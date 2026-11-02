@@ -1,0 +1,22 @@
+# Système
+.DS_Store
+Thumbs.db
+
+# Éditeurs
+.idea/
+.vscode/
+
+# Environnement — aucun secret dans le dépôt (CONTEXT §7.4)
+.env
+.env.*
+!.env.example
+
+# Dépendances et build Node.js
+node_modules/
+.next/
+out/
+coverage/
+*.tsbuildinfo
+
+# Logs
+*.log

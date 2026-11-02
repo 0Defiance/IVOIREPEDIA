@@ -1,0 +1,35 @@
+# Fins de ligne normalisées en LF : le développement se fait sous Windows, la CI
+# (GitHub Actions) et l'hébergement cible tournent sous Linux. Sans cette
+# normalisation, les scripts et le shebang peuvent recevoir des CRLF et casser
+# côté Linux.
+* text=auto eol=lf
+
+# Sources TypeScript / JavaScript et configuration
+*.ts     text eol=lf
+*.tsx    text eol=lf
+*.js     text eol=lf
+*.mjs    text eol=lf
+*.json   text eol=lf
+*.yml    text eol=lf
+*.yaml   text eol=lf
+*.css    text eol=lf
+*.sql    text eol=lf
+*.prisma text eol=lf
+
+# Scripts shell
+*.sh text eol=lf
+
+# Documentation
+*.md text eol=lf
+
+# Binaires : aucune conversion, aucune fusion texte
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.pdf  binary
+*.docx binary
+*.woff binary
+*.woff2 binary
+*.ttf  binary
