@@ -4,17 +4,15 @@
 # côté Linux.
 * text=auto eol=lf
 
-# Sources TypeScript / JavaScript et configuration
-*.ts     text eol=lf
-*.tsx    text eol=lf
-*.js     text eol=lf
-*.mjs    text eol=lf
-*.json   text eol=lf
-*.yml    text eol=lf
-*.yaml   text eol=lf
-*.css    text eol=lf
-*.sql    text eol=lf
-*.prisma text eol=lf
+# Sources Dart / PHP et configuration
+*.dart    text eol=lf
+*.php     text eol=lf
+*.blade.php text eol=lf
+*.json    text eol=lf
+*.yml     text eol=lf
+*.yaml    text eol=lf
+*.sql     text eol=lf
+*.css     text eol=lf
 
 # Scripts shell
 *.sh text eol=lf

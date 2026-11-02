@@ -6,17 +6,35 @@ Thumbs.db
 .idea/
 .vscode/
 
-# Environnement — aucun secret dans le dépôt (CONTEXT §7.4)
-.env
-.env.*
-!.env.example
+# Flutter (`app/`)
+app/.dart_tool/
+app/build/
+app/.flutter-plugins
+app/.flutter-plugins-dependencies
+app/android/local.properties
+app/android/key.properties
+app/*.jks
+app/*.keystore
 
-# Dépendances et build Node.js
-node_modules/
-.next/
-out/
-coverage/
-*.tsbuildinfo
+# Laravel (`backend/`) — aucun secret dans le dépôt (CONTEXT §7.5)
+backend/.env
+backend/.env.*
+!backend/.env.example
+backend/vendor/
+backend/bootstrap/cache/*.php
+backend/storage/logs/*.log
+backend/storage/framework/cache/data/*
+backend/storage/framework/sessions/*
+backend/storage/framework/views/*
+backend/storage/framework/testing/*
+backend/public/build/
+backend/public/storage
+backend/database/*.sqlite
+backend/database/*.sqlite-*
 
 # Logs
 *.log
+
+# Les fichiers de verrouillage sont versionnés (versions figées, CONTEXT §5)
+!app/pubspec.lock
+!backend/composer.lock

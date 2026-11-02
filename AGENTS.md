@@ -6,32 +6,33 @@ Ce fichier fixe la **définition de « fait »** appliquée à chaque interventi
 
 Une fonctionnalité n'existe que si l'on y arrive par le chemin normal de l'utilisateur, sans modifier le code pour l'atteindre :
 
-- **Pages (App Router)** : route dans `src/app/**` **et** point d'entrée visible (lien, bouton, menu) depuis un écran déjà accessible ; la page s'affiche sans flag de debug ni activation manuelle.
-- **API** : Route Handler dans `src/app/api/**/route.ts`, appelable en HTTP avec les mêmes paramètres que ceux que l'interface envoie.
-- **Espaces protégés (contributeur, éditorial, admin)** : la page existe sous son segment et ses actions s'exécutent réellement, avec les permissions vérifiées côté serveur.
+- **Flutter (`app/`)** : route enregistrée dans `app/lib/src/app.dart` **et** point d'entrée visible (menu, bouton, lien) depuis un écran déjà accessible ; l'écran s'affiche sans flag de debug ni activation manuelle.
+- **API (`backend/`)** : route déclarée dans `backend/routes/api.php` et appelable en HTTP (`/api/v1/...`) avec les mêmes paramètres que ceux que l'app envoie.
+- **Back-office** : la ressource Filament est présente dans le menu `/admin` et ses actions s'exécutent réellement.
 
-Vérification concrète : atteindre la fonctionnalité avec `pnpm dev` en suivant uniquement les chemins décrits dans CONTEXT §7, ou avec `curl` sur l'API.
+Vérification concrète : atteindre la fonctionnalité avec `flutter run -d web-server --web-port 8082` + `php artisan serve --port 8000` en suivant uniquement les chemins décrits dans `docs/INSTALLATION.md` (au Sprint 0 ; en attendant, CONTEXT §7), ou avec `curl` sur l'API.
 
 ## 2. Testable directement
 
-Chaque nouveau comportement est couvert par un test **ajouté à la suite existante** — on n'ajoute jamais un second outil de test. L'outil est **Vitest** (CONTEXT §5, §15.3).
+Chaque nouveau comportement est couvert par un test **ajouté à la suite existante** — on n'ajoute jamais un second outil de test :
 
 | Couche | Fichier | Commande |
 |---|---|---|
-| Logique pure (workflow, rbac, slug, sanitize, validateurs Zod) | `tests/unit/…` | `pnpm test` |
-| Services (transitions complètes, permissions, intégration BDD) | `tests/integration/…` | `pnpm test` |
+| Logique métier, services, routes, policies (Workflow, RBAC, slug, FormRequest) | `backend/tests/…/…Test.php` | `cd backend && composer test` |
+| Écrans et logique Flutter (éditeur, navigation, parcours) | `app/test/…_test.dart` | `cd app && flutter test` |
 
-Le test reproduit l'usage réel : un appel au service ou à la route avec assertions de statut **et** de contenu. Un test d'une fonction privée sans chemin d'appel réel ne suffit pas. Priorité absolue : **permissions, workflow, sanitisation** (CONTEXT §15.3).
+Le test reproduit l'usage réel : un appel HTTP authentifié sur la route avec assertions de statut **et** de contenu, ou un parcours de widgets qui navigue jusqu'à l'écran. Un test d'une méthode privée sans route ni écran ne suffit pas. Priorité absolue : **permissions, workflow, validation d'entrées** (CONTEXT §15.3).
 
 ## 3. Vérifier, documenter, committer
 
 Mêmes commandes que la CI prévue (CONTEXT §15.4), à exécuter avant chaque commit :
 
 ```bash
-pnpm lint && pnpm typecheck && pnpm test && pnpm build
+cd backend && composer test && composer format:check && composer analyse
+cd app && flutter analyze && flutter test
 ```
 
-*Ces commandes deviennent exécutables au Sprint 0, quand le socle est initialisé. En attendant, un commit de documentation reste possible, mais reste soumis aux deux règles ci-dessous.*
+*Ces commandes deviennent exécutables au Sprint 0, quand `backend/` et `app/` sont initialisés. En attendant, un commit de documentation reste possible, mais reste soumis aux deux règles ci-dessous.*
 
 **Documentation** : entrée dans `docs/SUIVI_DEVELOPPEMENT.md` (fait / vérifié / reste) et, si une décision change, mise à jour de `IVOIREPEDIA_CONTEXT.md` **dans la même PR** (règle de maintenance CONTEXT §19).
 

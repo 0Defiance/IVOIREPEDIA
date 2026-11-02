@@ -17,13 +17,13 @@
 |---|---|
 | Projet | Encyclopédie web libre dédiée à la Côte d'Ivoire (articles structurés, validés par des éditeurs, versionnés). |
 | Équipe actuelle | **1 seul développeur, niveau junior/intermédiaire en progression.** Pas encore de contributeurs externes. |
-| Stack MVP | Next.js (App Router) + TypeScript + Prisma + PostgreSQL + Auth.js + Tailwind + TipTap. **Rien d'autre sans ADR.** |
-| Architecture | **Monolithe modulaire** (un seul dépôt, un seul déploiement). Pas de microservices. |
+| Stack MVP | **Flutter** (`app/` : web d'abord, Android ensuite) + **Laravel** (`backend/` : API REST `/api/v1` + admin Filament) + **MySQL** (XAMPP / phpMyAdmin en local). **Rien d'autre sans ADR.** Modèle : dépôt Soutrali. |
+| Architecture | **Monolithe modulaire** : un seul dépôt, un seul backend Laravel, une seule base. Pas de microservices. |
 | Périmètre | **MVP uniquement** (section 3). Ne jamais implémenter une fonctionnalité V1/V2 sans demande explicite. |
 | Langue | Code, commits, noms de variables et tables : **anglais**. Interface utilisateur et docs : **français**. |
 | Pédagogie | Le dev est en apprentissage : **explique chaque terme technique en une phrase**, propose de petits changements (diffs courts), justifie tes choix. |
-| Sécurité | Valider toute entrée avec Zod, vérifier les permissions côté serveur, ne jamais faire confiance au client (section 11). |
-| Logique métier | Dans `src/server/services/*`, **jamais** dans les handlers d'API ni dans les composants React. |
+| Sécurité | Valider toute entrée côté serveur (Laravel `FormRequest`), vérifier les permissions côté serveur (Policies), ne jamais faire confiance au client (section 13). |
+| Logique métier | Dans `backend/app/Services/*`, **jamais** dans les contrôleurs Laravel ni dans les widgets Flutter. |
 | En cas de doute | Pose **une** question de clarification plutôt que d'inventer. Signale toute divergence avec ce fichier. |
 
 ---
@@ -54,9 +54,11 @@
 | Document | Rôle | Fichier |
 |---|---|---|
 | **Ce fichier** | Source de vérité opérationnelle | `IVOIREPEDIA_CONTEXT.md` |
-| Cahier des charges | Acteurs, exigences fonctionnelles (codes `EF-*`) et non fonctionnelles (`ENF-*`) | `IVOIREPEDIA_Cahier_des_Charges.docx` |
-| Conception UML | Cas d'utilisation, séquences, classes | `IVOIREPEDIA_Conception_UML.docx` |
-| Roadmap technique | Vision CTO 12 mois et 5 ans | `IVOIREPEDIA_Roadmap_Technique.docx` |
+| Cahier des charges | Acteurs, exigences fonctionnelles (codes `EF-*`) et non fonctionnelles (`ENF-*`) | `docs/CDC_Encyclopedie_Inclusive_Ivoirienne.pdf` |
+| Stack Phase 1 — local | XAMPP, phpMyAdmin, Laravel, MySQL : environnement de développement | `docs/EII_Stack_Technique_Phase1_Local.pdf` |
+| Stack Phase 2 — production | VPS Nginx, API `/api/v1` + Sanctum, application mobile, SMS/USSD | `docs/EII_Stack_Technique_Phase2_Production.pdf` |
+| Vision produit | Multilingue, sources orales, géolocalisation, hors-ligne (statuts ✅ 🟡 ❓) | `docs/IVOIREPEDIA_Document_de_Contextualisation.md` |
+| Règle de travail | Définition de « fait », vérifications avant commit | `AGENTS.md` |
 
 ### 2.1 Divergences connues entre les documents (⚠️ à lire)
 
@@ -64,24 +66,27 @@ Les documents ont été rédigés successivement. **En cas de contradiction, ce 
 
 | # | Sujet | Ce que disent les anciens docs | **Décision en vigueur** |
 |---|---|---|---|
-| D1 | Stack | Roadmap : NestJS + MongoDB + Elasticsearch + Kubernetes | **MVP : Next.js + Prisma + PostgreSQL seul.** La stack de la roadmap est un horizon V2+ (ADR-001, ADR-003). |
-| D2 | Contenu des articles | Roadmap : stocké dans MongoDB | **Colonne `Json` (jsonb) dans PostgreSQL** (ADR-003). |
-| D3 | Noms des statuts | UML : français (`BROUILLON`, `SOUMIS`…) | **Enums anglais** (`DRAFT`, `SUBMITTED`…), libellés français via un fichier de traduction UI (ADR-006). |
+| D1 | Stack | Vision : NestJS + MongoDB + Elasticsearch + Kubernetes | **MVP : Flutter (`app/`) + Laravel (`backend/`) + MySQL seul — modèle Soutrali** (ADR-001→004, 2 nov. 2026). NestJS / microservices = horizon V2+. |
+| D2 | Contenu des articles | Vision : stocké dans MongoDB | **Colonne `JSON` dans MySQL** contenant le Delta de l'éditeur Quill (ADR-003). |
+| D3 | Noms des statuts | UML : français (`BROUILLON`, `SOUMIS`…) | **Enums PHP anglais** (`DRAFT`, `SUBMITTED`…), libellés français côté Flutter (ADR-006). |
 | D4 | Statut après demande de révision | UML séquence 2.4 : `IN_REVISION` | **`REVISION_REQUESTED`** (section 8). |
 | D5 | Versions | UML : une version à chaque sauvegarde | **Une version = un jalon** (soumission, édition d'un article publié, publication, rollback). L'auto-save ne crée pas de version (ADR-005). |
-| D6 | Recherche | UML : `LIKE '%terme%'` | MVP : `contains` insensible à la casse ; **V1 : full-text PostgreSQL** (`tsvector` + `unaccent`). |
-| D7 | Rôles admin | CDC : Admin Contenu + Admin Technique | **Un seul rôle applicatif `ADMIN`.** « Admin technique » = accès infrastructure (Vercel, BDD), pas un rôle en base. |
+| D6 | Recherche | UML : `LIKE '%terme%'` | MVP : `LIKE` insensible à la casse ; **V1 : full-text MySQL** (`FULLTEXT`, parseur `ngram` si besoin français). |
+| D7 | Rôles admin | CDC : Admin Contenu + Admin Technique | **Un seul rôle applicatif `ADMIN`.** « Admin technique » = accès infrastructure (serveur, BDD), pas un rôle en base. |
 | D8 | Rôle à l'inscription | CDC : « Lecteur inscrit » | Inscription → `READER`. Promotion en `CONTRIBUTOR` par un `ADMIN`. |
+| D9 | Interface | PDFs EII : Blade + Tailwind (Phase 1), PWA Android (Phase 2) | **Flutter Web d'abord, Android ensuite** — même code, objectif multiplateforme partagé avec Soutrali (ADR-001). Blade/PWA abandonnés. |
+
+> Les PDFs EII restent la référence pour tout ce qui concerne **la base, l'API et la production** (XAMPP, MySQL, `/api/v1`, Sanctum, VPS Nginx) : ils sont en phase avec cette décision. Seule la couche **interface** a changé (D9).
 
 ---
 
 ## 3. Périmètre
 
 ### 3.1 MVP (à construire maintenant)
-Inscription / connexion / vérification email / reset mot de passe · Création et édition d'articles (brouillon, auto-save) · Éditeur riche · Catégories, tags · Image de couverture · Références bibliographiques · Soumission → révision → approbation → publication · Historique des versions · Recherche simple · Pages publiques (accueil, article, catégorie, résultats) · Admin minimal (utilisateurs, catégories, file de validation) · SEO de base.
+Site web **Flutter Web** · Inscription / connexion / vérification email / reset mot de passe · Création et édition d'articles (brouillon, auto-save) · Éditeur riche · Catégories, tags · Image de couverture · Références bibliographiques · Soumission → révision → approbation → publication · Historique des versions · Recherche simple · Pages publiques (accueil, article, catégorie, résultats) · Admin minimal (utilisateurs, catégories, file de validation) · SEO de base (limité : voir §17, risque R-09).
 
 ### 3.2 Hors MVP (ne pas implémenter sans demande)
-Elasticsearch · Application mobile · API publique · Multilingue (langues locales) · IA de modération · Cartes interactives · Commentaires · 2FA · OAuth Google/Facebook · Export chercheurs · Temps réel (WebSocket) · Kubernetes · Microservices · Redis (hors rate-limiting).
+Elasticsearch / Meilisearch · Publication Android/iOS (le code Flutter est partagé d'emblée ; la cible mobile vient **après validation du web**, cf. ADR-001) · API publique · Multilingue (langues locales) · IA de modération · Cartes interactives · Commentaires · 2FA · OAuth Google/Facebook · Export chercheurs · Temps réel (WebSocket) · Kubernetes · Microservices · Redis (hors rate-limiting).
 
 > Règle : si une demande touche à la section 3.2, **demander confirmation** avant d'écrire du code.
 
@@ -91,44 +96,44 @@ Elasticsearch · Application mobile · API publique · Multilingue (langues loca
 
 Chaque décision est numérotée. Pour en changer : ouvrir une PR qui ajoute un nouvel ADR dans `docs/adr/` et met à jour ce fichier.
 
-### ADR-001 — Monolithe modulaire (Next.js full-stack)
-- **Décision** : une seule application Next.js (App Router) pour l'interface et le backend (Route Handlers).
-- **Pourquoi** : un seul déploiement, un seul langage (TypeScript), débogage simple, coût zéro pour démarrer.
-- **Risque** : couplage si le code est mal organisé → **respecter la séparation en couches (section 6.2)**.
+### ADR-001 — Un dépôt, deux applications : Flutter (`app/`) + Laravel monolithe modulaire (`backend/`)
+- **Décision** : `app/` Flutter/Dart pour toute l'interface (site web d'abord, Android ensuite) ; `backend/` Laravel pour l'API REST `/api/v1` **et** le panneau d'administration Filament sur `/admin`. Une seule base, un seul déploiement backend.
+- **Pourquoi** : objectif multiplateforme — une seule base de code pour le web puis Android (même modèle que Soutrali) ; backend et base indépendants des interfaces ; le monolithe limite les composants à installer, surveiller et maintenir pour un dev seul.
+- **Risque** : deux langages (Dart, PHP) pour une personne seule → **le backend est l'unique source des règles métier**, l'app n'affiche et n'appelle que l'API ; couplage → respecter la séparation en couches (section 6.2).
 - **Sortie** : si un module devient un goulot (recherche, médias), il pourra être extrait en service indépendant.
 
-### ADR-002 — PostgreSQL + Prisma
-- **Décision** : PostgreSQL comme unique base de données, Prisma comme ORM.
-- **Pourquoi** : relations fortes (utilisateurs ↔ articles ↔ versions), transactions ACID (indispensables au workflow), `jsonb` pour le contenu flexible, full-text natif pour la V1.
-- **ORM ?** Un ORM (*Object-Relational Mapper*) traduit le code TypeScript en requêtes SQL et génère des types sûrs.
+### ADR-002 — MySQL + Eloquent (XAMPP / phpMyAdmin en local)
+- **Décision** : MySQL comme unique base de données, Eloquent comme ORM, migrations versionnées (jamais de modification manuelle seulement dans phpMyAdmin).
+- **Pourquoi** : les PDFs du projet ont déjà retenu XAMPP + phpMyAdmin + MySQL (Phase 1) ; relations fortes (utilisateurs ↔ articles ↔ versions), transactions ACID (indispensables au workflow). Eloquent = l'ORM intégré à Laravel (traduit le PHP en requêtes SQL).
+- **⚠️ Moteur réel** : XAMPP livre souvent **MariaDB**, pas MySQL. Éviter les fonctions propres à un moteur ; la CI teste contre MySQL ; consigner le moteur et la version réels dans `docs/INSTALLATION.md`.
 
-### ADR-003 — Pas de MongoDB ni d'Elasticsearch au MVP
-- **Décision** : le contenu riche est stocké en `Json` dans PostgreSQL.
-- **Pourquoi** : une seule base à sauvegarder, administrer et apprendre. Elasticsearch sera réévalué quand la recherche PostgreSQL deviendra insuffisante (seuil indicatif : plusieurs milliers d'articles ou besoin de tolérance aux fautes avancée).
+### ADR-003 — Pas de MongoDB, Elasticsearch ni Meilisearch au MVP
+- **Décision** : le contenu riche est stocké en colonne `JSON` de MySQL.
+- **Pourquoi** : une seule base à sauvegarder, administrer et apprendre. La recherche utilise `LIKE` au MVP ; full-text MySQL en V1 ; Meilisearch sera réévalué au seuil défini dans le PDF Phase 2 (plusieurs milliers d'articles ou tolérance aux fautes avancée).
 
-### ADR-004 — Auth.js (ex-NextAuth) avec sessions JWT en cookie HttpOnly
-- **Décision** : authentification par email + mot de passe (provider *Credentials*), sessions JWT.
-- **Pourquoi** : brique éprouvée, évite d'écrire de la cryptographie maison.
-- **⚠️ À vérifier avant implémentation** : la version et l'API d'Auth.js évoluent ; **lire la documentation officielle courante** avant de coder. Le provider Credentials impose la stratégie de session JWT.
-- **Sécurité** : mots de passe hachés avec bcrypt (≥ 12 rounds) ou argon2.
+### ADR-004 — Laravel Sanctum (session web + jeton révocable Android)
+- **Décision** : authentification par email + mot de passe. Côté web (Flutter Web), session par **cookie** (`HttpOnly`, `SameSite=Lax`) ; côté Android plus tard, **jeton personnel révocable** dans `flutter_secure_storage`. Mêmes comptes et rôles pour l'app, l'API et Filament.
+- **Pourquoi** : brique officielle de Laravel, évite d'écrire de la cryptographie maison ; un seul système d'authentification pour les trois surfaces.
+- **Sécurité** : mots de passe hachés avec `Hash::make()` (bcrypt, ≥ 12 rounds), jamais stockés ni loggés en clair.
 
 ### ADR-005 — Versionnage par jalons
-- **Décision** : le champ `Article.content` contient toujours le contenu courant. Une ligne `ArticleVersion` (snapshot immuable) est créée à : soumission, chaque sauvegarde d'un article **publié**, publication, rollback.
+- **Décision** : le champ `articles.content` (JSON) contient toujours le contenu courant. Une ligne `article_versions` (snapshot immuable) est créée à : soumission, chaque sauvegarde d'un article **publié**, publication, rollback.
 - **Pourquoi** : l'auto-save toutes les 60 s créerait des centaines de versions inutiles.
-- **Intégrité** : `contentHash` (SHA-256) pour détecter les doublons.
+- **Intégrité** : `content_hash` (SHA-256) pour détecter les doublons.
 
 ### ADR-006 — Convention de langue
 - **Code, schéma BDD, API, commits, branches** : anglais.
 - **Interface, messages d'erreur utilisateur, documentation** : français.
-- Les enums sont en anglais ; les libellés français sont dans `src/lib/i18n/fr.ts`.
+- Les enums PHP sont en anglais (`App\Enums\*`) ; les libellés français vivent côté Flutter (`app/lib/`, fichiers de libellés).
 
-### ADR-007 — Mutations via Route Handlers + couche service
-- **Décision** : toute écriture passe par `src/app/api/**/route.ts` qui appelle `src/server/services/*`. Les Server Components lisent via les services.
-- **Pourquoi** : API testable, prête pour une future API publique, logique métier isolée.
+### ADR-007 — API REST versionnée `/api/v1` + couche Service
+- **Décision** : toute écriture passe par `backend/routes/api.php` → contrôleur `Api/V1` (mince) → `backend/app/Services/*`. Filament appelle les **mêmes** Services. Les widgets Flutter lisent et écrivent uniquement via l'API.
+- **Pourquoi** : API testable avec Pest, prête pour une future API publique, logique métier isolée ; une action d'administration ne peut pas contourner les règles de statut ni la traçabilité.
 
 ### ADR-008 — Hébergement MVP
-- Vercel (app) + PostgreSQL managé (Neon ou Supabase) + Cloudinary (images, CDN). Offres gratuites au départ.
-- **À vérifier** : conditions et quotas des offres gratuites évoluent ; contrôler les tarifs actuels avant le lancement public.
+- **Phase 1 (MVP)** : développement et démonstration **100 % local** (XAMPP), aucun service payant (PDF Phase 1).
+- **Phase 2 (production)** : VPS Ubuntu + Nginx + PHP-FPM + MySQL géré avec sauvegardes automatiques, HTTPS Let's Encrypt (PDF Phase 2). **Hébergeur exact : décision ouverte** — à trancher avant la bêta publique (coûts, sauvegardes, support).
+- **Médias** : disque local (`storage/app/public`) au MVP ; stockage objet + CDN (type Cloudflare R2) en Phase 2.
 - **Souveraineté** : hébergement hors Côte d'Ivoire au départ (latence ≈ 150 ms acceptable). Rapatriement des données étudié à moyen terme (voir roadmap).
 
 ---
@@ -137,25 +142,29 @@ Chaque décision est numérotée. Pour en changer : ouvrir une PR qui ajoute un 
 
 | Couche | Choix | Rôle |
 |---|---|---|
-| Langage | TypeScript (mode `strict`) | JavaScript typé : détecte les erreurs avant l'exécution |
-| Framework | Next.js, App Router | Pages, routage, rendu serveur, API |
-| UI | React + Tailwind CSS | Composants + styles utilitaires |
-| Éditeur riche | TipTap (JSON ProseMirror) | Édition de texte structurée |
-| ORM / BDD | Prisma + PostgreSQL | Accès et stockage des données |
-| Auth | Auth.js (Credentials) | Connexion, sessions |
-| Validation | Zod | Schémas de validation des entrées (API et formulaires) |
-| Sanitisation | `sanitize-html` | Nettoyage du HTML rendu (anti-XSS) |
-| Emails | Resend (ou SMTP) | Vérification email, reset, notifications |
-| Médias | Cloudinary (upload signé) | Stockage et optimisation d'images |
-| Rate-limiting | Upstash Ratelimit (free tier) | Anti-brute-force sur login/inscription |
-| Tests | Vitest (unitaires/intégration), Playwright (e2e, V1) | Qualité |
-| Qualité | ESLint + Prettier + `tsc --noEmit` | Style et typage |
-| CI | GitHub Actions | Lint, types, tests, build à chaque PR |
-| Gestionnaire de paquets | pnpm (npm accepté) | Dépendances |
+| Interface | Flutter, langage Dart, canal stable | Une base de code : site web d'abord, application Android ensuite |
+| Navigation Flutter | `go_router` | Routes nommées, redirections selon l'état de connexion |
+| Appels HTTP Flutter | `dio` | API JSON, erreurs centralisées, délais d'attente |
+| État de l'interface | Gestion simple par fonctionnalité ; `flutter_riverpod` seulement si besoin confirmé | Éviter une architecture d'état disproportionnée |
+| Stockage de session mobile | `flutter_secure_storage` | Jetons Android dans le stockage protégé de l'appareil, jamais en clair |
+| Éditeur riche | `flutter_quill` (Delta JSON) — **choix de référence, à confirmer avant le Sprint 2 (Q8)** | Édition structurée ; le Delta JSON est le contenu stocké |
+| Backend / API | PHP 8.3+ avec Laravel, monolithe modulaire | API REST `/api/v1` JSON, règles métier testables côté serveur |
+| Administration | Filament pour Laravel (`/admin`) | Utilisateurs, catégories, tableaux de bord — accès protégé par rôle et Policy |
+| Authentification | Laravel Sanctum | Session cookie pour le web, jeton révocable pour Android |
+| Base de données | MySQL (MariaDB livré par XAMPP en local), administrée via phpMyAdmin | Stockage relationnel, migrations versionnées |
+| Validation des entrées | Laravel validation (`FormRequest`) | Validation **faisant foi** côté serveur (remplace les schémas Zod) |
+| Emails | Laravel Mail (SMTP en prod, driver `log` en local) | Vérification email, reset, notifications éditoriales |
+| Médias | Disque local `storage/app/public` (R2 + CDN en Phase 2) | Images de couverture et futures pièces jointes |
+| Rate-limiting | `RateLimiter` intégré à Laravel | Anti-brute-force sur login / inscription / reset |
+| Tests backend | Pest (tests `Unit` + `Feature`) | Règles métier, permissions, routes HTTP |
+| Tests Flutter | `flutter_test` | Widgets critiques et parcours essentiels |
+| Qualité | Pint (formatage), Larastan (analyse statique), `flutter analyze` | Style et erreurs détectées avant exécution |
+| CI | GitHub Actions — 2 jobs (backend, flutter) | Tests, analyse et build web à chaque PR |
+| Gestionnaire de dépendances | Composer (backend), `pub` (Flutter) | Fichiers de verrouillage `composer.lock`, `pubspec.lock` |
 
-**Versions** : utiliser la version stable courante de Node.js (LTS) et des dépendances à l'initialisation, puis **figer via le lockfile** (`pnpm-lock.yaml`). Ne pas copier de numéros de version depuis ce document.
+**Versions** : utiliser les versions stables courantes à l'initialisation, puis **figer via les lockfiles** (`composer.lock`, `pubspec.lock`). De référence constatée chez Soutrali (à revérifier sur ce poste) : Laravel 13 / PHP 8.3 / Filament 5 / Sanctum 4 / Pest 4 ; Flutter stable récent (Dart ≥ 3.13). **Ne pas copier de numéros de version depuis ce document** — les figer dans `docs/INSTALLATION.md` après exécution réelle.
 
-> **Règle d'ajout de dépendance** : toute nouvelle librairie doit être justifiée dans la PR (besoin, alternatives, taille, maintenance). Préférer la plateforme standard (Web APIs, Node) quand c'est suffisant.
+> **Règle d'ajout de dépendance** : toute nouvelle librairie doit être justifiée dans la PR (besoin, alternatives, taille, maintenance). Préférer le cadre standard (fonctions natives de Laravel, packages `flutter_*`) quand c'est suffisant.
 
 ---
 
@@ -165,125 +174,154 @@ Chaque décision est numérotée. Pour en changer : ouvrir une PR qui ajoute un 
 
 ```
 ivoirepedia/
-├─ prisma/
-│  ├─ schema.prisma
-│  ├─ migrations/
-│  └─ seed.ts                 # catégories de base + compte admin de dev
-├─ src/
+├─ app/                      # Flutter/Dart — interface partagée (web puis Android)
+│  ├─ lib/
+│  │  ├─ main.dart
+│  │  └─ src/
+│  │     ├─ app.dart          # thème, routes (go_router)
+│  │     ├─ core/            # client HTTP (dio), configuration, erreurs communes
+│  │     └─ features/
+│  │        ├─ auth/           # connexion, inscription, session
+│  │        ├─ articles/       # lecture publique, recherche, catégories
+│  │        ├─ editor/         # rédaction : éditeur Quill, auto-save
+│  │        ├─ editorial/      # file de révision, relecture
+│  │        └─ account/        # mes articles, profil
+│  ├─ test/                   # tests flutter_test
+│  ├─ web/                    # index.html, manifest
+│  └─ pubspec.yaml
+├─ backend/                   # Laravel — API /api/v1 + admin Filament
 │  ├─ app/
-│  │  ├─ (public)/            # accueil, article/[slug], categorie/[slug], recherche
-│  │  ├─ (auth)/              # connexion, inscription, mot-de-passe-oublie
-│  │  ├─ (contributeur)/      # mes-articles, articles/[id]/editer
-│  │  ├─ (editorial)/         # revision (file d'attente), revision/[id]
-│  │  ├─ admin/               # utilisateurs, categories
-│  │  └─ api/                 # Route Handlers (fines : parse → service → réponse)
-│  ├─ server/
-│  │  ├─ services/            # LOGIQUE MÉTIER (article.service.ts, workflow.service.ts…)
-│  │  ├─ policies/            # permissions (rbac.ts, article.policy.ts)
-│  │  └─ mail/                # templates et envoi d'emails
-│  ├─ lib/                    # utilitaires purs : db.ts, env.ts, slug.ts, sanitize.ts, workflow.ts, i18n/fr.ts
-│  ├─ validators/             # schémas Zod partagés front/back
-│  └─ components/             # composants React (ui/, article/, editor/, admin/)
-├─ tests/                     # unit/ et integration/
-├─ docs/                      # adr/, diagrammes, documents Word
-├─ .github/workflows/ci.yml
-├─ docker-compose.yml         # PostgreSQL local
-├─ .env.example
+│  │  ├─ Enums/               # Role, ArticleStatus, ArticleType… (anglais)
+│  │  ├─ Exceptions/          # WorkflowException…
+│  │  ├─ Http/
+│  │  │  ├─ Controllers/Api/V1/   # contrôleurs minces
+│  │  │  └─ Requests/             # validation FormRequest
+│  │  ├─ Models/              # modèles Eloquent et relations
+│  │  ├─ Policies/            # autorisations par ressource
+│  │  ├─ Services/            # LOGIQUE MÉTIER (ArticleService, Workflow…)
+│  │  └─ Filament/            # ressources et pages du panneau /admin
+│  ├─ database/
+│  │  ├─ migrations/          # schéma versionné (source de vérité du schéma)
+│  │  ├─ seeders/             # catégories de base + admin de dev
+│  │  └─ factories/
+│  ├─ routes/api.php
+│  ├─ storage/                # médias locaux (Phase 1)
+│  ├─ tests/{Feature,Unit}/   # tests Pest
+│  ├─ .env.example
+│  └─ composer.json
+├─ docs/                      # adr/, INSTALLATION, SUIVI, documents source
+├─ .github/workflows/ci.yml   # créé au Sprint 0
+├─ AGENTS.md
 └─ IVOIREPEDIA_CONTEXT.md
 ```
 
 ### 6.2 Architecture en couches (règle d'or)
 
 ```
-Navigateur ──► Route Handler (api/) ──► Service (server/services) ──► Prisma ──► PostgreSQL
-                 │ valide (Zod)           │ règles métier + permissions
-                 │ authentifie            │ transactions
-                 └ formate la réponse     └ audit (EditorialAction)
+Flutter (app/) ──HTTP JSON /api/v1──► routes/api.php ──► Contrôleur ──► Service ──► Eloquent ──► MySQL
+                                          │ FormRequest       │ règles métier + Policies
+                                          │ Sanctum (session) │ transactions
+Filament (/admin) ───────────────────────────────────────► mêmes Services
 ```
 
 | Couche | Autorisé | Interdit |
 |---|---|---|
-| Route Handler | Lire la requête, valider avec Zod, récupérer la session, appeler un service, renvoyer JSON | Requêtes Prisma directes, règles métier |
-| Service | Règles métier, vérification des permissions, transactions Prisma, envoi d'emails | Dépendre de `Request`/`Response` |
-| `lib/` | Fonctions pures et testables | Effets de bord, accès BDD (sauf `db.ts`) |
-| Composants React | Affichage, état d'UI | Logique métier, accès BDD |
+| Contrôleur `Api/V1` | Recevoir la requête validée (FormRequest), récupérer l'utilisateur Sanctum, appeler un service, renvoyer JSON | Requêtes Eloquent directes, règles métier |
+| Service (`app/Services`) | Règles métier, vérification des permissions (Policies), transactions, notifications | Dépendre des objets HTTP (`Request`) ou d'un widget Flutter |
+| Model Eloquent | Relations, accès aux données, casts | Règles métier complexes |
+| Filament | UI d'administration qui appelle les Services | Contourner les règles de statut ou de traçabilité |
+| Widget Flutter | Affichage, état d'UI, appels API via `dio` | Logique métier, accès direct à la base |
 
 ---
 
-## 7. Installation locale (onboarding 30 minutes)
+## 7. Installation locale (onboarding)
+
+> Guide pas-à-pas complet dans `docs/INSTALLATION.md` (créé et complété au Sprint 0, avec les versions réellement constatées). Résumé ici.
 
 ### 7.1 Prérequis
-Node.js (LTS), pnpm, Docker (pour PostgreSQL local), Git.
+XAMPP (MySQL/MariaDB + phpMyAdmin), **PHP CLI 8.3+** (attention : souvent différent du PHP d'Apache XAMPP — vérifier `php -v`), Composer, Flutter SDK (stable), Git.
+
+**Leçons tirées du dépôt Soutrali, à vérifier ici aussi :**
+- Laravel 13 exige PHP 8.3+ en CLI ; le PHP livré par XAMPP peut être plus ancien.
+- Composer peut être installé **hors du PATH** : si `composer --version` échoue alors que `backend/vendor/` existe, appeler `php <chemin>/composer.phar <commande>`.
+- XAMPP ne sert ici qu'à faire tourner **MariaDB + phpMyAdmin** ; Apache est facultatif (Laravel et Flutter ont leurs propres serveurs de dev).
 
 ### 7.2 Démarrage
 
 ```bash
 git clone <url-du-depot> ivoirepedia && cd ivoirepedia
-cp .env.example .env            # puis compléter les valeurs
-docker compose up -d            # démarre PostgreSQL local
-pnpm install
-pnpm prisma migrate dev         # crée les tables
-pnpm prisma db seed             # catégories + admin de dev
-pnpm dev                        # http://localhost:3000
+
+# 1. Base de données — démarrer MySQL depuis le panneau XAMPP, puis via phpMyAdmin :
+#    CREATE DATABASE ivoirepedia CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+#    + créer l'utilisateur dédié ivoirepedia_dev (jamais root sans mot de passe) — cf. docs/INSTALLATION.md
+
+# 2. Backend Laravel (terminal 1)
+cd backend
+composer install
+cp .env.example .env             # puis compléter DB_* (jamais versionné)
+php artisan key:generate
+php artisan migrate --seed       # tables + catégories + admin de dev
+php artisan serve --port 8000    # API /api/v1 + admin Filament /admin
+
+# 3. Application Flutter (terminal 2)
+cd app
+flutter pub get
+flutter run -d web-server --web-port 8082   # site sur http://127.0.0.1:8082
 ```
 
-### 7.3 Commandes utiles
+### 7.3 Ports de développement
+
+| Service | Port | Adresse | Rôle |
+|---|---:|---|---|
+| API Laravel | `8000` | `http://127.0.0.1:8000` | Routes `/api/v1`, sessions Sanctum, panneau `/admin` |
+| Flutter Web | `8082` | `http://127.0.0.1:8082` | Site IVOIREPEDIA |
+| MariaDB (XAMPP) | `3306` | `127.0.0.1:3306` | Consommée uniquement par Laravel, jamais par Flutter |
+
+Les deux origines (`:8000` et `:8082`) sont distinctes **par conception** : Sanctum, cookies CSRF et CORS doivent autoriser explicitement `127.0.0.1:8082` (`SANCTUM_STATEFUL_DOMAINS` + `config/cors.php` dans `backend/`). En production, servir app, API et `/admin` sous une seule origine HTTPS.
+
+### 7.4 Commandes utiles
 
 | Commande | Effet |
 |---|---|
-| `pnpm dev` | Serveur de développement |
-| `pnpm lint` / `pnpm typecheck` | ESLint / vérification TypeScript |
-| `pnpm test` | Tests Vitest |
-| `pnpm prisma studio` | Interface graphique de la BDD |
-| `pnpm prisma migrate dev --name <nom>` | Nouvelle migration après changement du schéma |
-| `pnpm build` | Build de production |
+| `php artisan serve --port 8000` | Serveur de développement backend (+ `/admin`) |
+| `cd backend && composer test` | Tests Pest (`php artisan test`) |
+| `cd backend && composer format:check` / `composer analyse` | Pint (style) / Larastan (statique) |
+| `php artisan migrate` / `migrate:rollback` | Appliquer / annuler les migrations |
+| `php artisan db:seed` | Seed (catégories, admin de dev) |
+| `php artisan tinker` | Console d'exploration de la base |
+| `flutter run -d web-server --web-port 8082` | Site en développement |
+| `flutter analyze` / `flutter test` | Analyse Dart / tests Flutter |
+| `flutter build web --release` | Build web de production |
 
-### 7.4 Variables d'environnement (`.env.example`)
+### 7.5 Variables d'environnement (`backend/.env.example`)
 
 ```bash
-# Base de données
-DATABASE_URL="postgresql://ivoirepedia:ivoirepedia@localhost:5432/ivoirepedia"
-DIRECT_URL="postgresql://ivoirepedia:ivoirepedia@localhost:5432/ivoirepedia"  # migrations (Neon)
-
-# Auth
-AUTH_SECRET=""                # générer : openssl rand -base64 32
-AUTH_URL="http://localhost:3000"
-
 # Application
-APP_URL="http://localhost:3000"
-ALLOW_SELF_REVIEW="true"      # true en phase solo : un ADMIN peut valider ses propres articles
+APP_NAME=IVOIREPEDIA
+APP_URL=http://127.0.0.1:8000
+APP_ENV=local
 
-# Emails
-RESEND_API_KEY=""
-EMAIL_FROM="IVOIREPEDIA <no-reply@exemple.ci>"
+# Base de données (créée via phpMyAdmin)
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=ivoirepedia
+DB_USERNAME=ivoirepedia_dev
+DB_PASSWORD=                       # mot de passe choisi par qui installe, jamais commité
 
-# Médias
-CLOUDINARY_CLOUD_NAME=""
-CLOUDINARY_API_KEY=""
-CLOUDINARY_API_SECRET=""
+# Origines autorisées pour Sanctum / CORS (Flutter Web)
+FRONTEND_URL=http://127.0.0.1:8082
+SANCTUM_STATEFUL_DOMAINS=127.0.0.1:8082,localhost:8082
 
-# Rate limiting
-UPSTASH_REDIS_REST_URL=""
-UPSTASH_REDIS_REST_TOKEN=""
+# Phase solo : un ADMIN peut valider ses propres articles (à désactiver dès le 1er éditeur)
+ALLOW_SELF_REVIEW=true
+
+# Emails — Phase 1 : driver "log" (aucun envoi réel) ; SMTP configuré en production
+MAIL_MAILER=log
+MAIL_FROM_ADDRESS="IVOIREPEDIA <no-reply@ivoirepedia.ci>"
 ```
 
-> **Règle** : aucun secret dans le dépôt. `.env` est dans `.gitignore`. Les variables sont lues via `src/lib/env.ts` (validation Zod au démarrage : l'app refuse de démarrer si une variable manque).
-
-`docker-compose.yml` minimal :
-
-```yaml
-services:
-  db:
-    image: postgres:16
-    environment:
-      POSTGRES_USER: ivoirepedia
-      POSTGRES_PASSWORD: ivoirepedia
-      POSTGRES_DB: ivoirepedia
-    ports: ["5432:5432"]
-    volumes: [pgdata:/var/lib/postgresql/data]
-volumes:
-  pgdata:
-```
+> **Règle** : aucun secret dans le dépôt. `backend/.env` est dans `.gitignore` (seul `.env.example` est versionné). Les mots de passe SQL sont choisis par la personne qui installe et ne figurent jamais dans un commit, un ticket ou une capture.
 
 ---
 
@@ -291,290 +329,223 @@ volumes:
 
 ### 8.1 Correspondance des noms (documents UML → code)
 
-| UML (français) | Code (anglais) |
-|---|---|
-| Utilisateur | `User` |
-| Article | `Article` |
-| VersionArticle | `ArticleVersion` |
-| ActionEditoriale | `EditorialAction` |
-| Catégorie | `Category` |
-| Tag | `Tag` |
-| Référence | `Reference` |
-| Média | `Media` |
+| UML (français) | Modèle Eloquent | Table MySQL |
+|---|---|---|
+| Utilisateur | `User` | `users` |
+| Article | `Article` | `articles` |
+| VersionArticle | `ArticleVersion` | `article_versions` |
+| ActionEditoriale | `EditorialAction` | `editorial_actions` |
+| Catégorie | `Category` | `categories` |
+| Tag | `Tag` | `tags` (+ pivot `article_tag`) |
+| Référence | `Reference` | `article_references`* |
+| Média | `Media` | `media` |
 
-### 8.2 Schéma Prisma de référence (`prisma/schema.prisma`)
+*\* `references` et `order` sont des **mots réservés MySQL** : tables `article_references` et colonne `position`.*
 
-```prisma
-generator client {
-  provider = "prisma-client-js"
-}
+### 8.2 Schéma MySQL de référence (source d'exécution : `backend/database/migrations/`)
 
-datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
-}
+```sql
+-- DDL de référence. Les migrations Laravel font foi pour l'historique du schéma.
+SET NAMES utf8mb4;
 
-// ───────────── Enums ─────────────
-enum Role {
-  READER
-  CONTRIBUTOR
-  EDITOR
-  ADMIN
-}
+CREATE TABLE users (
+  id               CHAR(36)      NOT NULL PRIMARY KEY,        -- UUID
+  name             VARCHAR(100)  NOT NULL,
+  email            VARCHAR(255)  NOT NULL,
+  password_hash    VARCHAR(255)  NOT NULL,                    -- Hash::make (bcrypt)
+  role             VARCHAR(20)   NOT NULL DEFAULT 'READER',   -- enum PHP Role
+  email_verified_at TIMESTAMP    NULL,
+  bio              VARCHAR(500)  NULL,
+  avatar_url       VARCHAR(500)  NULL,
+  suspended_at     TIMESTAMP     NULL,
+  created_at       TIMESTAMP     NULL,
+  updated_at       TIMESTAMP     NULL,
+  UNIQUE KEY uniq_users_email (email)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-enum ArticleType {
-  BIOGRAPHY
-  REGION
-  INSTITUTION
-  EVENT
-  CONCEPT
-  CULTURE
-  GASTRONOMY
-  OTHER
-}
+CREATE TABLE verification_tokens (
+  id          CHAR(36)     NOT NULL PRIMARY KEY,
+  user_id     CHAR(36)     NOT NULL,
+  type        VARCHAR(20)  NOT NULL,        -- EMAIL_VERIFY | PASSWORD_RESET
+  token_hash  CHAR(64)     NOT NULL,        -- HASH du token, jamais le token brut
+  expires_at  TIMESTAMP    NOT NULL,
+  used_at     TIMESTAMP    NULL,
+  created_at  TIMESTAMP    NULL,
+  UNIQUE KEY uniq_tokens_hash (token_hash),
+  KEY idx_tokens_user_type (user_id, type),
+  CONSTRAINT fk_tokens_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-enum ArticleStatus {
-  DRAFT
-  SUBMITTED
-  IN_REVIEW
-  REVISION_REQUESTED
-  APPROVED
-  PUBLISHED
-  ARCHIVED
-  DELETED
-}
+CREATE TABLE categories (
+  id          CHAR(36)      NOT NULL PRIMARY KEY,
+  name        VARCHAR(100)  NOT NULL,
+  slug        VARCHAR(120)  NOT NULL,
+  description TEXT          NULL,
+  position    INT           NOT NULL DEFAULT 0,   -- ex. « order » (mot réservé)
+  parent_id   CHAR(36)      NULL,
+  created_at  TIMESTAMP     NULL,
+  updated_at  TIMESTAMP     NULL,
+  UNIQUE KEY uniq_categories_name (name),
+  UNIQUE KEY uniq_categories_slug (slug),
+  KEY idx_categories_parent (parent_id),
+  CONSTRAINT fk_categories_parent FOREIGN KEY (parent_id) REFERENCES categories (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-enum EditorialActionType {
-  SUBMITTED
-  REVIEW_STARTED
-  REVISION_REQUESTED
-  APPROVED
-  PUBLISHED
-  ARCHIVED
-  RESTORED
-  EDITED_PUBLISHED
-  ROLLED_BACK
-  DELETED
-}
+CREATE TABLE articles (
+  id               CHAR(36)      NOT NULL PRIMARY KEY,
+  title            VARCHAR(255)  NOT NULL,
+  slug             VARCHAR(255)  NOT NULL,
+  summary          VARCHAR(500)  NOT NULL,
+  content          JSON          NOT NULL,     -- Delta Quill (source de vérité, ADR-003)
+  infobox          JSON          NULL,         -- données structurées selon `type` (cf. 8.3)
+  type             VARCHAR(20)   NOT NULL,     -- enum PHP ArticleType
+  status           VARCHAR(20)   NOT NULL DEFAULT 'DRAFT',  -- enum PHP ArticleStatus
+  cover_image_url  VARCHAR(500)  NULL,
+  cover_image_alt  VARCHAR(255)  NULL,         -- OBLIGATOIRE si image (accessibilité, ENF-UX-04)
+  lock_version     INT           NOT NULL DEFAULT 0,   -- verrou optimiste (cf. 9.4)
+  current_version  INT           NOT NULL DEFAULT 0,   -- dernier numéro d'article_versions
+  author_id        CHAR(36)      NOT NULL,
+  category_id      CHAR(36)      NOT NULL,
+  created_at       TIMESTAMP     NULL,
+  updated_at       TIMESTAMP     NULL,
+  published_at     TIMESTAMP     NULL,
+  deleted_at       TIMESTAMP     NULL,         -- suppression douce (SoftDeletes)
+  UNIQUE KEY uniq_articles_slug (slug),
+  KEY idx_articles_status_published (status, published_at),
+  KEY idx_articles_category (category_id),
+  KEY idx_articles_author (author_id),
+  CONSTRAINT fk_articles_author   FOREIGN KEY (author_id)   REFERENCES users (id),
+  CONSTRAINT fk_articles_category FOREIGN KEY (category_id) REFERENCES categories (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-enum MediaType {
-  IMAGE
-  AUDIO
-}
+CREATE TABLE article_versions (
+  id           CHAR(36)      NOT NULL PRIMARY KEY,
+  article_id   CHAR(36)      NOT NULL,
+  number       INT           NOT NULL,
+  title        VARCHAR(255)  NOT NULL,
+  summary      VARCHAR(500)  NOT NULL,
+  content      JSON          NOT NULL,
+  content_hash CHAR(64)      NOT NULL,         -- SHA-256 du JSON canonique
+  author_id    CHAR(36)      NOT NULL,
+  reason       VARCHAR(255)  NULL,
+  created_at   TIMESTAMP     NULL,
+  UNIQUE KEY uniq_version (article_id, number),
+  CONSTRAINT fk_versions_article FOREIGN KEY (article_id) REFERENCES articles (id) ON DELETE CASCADE,
+  CONSTRAINT fk_versions_author  FOREIGN KEY (author_id)  REFERENCES users (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-enum TokenType {
-  EMAIL_VERIFY
-  PASSWORD_RESET
-}
+CREATE TABLE tags (
+  id         CHAR(36)     NOT NULL PRIMARY KEY,
+  name       VARCHAR(100) NOT NULL,
+  slug       VARCHAR(120) NOT NULL,
+  created_at TIMESTAMP    NULL,
+  updated_at TIMESTAMP    NULL,
+  UNIQUE KEY uniq_tags_name (name),
+  UNIQUE KEY uniq_tags_slug (slug)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-enum ReferenceKind {
-  BOOK
-  ARTICLE
-  WEB
-  OTHER
-}
+CREATE TABLE article_tag (            -- table pivot (relation plusieurs-à-plusieurs)
+  article_id CHAR(36) NOT NULL,
+  tag_id     CHAR(36) NOT NULL,
+  PRIMARY KEY (article_id, tag_id),
+  CONSTRAINT fk_pivot_article FOREIGN KEY (article_id) REFERENCES articles (id) ON DELETE CASCADE,
+  CONSTRAINT fk_pivot_tag     FOREIGN KEY (tag_id)     REFERENCES tags (id)     ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-// ───────────── Utilisateurs ─────────────
-model User {
-  id            String    @id @default(uuid())
-  name          String    @db.VarChar(100)
-  email         String    @unique
-  passwordHash  String
-  role          Role      @default(READER)
-  emailVerified DateTime?
-  bio           String?   @db.VarChar(500)
-  avatarUrl     String?
-  suspendedAt   DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+CREATE TABLE article_references (     -- « references » est un mot réservé MySQL
+  id          CHAR(36)      NOT NULL PRIMARY KEY,
+  article_id  CHAR(36)      NOT NULL,
+  position    INT           NOT NULL,          -- ex. « order » (mot réservé)
+  kind        VARCHAR(10)   NOT NULL DEFAULT 'OTHER',  -- enum PHP ReferenceKind
+  authors     VARCHAR(255)  NULL,
+  title       VARCHAR(255)  NOT NULL,
+  publisher   VARCHAR(255)  NULL,
+  year        SMALLINT      NULL,
+  url         VARCHAR(500)  NULL,
+  accessed_at DATE          NULL,
+  note        TEXT          NULL,
+  KEY idx_references_article (article_id, position),
+  CONSTRAINT fk_references_article FOREIGN KEY (article_id) REFERENCES articles (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-  articles Article[]
-  versions ArticleVersion[]
-  actions  EditorialAction[]
-  tokens   VerificationToken[]
-}
+CREATE TABLE media (
+  id         CHAR(36)      NOT NULL PRIMARY KEY,
+  article_id CHAR(36)      NOT NULL,
+  type       VARCHAR(10)   NOT NULL,           -- enum PHP MediaType (IMAGE | AUDIO)
+  path       VARCHAR(500)  NOT NULL,           -- clé de stockage (disque local ; remplace l'ID Cloudinary)
+  alt        VARCHAR(255)  NOT NULL,           -- OBLIGATOIRE (accessibilité, ENF-UX-04)
+  credit     VARCHAR(255)  NULL,
+  license    VARCHAR(100)  NULL,
+  size_bytes INT           NULL,
+  created_at TIMESTAMP     NULL,
+  CONSTRAINT fk_media_article FOREIGN KEY (article_id) REFERENCES articles (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-model VerificationToken {
-  id        String    @id @default(uuid())
-  userId    String
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type      TokenType
-  tokenHash String    @unique // on stocke le HASH du token, jamais le token brut
-  expiresAt DateTime
-  usedAt    DateTime?
-  createdAt DateTime  @default(now())
-
-  @@index([userId, type])
-}
-
-// ───────────── Contenu ─────────────
-model Article {
-  id            String        @id @default(uuid())
-  title         String        @db.VarChar(255)
-  slug          String        @unique
-  summary       String        @db.VarChar(500)
-  content       Json                          // JSON TipTap (source de vérité)
-  contentHtml   String?       @db.Text        // HTML sanitisé (cache de rendu)
-  type          ArticleType
-  status        ArticleStatus @default(DRAFT)
-  infobox       Json?                         // données structurées selon `type` (cf. 8.3)
-  coverImageUrl String?
-  coverImageAlt String?
-  lockVersion   Int           @default(0)     // verrou optimiste (cf. 9.4)
-  currentVersion Int          @default(0)     // dernier numéro d'ArticleVersion
-
-  authorId   String
-  author     User     @relation(fields: [authorId], references: [id])
-  categoryId String
-  category   Category @relation(fields: [categoryId], references: [id])
-
-  tags       Tag[]
-  references Reference[]
-  media      Media[]
-  versions   ArticleVersion[]
-  actions    EditorialAction[]
-
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  publishedAt DateTime?
-  deletedAt   DateTime?
-
-  @@index([status, publishedAt])
-  @@index([categoryId])
-  @@index([authorId])
-}
-
-model ArticleVersion {
-  id          String   @id @default(uuid())
-  articleId   String
-  article     Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
-  number      Int
-  title       String   @db.VarChar(255)
-  summary     String   @db.VarChar(500)
-  content     Json
-  contentHash String   // SHA-256 du JSON canonique
-  authorId    String
-  author      User     @relation(fields: [authorId], references: [id])
-  reason      String?  @db.VarChar(255)
-  createdAt   DateTime @default(now())
-
-  @@unique([articleId, number])
-}
-
-model Category {
-  id          String     @id @default(uuid())
-  name        String     @unique
-  slug        String     @unique
-  description String?
-  order       Int        @default(0)
-  parentId    String?
-  parent      Category?  @relation("CategoryTree", fields: [parentId], references: [id])
-  children    Category[] @relation("CategoryTree")
-  articles    Article[]
-}
-
-model Tag {
-  id       String    @id @default(uuid())
-  name     String    @unique
-  slug     String    @unique
-  articles Article[]
-}
-
-model Reference {
-  id         String        @id @default(uuid())
-  articleId  String
-  article    Article       @relation(fields: [articleId], references: [id], onDelete: Cascade)
-  order      Int
-  kind       ReferenceKind @default(OTHER)
-  authors    String?
-  title      String
-  publisher  String?
-  year       Int?
-  url        String?
-  accessedAt DateTime?
-  note       String?
-
-  @@index([articleId, order])
-}
-
-model Media {
-  id        String    @id @default(uuid())
-  articleId String
-  article   Article   @relation(fields: [articleId], references: [id], onDelete: Cascade)
-  type      MediaType
-  url       String
-  publicId  String    // identifiant Cloudinary (pour suppression)
-  alt       String    // OBLIGATOIRE (accessibilité, ENF-UX-04)
-  credit    String?
-  license   String?
-  sizeBytes Int?
-  createdAt DateTime  @default(now())
-}
-
-// ───────────── Traçabilité (append-only) ─────────────
-model EditorialAction {
-  id         String              @id @default(uuid())
-  articleId  String
-  article    Article             @relation(fields: [articleId], references: [id], onDelete: Cascade)
-  actorId    String
-  actor      User                @relation(fields: [actorId], references: [id])
-  type       EditorialActionType
-  fromStatus ArticleStatus?
-  toStatus   ArticleStatus?
-  comment    String?             @db.Text
-  createdAt  DateTime            @default(now())
-
-  @@index([articleId, createdAt])
-}
+CREATE TABLE editorial_actions (      -- append-only : jamais d'UPDATE ni de DELETE
+  id          CHAR(36)     NOT NULL PRIMARY KEY,
+  article_id  CHAR(36)     NOT NULL,
+  actor_id    CHAR(36)     NOT NULL,
+  type        VARCHAR(20)  NOT NULL,           -- enum PHP EditorialActionType
+  from_status VARCHAR(20)  NULL,
+  to_status   VARCHAR(20)  NULL,
+  comment     TEXT         NULL,
+  created_at  TIMESTAMP    NULL,
+  KEY idx_actions_article (article_id, created_at),
+  CONSTRAINT fk_actions_article FOREIGN KEY (article_id) REFERENCES articles (id) ON DELETE CASCADE,
+  CONSTRAINT fk_actions_actor   FOREIGN KEY (actor_id)   REFERENCES users (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ```
 
 **Règles de données**
-- `EditorialAction` est **append-only** : jamais de `update` ni `delete` (hors purge programmée).
-- `Article.deletedAt` = suppression douce. Purge définitive après 90 jours (tâche V1).
-- Le `slug` est généré depuis le titre (sans accents, en minuscules, tirets), suffixé en cas de doublon. Seul un `ADMIN` peut le modifier après publication (les URLs publiées doivent rester stables).
-- Le `contentHtml` est **recalculé et sanitisé côté serveur** à chaque sauvegarde ; il n'est jamais accepté depuis le client.
-- Recherche V1 : ajouter une colonne `tsvector` via migration SQL manuelle (Prisma ne la gère que via `Unsupported("tsvector")`), config `french` + extension `unaccent`.
+- `editorial_actions` est **append-only** : jamais de `update` ni `delete` (hors purge programmée).
+- `articles.deleted_at` = suppression douce (trait Laravel `SoftDeletes`). Purge définitive après 90 jours (tâche V1).
+- Le `slug` est généré depuis le titre (`Str::slug`, sans accents, minuscules, tirets), suffixé en cas de doublon. Seul un `ADMIN` peut le modifier après publication (les URLs publiées doivent rester stables).
+- Le rendu se fait **depuis le JSON Delta côté Flutter** : aucun HTML n'est stocké ni injecté (l'ancienne colonne `contentHtml` disparaît avec le changement de stack — voir D9). Si un rendu serveur est ajouté en V1 (SEO), le HTML devra être généré **et sanitisé côté serveur**.
+- Recherche V1 : colonne générée ou champ aplatî en texte + index `FULLTEXT` MySQL (parseur `ngram` si la tokenisation française est insuffisante).
 
-### 8.3 Infobox structurée par type d'article (Zod)
+### 8.3 Infobox structurée par type d'article (validation Laravel)
 
-```ts
-// src/validators/infobox.ts
-import { z } from "zod";
-
-export const biographyInfobox = z.object({
-  fullName: z.string().max(200),
-  birthDate: z.string().optional(),       // ISO ou partielle ("1905", "1905-10")
-  birthPlace: z.string().optional(),
-  deathDate: z.string().optional(),
-  deathPlace: z.string().optional(),
-  nationality: z.array(z.string()).default([]),
-  occupations: z.array(z.string()).default([]),
-});
-
-export const regionInfobox = z.object({
-  level: z.enum(["DISTRICT", "REGION", "DEPARTMENT", "SUB_PREFECTURE", "VILLAGE"]),
-  population: z.number().int().positive().optional(),
-  populationYear: z.number().int().optional(),   // année du recensement source
-  areaKm2: z.number().positive().optional(),
-  ethnicGroups: z.array(z.string()).default([]),
-  languages: z.array(z.string()).default([]),
-});
-
-export const institutionInfobox = z.object({
-  officialName: z.string(),
-  acronym: z.string().optional(),
-  institutionType: z.string(),                   // Université, Ministère, ONG…
-  foundedYear: z.number().int().optional(),
-  headquarters: z.string().optional(),
-});
-
-export const infoboxByType = {
-  BIOGRAPHY: biographyInfobox,
-  REGION: regionInfobox,
-  INSTITUTION: institutionInfobox,
-} as const; // autres types : infobox absente au MVP
+```php
+// backend/app/Http/Requests/ArticleRequest.php (règles d'infobox par type)
+// Un type sans ligne ici n'a pas d'infobox au MVP.
+$infoboxRules = [
+    'BIOGRAPHY' => [
+        'infobox' => ['required', 'array'],
+        'infobox.fullName'      => ['required', 'string', 'max:200'],
+        'infobox.birthDate'     => ['nullable', 'string', 'max:20'],  // ISO ou partielle : "1905", "1905-10"
+        'infobox.birthPlace'    => ['nullable', 'string', 'max:200'],
+        'infobox.deathDate'     => ['nullable', 'string', 'max:20'],
+        'infobox.deathPlace'    => ['nullable', 'string', 'max:200'],
+        'infobox.nationalities' => ['sometimes', 'array', 'max:10'],
+        'infobox.nationalities.*' => ['string', 'max:100'],
+        'infobox.occupations'   => ['sometimes', 'array', 'max:20'],
+        'infobox.occupations.*' => ['string', 'max:100'],
+    ],
+    'REGION' => [
+        'infobox' => ['required', 'array'],
+        'infobox.level'          => ['required', \Illuminate\Validation\Rule::in(
+            ['DISTRICT', 'REGION', 'DEPARTMENT', 'SUB_PREFECTURE', 'VILLAGE'])],
+        'infobox.population'     => ['nullable', 'integer', 'min:0'],
+        'infobox.populationYear' => ['nullable', 'integer', 'min:1800', 'max:2100'],
+        'infobox.areaKm2'        => ['nullable', 'numeric', 'min:0'],
+        'infobox.ethnicGroups'   => ['sometimes', 'array'],
+        'infobox.ethnicGroups.*' => ['string', 'max:100'],
+        'infobox.languages'      => ['sometimes', 'array'],
+        'infobox.languages.*'    => ['string', 'max:100'],
+    ],
+    'INSTITUTION' => [
+        'infobox' => ['required', 'array'],
+        'infobox.officialName'  => ['required', 'string', 'max:200'],
+        'infobox.acronym'       => ['nullable', 'string', 'max:20'],
+        'infobox.institutionType' => ['required', 'string', 'max:100'], // Université, Ministère, ONG…
+        'infobox.foundedYear'   => ['nullable', 'integer', 'min:1000', 'max:2100'],
+        'infobox.headquarters'  => ['nullable', 'string', 'max:200'],
+    ],
+    // autres types : infobox absente au MVP
+];
 ```
+
+> La validation serveur (`FormRequest`) est **la référence**. Flutter n'anticipe les erreurs que pour le confort d'usage : il ne doit jamais être la seule barrière.
 
 ---
 
@@ -598,14 +569,14 @@ export const infoboxByType = {
 
 | Action | De | Vers | Rôles autorisés | Contraintes |
 |---|---|---|---|---|
-| `submit` | `DRAFT`, `REVISION_REQUESTED` | `SUBMITTED` | CONTRIBUTOR, EDITOR, ADMIN | Seul **l'auteur** ; titre, résumé, contenu non vide, catégorie requis ; crée une `ArticleVersion` |
+| `submit` | `DRAFT`, `REVISION_REQUESTED` | `SUBMITTED` | CONTRIBUTOR, EDITOR, ADMIN | Seul **l'auteur** ; titre, résumé, contenu non vide, catégorie requis ; crée une `article_versions` |
 | `start_review` | `SUBMITTED` | `IN_REVIEW` | EDITOR, ADMIN | Pas l'auteur (sauf `ALLOW_SELF_REVIEW`) |
 | `request_revision` | `IN_REVIEW` | `REVISION_REQUESTED` | EDITOR, ADMIN | **Commentaire obligatoire** ; notifie l'auteur |
 | `approve` | `IN_REVIEW` | `APPROVED` | EDITOR, ADMIN | — |
-| `publish` | `APPROVED` | `PUBLISHED` | EDITOR, ADMIN | Renseigne `publishedAt` ; crée une version ; (raccourci UI « Approuver et publier » = `approve` + `publish` dans **une** transaction) |
+| `publish` | `APPROVED` | `PUBLISHED` | EDITOR, ADMIN | Renseigne `published_at` ; crée une version ; (raccourci UI « Approuver et publier » = `approve` + `publish` dans **une** transaction) |
 | `archive` | `PUBLISHED` | `ARCHIVED` | EDITOR, ADMIN | — |
 | `restore` | `ARCHIVED` | `PUBLISHED` | EDITOR, ADMIN | — |
-| `delete` | tout sauf `DELETED` | `DELETED` | ADMIN | Suppression douce (`deletedAt`) |
+| `delete` | tout sauf `DELETED` | `DELETED` | ADMIN | Suppression douce (`deleted_at`) |
 
 **Règles d'édition par statut**
 
@@ -619,102 +590,138 @@ export const infoboxByType = {
 
 > Les contributeurs ne peuvent pas modifier directement un article publié au MVP. La « proposition de modification » est une fonctionnalité V1.
 
-### 9.3 Implémentation de référence (`src/lib/workflow.ts`, fonction pure)
+### 9.3 Implémentation de référence (`backend/app/Services/Workflow.php`, classe pure)
 
-```ts
-import { ArticleStatus as S, Role } from "@prisma/client";
+```php
+<?php
 
-export type WorkflowAction =
-  | "submit" | "start_review" | "request_revision"
-  | "approve" | "publish" | "archive" | "restore" | "delete";
+namespace App\Services;
 
-type Rule = {
-  from: S[];
-  to: S;
-  roles: Role[];
-  authorOnly?: boolean;        // l'acteur doit être l'auteur
-  notAuthor?: boolean;         // l'acteur ne doit pas être l'auteur
-  commentRequired?: boolean;
-};
+use App\Enums\ArticleStatus;
+use App\Enums\Role;
+use App\Exceptions\WorkflowException;
 
-export const RULES: Record<WorkflowAction, Rule> = {
-  submit:           { from: [S.DRAFT, S.REVISION_REQUESTED], to: S.SUBMITTED,
-                      roles: ["CONTRIBUTOR", "EDITOR", "ADMIN"], authorOnly: true },
-  start_review:     { from: [S.SUBMITTED], to: S.IN_REVIEW,
-                      roles: ["EDITOR", "ADMIN"], notAuthor: true },
-  request_revision: { from: [S.IN_REVIEW], to: S.REVISION_REQUESTED,
-                      roles: ["EDITOR", "ADMIN"], commentRequired: true },
-  approve:          { from: [S.IN_REVIEW], to: S.APPROVED, roles: ["EDITOR", "ADMIN"] },
-  publish:          { from: [S.APPROVED], to: S.PUBLISHED, roles: ["EDITOR", "ADMIN"] },
-  archive:          { from: [S.PUBLISHED], to: S.ARCHIVED, roles: ["EDITOR", "ADMIN"] },
-  restore:          { from: [S.ARCHIVED], to: S.PUBLISHED, roles: ["EDITOR", "ADMIN"] },
-  delete:           { from: [S.DRAFT, S.SUBMITTED, S.IN_REVIEW, S.REVISION_REQUESTED,
-                             S.APPROVED, S.PUBLISHED, S.ARCHIVED],
-                      to: S.DELETED, roles: ["ADMIN"] },
-};
+/**
+ * Machine à états du workflow éditorial — classe pure, aucun accès BDD.
+ * Règles : cf. CONTEXT §9.2 (source de vérité).
+ */
+final class Workflow
+{
+    public const RULES = [
+        'submit' => [
+            'from' => [ArticleStatus::DRAFT, ArticleStatus::REVISION_REQUESTED],
+            'to' => ArticleStatus::SUBMITTED,
+            'roles' => [Role::CONTRIBUTOR, Role::EDITOR, Role::ADMIN],
+            'authorOnly' => true,
+        ],
+        'start_review' => [
+            'from' => [ArticleStatus::SUBMITTED],
+            'to' => ArticleStatus::IN_REVIEW,
+            'roles' => [Role::EDITOR, Role::ADMIN],
+            'notAuthor' => true,
+        ],
+        'request_revision' => [
+            'from' => [ArticleStatus::IN_REVIEW],
+            'to' => ArticleStatus::REVISION_REQUESTED,
+            'roles' => [Role::EDITOR, Role::ADMIN],
+            'commentRequired' => true,
+        ],
+        'approve' => [
+            'from' => [ArticleStatus::IN_REVIEW],
+            'to' => ArticleStatus::APPROVED,
+            'roles' => [Role::EDITOR, Role::ADMIN],
+        ],
+        'publish' => [
+            'from' => [ArticleStatus::APPROVED],
+            'to' => ArticleStatus::PUBLISHED,
+            'roles' => [Role::EDITOR, Role::ADMIN],
+        ],
+        'archive' => [
+            'from' => [ArticleStatus::PUBLISHED],
+            'to' => ArticleStatus::ARCHIVED,
+            'roles' => [Role::EDITOR, Role::ADMIN],
+        ],
+        'restore' => [
+            'from' => [ArticleStatus::ARCHIVED],
+            'to' => ArticleStatus::PUBLISHED,
+            'roles' => [Role::EDITOR, Role::ADMIN],
+        ],
+        'delete' => [
+            'from' => [
+                ArticleStatus::DRAFT, ArticleStatus::SUBMITTED, ArticleStatus::IN_REVIEW,
+                ArticleStatus::REVISION_REQUESTED, ArticleStatus::APPROVED,
+                ArticleStatus::PUBLISHED, ArticleStatus::ARCHIVED,
+            ],
+            'to' => ArticleStatus::DELETED,
+            'roles' => [Role::ADMIN],
+        ],
+    ];
 
-export class WorkflowError extends Error {
-  constructor(public code: "FORBIDDEN" | "INVALID_TRANSITION" | "COMMENT_REQUIRED",
-              message: string) { super(message); }
-}
+    /**
+     * @throws WorkflowException code FORBIDDEN | INVALID_TRANSITION | COMMENT_REQUIRED
+     */
+    public static function assertTransition(array $args): ArticleStatus
+    {
+        $rule = self::RULES[$args['action']];
 
-export function assertTransition(args: {
-  action: WorkflowAction;
-  status: S;
-  actorId: string;
-  actorRole: Role;
-  authorId: string;
-  comment?: string;
-  allowSelfReview?: boolean;
-}): S {
-  const rule = RULES[args.action];
-  if (!rule.roles.includes(args.actorRole))
-    throw new WorkflowError("FORBIDDEN", "Rôle insuffisant.");
-  if (!rule.from.includes(args.status))
-    throw new WorkflowError("INVALID_TRANSITION",
-      `Impossible de faire « ${args.action} » depuis le statut ${args.status}.`);
-  if (rule.authorOnly && args.actorId !== args.authorId)
-    throw new WorkflowError("FORBIDDEN", "Seul l'auteur peut effectuer cette action.");
-  if (rule.notAuthor && args.actorId === args.authorId && !args.allowSelfReview)
-    throw new WorkflowError("FORBIDDEN", "Vous ne pouvez pas réviser votre propre article.");
-  if (rule.commentRequired && !args.comment?.trim())
-    throw new WorkflowError("COMMENT_REQUIRED", "Un commentaire est obligatoire.");
-  return rule.to;
+        if (!in_array($args['actorRole'], $rule['roles'], true)) {
+            throw new WorkflowException('FORBIDDEN', 'Rôle insuffisant.');
+        }
+        if (!in_array($args['status'], $rule['from'], true)) {
+            throw new WorkflowException(
+                'INVALID_TRANSITION',
+                "Impossible de faire « {$args['action']} » depuis le statut {$args['status']->value}."
+            );
+        }
+        if (($rule['authorOnly'] ?? false) && $args['actorId'] !== $args['authorId']) {
+            throw new WorkflowException('FORBIDDEN', "Seul l'auteur peut effectuer cette action.");
+        }
+        if (($rule['notAuthor'] ?? false)
+            && $args['actorId'] === $args['authorId']
+            && !($args['allowSelfReview'] ?? false)) {
+            throw new WorkflowException('FORBIDDEN', 'Vous ne pouvez pas réviser votre propre article.');
+        }
+        if (($rule['commentRequired'] ?? false) && trim((string) ($args['comment'] ?? '')) === '') {
+            throw new WorkflowException('COMMENT_REQUIRED', 'Un commentaire est obligatoire.');
+        }
+
+        return $rule['to'];
+    }
 }
 ```
 
-> **Première tâche de test recommandée** : écrire les tests Vitest de `assertTransition` (fonction pure, aucun mock nécessaire). C'est le meilleur entraînement du projet.
+> **Première tâche de test recommandée** : écrire les tests Pest de `Workflow::assertTransition` (classe pure, aucun mock nécessaire) : un test par ligne du tableau 9.2, plus les cas d'échec. C'est le meilleur entraînement du projet.
 
 ### 9.4 Service de transition (squelette)
 
-```ts
-// src/server/services/workflow.service.ts  (squelette — à compléter)
-export async function transitionArticle(input: {
-  articleId: string; action: WorkflowAction; actor: SessionUser; comment?: string;
-}) {
-  return prisma.$transaction(async (tx) => {
-    const article = await tx.article.findUniqueOrThrow({ where: { id: input.articleId } });
+```php
+// backend/app/Services/ArticleService.php  (squelette — à compléter)
+public function transition(Article $article, string $action, User $actor, ?string $comment = null): Article
+{
+    return DB::transaction(function () use ($article, $action, $actor, $comment) {
+        $fresh = Article::query()->lockForUpdate()->findOrFail($article->id);
 
-    const toStatus = assertTransition({ /* … voir 9.3 … */ });
+        $toStatus = Workflow::assertTransition([/* … voir 9.3 … */]);
 
-    await tx.article.update({
-      where: { id: article.id },
-      data: {
-        status: toStatus,
-        publishedAt: toStatus === "PUBLISHED" && !article.publishedAt ? new Date() : undefined,
-        deletedAt: toStatus === "DELETED" ? new Date() : undefined,
-        lockVersion: { increment: 1 },
-      },
+        $fresh->update([
+            'status' => $toStatus,
+            'published_at' => $toStatus === ArticleStatus::PUBLISHED && $fresh->published_at === null
+                ? now() : $fresh->published_at,
+            'deleted_at' => $toStatus === ArticleStatus::DELETED ? now() : null,
+            'lock_version' => $fresh->lock_version + 1,
+        ]);
+
+        // 1. snapshot si submit / publish (ADR-005)
+        // 2. editorial_actions (append-only) : fromStatus, toStatus, comment
+        // 3. notification email APRÈS la transaction (dispatch d'un job) :
+        //    ne pas bloquer ni annuler la transition si l'email échoue
+
+        return $fresh->refresh();
     });
-
-    // 1. snapshot si submit / publish
-    // 2. EditorialAction (append-only) avec fromStatus/toStatus/comment
-    // 3. email de notification APRÈS la transaction (ne pas bloquer ni annuler si l'email échoue)
-  });
 }
 ```
 
-**Verrou optimiste** : `PATCH /api/articles/:id` exige `lockVersion` dans le corps. Si la valeur en base diffère → réponse **409 CONFLICT** (« L'article a été modifié entre-temps »). Évite que deux personnes s'écrasent mutuellement.
+**Verrou optimiste** : `PATCH /api/v1/articles/{id}` exige `lock_version` dans le corps. Si la valeur en base diffère → réponse **409 CONFLICT** (« L'article a été modifié entre-temps »). Évite que deux personnes s'écrasent mutuellement.
 
 ---
 
@@ -736,8 +743,8 @@ export async function transitionArticle(input: {
 | Supprimer (soft delete) | ❌ | ❌ | ❌ | ❌ | ✅ |
 
 **Règles transverses**
-- Un utilisateur `suspendedAt != null` ne peut plus se connecter.
-- Les vérifications de permission sont **toujours côté serveur** (services). Masquer un bouton dans l'UI n'est **pas** une protection.
+- Un utilisateur `suspended_at != null` ne peut plus se connecter.
+- Les vérifications de permission sont **toujours côté serveur** (Services + Policies Laravel). Masquer un bouton dans Flutter n'est **pas** une protection.
 - Un article non publié n'est visible que par son auteur, les EDITOR et les ADMIN.
 - Phase solo : le fondateur est `ADMIN` et utilise `ALLOW_SELF_REVIEW=true`. **Le désactiver dès l'arrivée du premier éditeur.**
 
@@ -745,34 +752,37 @@ export async function transitionArticle(input: {
 
 ## 11. Contrat d'API (MVP)
 
-Base : `/api`. Format JSON. Authentification par cookie de session. Validation Zod sur **toutes** les entrées.
+Base : `/api/v1`. Format JSON. Authentification : session Sanctum (cookie) côté web. Validation `FormRequest` sur **toutes** les entrées.
 
 ### 11.1 Endpoints
 
 | Méthode | Route | Accès | Description | EF |
 |---|---|---|---|---|
-| POST | `/auth/register` | public | Inscription (crée `READER`, envoie email de vérification) | AUTH-01/02 |
-| POST | `/auth/verify-email` | public | Valide le token email | AUTH-02 |
-| POST | `/auth/forgot-password` | public | Envoie un lien de réinitialisation (réponse identique que l'email existe ou non) | AUTH-05 |
-| POST | `/auth/reset-password` | public | Définit un nouveau mot de passe | AUTH-05 |
-| *(Auth.js)* | `/auth/[...nextauth]` | public | Connexion / déconnexion / session | AUTH-03/04 |
-| GET | `/articles` | public | Liste des articles **publiés** (`?category=&tag=&page=&limit=`) | RCH-02/05 |
-| GET | `/articles/:slug` | public* | Détail (publié ; sinon auteur/éditeur/admin) | ART |
-| POST | `/articles` | CONTRIBUTOR+ | Crée un brouillon | ART-01 |
-| PATCH | `/articles/:id` | selon statut (9.2) | Met à jour (auto-save inclus) ; exige `lockVersion` | ART-02/03 |
-| POST | `/articles/:id/transition` | selon 9.2 | Corps : `{ action, comment? }` | WF |
-| GET | `/articles/:id/versions` | EDITOR+ / auteur | Historique des versions | ART-10 |
-| GET | `/me/articles` | CONTRIBUTOR+ | Mes articles et statuts | WF-05 |
-| GET | `/review/queue` | EDITOR+ | Articles `SUBMITTED` / `IN_REVIEW` | WF-01 |
-| GET | `/search?q=&page=` | public | Recherche dans les articles publiés | RCH-01 |
-| GET | `/categories` | public | Arbre des catégories | CAT |
-| POST/PATCH | `/admin/categories` | ADMIN | Gestion des catégories | ADM-03 |
-| GET/PATCH | `/admin/users` | ADMIN | Liste, changement de rôle, suspension | ADM-02 |
-| POST | `/upload/sign` | CONTRIBUTOR+ | Signature d'upload Cloudinary | ART-06 |
+| POST | `/api/v1/register` | public | Inscription (crée `READER`, envoie email de vérification) | AUTH-01/02 |
+| POST | `/api/v1/verify-email` | public | Valide le token email | AUTH-02 |
+| POST | `/api/v1/forgot-password` | public | Envoie un lien de réinitialisation (réponse identique que l'email existe ou non) | AUTH-05 |
+| POST | `/api/v1/reset-password` | public | Définit un nouveau mot de passe | AUTH-05 |
+| POST | `/api/v1/login` | public | Connexion (session web / jeton Android) | AUTH-03 |
+| POST | `/api/v1/logout` | authentifié | Déconnexion | AUTH-04 |
+| GET | `/api/v1/me` | authentifié | Profil courant (sanctionne les sessions invalides) | AUTH-04 |
+| GET | `/api/v1/articles` | public | Liste des articles **publiés** (`?category=&tag=&page=&limit=`) | RCH-02/05 |
+| GET | `/api/v1/articles/{slug}` | public* | Détail (publié ; sinon auteur/éditeur/admin) | ART |
+| POST | `/api/v1/articles` | CONTRIBUTOR+ | Crée un brouillon | ART-01 |
+| PATCH | `/api/v1/articles/{id}` | selon statut (9.2) | Met à jour (auto-save inclus) ; exige `lock_version` | ART-02/03 |
+| POST | `/api/v1/articles/{id}/transition` | selon 9.2 | Corps : `{ action, comment? }` | WF |
+| GET | `/api/v1/articles/{id}/versions` | EDITOR+ / auteur | Historique des versions | ART-10 |
+| GET | `/api/v1/me/articles` | CONTRIBUTOR+ | Mes articles et statuts | WF-05 |
+| GET | `/api/v1/review/queue` | EDITOR+ | Articles `SUBMITTED` / `IN_REVIEW` | WF-01 |
+| GET | `/api/v1/search?q=&page=` | public | Recherche dans les articles publiés | RCH-01 |
+| GET | `/api/v1/categories` | public | Arbre des catégories | CAT |
+| POST | `/api/v1/articles/{id}/cover` | CONTRIBUTOR+ | Upload d'image (multipart) : MIME vérifié côté serveur, `alt` obligatoire | ART-06 |
 
-*V1 : `POST /articles/:id/rollback`, signalements, logs d'activité.*
+*Gestion des catégories et des utilisateurs : **panneau Filament `/admin`** (ressources + Policies), pas de routes API admin dédiées au MVP — même décision que Soutrali.*
+*V1 : `POST /api/v1/articles/{id}/rollback`, signalements, logs d'activité.*
 
 ### 11.2 Format d'erreur unique
+
+Laravel renvoie `422 { message, errors }` pour la validation ; un handler d'exception unique (requete non transformée) adapte **toutes** les erreurs vers cette enveloppe :
 
 ```json
 {
@@ -786,11 +796,11 @@ Base : `/api`. Format JSON. Authentification par cookie de session. Validation Z
 
 | HTTP | `code` | Cas |
 |---|---|---|
-| 400 | `VALIDATION_ERROR`, `COMMENT_REQUIRED` | Entrée invalide |
 | 401 | `UNAUTHENTICATED` | Pas de session |
 | 403 | `FORBIDDEN` | Permission refusée |
 | 404 | `NOT_FOUND` | Ressource absente ou non visible |
 | 409 | `CONFLICT`, `INVALID_TRANSITION` | Verrou optimiste, transition interdite |
+| 422 | `VALIDATION_ERROR`, `COMMENT_REQUIRED` | Entrée invalide (FormRequest) ou commentaire manquant |
 | 429 | `RATE_LIMITED` | Trop de requêtes |
 | 500 | `INTERNAL_ERROR` | Erreur serveur (message générique, détails dans les logs) |
 
@@ -801,11 +811,11 @@ Base : `/api`. Format JSON. Authentification par cookie de session. Validation Z
 
 ## 12. Séquences clés (résumé)
 
-**Inscription** : formulaire → `POST /auth/register` → validation Zod → email unique ? → hash bcrypt → `INSERT User` → création `VerificationToken` (hash) → envoi email → réponse 201.
+**Inscription** : formulaire Flutter → `POST /api/v1/register` → `FormRequest` → email unique ? → `Hash::make` (bcrypt) → `INSERT users` → création `verification_tokens` (hash) → email de vérification → réponse 201.
 
-**Connexion** : `signIn("credentials")` → recherche user par email → vérification suspension + `emailVerified` → `bcrypt.compare` → JWT dans cookie HttpOnly/Secure/SameSite=Lax. Message d'erreur **identique** pour « email inconnu » et « mauvais mot de passe ».
+**Connexion** : `POST /api/v1/login` → recherche user par email → vérification suspension + `email_verified_at` → `Hash::check` → **session Sanctum en cookie HttpOnly / Secure / SameSite=Lax** (web) ou jeton dans `flutter_secure_storage` (Android, plus tard). Message d'erreur **identique** pour « email inconnu » et « mauvais mot de passe ».
 
-**Rédaction → publication** : `POST /articles` (DRAFT) → auto-save `PATCH` toutes les 60 s → `transition: submit` (snapshot v1, email aux éditeurs) → `start_review` → `approve` + `publish` (snapshot, `publishedAt`) → page publique générée.
+**Rédaction → publication** : `POST /api/v1/articles` (DRAFT) → auto-save `PATCH` toutes les 60 s → `transition: submit` (snapshot v1, notification aux éditeurs) → `start_review` → `approve` + `publish` (snapshot, `published_at`) → l'article apparaît dans les pages publiques de l'app.
 
 **Demande de révision** : `request_revision` avec commentaire → statut `REVISION_REQUESTED` → email à l'auteur → l'auteur corrige et re-soumet (`submit`).
 
@@ -815,19 +825,19 @@ Base : `/api`. Format JSON. Authentification par cookie de session. Validation Z
 
 | Menace | Règle |
 |---|---|
-| Injection SQL | Prisma uniquement (requêtes paramétrées). Si `$queryRaw` est nécessaire : **template literal tagué**, jamais de concaténation. |
-| XSS | Le contenu est du JSON TipTap ; le HTML est généré côté serveur puis passé dans `sanitize-html` (liste blanche de balises/attributs, pas de `script`, pas d'attributs `on*`, liens `http(s)`/`mailto` seulement). Interdit : `dangerouslySetInnerHTML` avec du HTML non sanitisé. |
-| CSRF | Cookies `SameSite=Lax`+, protections Auth.js ; vérifier l'`Origin` sur les mutations. |
-| Mots de passe | bcrypt ≥ 12 rounds (ou argon2), longueur minimale 10 caractères, jamais loggés. |
-| Brute-force | Rate-limit sur `/login`, `/register`, `/forgot-password` (par IP et par email). |
+| Injection SQL | Eloquent / Query Builder uniquement (requêtes paramétrées). Si `DB::raw` est nécessaire : **uniquement avec des liaisons (`?`)**, jamais de concaténation de chaînes. |
+| XSS | Le contenu est du **JSON Delta rendu par des widgets Flutter** : aucun HTML n'est injecté. Si un HTML est généré côté serveur (exports, rendu SEO V1), il passe par une liste blanche de balises/attributs (`strip_tags` durci ou purifier dédié) avant stockage ou affichage. |
+| CSRF | Cookies de session `SameSite=Lax` + tokens CSRF Laravel sur les mutations ; vérifier `Origin`/`Referer`. Les appels API depuis Android utiliseront un jeton Authorization (pas de cookie). |
+| Mots de passe | `Hash::make` (bcrypt ≥ 12 rounds), longueur minimale 10 caractères, jamais loggés. |
+| Brute-force | `RateLimiter` de Laravel sur `/login`, `/register`, `/forgot-password` (par IP et par email). |
 | Énumération de comptes | Réponses identiques pour « email existe / n'existe pas » (reset, inscription). |
-| Tokens (vérif. email, reset) | Aléatoires (≥ 32 octets), **stockés hachés**, usage unique, expiration courte. |
-| Upload | Signature Cloudinary côté serveur ; whitelist MIME (`image/jpeg`, `png`, `webp`) ; taille max définie ; `alt` obligatoire. |
-| Autorisation | Vérifiée dans chaque service (jamais seulement dans l'UI). Tester le cas « utilisateur A accède à la ressource de B ». |
-| Secrets | Variables d'environnement validées par `env.ts` ; jamais dans le code ni les logs. |
-| En-têtes HTTP | HTTPS forcé, HSTS, `Content-Security-Policy` raisonnable, `X-Content-Type-Options: nosniff`. |
-| Dépendances | Dependabot activé ; `pnpm audit` en CI. |
-| Sauvegardes | Sauvegarde BDD quotidienne **dès la première semaine** ; **tester une restauration** au moins une fois avant le lancement public. |
+| Tokens (vérif. email, reset) | Aléatoires (≥ 32 octets), **stockés hachés** (`token_hash`), usage unique, expiration courte. |
+| Upload | Validation MIME et taille **côté serveur** (jpeg/png/webp uniquement) ; stockage hors de la racine web via le disque `public` de Laravel ; `alt` obligatoire. |
+| Autorisation | Vérifiée dans chaque Service et Policy (jamais seulement dans Flutter). Tester le cas « utilisateur A accède à la ressource de B ». |
+| Secrets | `backend/.env` hors dépôt (`.gitignore`), jamais dans le code ni les logs ; `php artisan config:cache` en production. |
+| En-têtes HTTP | HTTPS forcé (prod), HSTS, `Content-Security-Policy` raisonnable, `X-Content-Type-Options: nosniff` (configuration Nginx, PDF Phase 2). |
+| Dépendances | Dependabot activé ; `composer audit` en CI. |
+| Sauvegardes | Sauvegarde MySQL quotidienne **dès la première semaine de prod** ; **tester une restauration** au moins une fois avant le lancement public. |
 
 **Données personnelles** : le traitement de données personnelles (email, nom) est encadré en Côte d'Ivoire par la loi n° 2013-450 relative à la protection des données à caractère personnel, sous le contrôle de l'ARTCI. Prévoir avant le lancement public : politique de confidentialité, mentions légales, possibilité de suppression de compte. *Ce document n'est pas un avis juridique : faire valider les obligations exactes (déclarations, hébergement) par un juriste.*
 
@@ -838,74 +848,74 @@ Base : `/api`. Format JSON. Authentification par cookie de session. Validation Z
 Durées **indicatives** pour un développeur seul à temps partiel ; ajuster selon la disponibilité réelle. Chaque ticket = une branche + une PR. Les codes `EF-*` renvoient au cahier des charges.
 
 ### Sprint 0 — Fondations (≈ 1 semaine)
-- [ ] Initialiser Next.js + TypeScript strict + Tailwind + ESLint/Prettier
-- [ ] Docker Compose PostgreSQL + `.env.example` + `env.ts` (validation Zod)
-- [ ] Schéma Prisma (section 8.2) + 1ʳᵉ migration + `seed.ts` (catégories de base, admin de dev)
-- [ ] CI GitHub Actions (lint, typecheck, test, build)
-- [ ] Déploiement « hello world » sur Vercel + BDD managée
-- **Critère de sortie** : `pnpm dev` fonctionne chez un nouvel arrivant en suivant la section 7 ; la CI est verte.
+- [ ] Créer `backend/` (projet Laravel, Composer) et `app/` (projet Flutter, `flutter create`)
+- [ ] Base `ivoirepedia` via phpMyAdmin + utilisateur SQL dédié ; `backend/.env.example` complet (§7.5)
+- [ ] Migrations du schéma §8.2 + `seeders` (catégories de base, admin de dev)
+- [ ] Scripts Composer : `test` (Pest), `format:check` (Pint), `analyse` (Larastan) ; `analysis_options.yaml` Flutter (flutter_lints)
+- [ ] CI GitHub Actions (2 jobs : backend + flutter — canevas §15.4)
+- [ ] `docs/INSTALLATION.md` avec les versions **réellement constatées**
+- [ ] Déploiement « hello world » (API qui répond + site Flutter affiche un écran)
+- **Critère de sortie** : un nouvel arrivant suit §7 et obtient l'app Flutter **et** l'API en local ; la CI est verte.
 
 ### Sprint 1 — Authentification (≈ 2 semaines) · EF-AUTH-01→05
-- [ ] Inscription + hash du mot de passe
+- [ ] Inscription + hash du mot de passe (`Hash::make`)
 - [ ] Vérification email (token haché, expiration)
-- [ ] Connexion / déconnexion (Auth.js)
+- [ ] Connexion / déconnexion (Sanctum, session cookie) + `GET /api/v1/me`
 - [ ] Reset du mot de passe
 - [ ] Rate-limiting sur routes sensibles
-- [ ] Middleware de protection de routes + helper `requireRole()`
-- **Critère de sortie** : un utilisateur s'inscrit, vérifie son email, se connecte ; un ADMIN peut le promouvoir en base (via Prisma Studio, l'UI admin vient au Sprint 5).
+- [ ] Middleware d'authentification + Policies (`requireRole()` équivalent)
+- **Critère de sortie** : un utilisateur s'inscrit, vérifie son email, se connecte ; un ADMIN peut le promouvoir en base (via **phpMyAdmin**, l'UI admin vient au Sprint 5).
 
 ### Sprint 2 — Articles & éditeur (≈ 2-3 semaines) · EF-ART-01→09
-- [ ] `lib/slug.ts` (+ tests)
-- [ ] Service article : créer / lire / mettre à jour (avec `lockVersion`)
-- [ ] Éditeur TipTap + auto-save 60 s
+- [ ] Génération de slug (`Str::slug` + suffixe anti-doublon, tests)
+- [ ] Service article : créer / lire / mettre à jour (avec `lock_version` → 409)
+- [ ] Éditeur `flutter_quill` + auto-save 60 s
 - [ ] Sélection catégorie + tags
-- [ ] Références bibliographiques (ajout / ordre / suppression)
-- [ ] Upload image de couverture (Cloudinary signé) avec `alt`
+- [ ] Références bibliographiques (ajout / position / suppression)
+- [ ] Upload image de couverture (disque local, MIME vérifié) avec `alt`
 - [ ] Prévisualisation
-- [ ] Rendu HTML sanitisé (`lib/sanitize.ts` + tests XSS)
-- **Critère de sortie** : un CONTRIBUTOR crée, édite et prévisualise un brouillon.
+- **Critère de sortie** : un CONTRIBUTOR crée, édite et prévisualise un brouillon depuis Flutter Web.
 
 ### Sprint 3 — Workflow & versions (≈ 2-3 semaines) · EF-WF-01→06, EF-ART-10
-- [ ] `lib/workflow.ts` + **tests exhaustifs** (chaque transition, chaque rôle)
-- [ ] `workflow.service.ts` avec transaction + `EditorialAction`
-- [ ] Création des `ArticleVersion` aux jalons (ADR-005)
-- [ ] File de révision `/revision` + page de relecture
+- [ ] `app/Services/Workflow.php` + **tests Pest exhaustifs** (chaque transition, chaque rôle)
+- [ ] `ArticleService::transition` avec transaction + `editorial_actions`
+- [ ] Création des `article_versions` aux jalons (ADR-005)
+- [ ] File de révision (écran Flutter) + page de relecture
 - [ ] Emails de notification (soumission, révision demandée, publication)
 - [ ] Page « Mes articles » avec statuts
 - [ ] Historique des versions (lecture seule)
-- **Critère de sortie** : cycle complet brouillon → publié, avec traçabilité, testé par test d'intégration.
+- **Critère de sortie** : cycle complet brouillon → publié, avec traçabilité, couvert par tests d'intégration Pest.
 
 ### Sprint 4 — Lecture publique, navigation, recherche (≈ 2 semaines) · EF-RCH-01→05, 08
 - [ ] Accueil (récents / mis en avant), page article (infobox, références, tags)
 - [ ] Pages catégorie (arborescence) et tag
 - [ ] Recherche simple + page de résultats paginée
-- [ ] SEO : URLs lisibles, métadonnées (`title`, `description`, `og:image`), `robots.txt`
+- [ ] Navigation `go_router` avec URLs propres ; métadonnées de base via `web/index.html` (limitation SPA — cf. §17 R-09)
 - [ ] Responsive mobile-first
 - **Critère de sortie** : un visiteur anonyme trouve et lit un article publié depuis un mobile.
 
-### Sprint 5 — Admin & durcissement (≈ 2 semaines) · EF-ADM-01→03,05,08
-- [ ] Admin utilisateurs (rôle, suspension)
-- [ ] Admin catégories
+### Sprint 5 — Admin Filament & durcissement (≈ 2 semaines) · EF-ADM-01→03,05,08
+- [ ] Panneau Filament `/admin` : ressources utilisateurs (rôle, suspension) et catégories
 - [ ] Tableau de bord minimal (compteurs)
-- [ ] Sauvegardes automatiques + **test de restauration**
+- [ ] Sauvegardes automatiques MySQL + **test de restauration**
 - [ ] Revue sécurité (checklist section 13) + en-têtes HTTP
 - [ ] Pages légales (confidentialité, mentions, licence du contenu)
 - [ ] Contenu initial : **au moins 30 articles de qualité** avant ouverture publique
 - **Critère de sortie** : bêta privée avec 5-10 testeurs.
 
 ### Après le MVP (V1)
-Rollback · Recherche full-text PostgreSQL · Commentaires éditoriaux · Signalements · Logs d'activité · Autocomplétion · Wiki-links `[[Terme]]` · Audio · API publique en lecture · Premiers contributeurs externes (voir `CONTRIBUTING.md` à rédiger).
+Rollback · Recherche full-text MySQL · Commentaires éditoriaux · Signalements · Logs d'activité · Autocomplétion · Wiki-links `[[Terme]]` · Audio · API publique en lecture · Publication Android (packaging du code Flutter partagé) · Premiers contributeurs externes (voir `CONTRIBUTING.md` à rédiger).
 
 ---
 
 ## 15. Conventions de développement
 
 ### 15.1 Code
-- TypeScript `strict: true`. Pas de `any` sans commentaire justificatif.
-- Fichiers : `kebab-case.ts` ; composants React : `PascalCase.tsx` ; services : `<domaine>.service.ts`.
+- **Dart** : `flutter analyze` sans erreur (règles `flutter_lints`) ; fichiers en `snake_case.dart`, classes en `PascalCase`.
+- **PHP** : style **PSR-12** via Pint, analyse Larastan ; classes en `PascalCase`, méthodes en `camelCase` (autoload PSR-4 `App\`).
 - Fonctions courtes, une responsabilité. Les noms disent **ce que ça fait**, pas comment.
 - Commentaires : expliquer le **pourquoi**, pas le **quoi**. Les règles métier non évidentes sont commentées avec une référence (`// cf. CONTEXT §9.2`).
-- Pas de logique dupliquée entre front et back : schémas Zod dans `src/validators/`, partagés.
+- Pas de logique dupliquée Flutter/backend : la validation `FormRequest` du backend est la référence, Flutter n'anticipe que pour l'UX.
 
 ### 15.2 Git
 - Branche principale `main` toujours déployable. Branches courtes : `feat/ef-art-01-create-draft`, `fix/…`, `docs/…`, `chore/…`.
@@ -915,42 +925,76 @@ Rollback · Recherche full-text PostgreSQL · Commentaires éditoriaux · Signal
 
 ### 15.3 Tests
 
-| Niveau | Outil | Cible minimale MVP |
-|---|---|---|
-| Unitaire | Vitest | `workflow.ts`, `rbac`, `slug.ts`, `sanitize.ts`, validateurs Zod |
-| Intégration | Vitest + BDD de test | Services `article` et `workflow` (transitions complètes) |
-| E2E | Playwright | V1 : parcours inscription → publication |
+| Niveau | Outil | Fichiers | Cible minimale MVP |
+|---|---|---|---|
+| Unit (règles pures) | Pest | `backend/tests/Unit/…` | `Workflow`, RBAC/Policies, slug, règles d'infobox |
+| Feature (HTTP) | Pest | `backend/tests/Feature/…` | Services `article` et `workflow` (transitions complètes), permissions, validation |
+| Widgets / parcours Flutter | `flutter_test` | `app/test/…` | Écrans critiques : connexion, éditeur, file de révision |
+| E2E | `integration_test` | V1 : parcours inscription → publication |
 
-> Priorité absolue de test : **permissions, workflow, sanitisation**. Ce sont les zones où un bug = faille ou corruption de contenu.
+> Priorité absolue de test : **permissions, workflow, validation d'entrées**. Ce sont les zones où un bug = faille ou corruption de contenu.
+> Un seul outil par couche : on n'ajoute jamais un second framework de test.
 
-### 15.4 CI (`.github/workflows/ci.yml` — canevas)
+### 15.4 CI (`.github/workflows/ci.yml` — canevas, créé au Sprint 0)
 
 ```yaml
 name: CI
-on: [pull_request, push]
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
 jobs:
-  check:
+  backend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: lts/*, cache: pnpm }
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm prisma validate
-      - run: pnpm lint
-      - run: pnpm typecheck
-      - run: pnpm test
-      - run: pnpm build
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, pdo_mysql, sqlite3, xml, curl, zip, bcmath, gd, intl
+          coverage: none
+      - uses: ramsey/composer-install@v3
+        with:
+          working-directory: backend
+      - name: Préparer la clé d'application de test
+        working-directory: backend
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+      - run: composer test
+        working-directory: backend
+      - run: composer format:check
+        working-directory: backend
+      - run: composer analyse
+        working-directory: backend
+
+  flutter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+        working-directory: app
+      - run: flutter analyze
+        working-directory: app
+      - run: flutter test
+        working-directory: app
+      - run: flutter build web --release
+        working-directory: app
 ```
 
-*(Vérifier les versions actuelles des actions GitHub à la mise en place.)*
+*(Même structure que la CI Soutrali. Vérifier les versions actuelles des actions GitHub à la mise en place, et figer la version de Flutter constatée.)*
 
 ### 15.5 Definition of Done (une tâche est terminée quand…)
 - [ ] Le comportement correspond à l'exigence `EF-*` citée
-- [ ] Entrées validées (Zod) et permissions vérifiées côté serveur
-- [ ] Tests ajoutés pour la logique métier touchée
-- [ ] `lint`, `typecheck`, `test`, `build` passent en local et en CI
+- [ ] Entrées validées (`FormRequest`) et permissions vérifiées côté serveur (Services/Policies)
+- [ ] Tests ajoutés pour la logique métier touchée (Pest ou flutter_test selon la couche)
+- [ ] `composer test`, `composer format:check`, `composer analyse`, `flutter analyze`, `flutter test` passent en local et en CI
 - [ ] Aucun secret ni donnée personnelle dans le code ou les logs
 - [ ] Textes d'interface en français, accessibles (alt, labels, contraste)
 - [ ] Ce fichier et/ou un ADR mis à jour si une décision a changé
@@ -963,18 +1007,18 @@ jobs:
 1. **Lire avant d'écrire** : consulter les sections 4, 6, 8, 9, 10, 13 avant de proposer du code.
 2. **Respecter le périmètre** : MVP seulement (section 3). Signaler gentiment toute demande hors périmètre.
 3. **Petits pas** : proposer des changements courts et vérifiables (un fichier ou une fonction à la fois), avec la commande pour les tester.
-4. **Pédagogie** : le développeur est en apprentissage. Pour chaque concept non trivial (ORM, transaction, JWT, verrou optimiste…), donner une définition en une phrase et le *pourquoi*.
+4. **Pédagogie** : le développeur est en apprentissage. Pour chaque concept non trivial (ORM, transaction, Policy, verrou optimiste, Delta Quill…), donner une définition en une phrase et le *pourquoi*.
 5. **Cohérence** : réutiliser les noms de la section 8.1, les codes d'erreur de 11.2, les conventions de 15.
-6. **Honnêteté** : si une information dépend de la version d'une librairie (Auth.js, Next.js, Prisma, Cloudinary, Resend…), **dire de vérifier la documentation officielle** plutôt que d'affirmer de mémoire.
-7. **Tests d'abord pour la logique métier** : proposer les tests de `workflow`/`rbac` avant ou avec l'implémentation.
+6. **Honnêteté** : si une information dépend de la version d'une librairie (Laravel, Filament, Sanctum, Flutter, Quill…), **dire de vérifier la documentation officielle** plutôt que d'affirmer de mémoire.
+7. **Tests d'abord pour la logique métier** : proposer les tests Pest de `Workflow`/`Policies` avant ou avec l'implémentation.
 
 ### 16.2 À ne jamais faire
 - Ajouter une dépendance, un service cloud ou un changement d'architecture sans ADR.
-- Mettre de la logique métier dans un handler d'API ou un composant React.
+- Mettre de la logique métier dans un contrôleur Laravel, une route Filament ou un widget Flutter.
 - Écrire une requête SQL par concaténation de chaînes.
-- Afficher du HTML non sanitisé ; accepter `contentHtml` depuis le client.
-- Contourner `assertTransition` pour changer un statut.
-- Modifier ou supprimer des lignes d'`EditorialAction`.
+- Insérer du HTML non sanitisé ; accepter un contenu ou un `content` non validé depuis le client.
+- Contourner `Workflow::assertTransition` pour changer un statut.
+- Modifier ou supprimer des lignes d'`editorial_actions`.
 - Stocker un token ou un mot de passe en clair.
 - Introduire du code mort « pour plus tard » (YAGNI).
 - Réécrire de gros pans du projet sans demande explicite.
@@ -982,7 +1026,7 @@ jobs:
 ### 16.3 Modèles de prompts utiles (pour le dev)
 
 **Implémenter un ticket**
-> Contexte : IVOIREPEDIA (voir CONTEXT.md). Ticket : « EF-ART-01 Créer un brouillon ». Respecte les couches de la section 6.2 et le schéma 8.2. Donne : (1) le schéma Zod, (2) le service, (3) le Route Handler, (4) les tests Vitest. Explique chaque concept nouveau en une phrase.
+> Contexte : IVOIREPEDIA (voir IVOIREPEDIA_CONTEXT.md). Ticket : « EF-ART-01 Créer un brouillon ». Respecte les couches de la section 6.2 et le schéma 8.2. Donne : (1) le `FormRequest`, (2) le Service, (3) le contrôleur `Api/V1`, (4) les tests Pest. Explique chaque concept nouveau en une phrase.
 
 **Revue de code**
 > Relis ce diff selon la Definition of Done (15.5) et la checklist sécurité (13). Liste d'abord les problèmes bloquants, puis les améliorations. Explique chaque remarque.
@@ -991,7 +1035,7 @@ jobs:
 > Voici l'erreur et le fichier concerné. Explique la cause en termes simples, propose la correction minimale, puis dis comment éviter ce type d'erreur à l'avenir.
 
 **Écrire des tests**
-> Écris les tests Vitest de `assertTransition` : un test par ligne du tableau 9.2, plus les cas d'échec (mauvais rôle, mauvais statut, commentaire manquant, auto-révision).
+> Écris les tests Pest de `Workflow::assertTransition` : un test par ligne du tableau 9.2, plus les cas d'échec (mauvais rôle, mauvais statut, commentaire manquant, auto-révision).
 
 ---
 
@@ -999,15 +1043,18 @@ jobs:
 
 ### 17.1 Risques principaux
 
-| Risque | Gravité | Mitigation |
-|---|---|---|
-| Surcharge / abandon du projet solo | Élevée | Sprints courts, périmètre MVP strict, 1 fonctionnalité à la fois, publier tôt |
-| Dérive de périmètre (scope creep) | Élevée | Section 3.2 ; toute addition passe par un ticket explicite |
-| Faille de sécurité (XSS, contrôle d'accès) | Élevée | Section 13, tests ciblés, services comme unique point d'écriture |
-| Perte de données | Élevée | Sauvegardes dès S0 + test de restauration |
-| Plateforme vide au lancement | Moyenne | ≥ 30 articles de qualité avant ouverture ; recruter 2-3 éditeurs de confiance |
-| Qualité éditoriale / vandalisme | Moyenne | Workflow strict, pas de modification directe des articles publiés par les contributeurs |
-| Dépendance aux offres gratuites cloud | Moyenne | Garder le code portable (PostgreSQL standard, Cloudinary derrière une interface `media.service`) |
+| # | Risque | Gravité | Mitigation |
+|---|---|---|---|
+| R-01 | Surcharge / abandon du projet solo | Élevée | Sprints courts, périmètre MVP strict, 1 fonctionnalité à la fois, publier tôt |
+| R-02 | Dérive de périmètre (scope creep) | Élevée | Section 3.2 ; toute addition passe par un ticket explicite |
+| R-03 | Faille de sécurité (XSS, contrôle d'accès) | Élevée | Section 13, tests Pest ciblés, Services comme unique point d'écriture |
+| R-04 | Perte de données | Élevée | Sauvegardes MySQL dès S0 (prod) + test de restauration |
+| R-05 | Charge cognitive : deux langages (Dart, PHP) pour un dev seul | Moyenne | Backend = unique source des règles métier ; l'app reste une couche d'affichage ; pédagogie du CONTEXT |
+| R-06 | Plateforme vide au lancement | Moyenne | ≥ 30 articles de qualité avant ouverture ; recruter 2-3 éditeurs de confiance |
+| R-07 | Qualité éditoriale / vandalisme | Moyenne | Workflow strict, pas de modification directe des articles publiés par les contributeurs |
+| R-08 | Fragmentation moteur MySQL/MariaDB (XAMPP) | Moyenne | Migrations sans fonctions propriétaires, CI sur MySQL, moteur réel consigné dans INSTALLATION |
+| R-09 | **SEO limité (Flutter Web = SPA côté client)** | Moyenne | Pages publiques sans rendu serveur : atténuer par URLs propres + métadonnées dans `web/index.html` ; réévaluer un prérendu/SSR statique en V1 si la visibilité devient critique |
+| R-10 | Dépendance à l'hébergeur de production | Moyenne | Code portable (MySQL standard, médias derrière un `MediaService`) ; PDF Phase 2 = VPS + Nginx, choix ouvert (ADR-008) |
 
 ### 17.2 Questions ouvertes (à trancher avant la bêta publique)
 
@@ -1020,6 +1067,8 @@ jobs:
 | Q5 | Politique de modération (vandalisme, contenus sensibles, droit de réponse) | Sprint 5 |
 | Q6 | Conformité données personnelles : déclarations ARTCI, hébergement, durée de conservation | Avant la bêta publique |
 | Q7 | Stratégie de recrutement des premiers éditeurs et contributeurs | Sprint 4 |
+| Q8 | **Éditeur riche Flutter** : confirmer `flutter_quill` (choix de référence §5) ou alternative avant de coder le Sprint 2 | Avant le Sprint 2 |
+| Q9 | Hébergeur de production, sauvegardes et supervision (PDF Phase 2 : VPS + Nginx) | Avant la bêta publique |
 
 ---
 
@@ -1028,28 +1077,30 @@ jobs:
 | Terme | Définition |
 |---|---|
 | **ADR** | *Architecture Decision Record* : note courte qui consigne une décision technique et sa justification. |
-| **API / Route Handler** | Point d'entrée HTTP du serveur (ex. `POST /api/articles`) qui reçoit une requête et renvoie du JSON. |
+| **API REST / route** | Point d'entrée HTTP du serveur (ex. `POST /api/v1/articles`) qui reçoit une requête et renvoie du JSON. |
 | **Append-only** | Table où l'on n'ajoute que des lignes, sans jamais modifier ni supprimer (journal fiable). |
 | **bcrypt** | Algorithme de hachage lent pour mots de passe : transforme un mot de passe en empreinte non réversible. |
-| **CI** | *Continuous Integration* : exécution automatique des vérifications (lint, tests, build) à chaque modification. |
+| **CI** | *Continuous Integration* : exécution automatique des vérifications (tests, analyse, build) à chaque modification. |
+| **Composer / `pub`** | Gestionnaires de dépendances, respectivement PHP (backend) et Dart (Flutter). |
 | **CRUD** | Create, Read, Update, Delete : les 4 opérations de base sur les données. |
 | **CSP** | *Content Security Policy* : en-tête HTTP limitant les sources de scripts autorisées (défense contre XSS). |
+| **Delta (Quill)** | Format JSON de l'éditeur `flutter_quill` : le contenu d'un article est stocké sous cette forme. |
+| **Eloquent** | L'ORM de Laravel : traduit les objets PHP en requêtes SQL paramétrées. |
+| **Filament** | Framework d'administration pour Laravel : construit le panneau `/admin` à partir des modèles. |
 | **Hash / empreinte** | Résultat d'une fonction à sens unique appliquée à une donnée (ex. SHA-256). |
-| **jsonb** | Type PostgreSQL pour stocker du JSON de façon indexable et performante. |
-| **JWT** | *JSON Web Token* : jeton signé prouvant l'identité de l'utilisateur, transporté ici dans un cookie HttpOnly. |
 | **MVP** | *Minimum Viable Product* : plus petite version utilisable du produit. |
-| **ORM** | *Object-Relational Mapper* : traduit le code en requêtes SQL (ici Prisma). |
+| **Pest / PHPUnit** | Frameworks de tests PHP ; le projet retient **Pest** (un seul outil de test). |
+| **Pint / Larastan** | Outils de qualité PHP : formatage (PSR-12) et analyse statique. |
 | **Rate limiting** | Limitation du nombre de requêtes par période pour contrer abus et brute-force. |
 | **RBAC** | *Role-Based Access Control* : contrôle d'accès fondé sur les rôles. |
-| **Sanitisation** | Nettoyage d'un contenu HTML pour retirer tout code dangereux. |
+| **Sanctum** | Brique d'authentification de Laravel : sessions cookies (web) et jetons révocables (mobile). |
 | **Slug** | Version « URL » d'un titre : `felix-houphouet-boigny`. |
-| **Soft delete** | Suppression logique : la ligne est marquée supprimée mais conservée un temps. |
-| **TipTap / ProseMirror** | Éditeur de texte riche dont le contenu est un arbre JSON structuré. |
+| **Soft delete** | Suppression logique : la ligne est marquée supprimée (`deleted_at`) mais conservée un temps. |
 | **Transaction** | Groupe d'opérations BDD exécutées « tout ou rien ». |
-| **Verrou optimiste** | Détection de modifications concurrentes via un numéro de version ; conflit → 409. |
+| **Verrou optimiste** | Détection de modifications concurrentes via un numéro de version (`lock_version`) ; conflit → 409. |
+| **XAMPP** | Distribution locale Apache + PHP + MySQL/MariaDB + phpMyAdmin, pour le développement sans configuration serveur. |
 | **XSS** | *Cross-Site Scripting* : injection de script malveillant dans une page vue par d'autres utilisateurs. |
 | **YAGNI** | *You Aren't Gonna Need It* : ne pas construire ce dont on n'a pas encore besoin. |
-| **Zod** | Librairie TypeScript de validation de données par schémas. |
 
 ---
 
@@ -1058,5 +1109,6 @@ jobs:
 | Date | Version | Changement |
 |---|---|---|
 | 2026-11-02 | 1.0 | Création : consolidation du cahier des charges, de la conception UML et de la roadmap ; décisions ADR-001 à 008 ; backlog MVP. |
+| 2026-11-02 | 1.1 | **Adaptation de la stack au modèle Soutrali** : Flutter (`app/`) + Laravel (`backend/`) + MySQL/Filament/Sanctum remplacent Next.js + Prisma + PostgreSQL + Auth.js. Schéma converti en MySQL (§8.2), workflow traduit en PHP (§9), API versionnée `/api/v1` (§11), CI à deux jobs (§15.4), divergences D9 et nouveaux risques R-05/R-08/R-09. |
 
 > **Règle de maintenance** : tout changement d'architecture, de modèle de données ou de workflow doit mettre à jour ce fichier **dans la même PR**. Un contexte obsolète est pire que pas de contexte.

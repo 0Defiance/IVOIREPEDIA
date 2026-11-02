@@ -4,6 +4,8 @@
 > **Statut du projet** : phase de cadrage (aucune ligne de code écrite à ce jour)
 > **Usage** : ce fichier est la source de vérité de départ. Toute personne ou IA qui rejoint le projet doit le lire en entier avant de produire quoi que ce soit.
 > **Convention** : les éléments marqués ✅ sont des décisions actées. Ceux marqués 🟡 sont des **hypothèses de travail** à valider. Ceux marqués ❓ sont des **questions ouvertes**.
+>
+> **⚠️ Stack technique (mise à jour du 2 nov. 2026)** : les sections de ce document qui décrivent une stack (§5, §6, §19-§20…) datent du cadrage initial et sont **supplantées par [`IVOIREPEDIA_CONTEXT.md`](../IVOIREPEDIA_CONTEXT.md)** — la stack validée est désormais le modèle Soutrali : **Flutter (`app/`) + Laravel (`backend/`) + MySQL/XAMPP** (ADR-001 à 008 du CONTEXT). Ce document reste la référence pour la **vision produit** (multilinguisme, sources orales, géolocalisation, hors-ligne, validation par cercles). En cas de contradiction, le CONTEXT fait foi (CONTEXT §2.1).
 
 ---
 
