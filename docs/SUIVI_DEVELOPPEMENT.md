@@ -4,9 +4,9 @@
 > Chaque séance de travail ajoute une entrée datée.
 > Règle : ce journal, le dépôt local et le dépôt distant restent **au même niveau d'information**.
 
-**Version** : 1.3 · **Dernière mise à jour** : 3 novembre 2026
+**Version** : 1.4 · **Dernière mise à jour** : 3 novembre 2026
 
-**État en une phrase** : le **Sprint 0 est réalisé et vérifié** (`backend/` Laravel 13 + `app/` Flutter + CI au vert) ; le déploiement réalisé sur un compte d'hébergement partagé est **abandonné** (séance 5) et repart sur un **compte Alwaysdata dédié à IVOIREPEDIA**, qui reste à créer.
+**État en une phrase** : **IVOIREPEDIA est en ligne** sur son compte Alwaysdata dédié — Sprint 0 terminé, backend déployé (Laravel 13.39.0, PHP 8.4.27), base de production migrée et seedée, l'endpoint `api/v1/health` répond `200` sur `https://ivoirepedia.alwaysdata.net`. Restent Mailjet, la tâche planifiée et la rotation des secrets.
 
 ---
 
@@ -130,21 +130,40 @@
 
 **Reste**
 1. ~~Créer le compte Alwaysdata~~ — **fait** : compte `ivoirepedia` (courriel `my.fat.inc@gmail.com`). Résolution DNS vérifiée le 3 nov. 2026 : `ivoirepedia.alwaysdata.net` (185.31.40.30), `ssh-ivoirepedia.alwaysdata.net` (185.31.41.84), `mysql-ivoirepedia.alwaysdata.net` (185.31.41.43). Nouvelle clé de déploiement générée dans `.deploy/ivoirepedia_ed25519` (empreinte `ivoirepedia-deploy`) ; accès SSH en attente du dépôt de la clé publique dans le panneau.
-2. **Panneau du nouveau compte** : PHP ≥ 8.3, bases `prod` et `dev` + utilisateur MySQL `app`, dépôt de la nouvelle clé publique SSH, site PHP pointant sur `~/ivoirepedia/backend/public` (§2 de `docs/DEPLOIEMENT.md`).
-3. **Nouvelle clé de déploiement** (l'ancienne appartient au compte abandonné) : `ssh-keygen` puis dépôt dans le panneau ; `.deploy/env.production` réécrit avec les valeurs du nouveau compte.
-4. Redéployer le backend (clone, `.env`, `composer install`, `migrate --seed`) et vérifier `https://<compte>.alwaysdata.net/api/v1/health`.
-5. `backend/.env` local : à repointer sur la nouvelle base de développement dès qu'elle existe (il pointe encore l'ancien serveur, fichier non versionné).
-6. **Côté ancien compte** : supprimer les bases IVOIREPEDIA (prod et dev) et l'utilisateur MySQL qui y était dédié, pour que son phpMyAdmin ne montre plus que les bases de l'autre projet. Rien à faire dans ce dépôt.
+---
+
+### 3 novembre 2026 (séance 6) — Mise en ligne sur le compte dédié
+
+**Fait**
+- Compte `ivoirepedia` configuré : bases `ivoirepedia_prod` et `ivoirepedia_dev`, utilisateur MySQL `ivoirepedia_app` (tous droits sur les deux), clé publique de déploiement autorisée dans `Accès distant > SSH`.
+- Serveur : `git clone` dans `~/ivoirepedia` (commit `fcb6eab`), `composer install --no-dev --optimize-autoloader` (56 paquets), `backend/.env` de production copié depuis `.deploy/env.production`, `php artisan key:generate --force`, `php artisan storage:link`, droits sur `storage` et `bootstrap/cache`.
+- Base de production : `php artisan migrate --seed --force` → 10 migrations, 9 tables métier (17 avec les tables techniques), `CategorySeeder` (8 catégories) ; `DevAdminSeeder` correctement ignoré.
+- **Administrateur de production** créé par un script bootstrapé : `my.fat.inc@gmail.com`, rôle `ADMIN`, mot de passe provisoire communiqué au titulaire — **à changer**.
+- Site PHP créé dans `Web > Sites` : adresse `ivoirepedia.alwaysdata.net`, répertoire `ivoirepedia/backend/public`.
+- Base de **développement** migrée et seedée depuis le poste de travail (`ivoirepedia_dev`, admin de dev `admin@ivoirepedia.test`).
+
+**Vérifié**
+- `curl https://ivoirepedia.alwaysdata.net/api/v1/health` → `HTTP 200`, `application/json`, `{"status":"ok","service":"ivoirepedia-api","version":"v1"}` (~0,8 s).
+- Certificat TLS : `CN=*.alwaysdata.net`, Let's Encrypt, valide jusqu'au 14 décembre 2026.
+- `mysql-ivoirepedia.alwaysdata.net:3306` atteint depuis le serveur **et** depuis le poste (migrations exécutées des deux côtés).
+- `php artisan about` sur le serveur : Laravel 13.39.0 · PHP 8.4.27 · Composer 2.9.8 · `APP_ENV=production`, `APP_DEBUG=off`.
+
+**Reste**
+1. **Mailjet** : valider l'expéditeur, générer la clé SMTP, passer `MAIL_MAILER=smtp` dans `~/ivoirepedia/backend/.env`, tester un envoi (§4 de `docs/DEPLOIEMENT.md`). Aujourd'hui `MAIL_MAILER=log`.
+2. **Tâche planifiée** : `php artisan schedule:run` chaque minute (`Advanced > Tâches planifiées`).
+3. **Rotation des secrets** : le mot de passe MySQL et celui de l'administrateur ont circulé dans la conversation. À changer : panneau `Bases de données > MySQL` puis `DB_PASSWORD` dans `backend/.env` (local) et `~/ivoirepedia/backend/.env` (serveur) ; pour l'admin, dès que l'écran de connexion existera (Sprint 1).
+4. **Ancien compte** : supprimer les bases IVOIREPEDIA (prod et dev) et l'utilisateur MySQL qui y était dédié, pour que son phpMyAdmin ne montre plus que les bases de l'autre projet.
+5. **Côté autre projet** : renommer `soutrali_bd` en `soutrali_prod`, créer `soutrali_dev` (export/import phpMyAdmin), puis supprimer l'ancienne base une fois le site basculé.
 
 ---
 
 ## Blocages
 
-Aucun blocage technique : le seul prérequis est la **création du compte Alwaysdata dédié** (action du titulaire dans le panneau). Tout le reste est scripté et documenté.
+**Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
 
 **Mailjet** n'est pas bloquant : `MAIL_MAILER=log` jusqu'à réception de la clé SMTP.
 
-**Historique Git** : les séances 3 et 4 contiennent des hôtes et noms de bases de l'ancien compte dans les commits déjà poussés. La réécriture de l'historique (`git filter-repo` + `push --force`) est destructive et n'a pas été faite : à décider si le dépôt doit devenir totalement silencieux sur ce point.
+**Historique Git** : les commits antérieurs à la séance 5 contiennent les hôtes et noms de bases de l'ancien compte. La réécriture (`git filter-repo` + `push --force`) n'a pas été faite : destructive, elle attend une décision explicite.
 
 ---
 
