@@ -134,6 +134,7 @@
 3. **Nouvelle clé de déploiement** (l'ancienne appartient au compte abandonné) : `ssh-keygen` puis dépôt dans le panneau ; `.deploy/env.production` réécrit avec les valeurs du nouveau compte.
 4. Redéployer le backend (clone, `.env`, `composer install`, `migrate --seed`) et vérifier `https://<compte>.alwaysdata.net/api/v1/health`.
 5. `backend/.env` local : à repointer sur la nouvelle base de développement dès qu'elle existe (il pointe encore l'ancien serveur, fichier non versionné).
+6. **Côté ancien compte** : supprimer les bases IVOIREPEDIA (prod et dev) et l'utilisateur MySQL qui y était dédié, pour que son phpMyAdmin ne montre plus que les bases de l'autre projet. Rien à faire dans ce dépôt.
 
 ---
 
