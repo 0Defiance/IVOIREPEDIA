@@ -103,7 +103,7 @@ Chaque décision est numérotée. Pour en changer : ouvrir une PR qui ajoute un 
 - **Sortie** : si un module devient un goulot (recherche, médias), il pourra être extrait en service indépendant.
 
 ### ADR-002 — MySQL + Eloquent (hébergé sur Alwaysdata, développement **et** production)
-- **Décision** : MySQL comme unique base de données, Eloquent comme ORM, migrations versionnées. **La base de développement est hébergée sur Alwaysdata**, comme celle de production (révision du 3 nov. 2026 : XAMPP et phpMyAdmin locaux sont abandonnés). Deux bases distinctes sur le même serveur : `<compte>_ivoirepedia_dev` et `<compte>_ivoirepedia`.
+- **Décision** : MySQL comme unique base de données, Eloquent comme ORM, migrations versionnées. **La base de développement est hébergée sur Alwaysdata**, comme celle de production (révision du 3 nov. 2026 : XAMPP et phpMyAdmin locaux sont abandonnés). Deux bases distinctes sur le même serveur : `soutrali_ivoirepedia_dev` et `soutrali_ivoirepedia`.
 - **Pourquoi** : un seul moteur, donc plus d'écart entre le poste et le serveur ; relations fortes (utilisateurs ↔ articles ↔ versions) et transactions ACID indispensables au workflow ; Eloquent = l'ORM intégré à Laravel (traduit le PHP en requêtes SQL).
 - **Conséquences** : le développement du backend exige une connexion Internet ; **les tests n'y touchent jamais** (`phpunit.xml` force SQLite en mémoire) ; la création des bases et des utilisateurs passe obligatoirement par le panneau Alwaysdata, qui interdit `CREATE DATABASE` depuis un client tiers. Procédures : `docs/INSTALLATION.md` §1 et `docs/DEPLOIEMENT.md` §2.
 - **⚠️ Moteur réel** : Alwaysdata sert **MariaDB** (10.11 / 11.4 / 11.8). Éviter les fonctions propres à un moteur ; consigner la version réelle dans `docs/INSTALLATION.md`.
@@ -260,7 +260,7 @@ Filament (/admin) ────────────────────�
 git clone <url-du-depot> ivoirepedia && cd ivoirepedia
 
 # 1. Base de données — créée dans le panneau Alwaysdata (Databases > MySQL), jamais en SQL :
-#    <compte>_ivoirepedia_dev + utilisateur dédié — cf. docs/DEPLOIEMENT.md §2
+#    soutrali_ivoirepedia_dev + utilisateur dédié — cf. docs/DEPLOIEMENT.md §2
 
 # 2. Backend Laravel (terminal 1)
 cd backend
@@ -282,7 +282,7 @@ flutter run -d web-server --web-port 8082   # site sur http://127.0.0.1:8082
 |---|---:|---|---|
 | API Laravel | `8000` | `http://127.0.0.1:8000` | Routes `/api/v1`, sessions Sanctum, panneau `/admin` |
 | Flutter Web | `8082` | `http://127.0.0.1:8082` | Site IVOIREPEDIA |
-| MySQL Alwaysdata | `3306` | `mysql-<compte>.alwaysdata.net:3306` | Consommée uniquement par Laravel, jamais par Flutter |
+| MySQL Alwaysdata | `3306` | `mysql-soutrali.alwaysdata.net:3306` | Consommée uniquement par Laravel, jamais par Flutter |
 
 Les deux origines (`:8000` et `:8082`) sont distinctes **par conception** : Sanctum, cookies CSRF et CORS doivent autoriser explicitement `127.0.0.1:8082` (`SANCTUM_STATEFUL_DOMAINS` + `config/cors.php` dans `backend/`). En production, servir app, API et `/admin` sous une seule origine HTTPS.
 
@@ -310,10 +310,10 @@ APP_ENV=local
 
 # Base de données — hébergée sur Alwaysdata (créée dans le panneau, jamais en SQL)
 DB_CONNECTION=mysql
-DB_HOST="mysql-<compte>.alwaysdata.net"
+DB_HOST="mysql-soutrali.alwaysdata.net"
 DB_PORT=3306
-DB_DATABASE="<compte>_ivoirepedia_dev"
-DB_USERNAME="<compte>_ivoirepedia"
+DB_DATABASE="soutrali_ivoirepedia_dev"
+DB_USERNAME="soutrali_ivoirepedia"
 DB_PASSWORD=                       # mot de passe choisi dans le panneau, jamais commité
 
 # Origines autorisées pour Sanctum / CORS (Flutter Web)

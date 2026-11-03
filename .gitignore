@@ -32,6 +32,9 @@ backend/public/storage
 backend/database/*.sqlite
 backend/database/*.sqlite-*
 
+# Clés et artefacts de déploiement — jamais versionnés (docs/DEPLOIEMENT.md §3)
+.deploy/
+
 # Logs
 *.log
 

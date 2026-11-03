@@ -73,7 +73,7 @@
 - **CI** : `.github/workflows/ci.yml`, deux jobs (backend PHP 8.3, Flutter 3.47.7), mêmes commandes que `AGENTS.md` §3.
 - **Changement de cap demandé** : abandon des tests et du MySQL local ; l'hébergement **Alwaysdata** et les emails **Mailjet** sont retenus « comme Soutrali » — le compte Alwaysdata de Soutrali est réutilisé, avec des ressources IVOIREPEDIA séparées.
   - `IVOIREPEDIA_CONTEXT.md` v1.2 : **ADR-002 révisé** (base hébergée, dev et production), **ADR-008 réécrit** (Alwaysdata mutualisé dès le développement, VPS+Nginx abandonné), **ADR-009 ajouté** (Mailjet SMTP). §5, §7, §7.5, R-10, Q3 et Q9 mis à jour.
-  - `backend/.env.example` : `DB_HOST` sur `mysql-<compte>.alwaysdata.net`, deux bases (dev/prod), SMTP Mailjet (port 587, `MAIL_SCHEME=null`).
+  - `backend/.env.example` : `DB_HOST` sur `mysql-soutrali.alwaysdata.net`, deux bases (dev/prod), SMTP Mailjet (port 587, `MAIL_SCHEME=null`).
   - `docs/INSTALLATION.md` créé (poste de travail, base distante, versions constatées) et `docs/DEPLOIEMENT.md` créé (panneau Alwaysdata, premier déploiement, Mailjet, vérifications, pièges) — faits vérifiés dans la documentation officielle des deux services.
 
 **Vérifié**
@@ -82,9 +82,10 @@
 - `php artisan migrate:fresh --seed` → 10 migrations + `CategorySeeder` + `DevAdminSeeder` sans erreur.
 - `php artisan serve` + `curl /api/v1/health` → `200` avec `{"status":"ok","service":"ivoirepedia-api","version":"v1"}`.
 - `cd app && flutter analyze` → « No issues found! » ; `flutter test` → écran d'accueil, 1 test vert.
+- **Accessibilité du compte `soutrali`** (sondes réseau, sans mot de passe) : `ssh-soutrali.alwaysdata.net:22` ouvert, `mysql-soutrali.alwaysdata.net:3306` ouvert, `https://soutrali.alwaysdata.net` → `200`, `https://ivoirepedia.alwaysdata.net` → aucun site. Authentification SSH par clé refusée avant dépôt de la clé dans le panneau.
 
 **Reste**
-1. **Panneau Alwaysdata** (actions humaines, cf. `docs/DEPLOIEMENT.md` §2) : PHP 8.3 au niveau du compte, créer `<compte>_ivoirepedia` et `<compte>_ivoirepedia_dev` + utilisateur MySQL dédié, activer SSH avec la clé publique, créer le site PHP pointant sur `~/ivoirepedia/backend/public`, valider l'expéditeur Mailjet et générer la clé SMTP.
+1. **Panneau Alwaysdata** (actions humaines, cf. `docs/DEPLOIEMENT.md` §2) : PHP 8.3 au niveau du compte, créer `soutrali_ivoirepedia` et `soutrali_ivoirepedia_dev` + utilisateur MySQL dédié, déposer la clé publique de déploiement `.deploy/ivoirepedia_ed25519.pub` (générée le 3 nov. 2026, exclue de Git) dans `Accès distant > SSH`, créer le site PHP pointant sur `~/ivoirepedia/backend/public`, valider l'expéditeur Mailjet et générer la clé SMTP.
 2. Renseigner `backend/.env` (DB_*, MAIL_*) puis `php artisan migrate --seed` sur la base de dev distante.
 3. Déployer le backend et vérifier `https://ivoirepedia.alwaysdata.net/api/v1/health` en ligne.
 4. Test d'envoi Mailjet (`Mail::raw` en tinker).

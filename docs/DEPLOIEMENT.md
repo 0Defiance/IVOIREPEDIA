@@ -31,7 +31,7 @@ Un compte Alwaysdata = **un utilisateur UNIX**, plusieurs sites et plusieurs bas
 | Compte Alwaysdata (identifiant, SSH) | ✅ Oui | Un seul accès à administrer |
 | Version de PHP | ⚠️ **Au niveau du compte** (`Environment > PHP`) | Seule vraie contrainte : si Soutrali exige 8.4 et IVOIREPEDIA 8.3, il faut s'aligner ou fixer la version par site (plus gourmand en RAM) |
 | Site web (domaine) | ❌ Non | Un site dédié : `ivoirepedia.alwaysdata.net` |
-| Base MySQL | ❌ Non | `<compte>_ivoirepedia` (prod) et `<compte>_ivoirepedia_dev` (dev) — **jamais** la base de Soutrali |
+| Base MySQL | ❌ Non | `soutrali_ivoirepedia` (prod) et `soutrali_ivoirepedia_dev` (dev) — **jamais** la base de Soutrali |
 | Utilisateur MySQL | ❌ Non | Un utilisateur dédié, droits limités à ses propres bases |
 | Dossier de déploiement | ❌ Non | `~/ivoirepedia/` — les migrations d'un projet ne doivent jamais toucher l'autre |
 | Compte Mailjet | ✅ Possible | Mais **une clé SMTP dédiée** à IVOIREPEDIA, pour la révoquer sans casser Soutrali |
@@ -54,10 +54,10 @@ Ces étapes se font **dans le panneau** (`https://admin.alwaysdata.com`), pas en
 
 | Base | Usage |
 |---|---|
-| `<compte>_ivoirepedia` | Production |
-| `<compte>_ivoirepedia_dev` | Développement (poste de travail) |
+| `soutrali_ivoirepedia` | Production |
+| `soutrali_ivoirepedia_dev` | Développement (poste de travail) |
 
-Puis un utilisateur `<compte>_ivoirepedia` avec `GRANT ALL PRIVILEGES` sur ces deux bases.
+Puis un utilisateur `soutrali_ivoirepedia` avec `GRANT ALL PRIVILEGES` sur ces deux bases.
 
 > **Important** : la création de bases et d'utilisateurs est **impossible en SQL** depuis un client tiers (phpMyAdmin, DBeaver…) — Alwaysdata l'interdit pour raison de sécurité. Le panneau ou l'API sont les seuls chemins.
 
@@ -65,23 +65,34 @@ Puis un utilisateur `<compte>_ivoirepedia` avec `GRANT ALL PRIVILEGES` sur ces d
 
 ### 2.3 Accès SSH
 
-`Remote access > SSH` → vérifier que l'accès est actif et déposer la **clé publique** du poste (`~/.ssh/id_ed25519.pub`), pour ne pas dépendre d'un mot de passe.
+`Remote access > SSH` → vérifier que l'accès est actif et déposer une **clé publique**, pour ne pas dépendre d'un mot de passe.
+
+Une clé **dédiée au déploiement** est générée dans le dépôt (dossier `.deploy/`, exclu par `.gitignore`, sans phrase de passe) :
+
+```bash
+ssh-keygen -t ed25519 -f .deploy/ivoirepedia_ed25519 -N "" -C "ivoirepedia-deploy"
+cat .deploy/ivoirepedia_ed25519.pub   # à coller dans le panneau
+```
+
+Toutes les commandes de ce guide utilisent ensuite `-i .deploy/ivoirepedia_ed25519`. Ne jamais committer `.deploy/` : la clé privée donne accès au compte hébergeur.
 
 | Paramètre | Valeur |
 |---|---|
-| Hôte | `ssh-<compte>.alwaysdata.net` |
+| Hôte | `ssh-soutrali.alwaysdata.net` |
 | Port | `22` |
-| Utilisateur | `<compte>` |
-| Racine | `/home/<compte>/` |
+| Utilisateur | `soutrali` |
+| Racine | `/home/soutrali/` |
 
-Test : `ssh <compte>@ssh-<compte>.alwaysdata.net "php -v"` doit afficher PHP 8.3.
+Test : `ssh -i .deploy/ivoirepedia_ed25519 soutrali@ssh-soutrali.alwaysdata.net "php -v"` doit afficher PHP 8.3.
+
+État constaté le 3 novembre 2026 : `ssh-soutrali.alwaysdata.net:22` et `mysql-soutrali.alwaysdata.net:3306` répondent, `https://soutrali.alwaysdata.net` renvoie `200` (site Soutrali en ligne), `https://ivoirepedia.alwaysdata.net` ne répond pas encore (site non créé). L'authentification par clé était refusée avant le dépôt de `ivoirepedia_ed25519.pub` dans le panneau.
 
 ### 2.4 Site web
 
 Le répertoire racine **doit exister avant** la création du site (le panneau ne le crée pas) :
 
 ```bash
-ssh <compte>@ssh-<compte>.alwaysdata.net
+ssh -i .deploy/ivoirepedia_ed25519 soutrali@ssh-soutrali.alwaysdata.net
 mkdir -p ~/ivoirepedia
 ```
 
@@ -91,7 +102,7 @@ Puis `Web > Sites > Ajouter un site` :
 |---|---|
 | Type | **PHP** |
 | Adresses | `ivoirepedia.alwaysdata.net` (ajouter aussi `www.` lors du branchement d'un domaine propre) |
-| Chemin | `/home/<compte>/ivoirepedia/backend/public` |
+| Chemin | `/home/soutrali/ivoirepedia/backend/public` |
 | Version PHP | celle du compte (§2.1) |
 
 Le type PHP est servi par Apache : le `.htaccess` livré par Laravel dans `public/` prend en charge les URL sans `index.php`.
@@ -103,7 +114,7 @@ Le type PHP est servi par Apache : le `.htaccess` livré par Laravel dans `publi
 Le dépôt GitHub est **public** : le serveur peut cloner et tirer sans clé de déploiement.
 
 ```bash
-ssh <compte>@ssh-<compte>.alwaysdata.net
+ssh -i .deploy/ivoirepedia_ed25519 soutrali@ssh-soutrali.alwaysdata.net
 
 cd ~/ivoirepedia
 git clone https://github.com/0Defiance/IVOIREPEDIA.git .
@@ -123,10 +134,10 @@ APP_URL=https://ivoirepedia.alwaysdata.net
 FRONTEND_URL=https://ivoirepedia.alwaysdata.net
 
 DB_CONNECTION=mysql
-DB_HOST="mysql-<compte>.alwaysdata.net"
+DB_HOST="mysql-soutrali.alwaysdata.net"
 DB_PORT=3306
-DB_DATABASE="<compte>_ivoirepedia"
-DB_USERNAME="<compte>_ivoirepedia"
+DB_DATABASE="soutrali_ivoirepedia"
+DB_USERNAME="soutrali_ivoirepedia"
 DB_PASSWORD=<mot de passe du panneau>
 
 SESSION_DRIVER=database
@@ -162,7 +173,7 @@ Pour le premier administrateur de production, utiliser une commande ponctuelle v
 `Advanced > Scheduled tasks` → commande, toutes les minutes :
 
 ```
-php /home/<compte>/ivoirepedia/backend/artisan schedule:run
+php /home/soutrali/ivoirepedia/backend/artisan schedule:run
 ```
 
 ---
@@ -257,7 +268,7 @@ php artisan config:cache && php artisan route:cache
 - Versions PHP et choix au niveau du compte : https://help.alwaysdata.com/en/docs/web-hosting/languages/php/configuration/
 - Composer déjà installé : https://help.alwaysdata.com/en/docs/web-hosting/languages/php/packages/
 - Accès SSH (hôte, port, pas de root) : https://help.alwaysdata.com/en/docs/web-hosting/remote-access/ssh/
-- MySQL (hôte `mysql-<compte>.alwaysdata.net`, restriction IPv4, création via panneau) : https://help.alwaysdata.com/en/docs/web-hosting/databases/mariadb/
+- MySQL (hôte `mysql-soutrali.alwaysdata.net`, restriction IPv4, création via panneau) : https://help.alwaysdata.com/en/docs/web-hosting/databases/mariadb/
 - Tâches planifiées : https://help.alwaysdata.com/en/docs/web-hosting/tasks/
 - Déploiement Git : https://help.alwaysdata.com/en/blog/2018-02-05-deploy-at-lightning-speed-with-git-hooks/
 - SMTP Mailjet (hôte, ports, identifiants) : https://dev.mailjet.com/docs/smtp-relay/configuration
