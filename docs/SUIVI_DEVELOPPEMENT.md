@@ -6,7 +6,7 @@
 
 **Version** : 1.2 · **Dernière mise à jour** : 3 novembre 2026
 
-**État en une phrase** : le **Sprint 0 est réalisé et vérifié** (`backend/` Laravel 13 + `app/` Flutter + CI, tous les contrôles au vert) ; l'hébergement **Alwaysdata** et les emails **Mailjet** remplacent l'environnement local, et **la mise en ligne attend les actions de panneau côté hébergeur**.
+**État en une phrase** : le **Sprint 0 est réalisé et vérifié** (`backend/` Laravel 13 + `app/` Flutter + CI au vert) et le **backend est déployé sur Alwaysdata** (code, `.env`, dépendances, migrations et catégories en base) ; il reste **à créer le site PHP dans le panneau** pour l'exposer en HTTPS.
 
 ---
 
@@ -93,9 +93,37 @@
 
 ---
 
+### 3 novembre 2026 (séance 4) — Compte `soutrali` branché, backend déployé
+
+**Fait**
+- Compte Alwaysdata confirmé : **`soutrali`** (partagé avec le projet Soutrali). Hôtes : `ssh-soutrali.alwaysdata.net`, `mysql-soutrali.alwaysdata.net`.
+- **Clé de déploiement dédiée** générée dans `.deploy/ivoirepedia_ed25519` (ed25519, sans phrase de passe, exclue par `.gitignore`), clé publique déposée dans `Accès distant > SSH`. L'accès SSH fonctionne en `BatchMode`, sans mot de passe.
+- Bases créées par le titulaire du compte : `soutrali_ivoirepedia` (prod) et `soutrali_ivoirepedia_dev` (dev), utilisateur MySQL unique avec tous droits sur les deux.
+- **Déploiement du backend** : `git clone` dans `~/ivoirepedia` (commit `b23ab6e`), `backend/.env` de production copié par `scp` depuis `.deploy/env.production`, `composer install --no-dev --optimize-autoloader`, `php artisan key:generate --force`, `php artisan storage:link`, `php artisan migrate --seed --force`.
+- Base de **développement** migrée et seedée depuis le poste de travail (connexion MySQL distante validée, ~20 s au total).
+- Guides corrigés avec les valeurs réelles (`soutrali`), la procédure de clé, le piège du domaine `.net`/`.com` et la section phpMyAdmin.
+
+**Vérifié**
+- `ssh -i .deploy/ivoirepedia_ed25519 soutrali@ssh-soutrali.alwaysdata.net` → connecté, **PHP 8.4.27** en CLI, Composer en `/usr/bin/composer`.
+- `php artisan migrate --seed --force` sur la base de production → 9 tables + `CategorySeeder` en ~85 ms ; `DevAdminSeeder` correctement ignoré en production.
+- `php artisan route:list --path=api` sur le serveur → `GET|HEAD api/v1/health`, `routes/api.php:12`.
+- `https://soutrali.alwaysdata.net` → `200` ; `https://ivoirepedia.alwaysdata.net` → toujours absent (site non créé).
+
+**Reste**
+1. **Créer le site PHP** dans le panneau : adresse `ivoirepedia.alwaysdata.net` (jamais `.alwaysdata.com`, refusé par le panneau), chemin `/home/soutrali/ivoirepedia/backend/public`.
+2. Vérifier `https://ivoirepedia.alwaysdata.net/api/v1/health` → attendu `{"status":"ok","service":"ivoirepedia-api","version":"v1"}`.
+3. Créer le compte administrateur de production (`php artisan tinker`, `DevAdminSeeder` refuse en production).
+4. Mailjet : valider l'expéditeur, générer la clé SMTP, passer `MAIL_MAILER=smtp`.
+5. Tâche planifiée `schedule:run` (`Advanced > Scheduled tasks`).
+6. **Changer le mot de passe MySQL** : il a circulé en clair dans la conversation ; le remplacer dans le panneau puis dans `backend/.env` (local) et `~/ivoirepedia/backend/.env` (serveur).
+
+---
+
 ## Blocages
 
-**Déploiement en attente d'actions humaines** dans le panneau Alwaysdata (Création des bases MySQL et de l'utilisateur, dépôt de la clé SSH, création du site PHP, validation de l'expéditeur Mailjet). Toujours impossible en SQL ou en ligne de commande : ces opérations sont réservées au panneau ou à l'API de l'hébergeur (`docs/DEPLOIEMENT.md` §2).
+**Création du site PHP** dans le panneau Alwaysdata (`Web > Sites`) : c'est la seule étape qui manque pour que l'API réponde en HTTPS, et elle n'est possible ni en SSH ni en SQL. Adresse `ivoirepedia.alwaysdata.net`, chemin `/home/soutrali/ivoirepedia/backend/public` — l'adresse en `.alwaysdata.com` est refusée par l'hébergeur (`docs/DEPLOIEMENT.md` §2.4).
+
+**Mailjet** n'est pas bloquant : `MAIL_MAILER=log` jusqu'à réception de la clé SMTP.
 
 ---
 

@@ -48,6 +48,8 @@ Ces étapes se font **dans le panneau** (`https://admin.alwaysdata.com`), pas en
 
 `Environment > PHP` → choisir **PHP 8.3** (ou la plus récente ≥ 8.3 compatible avec Laravel 13). C'est la version utilisée en ligne de commande et par les tâches planifiées. Éviter de multiplier les versions par site : Alwaysdata documente une consommation RAM supérieure.
 
+**Constaté le 3 novembre 2026** : le compte est en **PHP 8.4.27** en CLI (`php -v`), avec Composer en `/usr/bin/composer`. Laravel 13 exige 8.3+ : 8.4 convient, aucune action nécessaire.
+
 ### 2.2 Bases MySQL
 
 `Databases > MySQL` → créer **deux bases** et **un utilisateur** :
@@ -101,11 +103,24 @@ Puis `Web > Sites > Ajouter un site` :
 | Champ | Valeur |
 |---|---|
 | Type | **PHP** |
-| Adresses | `ivoirepedia.alwaysdata.net` (ajouter aussi `www.` lors du branchement d'un domaine propre) |
+| Adresses | `ivoirepedia.alwaysdata.net` |
 | Chemin | `/home/soutrali/ivoirepedia/backend/public` |
 | Version PHP | celle du compte (§2.1) |
 
 Le type PHP est servi par Apache : le `.htaccess` livré par Laravel dans `public/` prend en charge les URL sans `index.php`.
+
+> **Piège du nom de domaine** : le sous-domaine offert se termine **obligatoirement par `.alwaysdata.net`**. Saisir `ivoirepedia.alwaysdata.com` renvoie « Le domaine alwaysdata.com ne vous appartient pas » — `.com` est le domaine de l'éditeur, pas le nôtre. Ne pas mettre non plus de `www.` sur un sous-domaine `alwaysdata.net` tant qu'aucun domaine propre n'est branché : `www` est une adresse distincte, à n'ajouter qu'avec un domaine à soi. La documentation le confirme : « The subdomain assigned to you when your account is created will end with a .net extension and not a .com extension ».
+
+### 2.5 phpMyAdmin
+
+Toujours disponible, rien à installer : **<https://phpmyadmin.alwaysdata.com>**.
+
+| Champ | Valeur |
+|---|---|
+| Utilisateur MySQL | `soutrali_ivoirepedia` (l'utilisateur MySQL, pas le compte Alwaysdata) |
+| Mot de passe | celui défini dans `Databases > MySQL` |
+
+Les deux bases (`soutrali_ivoirepedia` et `soutrali_ivoirepedia_dev`) apparaissent ensuite dans la colonne de gauche. C'est l'interface prévue par l'hébergeur pour consulter les tables, éditer une ligne ou exporter un dump ; il n'y a pas de phpMyAdmin à installer dans `~/ivoirepedia`.
 
 ---
 
@@ -167,6 +182,21 @@ chmod -R u+rwX storage bootstrap/cache
 Le processus PHP tourne sous l'utilisateur du compte : aucun `chown` système n'est nécessaire (et il n'y a pas d'accès root).
 
 Pour le premier administrateur de production, utiliser une commande ponctuelle via `php artisan tinker` avec un mot de passe fort : `DevAdminSeeder` refuse de s'exécuter en production, c'est volontaire.
+
+### État réel du déploiement (3 novembre 2026)
+
+| Étape | État |
+|---|---|
+| Clé SSH `ivoirepedia-deploy` déposée dans le panneau | ✅ fait |
+| Bases `soutrali_ivoirepedia` + `soutrali_ivoirepedia_dev` et utilisateur MySQL | ✅ fait |
+| Dépôt cloné dans `~/ivoirepedia` | ✅ fait (commit `b23ab6e`) |
+| `backend/.env` de production en place (`APP_KEY` généré) | ✅ fait (fichier non versionné, copié par `scp`) |
+| `composer install --no-dev --optimize-autoloader` | ✅ fait sur le serveur |
+| `php artisan migrate --seed --force` sur la base de production | ✅ fait (9 tables + catégories ; `DevAdminSeeder` ignoré, comme prévu) |
+| Base de développement migrée + seedée depuis le poste de travail | ✅ fait |
+| Site PHP créé dans le panneau (`ivoirepedia.alwaysdata.net`) | ⏳ **à faire** — adresse en `.com` refusée (§2.4) |
+| Vérification HTTP de `/api/v1/health` | ⏳ en attente du site |
+| Mailjet (`MAIL_MAILER=log` pour l'instant) | ⏳ en attente des clés |
 
 ### Tâches planifiées
 
