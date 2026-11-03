@@ -17,7 +17,7 @@
 |---|---|
 | Projet | Encyclopédie web libre dédiée à la Côte d'Ivoire (articles structurés, validés par des éditeurs, versionnés). |
 | Équipe actuelle | **1 seul développeur, niveau junior/intermédiaire en progression.** Pas encore de contributeurs externes. |
-| Stack MVP | **Flutter** (`app/` : web d'abord, Android ensuite) + **Laravel** (`backend/` : API REST `/api/v1` + admin Filament) + **MySQL hébergé sur Alwaysdata** (dev et production) + **Mailjet** pour les emails. **Rien d'autre sans ADR.** Modèle : dépôt Soutrali. |
+| Stack MVP | **Flutter** (`app/` : web d'abord, Android ensuite) + **Laravel** (`backend/` : API REST `/api/v1` + admin Filament) + **MySQL hébergé sur Alwaysdata** (dev et production) + **Mailjet** pour les emails. **Rien d'autre sans ADR.** |
 | Architecture | **Monolithe modulaire** : un seul dépôt, un seul backend Laravel, une seule base. Pas de microservices. |
 | Périmètre | **MVP uniquement** (section 3). Ne jamais implémenter une fonctionnalité V1/V2 sans demande explicite. |
 | Langue | Code, commits, noms de variables et tables : **anglais**. Interface utilisateur et docs : **français**. |
@@ -66,7 +66,7 @@ Les documents ont été rédigés successivement. **En cas de contradiction, ce 
 
 | # | Sujet | Ce que disent les anciens docs | **Décision en vigueur** |
 |---|---|---|---|
-| D1 | Stack | Vision : NestJS + MongoDB + Elasticsearch + Kubernetes | **MVP : Flutter (`app/`) + Laravel (`backend/`) + MySQL seul — modèle Soutrali** (ADR-001→004, 2 nov. 2026). NestJS / microservices = horizon V2+. |
+| D1 | Stack | Vision : NestJS + MongoDB + Elasticsearch + Kubernetes | **MVP : Flutter (`app/`) + Laravel (`backend/`) + MySQL seul** (ADR-001→004, 2 nov. 2026). NestJS / microservices = horizon V2+. |
 | D2 | Contenu des articles | Vision : stocké dans MongoDB | **Colonne `JSON` dans MySQL** contenant le Delta de l'éditeur Quill (ADR-003). |
 | D3 | Noms des statuts | UML : français (`BROUILLON`, `SOUMIS`…) | **Enums PHP anglais** (`DRAFT`, `SUBMITTED`…), libellés français côté Flutter (ADR-006). |
 | D4 | Statut après demande de révision | UML séquence 2.4 : `IN_REVISION` | **`REVISION_REQUESTED`** (section 8). |
@@ -74,7 +74,7 @@ Les documents ont été rédigés successivement. **En cas de contradiction, ce 
 | D6 | Recherche | UML : `LIKE '%terme%'` | MVP : `LIKE` insensible à la casse ; **V1 : full-text MySQL** (`FULLTEXT`, parseur `ngram` si besoin français). |
 | D7 | Rôles admin | CDC : Admin Contenu + Admin Technique | **Un seul rôle applicatif `ADMIN`.** « Admin technique » = accès infrastructure (serveur, BDD), pas un rôle en base. |
 | D8 | Rôle à l'inscription | CDC : « Lecteur inscrit » | Inscription → `READER`. Promotion en `CONTRIBUTOR` par un `ADMIN`. |
-| D9 | Interface | PDFs EII : Blade + Tailwind (Phase 1), PWA Android (Phase 2) | **Flutter Web d'abord, Android ensuite** — même code, objectif multiplateforme partagé avec Soutrali (ADR-001). Blade/PWA abandonnés. |
+| D9 | Interface | PDFs EII : Blade + Tailwind (Phase 1), PWA Android (Phase 2) | **Flutter Web d'abord, Android ensuite** — une seule base de code pour les deux cibles (ADR-001). Blade/PWA abandonnés. |
 
 > Les PDFs EII restent la référence pour tout ce qui concerne **la base, l'API et la production** (XAMPP, MySQL, `/api/v1`, Sanctum, VPS Nginx) : ils sont en phase avec cette décision. Seule la couche **interface** a changé (D9).
 
@@ -98,12 +98,12 @@ Chaque décision est numérotée. Pour en changer : ouvrir une PR qui ajoute un 
 
 ### ADR-001 — Un dépôt, deux applications : Flutter (`app/`) + Laravel monolithe modulaire (`backend/`)
 - **Décision** : `app/` Flutter/Dart pour toute l'interface (site web d'abord, Android ensuite) ; `backend/` Laravel pour l'API REST `/api/v1` **et** le panneau d'administration Filament sur `/admin`. Une seule base, un seul déploiement backend.
-- **Pourquoi** : objectif multiplateforme — une seule base de code pour le web puis Android (même modèle que Soutrali) ; backend et base indépendants des interfaces ; le monolithe limite les composants à installer, surveiller et maintenir pour un dev seul.
+- **Pourquoi** : objectif multiplateforme — une seule base de code pour le web puis Android ; backend et base indépendants des interfaces ; le monolithe limite les composants à installer, surveiller et maintenir pour un dev seul.
 - **Risque** : deux langages (Dart, PHP) pour une personne seule → **le backend est l'unique source des règles métier**, l'app n'affiche et n'appelle que l'API ; couplage → respecter la séparation en couches (section 6.2).
 - **Sortie** : si un module devient un goulot (recherche, médias), il pourra être extrait en service indépendant.
 
 ### ADR-002 — MySQL + Eloquent (hébergé sur Alwaysdata, développement **et** production)
-- **Décision** : MySQL comme unique base de données, Eloquent comme ORM, migrations versionnées. **La base de développement est hébergée sur Alwaysdata**, comme celle de production (révision du 3 nov. 2026 : XAMPP et phpMyAdmin locaux sont abandonnés). Deux bases distinctes sur le même serveur : `soutrali_ivoirepedia_dev` et `soutrali_ivoirepedia`.
+- **Décision** : MySQL comme unique base de données, Eloquent comme ORM, migrations versionnées. **La base de développement est hébergée sur Alwaysdata**, comme celle de production (révision du 3 nov. 2026 : XAMPP et phpMyAdmin locaux sont abandonnés). Deux bases distinctes sur le serveur dédié : `ivoirepedia_dev` et `ivoirepedia_prod`.
 - **Pourquoi** : un seul moteur, donc plus d'écart entre le poste et le serveur ; relations fortes (utilisateurs ↔ articles ↔ versions) et transactions ACID indispensables au workflow ; Eloquent = l'ORM intégré à Laravel (traduit le PHP en requêtes SQL).
 - **Conséquences** : le développement du backend exige une connexion Internet ; **les tests n'y touchent jamais** (`phpunit.xml` force SQLite en mémoire) ; la création des bases et des utilisateurs passe obligatoirement par le panneau Alwaysdata, qui interdit `CREATE DATABASE` depuis un client tiers. Procédures : `docs/INSTALLATION.md` §1 et `docs/DEPLOIEMENT.md` §2.
 - **⚠️ Moteur réel** : Alwaysdata sert **MariaDB** (10.11 / 11.4 / 11.8). Éviter les fonctions propres à un moteur ; consigner la version réelle dans `docs/INSTALLATION.md`.
@@ -132,8 +132,8 @@ Chaque décision est numérotée. Pour en changer : ouvrir une PR qui ajoute un 
 - **Pourquoi** : API testable avec Pest, prête pour une future API publique, logique métier isolée ; une action d'administration ne peut pas contourner les règles de statut ni la traçabilité.
 
 ### ADR-008 — Hébergement : Alwaysdata (mutualisé), dès le développement
-- **Décision (révisée le 3 nov. 2026)** : **Alwaysdata** héberge l'application **dès le développement**, sur le compte déjà utilisé pour Soutrali. Un site PHP dédié (`ivoirepedia.alwaysdata.net`), un dossier `~/ivoirepedia/`, des bases MySQL dédiées. Le VPS + Nginx du PDF Phase 2 est abandonné pour le MVP.
-- **Pourquoi** : arrêter de maintenir un environnement local (XAMPP) qui divergera de la production ; l'hébergeur fournit PHP 8.3+, Composer, MySQL sauvegardé, HTTPS et tâches planifiées ; le coût est celui d'un compte déjà payé. Cela supprime le risque R-08 et réduit R-04.
+- **Décision (révisée le 3 nov. 2026)** : **Alwaysdata** héberge l'application **dès le développement**, sur un **compte dédié à IVOIREPEDIA**. Un site PHP (`ivoirepedia.alwaysdata.net`), un dossier `~/ivoirepedia/`, des bases MySQL dédiées et un utilisateur MySQL propre. Le compte d'un autre projet n'est jamais réutilisé : son unique adresse gratuite y est déjà prise et les données, quotas et identifiants doivent rester séparés. Le VPS + Nginx du PDF Phase 2 est abandonné pour le MVP.
+- **Pourquoi** : arrêter de maintenir un environnement local (XAMPP) qui divergera de la production ; l'hébergeur fournit PHP 8.3+, Composer, MySQL sauvegardé, HTTPS et tâches planifiées ; le coût est celui d'un compte mutualisé unique. Cela supprime le risque R-08 et réduit R-04.
 - **Médias** : disque local (`storage/app/public`) au MVP ; stockage objet + CDN (type Cloudflare R2) en Phase 2.
 - **Souveraineté** : hébergement hors Côte d'Ivoire (latence ≈ 150 ms acceptable). Rapatriement des données étudié à moyen terme (voir roadmap).
 - **Limites assumées** : pas d'accès root, pas de worker permanent, version de PHP réglée au niveau du compte. Procédure et pièges : `docs/DEPLOIEMENT.md`.
@@ -159,7 +159,7 @@ Chaque décision est numérotée. Pour en changer : ouvrir une PR qui ajoute un 
 | Administration | Filament pour Laravel (`/admin`) | Utilisateurs, catégories, tableaux de bord — accès protégé par rôle et Policy |
 | Authentification | Laravel Sanctum | Session cookie pour le web, jeton révocable pour Android |
 | Base de données | MySQL/MariaDB hébergé sur **Alwaysdata** — base de dev et base de production distinctes | Stockage relationnel, migrations versionnées |
-| Hébergement | **Alwaysdata** : site PHP + SSH, MySQL, HTTPS — compte partagé avec Soutrali, ressources séparées | Développement et production sur le même moteur (ADR-008) |
+| Hébergement | **Alwaysdata** : site PHP + SSH, MySQL, HTTPS — compte dédié à IVOIREPEDIA (ADR-008) | Développement et production sur le même moteur (ADR-008) |
 | Validation des entrées | Laravel validation (`FormRequest`) | Validation **faisant foi** côté serveur (remplace les schémas Zod) |
 | Emails | Laravel Mail via **SMTP Mailjet** (`in-v3.mailjet.com`, port 587) | Vérification email, reset, notifications éditoriales (ADR-009) |
 | Médias | Disque local `storage/app/public` (R2 + CDN en Phase 2) | Images de couverture et futures pièces jointes |
@@ -170,7 +170,7 @@ Chaque décision est numérotée. Pour en changer : ouvrir une PR qui ajoute un 
 | CI | GitHub Actions — 2 jobs (backend, flutter) | Tests, analyse et build web à chaque PR |
 | Gestionnaire de dépendances | Composer (backend), `pub` (Flutter) | Fichiers de verrouillage `composer.lock`, `pubspec.lock` |
 
-**Versions** : utiliser les versions stables courantes à l'initialisation, puis **figer via les lockfiles** (`composer.lock`, `pubspec.lock`). De référence constatée chez Soutrali (à revérifier sur ce poste) : Laravel 13 / PHP 8.3 / Filament 5 / Sanctum 4 / Pest 4 ; Flutter stable récent (Dart ≥ 3.13). **Ne pas copier de numéros de version depuis ce document** — les figer dans `docs/INSTALLATION.md` après exécution réelle.
+**Versions** : utiliser les versions stables courantes à l'initialisation, puis **figer via les lockfiles** (`composer.lock`, `pubspec.lock`). Versions constatées sur ce poste le 3 novembre 2026 : Laravel 13 / PHP 8.3 / Filament 5 / Sanctum 4 / Pest 4 ; Flutter stable récent (Dart ≥ 3.13). **Ne pas copier de numéros de version depuis ce document** — les figer dans `docs/INSTALLATION.md` après exécution réelle.
 
 > **Règle d'ajout de dépendance** : toute nouvelle librairie doit être justifiée dans la PR (besoin, alternatives, taille, maintenance). Préférer le cadre standard (fonctions natives de Laravel, packages `flutter_*`) quand c'est suffisant.
 
@@ -249,7 +249,7 @@ Filament (/admin) ────────────────────�
 ### 7.1 Prérequis
 **PHP CLI 8.3+**, Composer, Flutter SDK (stable), Git, et un **compte Alwaysdata** pour la base MySQL — plus de MySQL local (ADR-002).
 
-**Leçons tirées du dépôt Soutrali, à vérifier ici aussi :**
+**Leçons tirées du premier montage, à vérifier ici aussi :**
 - Laravel 13 exige PHP 8.3+ en CLI ; le PHP livré par XAMPP est en 8.2 et ne doit plus servir.
 - Composer peut être installé **hors du PATH** : si `composer --version` échoue alors que `backend/vendor/` existe, appeler `php <chemin>/composer.phar <commande>`.
 - La base distante exige une connexion Internet ; les tests n'en dépendent pas (SQLite en mémoire, `phpunit.xml`).
@@ -260,7 +260,7 @@ Filament (/admin) ────────────────────�
 git clone <url-du-depot> ivoirepedia && cd ivoirepedia
 
 # 1. Base de données — créée dans le panneau Alwaysdata (Databases > MySQL), jamais en SQL :
-#    soutrali_ivoirepedia_dev + utilisateur dédié — cf. docs/DEPLOIEMENT.md §2
+#    ivoirepedia_dev + utilisateur dédié — cf. docs/DEPLOIEMENT.md §2
 
 # 2. Backend Laravel (terminal 1)
 cd backend
@@ -282,7 +282,7 @@ flutter run -d web-server --web-port 8082   # site sur http://127.0.0.1:8082
 |---|---:|---|---|
 | API Laravel | `8000` | `http://127.0.0.1:8000` | Routes `/api/v1`, sessions Sanctum, panneau `/admin` |
 | Flutter Web | `8082` | `http://127.0.0.1:8082` | Site IVOIREPEDIA |
-| MySQL Alwaysdata | `3306` | `mysql-soutrali.alwaysdata.net:3306` | Consommée uniquement par Laravel, jamais par Flutter |
+| MySQL Alwaysdata | `3306` | `mysql-ivoirepedia.alwaysdata.net:3306` | Consommée uniquement par Laravel, jamais par Flutter |
 
 Les deux origines (`:8000` et `:8082`) sont distinctes **par conception** : Sanctum, cookies CSRF et CORS doivent autoriser explicitement `127.0.0.1:8082` (`SANCTUM_STATEFUL_DOMAINS` + `config/cors.php` dans `backend/`). En production, servir app, API et `/admin` sous une seule origine HTTPS.
 
@@ -310,10 +310,10 @@ APP_ENV=local
 
 # Base de données — hébergée sur Alwaysdata (créée dans le panneau, jamais en SQL)
 DB_CONNECTION=mysql
-DB_HOST="mysql-soutrali.alwaysdata.net"
+DB_HOST="mysql-ivoirepedia.alwaysdata.net"
 DB_PORT=3306
-DB_DATABASE="soutrali_ivoirepedia_dev"
-DB_USERNAME="soutrali_ivoirepedia"
+DB_DATABASE="ivoirepedia_dev"
+DB_USERNAME="ivoirepedia_app"
 DB_PASSWORD=                       # mot de passe choisi dans le panneau, jamais commité
 
 # Origines autorisées pour Sanctum / CORS (Flutter Web)
@@ -789,7 +789,7 @@ Base : `/api/v1`. Format JSON. Authentification : session Sanctum (cookie) côt�
 | GET | `/api/v1/categories` | public | Arbre des catégories | CAT |
 | POST | `/api/v1/articles/{id}/cover` | CONTRIBUTOR+ | Upload d'image (multipart) : MIME vérifié côté serveur, `alt` obligatoire | ART-06 |
 
-*Gestion des catégories et des utilisateurs : **panneau Filament `/admin`** (ressources + Policies), pas de routes API admin dédiées au MVP — même décision que Soutrali.*
+*Gestion des catégories et des utilisateurs : **panneau Filament `/admin`** (ressources + Policies), pas de routes API admin dédiées au MVP.*
 *V1 : `POST /api/v1/articles/{id}/rollback`, signalements, logs d'activité.*
 
 ### 11.2 Format d'erreur unique
@@ -1000,7 +1000,7 @@ jobs:
         working-directory: app
 ```
 
-*(Même structure que la CI Soutrali. Vérifier les versions actuelles des actions GitHub à la mise en place, et figer la version de Flutter constatée.)*
+*(Vérifier les versions actuelles des actions GitHub à la mise en place, et figer la version de Flutter constatée.)*
 
 ### 15.5 Definition of Done (une tâche est terminée quand…)
 - [ ] Le comportement correspond à l'exigence `EF-*` citée
@@ -1121,7 +1121,8 @@ jobs:
 | Date | Version | Changement |
 |---|---|---|
 | 2026-11-02 | 1.0 | Création : consolidation du cahier des charges, de la conception UML et de la roadmap ; décisions ADR-001 à 008 ; backlog MVP. |
-| 2026-11-02 | 1.1 | **Adaptation de la stack au modèle Soutrali** : Flutter (`app/`) + Laravel (`backend/`) + MySQL/Filament/Sanctum remplacent Next.js + Prisma + PostgreSQL + Auth.js. Schéma converti en MySQL (§8.2), workflow traduit en PHP (§9), API versionnée `/api/v1` (§11), CI à deux jobs (§15.4), divergences D9 et nouveaux risques R-05/R-08/R-09. |
+| 2026-11-02 | 1.1 | **Adaptation de la stack au modèle Flutter + Laravel** : Flutter (`app/`) + Laravel (`backend/`) + MySQL/Filament/Sanctum remplacent Next.js + Prisma + PostgreSQL + Auth.js. Schéma converti en MySQL (§8.2), workflow traduit en PHP (§9), API versionnée `/api/v1` (§11), CI à deux jobs (§15.4), divergences D9 et nouveaux risques R-05/R-08/R-09. |
 | 2026-11-03 | 1.2 | **Hébergement et emails tranchés** : Alwaysdata remplace XAMPP dès le développement (ADR-002 révisé, ADR-008 réécrit) et Mailjet devient le relais SMTP (ADR-009). §5 stack, §7 installation (base distante, ports), §7.5 variables d'environnement, R-10, Q3/Q9 mis à jour. Guides `docs/INSTALLATION.md` et `docs/DEPLOIEMENT.md`. |
+| 2026-11-03 | 1.3 | **Compte d'hébergement dédié** : IVOIREPEDIA quitte le compte Alwaysdata partagé (ADR-008) — compte, site `ivoirepedia.alwaysdata.net`, dossier, bases `ivoirepedia_prod`/`ivoirepedia_dev` et utilisateur MySQL propres, phpMyAdmin par compte. §5, §7, ADR-002 et ADR-008 alignés ; aucune référence à un autre projet ne subsiste dans le dépôt. |
 
 > **Règle de maintenance** : tout changement d'architecture, de modèle de données ou de workflow doit mettre à jour ce fichier **dans la même PR**. Un contexte obsolète est pire que pas de contexte.

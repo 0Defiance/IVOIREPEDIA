@@ -30,7 +30,7 @@ Décision du 3 novembre 2026 (CONTEXT ADR-002) : **la base de développement est
 Conséquences à connaître :
 
 - **Il faut une connexion Internet** pour démarrer le backend et lancer les migrations. Le développement de l'interface Flutter, lui, reste possible hors ligne.
-- **Deux bases distinctes** vivent sur le même serveur : `soutrali_ivoirepedia_dev` (poste de travail) et `soutrali_ivoirepedia` (production). Ne jamais pointer le `.env` local vers la base de production.
+- **Deux bases distinctes** vivent sur le serveur dédié : `ivoirepedia_dev` (poste de travail) et `ivoirepedia_prod` (production). Ne jamais pointer le `.env` local vers la base de production.
 - **Les tests ne touchent jamais la base distante** : `phpunit.xml` force SQLite **en mémoire**. `composer test` fonctionne donc sans réseau (CONTEXT §15.3).
 - La création de la base et de l'utilisateur MySQL se fait **uniquement dans le panneau Alwaysdata** (ou son API) : l'hébergeur interdit `CREATE DATABASE` depuis un client tiers. Procédure : [`DEPLOIEMENT.md` §2](DEPLOIEMENT.md).
 
@@ -44,7 +44,7 @@ Conséquences à connaître :
 | Composer | **2.10.3** — absent du PATH sur ce poste | Dépendances PHP | `php "C:\Users\Abd Al Fattah\AppData\Local\Programs\Composer\composer.phar" --version` |
 | Flutter / Dart | **3.47.7 / 3.13.5** | Interface web puis Android | `flutter --version` |
 | Git | ≥ 2.40 | Versionnement et parité local ↔ distant | `git --version` |
-| Compte Alwaysdata | — | Base MySQL distante (et production) | `ssh soutrali@ssh-soutrali.alwaysdata.net` |
+| Compte Alwaysdata | — | Base MySQL distante (et production) | `ssh ivoirepedia@ssh-ivoirepedia.alwaysdata.net` |
 | Navigateur récent | — | Recette du site | — |
 
 **Points d'attention relevés le 3 novembre 2026 :**
@@ -61,7 +61,7 @@ Conséquences à connaître :
 |---|---:|---|---|
 | API Laravel | `8000` | `http://127.0.0.1:8000` | Routes `/api/v1`, sessions Sanctum, panneau `/admin` |
 | Flutter Web | `8082` | `http://127.0.0.1:8082` | Site IVOIREPEDIA |
-| MySQL Alwaysdata | `3306` | `mysql-soutrali.alwaysdata.net:3306` | Consommée uniquement par Laravel, jamais par Flutter |
+| MySQL Alwaysdata | `3306` | `mysql-ivoirepedia.alwaysdata.net:3306` | Consommée uniquement par Laravel, jamais par Flutter |
 
 Les ports `8000` et `8082` sont distincts **par conception** : le navigateur les voit comme deux origines. Sanctum, cookies CSRF et CORS doivent donc autoriser explicitement `127.0.0.1:8082` — c'est déjà prévu dans `backend/.env.example` (`SANCTUM_STATEFUL_DOMAINS`). En production, web, API et `/admin` sont servis sous une seule origine HTTPS.
 
@@ -73,10 +73,10 @@ La base n'est **pas** créée localement : elle l'est une seule fois dans le pan
 
 ```dotenv
 DB_CONNECTION=mysql
-DB_HOST="mysql-soutrali.alwaysdata.net"
+DB_HOST="mysql-ivoirepedia.alwaysdata.net"
 DB_PORT=3306
-DB_DATABASE="soutrali_ivoirepedia_dev"
-DB_USERNAME="soutrali_ivoirepedia"
+DB_DATABASE="ivoirepedia_dev"
+DB_USERNAME="ivoirepedia_app"
 DB_PASSWORD=<mot de passe choisi dans le panneau>
 ```
 
@@ -159,7 +159,7 @@ flutter test             # écran d'accueil : 1 test vert
 |---|---|---|
 | `SQLSTATE[HY000] [1045] Access denied` | Mot de passe ou nom d'utilisateur MySQL erroné dans `.env` | Reprendre les valeurs exactes de **Databases > MySQL** dans le panneau Alwaysdata |
 | `SQLSTATE[HY000] [2002]` / timeout | Base distante injoignable : accès distant non autorisé ou réseau coupé | Vérifier la restriction d'IP de l'utilisateur MySQL (IPv4 uniquement chez Alwaysdata) et la connexion Internet |
-| `Unknown database 'soutrali_ivoirepedia_dev'` | La base n'a pas été créée dans le panneau | La créer dans **Databases > MySQL** (impossible en SQL depuis un client tiers) |
+| `Unknown database 'ivoirepedia_dev'` | La base n'a pas été créée dans le panneau | La créer dans **Databases > MySQL** (impossible en SQL depuis un client tiers) |
 | `composer : commande introuvable` | Composer hors du PATH | Utiliser `php "<chemin>/composer.phar" <commande>` |
 | `Class "..." not found` après ajout d'un import | Pint a requalifié un import vers un namespace inexistant | Vérifier avec `composer format:check`, corriger l'import, relancer les tests |
 | `flutter test` échoue sur `Counter increments` | Ancien test du modèle `flutter create` | Remplacé au Sprint 0 par le test de l'écran d'accueil |

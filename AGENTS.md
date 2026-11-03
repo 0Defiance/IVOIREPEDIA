@@ -1,6 +1,6 @@
 # AGENTS.md — règle de travail sur IVOIREPEDIA
 
-Ce fichier fixe la **définition de « fait »** appliquée à chaque intervention dans ce dépôt. Aucune tâche n'est considérée terminée tant que les trois points ci-dessous ne sont pas satisfaits. La structure reprend le modèle du projet Soutrali ; les commandes et chemins sont ceux d'IVOIREPEDIA (voir `IVOIREPEDIA_CONTEXT.md` §15.5).
+Ce fichier fixe la **définition de « fait »** appliquée à chaque intervention dans ce dépôt. Aucune tâche n'est considérée terminée tant que les trois points ci-dessous ne sont pas satisfaits. Les commandes et chemins sont ceux d'IVOIREPEDIA (voir `IVOIREPEDIA_CONTEXT.md` §15.5).
 
 ## 1. Accessible
 

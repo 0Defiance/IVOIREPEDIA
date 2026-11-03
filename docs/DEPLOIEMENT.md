@@ -1,18 +1,18 @@
 # IVOIREPEDIA — Déploiement sur Alwaysdata + Mailjet
 
-> **Objet :** mettre le backend Laravel en ligne sur un hébergement mutualisé Alwaysdata, avec sa base MySQL et ses emails transactionnels Mailjet.
+> **Objet :** mettre le backend Laravel en ligne sur un hébergement mutualisé Alwaysdata **dédié à IVOIREPEDIA**, avec sa base MySQL et ses emails transactionnels Mailjet.
 >
 > **Complément local :** [`INSTALLATION.md`](INSTALLATION.md). **État réel :** [`SUIVI_DEVELOPPEMENT.md`](SUIVI_DEVELOPPEMENT.md).
 >
-> **Version :** 1.0 · **Dernière mise à jour :** 3 novembre 2026
+> **Version :** 2.0 · **Dernière mise à jour :** 3 novembre 2026
 >
-> Faits vérifiés dans la documentation officielle Alwaysdata et Mailjet le 3 novembre 2026 (sources en fin de document).
+> **Convention de lecture** : `ivoirepedia` désigne l'identifiant du compte Alwaysdata. S'il diffère, remplacer cette valeur partout (hôtes, bases, chemins) — le raisonnement ne change pas.
 
 ---
 
 ## Sommaire
 
-1. [Ce qui se partage avec Soutrali (et ce qui ne se partage pas)](#1-ce-qui-se-partage-avec-soutrali-et-ce-qui-ne-se-partage-pas)
+1. [Un compte dédié, sans partage](#1-un-compte-dédié-sans-partage)
 2. [Préparer le compte Alwaysdata](#2-préparer-le-compte-alwaysdata)
 3. [Premier déploiement du backend](#3-premier-déploiement-du-backend)
 4. [Emails transactionnels avec Mailjet](#4-emails-transactionnels-avec-mailjet)
@@ -22,21 +22,23 @@
 
 ---
 
-## 1. Ce qui se partage avec Soutrali (et ce qui ne se partage pas)
+## 1. Un compte dédié, sans partage
 
-Un compte Alwaysdata = **un utilisateur UNIX**, plusieurs sites et plusieurs bases. On peut donc réutiliser le compte de Soutrali, à condition de séparer ce qui doit l'être :
+IVOIREPEDIA possède **son propre compte d'hébergement**. Aucun site, aucune base, aucun identifiant n'est partagé avec un autre projet.
 
-| Élément | Partagé ? | Pourquoi |
-|---|---|---|
-| Compte Alwaysdata (identifiant, SSH) | ✅ Oui | Un seul accès à administrer |
-| Version de PHP | ⚠️ **Au niveau du compte** (`Environment > PHP`) | Seule vraie contrainte : si Soutrali exige 8.4 et IVOIREPEDIA 8.3, il faut s'aligner ou fixer la version par site (plus gourmand en RAM) |
-| Site web (domaine) | ❌ Non | Un sous-domaine du domaine du compte : `ivoirepedia.soutrali.alwaysdata.net` (§2.4) |
-| Base MySQL | ❌ Non | `soutrali_ivoirepedia` (prod) et `soutrali_ivoirepedia_dev` (dev) — **jamais** la base de Soutrali |
-| Utilisateur MySQL | ❌ Non | Un utilisateur dédié, droits limités à ses propres bases |
-| Dossier de déploiement | ❌ Non | `~/ivoirepedia/` — les migrations d'un projet ne doivent jamais toucher l'autre |
-| Compte Mailjet | ✅ Possible | Mais **une clé SMTP dédiée** à IVOIREPEDIA, pour la révoquer sans casser Soutrali |
+| Élément | Valeur |
+|---|---|
+| Compte Alwaysdata | `ivoirepedia` (identifiant du compte, distinct de tout autre projet) |
+| Adresse gratuite | `ivoirepedia.alwaysdata.net` — l'adresse `<compte>.alwaysdata.net` est attribuée au compte à sa création |
+| Dossier de déploiement | `~/ivoirepedia/` (dans `/home/ivoirepedia/`) |
+| Bases MySQL | `ivoirepedia_prod` (production) et `ivoirepedia_dev` (poste de travail) |
+| Utilisateur MySQL | `ivoirepedia_app`, droits limités à ces deux bases |
+| phpMyAdmin | <https://phpmyadmin.alwaysdata.com>, avec **l'utilisateur MySQL du compte** — jamais celui d'un autre projet |
+| Mailjet | Compte IVOIREPEDIA, expéditeur `no-reply@ivoirepedia.ci` |
 
-**Règle** : partager l'accès, jamais les données. Deux projets dans une même base rendent toute restauration et toute suppression dangereuses.
+**Pourquoi un compte dédié** : sur un compte partagé, un seul domaine gratuit existe (`<compte>.alwaysdata.net`) et il est déjà occupé ; les adresses dérivées sont refusées par le panneau. Un compte dédié redonne l'adresse `ivoirepedia.alwaysdata.net`, isole les quotas, les sauvegardes et les identifiants, et permet de changer de formule ou de résilier sans impacter un autre projet.
+
+> **Règle** : un projet = un compte = ses bases = ses clés. Toute exception doit être écrite ici et dans le CONTEXT (ADR-008).
 
 ---
 
@@ -46,20 +48,22 @@ Ces étapes se font **dans le panneau** (`https://admin.alwaysdata.com`), pas en
 
 ### 2.1 Version de PHP
 
-`Environment > PHP` → choisir **PHP 8.3** (ou la plus récente ≥ 8.3 compatible avec Laravel 13). C'est la version utilisée en ligne de commande et par les tâches planifiées. Éviter de multiplier les versions par site : Alwaysdata documente une consommation RAM supérieure.
+`Environment > PHP` → choisir la version la plus récente ≥ 8.3 compatible avec Laravel 13. C'est la version utilisée en ligne de commande et par les tâches planifiées.
 
-**Constaté le 3 novembre 2026** : le compte est en **PHP 8.4.27** en CLI (`php -v`), avec Composer en `/usr/bin/composer`. Laravel 13 exige 8.3+ : 8.4 convient, aucune action nécessaire.
+**Constaté le 3 novembre 2026** sur l'hébergement Alwaysdata : PHP **8.4.27** en CLI, Composer en `/usr/bin/composer`. 8.4 convient à Laravel 13, aucune action nécessaire.
 
 ### 2.2 Bases MySQL
 
 `Databases > MySQL` → créer **deux bases** et **un utilisateur** :
 
-| Base | Usage |
-|---|---|
-| `soutrali_ivoirepedia` | Production |
-| `soutrali_ivoirepedia_dev` | Développement (poste de travail) |
+| Nom saisi dans le panneau | Nom complet | Usage |
+|---|---|---|
+| `prod` | `ivoirepedia_prod` | Production |
+| `dev` | `ivoirepedia_dev` | Développement (poste de travail) |
 
-Puis un utilisateur `soutrali_ivoirepedia` avec `GRANT ALL PRIVILEGES` sur ces deux bases.
+Le panneau **préfixe automatiquement** le nom saisi par l'identifiant du compte : saisir `prod`, pas `ivoirepedia_prod`.
+
+Puis un utilisateur `app` (nom complet `ivoirepedia_app`) avec `GRANT ALL PRIVILEGES` sur ces deux bases seulement.
 
 > **Important** : la création de bases et d'utilisateurs est **impossible en SQL** depuis un client tiers (phpMyAdmin, DBeaver…) — Alwaysdata l'interdit pour raison de sécurité. Le panneau ou l'API sont les seuls chemins.
 
@@ -76,25 +80,23 @@ ssh-keygen -t ed25519 -f .deploy/ivoirepedia_ed25519 -N "" -C "ivoirepedia-deplo
 cat .deploy/ivoirepedia_ed25519.pub   # à coller dans le panneau
 ```
 
-Toutes les commandes de ce guide utilisent ensuite `-i .deploy/ivoirepedia_ed25519`. Ne jamais committer `.deploy/` : la clé privée donne accès au compte hébergeur.
+Toutes les commandes de ce guide utilisent ensuite `-i .deploy/ivoirepedia_ed25519`. Ne jamais committer `.deploy/` : la clé privée donne accès au compte hébergeur. Une clé par compte : celle d'un autre projet ne doit pas être réutilisée.
 
 | Paramètre | Valeur |
 |---|---|
-| Hôte | `ssh-soutrali.alwaysdata.net` |
+| Hôte | `ssh-ivoirepedia.alwaysdata.net` |
 | Port | `22` |
-| Utilisateur | `soutrali` |
-| Racine | `/home/soutrali/` |
+| Utilisateur | `ivoirepedia` |
+| Racine | `/home/ivoirepedia/` |
 
-Test : `ssh -i .deploy/ivoirepedia_ed25519 soutrali@ssh-soutrali.alwaysdata.net "php -v"` doit afficher PHP 8.3.
-
-État constaté le 3 novembre 2026 : `ssh-soutrali.alwaysdata.net:22` et `mysql-soutrali.alwaysdata.net:3306` répondent, `https://soutrali.alwaysdata.net` renvoie `200` (site Soutrali en ligne), `https://ivoirepedia.alwaysdata.net` ne répond pas encore (site non créé). L'authentification par clé était refusée avant le dépôt de `ivoirepedia_ed25519.pub` dans le panneau.
+Test : `ssh -i .deploy/ivoirepedia_ed25519 ivoirepedia@ssh-ivoirepedia.alwaysdata.net "php -v"` doit afficher PHP 8.4.
 
 ### 2.4 Site web
 
 Le répertoire racine **doit exister avant** la création du site (le panneau ne le crée pas) :
 
 ```bash
-ssh -i .deploy/ivoirepedia_ed25519 soutrali@ssh-soutrali.alwaysdata.net
+ssh -i .deploy/ivoirepedia_ed25519 ivoirepedia@ssh-ivoirepedia.alwaysdata.net
 mkdir -p ~/ivoirepedia
 ```
 
@@ -103,20 +105,17 @@ Puis `Web > Sites > Ajouter un site` :
 | Champ | Valeur |
 |---|---|
 | Type | **PHP** |
-| Adresses | `ivoirepedia.soutrali.alwaysdata.net` |
-| Chemin | `/home/soutrali/ivoirepedia/backend/public` (dans le panneau, saisir `ivoirepedia/backend/public` : le préfixe `/home/soutrali/` est déjà affiché, ne pas y ajouter `www`) |
+| Adresses | `ivoirepedia.alwaysdata.net` |
+| Chemin | `/home/ivoirepedia/ivoirepedia/backend/public` (dans le panneau, saisir `ivoirepedia/backend/public` : le préfixe `/home/ivoirepedia/` est déjà affiché — ne pas le retaper, ne pas laisser le `www` par défaut) |
 | Version PHP | celle du compte (§2.1) |
 
 Le type PHP est servi par Apache : le `.htaccess` livré par Laravel dans `public/` prend en charge les URL sans `index.php`.
 
-> **Piège du nom de domaine (constaté le 3 novembre 2026)** : un compte ne possède **qu'une seule adresse gratuite**, `<compte>.alwaysdata.net` — ici `soutrali.alwaysdata.net`, déjà occupée par le site Soutrali.
+> **Piège du nom de domaine (constaté le 3 novembre 2026)** : le compte ne possède **qu'une seule adresse gratuite**, `<compte>.alwaysdata.net`, attribuée à sa création.
 >
-> - `ivoirepedia.alwaysdata.com` → « Le domaine alwaysdata.com ne vous appartient pas » : `.com` appartient à l'éditeur.
-> - `ivoirepedia.alwaysdata.net` → « Le domaine alwaysdata.net ne vous appartient pas » : le compte ne possède pas `alwaysdata.net`, seulement `soutrali.alwaysdata.net`.
->
-> L'adresse valide est donc un **sous-domaine du domaine du compte** : `ivoirepedia.soutrali.alwaysdata.net`. À défaut, un **chemin** sur le domaine du compte (`soutrali.alwaysdata.net/ivoirepedia`) est accepté — le panneau le suggère lui-même (« example.net/blog »). La solution propre à terme reste un domaine propre branché sur `Domaines`.
->
-> Ne pas mettre de `www.` tant qu'aucun domaine propre n'est branché.
+> - `ivoirepedia.alwaysdata.com` → « Le domaine alwaysdata.com ne vous appartient pas » : `.com` est le domaine de l'éditeur.
+> - Sur un compte dont l'adresse `X.alwaysdata.net` est déjà occupée, ni `ivoirepedia.alwaysdata.net` ni un sous-domaine de `X.alwaysdata.net` ne sont attribuables sans domaine propre : c'est précisément ce qui a motivé le compte dédié.
+> - Ne pas mettre de `www.` tant qu'aucun domaine propre n'est branché : `www` est une adresse distincte.
 
 ### 2.5 phpMyAdmin
 
@@ -124,10 +123,12 @@ Toujours disponible, rien à installer : **<https://phpmyadmin.alwaysdata.com>**
 
 | Champ | Valeur |
 |---|---|
-| Utilisateur MySQL | `soutrali_ivoirepedia` (l'utilisateur MySQL, pas le compte Alwaysdata) |
+| Utilisateur MySQL | `ivoirepedia_app` (l'utilisateur MySQL du compte, pas le compte Alwaysdata) |
 | Mot de passe | celui défini dans `Databases > MySQL` |
 
-Les deux bases (`soutrali_ivoirepedia` et `soutrali_ivoirepedia_dev`) apparaissent ensuite dans la colonne de gauche. C'est l'interface prévue par l'hébergeur pour consulter les tables, éditer une ligne ou exporter un dump ; il n'y a pas de phpMyAdmin à installer dans `~/ivoirepedia`.
+Les deux bases (`ivoirepedia_prod` et `ivoirepedia_dev`) apparaissent ensuite dans la colonne de gauche, et **uniquement celles-là** : l'utilisateur n'a de droits que sur elles. C'est l'interface prévue par l'hébergeur pour consulter les tables, éditer une ligne ou exporter un dump ; il n'y a pas de phpMyAdmin à installer dans `~/ivoirepedia`.
+
+Un mot de passe par utilisateur MySQL, jamais réutilisé d'un projet à l'autre : en cas de fuite, seul ce compte est concerné et la rotation se fait dans le panneau.
 
 ---
 
@@ -136,7 +137,7 @@ Les deux bases (`soutrali_ivoirepedia` et `soutrali_ivoirepedia_dev`) apparaisse
 Le dépôt GitHub est **public** : le serveur peut cloner et tirer sans clé de déploiement.
 
 ```bash
-ssh -i .deploy/ivoirepedia_ed25519 soutrali@ssh-soutrali.alwaysdata.net
+ssh -i .deploy/ivoirepedia_ed25519 ivoirepedia@ssh-ivoirepedia.alwaysdata.net
 
 cd ~/ivoirepedia
 git clone https://github.com/0Defiance/IVOIREPEDIA.git .
@@ -156,10 +157,10 @@ APP_URL=https://ivoirepedia.alwaysdata.net
 FRONTEND_URL=https://ivoirepedia.alwaysdata.net
 
 DB_CONNECTION=mysql
-DB_HOST="mysql-soutrali.alwaysdata.net"
+DB_HOST="mysql-ivoirepedia.alwaysdata.net"
 DB_PORT=3306
-DB_DATABASE="soutrali_ivoirepedia"
-DB_USERNAME="soutrali_ivoirepedia"
+DB_DATABASE="ivoirepedia_prod"
+DB_USERNAME="ivoirepedia_app"
 DB_PASSWORD=<mot de passe du panneau>
 
 SESSION_DRIVER=database
@@ -190,27 +191,12 @@ Le processus PHP tourne sous l'utilisateur du compte : aucun `chown` système n'
 
 Pour le premier administrateur de production, utiliser une commande ponctuelle via `php artisan tinker` avec un mot de passe fort : `DevAdminSeeder` refuse de s'exécuter en production, c'est volontaire.
 
-### État réel du déploiement (3 novembre 2026)
-
-| Étape | État |
-|---|---|
-| Clé SSH `ivoirepedia-deploy` déposée dans le panneau | ✅ fait |
-| Bases `soutrali_ivoirepedia` + `soutrali_ivoirepedia_dev` et utilisateur MySQL | ✅ fait |
-| Dépôt cloné dans `~/ivoirepedia` | ✅ fait (commit `b23ab6e`) |
-| `backend/.env` de production en place (`APP_KEY` généré) | ✅ fait (fichier non versionné, copié par `scp`) |
-| `composer install --no-dev --optimize-autoloader` | ✅ fait sur le serveur |
-| `php artisan migrate --seed --force` sur la base de production | ✅ fait (9 tables + catégories ; `DevAdminSeeder` ignoré, comme prévu) |
-| Base de développement migrée + seedée depuis le poste de travail | ✅ fait |
-| Site PHP créé dans le panneau (`ivoirepedia.alwaysdata.net`) | ⏳ **à faire** — adresse en `.com` refusée (§2.4) |
-| Vérification HTTP de `/api/v1/health` | ⏳ en attente du site |
-| Mailjet (`MAIL_MAILER=log` pour l'instant) | ⏳ en attente des clés |
-
 ### Tâches planifiées
 
 `Advanced > Scheduled tasks` → commande, toutes les minutes :
 
 ```
-php /home/soutrali/ivoirepedia/backend/artisan schedule:run
+php /home/ivoirepedia/ivoirepedia/backend/artisan schedule:run
 ```
 
 ---
@@ -288,10 +274,10 @@ php artisan config:cache && php artisan route:cache
 
 | Point | Détail |
 |---|---|
+| Une adresse gratuite par compte | `<compte>.alwaysdata.net`, non modifiable ; toute autre adresse exige un domaine propre ou un chemin (`exemple.net/blog`) |
 | Création de base | Panneau ou API uniquement — jamais en SQL |
 | Restriction MySQL | IPv4 seulement (adresse ou masque) |
 | Pas de root | Aucune commande système privilégiée ; PHP tourne sous l'utilisateur du compte |
-| Version PHP | Réglée au niveau du compte par défaut (voir §1 pour le partage avec Soutrali) |
 | Composer | Déjà présent côté serveur : `composer install` fonctionne directement |
 | File d'attente | Pas de worker permanent au MVP : `QUEUE_CONNECTION=database` piloté par une tâche planifiée, ou `sync` tant que rien n'est asynchrone |
 | Sauvegardes | Sauvegardes Alwaysdata activées par défaut ; **tester une restauration** avant la bêta (risque R-04) |
@@ -304,8 +290,8 @@ php artisan config:cache && php artisan route:cache
 - Types de sites et chemin du site : https://help.alwaysdata.com/en/docs/web-hosting/sites/add-a-site/
 - Versions PHP et choix au niveau du compte : https://help.alwaysdata.com/en/docs/web-hosting/languages/php/configuration/
 - Composer déjà installé : https://help.alwaysdata.com/en/docs/web-hosting/languages/php/packages/
-- Accès SSH (hôte, port, pas de root) : https://help.alwaysdata.com/en/docs/web-hosting/remote-access/ssh/
-- MySQL (hôte `mysql-soutrali.alwaysdata.net`, restriction IPv4, création via panneau) : https://help.alwaysdata.com/en/docs/web-hosting/databases/mariadb/
+- Accès SSH (hôte, port, pas de root) et adresse gratuite en `.net` : https://help.alwaysdata.com/en/docs/technical-specifications/login-details/
+- MySQL (hôte `mysql-<compte>.alwaysdata.net`, restriction IPv4, création via panneau) : https://help.alwaysdata.com/en/docs/web-hosting/databases/mariadb/
 - Tâches planifiées : https://help.alwaysdata.com/en/docs/web-hosting/tasks/
 - Déploiement Git : https://help.alwaysdata.com/en/blog/2018-02-05-deploy-at-lightning-speed-with-git-hooks/
 - SMTP Mailjet (hôte, ports, identifiants) : https://dev.mailjet.com/docs/smtp-relay/configuration

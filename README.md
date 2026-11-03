@@ -1,24 +1,24 @@
 # IVOIREPEDIA — Encyclopédie Inclusive Ivoirienne
 
-> **Version** : 1.2 · **Dernière mise à jour** : 3 novembre 2026 · **Statut** : pré-MVP — Sprint 0 (fondations) réalisé, hébergement **Alwaysdata** et emails **Mailjet** retenus · **Langue de travail** : français
+> **Version** : 1.3 · **Dernière mise à jour** : 3 novembre 2026 · **Statut** : pré-MVP — Sprint 0 (fondations) réalisé, hébergement **Alwaysdata** (compte dédié) et emails **Mailjet** retenus · **Langue de travail** : français
 
 **IVOIREPEDIA** est une encyclopédie numérique libre et open source consacrée exclusivement à la documentation, la structuration et la valorisation du savoir ivoirien : histoire, géographie, personnalités, institutions, langues, culture, économie, patrimoine.
 
 > Ce dépôt est la source de contexte du projet. Une personne ou une IA qui n'a rien suivi doit pouvoir comprendre **ce qu'est IVOIREPEDIA, ce qui est décidé, ce qui n'est pas, et comment reprendre le travail** en lisant les fichiers ci-dessous.
 
-## Stack technique (validée le 2 novembre 2026 — modèle Soutrali)
+## Stack technique (validée le 2 novembre 2026)
 
 | Couche | Choix |
 |---|---|
 | Interface | **Flutter** (`app/`) — site web d'abord, Android ensuite, une seule base de code |
 | Backend | **Laravel** (`backend/`) — API REST `/api/v1` + back-office Filament sur `/admin` |
 | Base de données | **MySQL** hébergé sur **Alwaysdata** — base de dev et base de production distinctes (plus de MySQL local) |
-| Hébergement | **Alwaysdata** (site PHP + SSH) — compte partagé avec Soutrali, ressources séparées |
+| Hébergement | **Alwaysdata** (site PHP + SSH) — **compte dédié à IVOIREPEDIA**, bases et identifiants propres |
 | Authentification | **Laravel Sanctum** (session cookie web, jeton révocable Android) |
 | Emails | **Mailjet** (relais SMTP) pour vérification d'adresse, reset et notifications |
 | Tests / CI | **Pest** + **flutter_test** ; GitHub Actions (2 jobs : backend, flutter) |
 
-Même objectif multiplateforme que le projet [Soutrali](https://github.com/0Defiance/soutrali) : web d'abord, Android ensuite. Détails et ADR-001→009 dans le CONTEXT.
+Une seule base de code pour le web puis Android. Détails et ADR-001→009 dans le CONTEXT.
 
 ## Où est quoi
 

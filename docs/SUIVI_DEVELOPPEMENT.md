@@ -1,12 +1,12 @@
 # Suivi de développement — IVOIREPEDIA
 
 > Journal technique étape par étape : **ce qui est fait, vérifié, bloqué et restant.**
-> Modèle repris du projet Soutrali. Chaque séance de travail ajoute une entrée datée.
+> Chaque séance de travail ajoute une entrée datée.
 > Règle : ce journal, le dépôt local et le dépôt distant restent **au même niveau d'information**.
 
-**Version** : 1.2 · **Dernière mise à jour** : 3 novembre 2026
+**Version** : 1.3 · **Dernière mise à jour** : 3 novembre 2026
 
-**État en une phrase** : le **Sprint 0 est réalisé et vérifié** (`backend/` Laravel 13 + `app/` Flutter + CI au vert) et le **backend est déployé sur Alwaysdata** (code, `.env`, dépendances, migrations et catégories en base) ; il reste **à créer le site PHP dans le panneau** pour l'exposer en HTTPS.
+**État en une phrase** : le **Sprint 0 est réalisé et vérifié** (`backend/` Laravel 13 + `app/` Flutter + CI au vert) ; le déploiement réalisé sur un compte d'hébergement partagé est **abandonné** (séance 5) et repart sur un **compte Alwaysdata dédié à IVOIREPEDIA**, qui reste à créer.
 
 ---
 
@@ -16,7 +16,7 @@
 
 **Fait**
 - Dépôt GitHub `0Defiance/IVOIREPEDIA` initialisé (licence MIT) et cloné en local.
-- Structure du dépôt alignée sur le modèle de création de Soutrali :
+- Structure du dépôt :
   - `README.md` — page d'accueil : présentation, table « Où est quoi », règle de parité local/distant, ordre de lecture ;
   - `IVOIREPEDIA_CONTEXT.md` — **source de vérité opérationnelle** (sections 0 à 19 : stack MVP, ADR-001→008, modèle de données Prisma, workflow éditorial, RBAC, contrat d'API, backlog en sprints, conventions, instructions IA) ;
   - `docs/IVOIREPEDIA_Document_de_Contextualisation.md` — vision complète du produit (statuts ✅ 🟡 ❓) ;
@@ -32,7 +32,7 @@
 
 **Point d'attention (divergence signalée)**
 - Les deux documents de cadrage décrivaient des stacks différentes : le **CONTEXT** (MVP : Next.js + Prisma + PostgreSQL, monolithe) et le **document de contextualisation** (horizon plus large : NestJS + PostGIS + Meilisearch, monorepo, 🟡 hypothèses). Règle en vigueur : **`IVOIREPEDIA_CONTEXT.md` fait foi** en cas de contradiction (CONTEXT §2). Le document de contextualisation reste la référence pour la vision produit (langues, sources orales, géo, hors-ligne).
-  - *Corrigé en séance 2 (ci-dessous) : le CONTEXT a été aligné sur le modèle Soutrali (Flutter + Laravel + MySQL), et la stack du document de contextualisation est désormais explicitement supplantée par une bannière ⚠️.*
+  - *Corrigé en séance 2 (ci-dessous) : le CONTEXT a été aligné sur la stack retenue (Flutter + Laravel + MySQL), et la stack du document de contextualisation est désormais explicitement supplantée par une bannière ⚠️.*
 
 **Reste (ordre prioritaire)**
 1. **Sprint 0 — Fondations** (CONTEXT §14) : créer `backend/` (Laravel) et `app/` (Flutter) ; base `ivoirepedia` via phpMyAdmin + `.env.example` ; migrations + seeders ; scripts Composer (Pest/Pint/Larastan) + `flutter analyze`/`flutter test` ; CI GitHub Actions ; `docs/INSTALLATION.md` avec versions constatées ; déploiement « hello world ».
@@ -40,15 +40,15 @@
 2. Puis Sprint 1 — Authentification (EF-AUTH-01→05).
 3. Questions ouvertes à traiter au fil de l'eau : éditeur riche Flutter à confirmer (Q8), licence du code (Q1), licence du contenu (Q2), nom de domaine / emails (Q3).
 
-### 2 novembre 2026 (séance 2) — Adaptation de la stack au modèle Soutrali
+### 2 novembre 2026 (séance 2) — Adaptation de la stack (Flutter + Laravel)
 
 **Fait**
-- Décision : **aligner la stack technique d'IVOIREPEDIA sur celle de Soutrali**, même objectif multiplateforme (web d'abord, Android ensuite) — au lieu de Next.js + Prisma + PostgreSQL.
+- Décision : **adopter Flutter + Laravel + MySQL**, même objectif multiplateforme (web d'abord, Android ensuite) — au lieu de Next.js + Prisma + PostgreSQL.
 - `IVOIREPEDIA_CONTEXT.md` passé en **v1.1** : Flutter (`app/`) + Laravel (`backend/`, API `/api/v1` + Filament) + MySQL/XAMPP/phpMyAdmin + Sanctum + Pest/flutter_test.
   - ADR-001→008 réécrits ; §5 stack ; §6 arborescence `app/` + `backend/` ; §7 installation XAMPP (ports 8000/8082/3306) ; §8 schéma converti en **MySQL** (DDL, tables `article_tag` et `article_references` pivot/mot réservé, `position` au lieu de `order`) ; §8.3 infobox en règles `FormRequest` ; §9 workflow traduit en **PHP** (`app/Services/Workflow.php`) ; §11 contrat `/api/v1` + table d'erreurs 422 ; §13 sécurité adaptée (Eloquent, disque local) ; §14 backlog Sprint 0 réécrit ; §15.4 CI 2 jobs ; §17 risques R-05/R-08/R-09 (SPA → SEO limité) ; Q8/Q9 ajoutées.
 - `README.md` (v1.1) : tableau de stack validée + prochaine étape Sprint 0 adaptée ; bannière ⚠️ ajoutée en tête du document de contextualisation (sa stack NestJS/PostGIS est supplantée, vision produit inchangée).
 - `AGENTS.md` : chemins Flutter/Filament/Pest, commandes `composer test/format:check/analyse` + `flutter analyze/test`.
-- `.gitignore` (modèle Soutrali : `app/`, `backend/`) et `.gitattributes` (`.dart`, `.php` au lieu de `.ts`).
+- `.gitignore` (`app/`, `backend/`) et `.gitattributes` (`.dart`, `.php` au lieu de `.ts`).
 - Cohérence vérifiée avec les PDFs du dépôt : Phase 1 (XAMPP + Laravel + MySQL) et Phase 2 (API `/api/v1` + Sanctum, VPS Nginx) — seuls les PDFs confirment déjà Laravel ; l'interface Blade/PWA est remplacée par Flutter (divergence D9 documentée).
 
 **Vérifié**
@@ -65,15 +65,15 @@
 ### 3 novembre 2026 (séance 3) — Sprint 0 réalisé, puis bascule vers Alwaysdata + Mailjet
 
 **Fait**
-- **Sprint 0 côté backend** : Laravel 13.39.0 installé, `composer.json` aligné sur le modèle Soutrali (Pest 4, Larastan 3, Pint, scripts `test` / `analyse` / `format` / `format:check`), `phpstan.neon` niveau 5.
+- **Sprint 0 côté backend** : Laravel 13.39.0 installé, `composer.json` aligné sur le socle retenu (Pest 4, Larastan 3, Pint, scripts `test` / `analyse` / `format` / `format:check`), `phpstan.neon` niveau 5.
   - 10 migrations fidèles au schéma §8.2 : `users` (+ `verification_tokens`, `sessions`), `categories`, `articles`, `article_versions`, `tags`, `article_tag`, `article_references`, `media`, `editorial_actions`.
   - Seeders `CategorySeeder` (8 catégories) et `DevAdminSeeder` (`admin@ivoirepedia.test`, refusé en production).
   - `app/Models/User.php` adapté (UUID, `password_hash`, `role`), `GET /api/v1/health` déclarée dans `routes/api.php` et câblée via `bootstrap/app.php`.
 - **Sprint 0 côté app** : Flutter 3.47.7 / Dart 3.13.5 ; l'écran compteur de `flutter create` est remplacé par `app/lib/src/app.dart` (écran d'accueil IVOIREPEDIA) avec son test widget.
 - **CI** : `.github/workflows/ci.yml`, deux jobs (backend PHP 8.3, Flutter 3.47.7), mêmes commandes que `AGENTS.md` §3.
-- **Changement de cap demandé** : abandon des tests et du MySQL local ; l'hébergement **Alwaysdata** et les emails **Mailjet** sont retenus « comme Soutrali » — le compte Alwaysdata de Soutrali est réutilisé, avec des ressources IVOIREPEDIA séparées.
+- **Changement de cap demandé** : abandon des tests et du MySQL local ; l'hébergement **Alwaysdata** et les emails **Mailjet** sont retenus. Le compte Alwaysdata d'un autre projet est d'abord réutilisé avec des ressources IVOIREPEDIA séparées (abandonné en séance 5).
   - `IVOIREPEDIA_CONTEXT.md` v1.2 : **ADR-002 révisé** (base hébergée, dev et production), **ADR-008 réécrit** (Alwaysdata mutualisé dès le développement, VPS+Nginx abandonné), **ADR-009 ajouté** (Mailjet SMTP). §5, §7, §7.5, R-10, Q3 et Q9 mis à jour.
-  - `backend/.env.example` : `DB_HOST` sur `mysql-soutrali.alwaysdata.net`, deux bases (dev/prod), SMTP Mailjet (port 587, `MAIL_SCHEME=null`).
+  - `backend/.env.example` : `DB_HOST` sur l'hôte MySQL de l'hébergement, deux bases (dev/prod), SMTP Mailjet (port 587, `MAIL_SCHEME=null`).
   - `docs/INSTALLATION.md` créé (poste de travail, base distante, versions constatées) et `docs/DEPLOIEMENT.md` créé (panneau Alwaysdata, premier déploiement, Mailjet, vérifications, pièges) — faits vérifiés dans la documentation officielle des deux services.
 
 **Vérifié**
@@ -82,10 +82,10 @@
 - `php artisan migrate:fresh --seed` → 10 migrations + `CategorySeeder` + `DevAdminSeeder` sans erreur.
 - `php artisan serve` + `curl /api/v1/health` → `200` avec `{"status":"ok","service":"ivoirepedia-api","version":"v1"}`.
 - `cd app && flutter analyze` → « No issues found! » ; `flutter test` → écran d'accueil, 1 test vert.
-- **Accessibilité du compte `soutrali`** (sondes réseau, sans mot de passe) : `ssh-soutrali.alwaysdata.net:22` ouvert, `mysql-soutrali.alwaysdata.net:3306` ouvert, `https://soutrali.alwaysdata.net` → `200`, `https://ivoirepedia.alwaysdata.net` → aucun site. Authentification SSH par clé refusée avant dépôt de la clé dans le panneau.
+- **Accessibilité du compte d'hébergement** (sondes réseau, sans mot de passe) : SSH `:22` et MySQL `:3306` ouverts, le domaine du compte répond en `200`, `https://ivoirepedia.alwaysdata.net` → aucun site. Authentification SSH par clé refusée avant dépôt de la clé dans le panneau.
 
 **Reste**
-1. **Panneau Alwaysdata** (actions humaines, cf. `docs/DEPLOIEMENT.md` §2) : PHP 8.3 au niveau du compte, créer `soutrali_ivoirepedia` et `soutrali_ivoirepedia_dev` + utilisateur MySQL dédié, déposer la clé publique de déploiement `.deploy/ivoirepedia_ed25519.pub` (générée le 3 nov. 2026, exclue de Git) dans `Accès distant > SSH`, créer le site PHP pointant sur `~/ivoirepedia/backend/public`, valider l'expéditeur Mailjet et générer la clé SMTP.
+1. **Panneau Alwaysdata** (actions humaines, cf. `docs/DEPLOIEMENT.md` §2) : PHP 8.3 au niveau du compte, créer les deux bases + utilisateur MySQL dédié, déposer la clé publique de déploiement `.deploy/ivoirepedia_ed25519.pub` (générée le 3 nov. 2026, exclue de Git) dans `Accès distant > SSH`, créer le site PHP pointant sur `~/ivoirepedia/backend/public`, valider l'expéditeur Mailjet et générer la clé SMTP.
 2. Renseigner `backend/.env` (DB_*, MAIL_*) puis `php artisan migrate --seed` sur la base de dev distante.
 3. Déployer le backend et vérifier `https://ivoirepedia.alwaysdata.net/api/v1/health` en ligne.
 4. Test d'envoi Mailjet (`Mail::raw` en tinker).
@@ -93,37 +93,57 @@
 
 ---
 
-### 3 novembre 2026 (séance 4) — Compte `soutrali` branché, backend déployé
+### 3 novembre 2026 (séance 4) — Compte partagé branché, backend déployé
 
 **Fait**
-- Compte Alwaysdata confirmé : **`soutrali`** (partagé avec le projet Soutrali). Hôtes : `ssh-soutrali.alwaysdata.net`, `mysql-soutrali.alwaysdata.net`.
+- Compte Alwaysdata d'un autre projet confirmé et réutilisé, avec des ressources IVOIREPEDIA séparées.
 - **Clé de déploiement dédiée** générée dans `.deploy/ivoirepedia_ed25519` (ed25519, sans phrase de passe, exclue par `.gitignore`), clé publique déposée dans `Accès distant > SSH`. L'accès SSH fonctionne en `BatchMode`, sans mot de passe.
-- Bases créées par le titulaire du compte : `soutrali_ivoirepedia` (prod) et `soutrali_ivoirepedia_dev` (dev), utilisateur MySQL unique avec tous droits sur les deux.
+- Bases créées par le titulaire du compte : une base de production et une base de développement, utilisateur MySQL unique avec tous droits sur les deux.
 - **Déploiement du backend** : `git clone` dans `~/ivoirepedia` (commit `b23ab6e`), `backend/.env` de production copié par `scp` depuis `.deploy/env.production`, `composer install --no-dev --optimize-autoloader`, `php artisan key:generate --force`, `php artisan storage:link`, `php artisan migrate --seed --force`.
 - Base de **développement** migrée et seedée depuis le poste de travail (connexion MySQL distante validée, ~20 s au total).
-- Guides corrigés avec les valeurs réelles (`soutrali`), la procédure de clé, le piège du domaine `.net`/`.com` et la section phpMyAdmin.
+- Guides corrigés avec les valeurs réelles, la procédure de clé, le piège du domaine `.net`/`.com` et la section phpMyAdmin.
 
 **Vérifié**
-- `ssh -i .deploy/ivoirepedia_ed25519 soutrali@ssh-soutrali.alwaysdata.net` → connecté, **PHP 8.4.27** en CLI, Composer en `/usr/bin/composer`.
+- `ssh -i .deploy/ivoirepedia_ed25519 <compte>@ssh-<compte>.alwaysdata.net` → connecté, **PHP 8.4.27** en CLI, Composer en `/usr/bin/composer`.
 - `php artisan migrate --seed --force` sur la base de production → 9 tables + `CategorySeeder` en ~85 ms ; `DevAdminSeeder` correctement ignoré en production.
 - `php artisan route:list --path=api` sur le serveur → `GET|HEAD api/v1/health`, `routes/api.php:12`.
-- `https://soutrali.alwaysdata.net` → `200` ; `https://ivoirepedia.alwaysdata.net` → toujours absent (site non créé).
+- Le domaine du compte répond `200` ; `https://ivoirepedia.alwaysdata.net` → absent (site non créé).
+
+**Reste (abandonné en séance 5)**
+- Créer le site PHP dans le panneau : l'adresse `ivoirepedia.alwaysdata.net` y est **refusée** (« le domaine alwaysdata.net ne vous appartient pas ») car le compte ne possède qu'une seule adresse gratuite, déjà occupée.
+
+---
+
+### 3 novembre 2026 (séance 5) — Virage : compte d'hébergement dédié, séparation totale
+
+**Décision (titulaire du projet)** : abandon du compte d'hébergement partagé. IVOIREPEDIA aura **son propre compte Alwaysdata**, créé par le titulaire, avec son site, ses bases, son utilisateur MySQL et son phpMyAdmin. Motif : sur un compte partagé, l'unique adresse gratuite est déjà prise et le panneau refuse toute adresse dérivée — le blocage était structurel, pas une erreur de saisie.
+
+**Fait**
+- **Purge des références à l'autre projet** dans tout le dépôt (compte, hôtes `ssh-*`/`mysql-*`, noms de bases, utilisateur MySQL, comparaisons, lien vers son dépôt) : `README.md`, `AGENTS.md`, `IVOIREPEDIA_CONTEXT.md`, `docs/INSTALLATION.md`, `docs/DEPLOIEMENT.md`, `docs/SUIVI_DEVELOPPEMENT.md`, `backend/.env.example`.
+- `docs/DEPLOIEMENT.md` **réécrit en v2.0** pour un compte dédié : §1 « un compte dédié, sans partage » remplace la table de partage, adresse `ivoirepedia.alwaysdata.net` (l'adresse gratuite du compte), bases `ivoirepedia_prod`/`ivoirepedia_dev` (le panneau préfixe par le nom du compte), utilisateur `ivoirepedia_app`, §2.5 phpMyAdmin par compte, piège du domaine reformulé.
+- `backend/.env.example` : hôtes et bases du compte dédié.
+- `IVOIREPEDIA_CONTEXT.md` **v1.3** : ADR-002 et ADR-008 alignés (compte dédié), §5 et §7 mis à jour, historique complété.
+- `README.md` **v1.3** et section stack : compte dédié.
+
+**Vérifié**
+- Recherche du nom de l'ancien compte dans tout le dépôt (hors `.git`, `vendor`, `node_modules`) → **aucune occurrence** dans les fichiers versionnés.
 
 **Reste**
-1. **Créer le site PHP** dans le panneau : adresse `ivoirepedia.alwaysdata.net` (jamais `.alwaysdata.com`, refusé par le panneau), chemin `/home/soutrali/ivoirepedia/backend/public`.
-2. Vérifier `https://ivoirepedia.alwaysdata.net/api/v1/health` → attendu `{"status":"ok","service":"ivoirepedia-api","version":"v1"}`.
-3. Créer le compte administrateur de production (`php artisan tinker`, `DevAdminSeeder` refuse en production).
-4. Mailjet : valider l'expéditeur, générer la clé SMTP, passer `MAIL_MAILER=smtp`.
-5. Tâche planifiée `schedule:run` (`Advanced > Scheduled tasks`).
-6. **Changer le mot de passe MySQL** : il a circulé en clair dans la conversation ; le remplacer dans le panneau puis dans `backend/.env` (local) et `~/ivoirepedia/backend/.env` (serveur).
+1. **Créer le compte Alwaysdata** (titulaire) et relever : identifiant, adresse `<compte>.alwaysdata.net`, accès SSH.
+2. **Panneau du nouveau compte** : PHP ≥ 8.3, bases `prod` et `dev` + utilisateur MySQL `app`, dépôt de la nouvelle clé publique SSH, site PHP pointant sur `~/ivoirepedia/backend/public` (§2 de `docs/DEPLOIEMENT.md`).
+3. **Nouvelle clé de déploiement** (l'ancienne appartient au compte abandonné) : `ssh-keygen` puis dépôt dans le panneau ; `.deploy/env.production` réécrit avec les valeurs du nouveau compte.
+4. Redéployer le backend (clone, `.env`, `composer install`, `migrate --seed`) et vérifier `https://<compte>.alwaysdata.net/api/v1/health`.
+5. `backend/.env` local : à repointer sur la nouvelle base de développement dès qu'elle existe (il pointe encore l'ancien serveur, fichier non versionné).
 
 ---
 
 ## Blocages
 
-**Création du site PHP** dans le panneau Alwaysdata (`Web > Sites`) : c'est la seule étape qui manque pour que l'API réponde en HTTPS, et elle n'est possible ni en SSH ni en SQL. Adresse `ivoirepedia.alwaysdata.net`, chemin `/home/soutrali/ivoirepedia/backend/public` — l'adresse en `.alwaysdata.com` est refusée par l'hébergeur (`docs/DEPLOIEMENT.md` §2.4).
+Aucun blocage technique : le seul prérequis est la **création du compte Alwaysdata dédié** (action du titulaire dans le panneau). Tout le reste est scripté et documenté.
 
 **Mailjet** n'est pas bloquant : `MAIL_MAILER=log` jusqu'à réception de la clé SMTP.
+
+**Historique Git** : les séances 3 et 4 contiennent des hôtes et noms de bases de l'ancien compte dans les commits déjà poussés. La réécriture de l'historique (`git filter-repo` + `push --force`) est destructive et n'a pas été faite : à décider si le dépôt doit devenir totalement silencieux sur ce point.
 
 ---
 
