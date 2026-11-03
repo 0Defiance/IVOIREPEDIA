@@ -30,7 +30,7 @@ Un compte Alwaysdata = **un utilisateur UNIX**, plusieurs sites et plusieurs bas
 |---|---|---|
 | Compte Alwaysdata (identifiant, SSH) | ✅ Oui | Un seul accès à administrer |
 | Version de PHP | ⚠️ **Au niveau du compte** (`Environment > PHP`) | Seule vraie contrainte : si Soutrali exige 8.4 et IVOIREPEDIA 8.3, il faut s'aligner ou fixer la version par site (plus gourmand en RAM) |
-| Site web (domaine) | ❌ Non | Un site dédié : `ivoirepedia.alwaysdata.net` |
+| Site web (domaine) | ❌ Non | Un sous-domaine du domaine du compte : `ivoirepedia.soutrali.alwaysdata.net` (§2.4) |
 | Base MySQL | ❌ Non | `soutrali_ivoirepedia` (prod) et `soutrali_ivoirepedia_dev` (dev) — **jamais** la base de Soutrali |
 | Utilisateur MySQL | ❌ Non | Un utilisateur dédié, droits limités à ses propres bases |
 | Dossier de déploiement | ❌ Non | `~/ivoirepedia/` — les migrations d'un projet ne doivent jamais toucher l'autre |
@@ -103,13 +103,20 @@ Puis `Web > Sites > Ajouter un site` :
 | Champ | Valeur |
 |---|---|
 | Type | **PHP** |
-| Adresses | `ivoirepedia.alwaysdata.net` |
-| Chemin | `/home/soutrali/ivoirepedia/backend/public` |
+| Adresses | `ivoirepedia.soutrali.alwaysdata.net` |
+| Chemin | `/home/soutrali/ivoirepedia/backend/public` (dans le panneau, saisir `ivoirepedia/backend/public` : le préfixe `/home/soutrali/` est déjà affiché, ne pas y ajouter `www`) |
 | Version PHP | celle du compte (§2.1) |
 
 Le type PHP est servi par Apache : le `.htaccess` livré par Laravel dans `public/` prend en charge les URL sans `index.php`.
 
-> **Piège du nom de domaine** : le sous-domaine offert se termine **obligatoirement par `.alwaysdata.net`**. Saisir `ivoirepedia.alwaysdata.com` renvoie « Le domaine alwaysdata.com ne vous appartient pas » — `.com` est le domaine de l'éditeur, pas le nôtre. Ne pas mettre non plus de `www.` sur un sous-domaine `alwaysdata.net` tant qu'aucun domaine propre n'est branché : `www` est une adresse distincte, à n'ajouter qu'avec un domaine à soi. La documentation le confirme : « The subdomain assigned to you when your account is created will end with a .net extension and not a .com extension ».
+> **Piège du nom de domaine (constaté le 3 novembre 2026)** : un compte ne possède **qu'une seule adresse gratuite**, `<compte>.alwaysdata.net` — ici `soutrali.alwaysdata.net`, déjà occupée par le site Soutrali.
+>
+> - `ivoirepedia.alwaysdata.com` → « Le domaine alwaysdata.com ne vous appartient pas » : `.com` appartient à l'éditeur.
+> - `ivoirepedia.alwaysdata.net` → « Le domaine alwaysdata.net ne vous appartient pas » : le compte ne possède pas `alwaysdata.net`, seulement `soutrali.alwaysdata.net`.
+>
+> L'adresse valide est donc un **sous-domaine du domaine du compte** : `ivoirepedia.soutrali.alwaysdata.net`. À défaut, un **chemin** sur le domaine du compte (`soutrali.alwaysdata.net/ivoirepedia`) est accepté — le panneau le suggère lui-même (« example.net/blog »). La solution propre à terme reste un domaine propre branché sur `Domaines`.
+>
+> Ne pas mettre de `www.` tant qu'aucun domaine propre n'est branché.
 
 ### 2.5 phpMyAdmin
 
