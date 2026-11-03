@@ -4,9 +4,9 @@
 > Modèle repris du projet Soutrali. Chaque séance de travail ajoute une entrée datée.
 > Règle : ce journal, le dépôt local et le dépôt distant restent **au même niveau d'information**.
 
-**Version** : 1.1 · **Dernière mise à jour** : 2 novembre 2026
+**Version** : 1.2 · **Dernière mise à jour** : 3 novembre 2026
 
-**État en une phrase** : le cadrage est consolidé **et la stack est validée sur le modèle Soutrali (Flutter + Laravel + MySQL/XAMPP)**, le dépôt GitHub et le local sont alignés, mais **aucune ligne de code n'existe encore** — la prochaine étape est le Sprint 0 (fondations).
+**État en une phrase** : le **Sprint 0 est réalisé et vérifié** (`backend/` Laravel 13 + `app/` Flutter + CI, tous les contrôles au vert) ; l'hébergement **Alwaysdata** et les emails **Mailjet** remplacent l'environnement local, et **la mise en ligne attend les actions de panneau côté hébergeur**.
 
 ---
 
@@ -62,9 +62,39 @@
 
 ---
 
+### 3 novembre 2026 (séance 3) — Sprint 0 réalisé, puis bascule vers Alwaysdata + Mailjet
+
+**Fait**
+- **Sprint 0 côté backend** : Laravel 13.39.0 installé, `composer.json` aligné sur le modèle Soutrali (Pest 4, Larastan 3, Pint, scripts `test` / `analyse` / `format` / `format:check`), `phpstan.neon` niveau 5.
+  - 10 migrations fidèles au schéma §8.2 : `users` (+ `verification_tokens`, `sessions`), `categories`, `articles`, `article_versions`, `tags`, `article_tag`, `article_references`, `media`, `editorial_actions`.
+  - Seeders `CategorySeeder` (8 catégories) et `DevAdminSeeder` (`admin@ivoirepedia.test`, refusé en production).
+  - `app/Models/User.php` adapté (UUID, `password_hash`, `role`), `GET /api/v1/health` déclarée dans `routes/api.php` et câblée via `bootstrap/app.php`.
+- **Sprint 0 côté app** : Flutter 3.47.7 / Dart 3.13.5 ; l'écran compteur de `flutter create` est remplacé par `app/lib/src/app.dart` (écran d'accueil IVOIREPEDIA) avec son test widget.
+- **CI** : `.github/workflows/ci.yml`, deux jobs (backend PHP 8.3, Flutter 3.47.7), mêmes commandes que `AGENTS.md` §3.
+- **Changement de cap demandé** : abandon des tests et du MySQL local ; l'hébergement **Alwaysdata** et les emails **Mailjet** sont retenus « comme Soutrali » — le compte Alwaysdata de Soutrali est réutilisé, avec des ressources IVOIREPEDIA séparées.
+  - `IVOIREPEDIA_CONTEXT.md` v1.2 : **ADR-002 révisé** (base hébergée, dev et production), **ADR-008 réécrit** (Alwaysdata mutualisé dès le développement, VPS+Nginx abandonné), **ADR-009 ajouté** (Mailjet SMTP). §5, §7, §7.5, R-10, Q3 et Q9 mis à jour.
+  - `backend/.env.example` : `DB_HOST` sur `mysql-<compte>.alwaysdata.net`, deux bases (dev/prod), SMTP Mailjet (port 587, `MAIL_SCHEME=null`).
+  - `docs/INSTALLATION.md` créé (poste de travail, base distante, versions constatées) et `docs/DEPLOIEMENT.md` créé (panneau Alwaysdata, premier déploiement, Mailjet, vérifications, pièges) — faits vérifiés dans la documentation officielle des deux services.
+
+**Vérifié**
+- `cd backend && composer test` → 3 tests / 4 assertions, vert.
+- `composer format:check` → 38 fichiers conformes ; `composer analyse` → « No errors » (niveau 5).
+- `php artisan migrate:fresh --seed` → 10 migrations + `CategorySeeder` + `DevAdminSeeder` sans erreur.
+- `php artisan serve` + `curl /api/v1/health` → `200` avec `{"status":"ok","service":"ivoirepedia-api","version":"v1"}`.
+- `cd app && flutter analyze` → « No issues found! » ; `flutter test` → écran d'accueil, 1 test vert.
+
+**Reste**
+1. **Panneau Alwaysdata** (actions humaines, cf. `docs/DEPLOIEMENT.md` §2) : PHP 8.3 au niveau du compte, créer `<compte>_ivoirepedia` et `<compte>_ivoirepedia_dev` + utilisateur MySQL dédié, activer SSH avec la clé publique, créer le site PHP pointant sur `~/ivoirepedia/backend/public`, valider l'expéditeur Mailjet et générer la clé SMTP.
+2. Renseigner `backend/.env` (DB_*, MAIL_*) puis `php artisan migrate --seed` sur la base de dev distante.
+3. Déployer le backend et vérifier `https://ivoirepedia.alwaysdata.net/api/v1/health` en ligne.
+4. Test d'envoi Mailjet (`Mail::raw` en tinker).
+5. Puis Sprint 1 — Authentification (EF-AUTH-01→05).
+
+---
+
 ## Blocages
 
-_Aucun pour l'instant._
+**Déploiement en attente d'actions humaines** dans le panneau Alwaysdata (Création des bases MySQL et de l'utilisateur, dépôt de la clé SSH, création du site PHP, validation de l'expéditeur Mailjet). Toujours impossible en SQL ou en ligne de commande : ces opérations sont réservées au panneau ou à l'API de l'hébergeur (`docs/DEPLOIEMENT.md` §2).
 
 ---
 

@@ -17,7 +17,7 @@
 |---|---|
 | Projet | Encyclopédie web libre dédiée à la Côte d'Ivoire (articles structurés, validés par des éditeurs, versionnés). |
 | Équipe actuelle | **1 seul développeur, niveau junior/intermédiaire en progression.** Pas encore de contributeurs externes. |
-| Stack MVP | **Flutter** (`app/` : web d'abord, Android ensuite) + **Laravel** (`backend/` : API REST `/api/v1` + admin Filament) + **MySQL** (XAMPP / phpMyAdmin en local). **Rien d'autre sans ADR.** Modèle : dépôt Soutrali. |
+| Stack MVP | **Flutter** (`app/` : web d'abord, Android ensuite) + **Laravel** (`backend/` : API REST `/api/v1` + admin Filament) + **MySQL hébergé sur Alwaysdata** (dev et production) + **Mailjet** pour les emails. **Rien d'autre sans ADR.** Modèle : dépôt Soutrali. |
 | Architecture | **Monolithe modulaire** : un seul dépôt, un seul backend Laravel, une seule base. Pas de microservices. |
 | Périmètre | **MVP uniquement** (section 3). Ne jamais implémenter une fonctionnalité V1/V2 sans demande explicite. |
 | Langue | Code, commits, noms de variables et tables : **anglais**. Interface utilisateur et docs : **français**. |
@@ -102,10 +102,11 @@ Chaque décision est numérotée. Pour en changer : ouvrir une PR qui ajoute un 
 - **Risque** : deux langages (Dart, PHP) pour une personne seule → **le backend est l'unique source des règles métier**, l'app n'affiche et n'appelle que l'API ; couplage → respecter la séparation en couches (section 6.2).
 - **Sortie** : si un module devient un goulot (recherche, médias), il pourra être extrait en service indépendant.
 
-### ADR-002 — MySQL + Eloquent (XAMPP / phpMyAdmin en local)
-- **Décision** : MySQL comme unique base de données, Eloquent comme ORM, migrations versionnées (jamais de modification manuelle seulement dans phpMyAdmin).
-- **Pourquoi** : les PDFs du projet ont déjà retenu XAMPP + phpMyAdmin + MySQL (Phase 1) ; relations fortes (utilisateurs ↔ articles ↔ versions), transactions ACID (indispensables au workflow). Eloquent = l'ORM intégré à Laravel (traduit le PHP en requêtes SQL).
-- **⚠️ Moteur réel** : XAMPP livre souvent **MariaDB**, pas MySQL. Éviter les fonctions propres à un moteur ; la CI teste contre MySQL ; consigner le moteur et la version réels dans `docs/INSTALLATION.md`.
+### ADR-002 — MySQL + Eloquent (hébergé sur Alwaysdata, développement **et** production)
+- **Décision** : MySQL comme unique base de données, Eloquent comme ORM, migrations versionnées. **La base de développement est hébergée sur Alwaysdata**, comme celle de production (révision du 3 nov. 2026 : XAMPP et phpMyAdmin locaux sont abandonnés). Deux bases distinctes sur le même serveur : `<compte>_ivoirepedia_dev` et `<compte>_ivoirepedia`.
+- **Pourquoi** : un seul moteur, donc plus d'écart entre le poste et le serveur ; relations fortes (utilisateurs ↔ articles ↔ versions) et transactions ACID indispensables au workflow ; Eloquent = l'ORM intégré à Laravel (traduit le PHP en requêtes SQL).
+- **Conséquences** : le développement du backend exige une connexion Internet ; **les tests n'y touchent jamais** (`phpunit.xml` force SQLite en mémoire) ; la création des bases et des utilisateurs passe obligatoirement par le panneau Alwaysdata, qui interdit `CREATE DATABASE` depuis un client tiers. Procédures : `docs/INSTALLATION.md` §1 et `docs/DEPLOIEMENT.md` §2.
+- **⚠️ Moteur réel** : Alwaysdata sert **MariaDB** (10.11 / 11.4 / 11.8). Éviter les fonctions propres à un moteur ; consigner la version réelle dans `docs/INSTALLATION.md`.
 
 ### ADR-003 — Pas de MongoDB, Elasticsearch ni Meilisearch au MVP
 - **Décision** : le contenu riche est stocké en colonne `JSON` de MySQL.
@@ -130,11 +131,17 @@ Chaque décision est numérotée. Pour en changer : ouvrir une PR qui ajoute un 
 - **Décision** : toute écriture passe par `backend/routes/api.php` → contrôleur `Api/V1` (mince) → `backend/app/Services/*`. Filament appelle les **mêmes** Services. Les widgets Flutter lisent et écrivent uniquement via l'API.
 - **Pourquoi** : API testable avec Pest, prête pour une future API publique, logique métier isolée ; une action d'administration ne peut pas contourner les règles de statut ni la traçabilité.
 
-### ADR-008 — Hébergement MVP
-- **Phase 1 (MVP)** : développement et démonstration **100 % local** (XAMPP), aucun service payant (PDF Phase 1).
-- **Phase 2 (production)** : VPS Ubuntu + Nginx + PHP-FPM + MySQL géré avec sauvegardes automatiques, HTTPS Let's Encrypt (PDF Phase 2). **Hébergeur exact : décision ouverte** — à trancher avant la bêta publique (coûts, sauvegardes, support).
+### ADR-008 — Hébergement : Alwaysdata (mutualisé), dès le développement
+- **Décision (révisée le 3 nov. 2026)** : **Alwaysdata** héberge l'application **dès le développement**, sur le compte déjà utilisé pour Soutrali. Un site PHP dédié (`ivoirepedia.alwaysdata.net`), un dossier `~/ivoirepedia/`, des bases MySQL dédiées. Le VPS + Nginx du PDF Phase 2 est abandonné pour le MVP.
+- **Pourquoi** : arrêter de maintenir un environnement local (XAMPP) qui divergera de la production ; l'hébergeur fournit PHP 8.3+, Composer, MySQL sauvegardé, HTTPS et tâches planifiées ; le coût est celui d'un compte déjà payé. Cela supprime le risque R-08 et réduit R-04.
 - **Médias** : disque local (`storage/app/public`) au MVP ; stockage objet + CDN (type Cloudflare R2) en Phase 2.
-- **Souveraineté** : hébergement hors Côte d'Ivoire au départ (latence ≈ 150 ms acceptable). Rapatriement des données étudié à moyen terme (voir roadmap).
+- **Souveraineté** : hébergement hors Côte d'Ivoire (latence ≈ 150 ms acceptable). Rapatriement des données étudié à moyen terme (voir roadmap).
+- **Limites assumées** : pas d'accès root, pas de worker permanent, version de PHP réglée au niveau du compte. Procédure et pièges : `docs/DEPLOIEMENT.md`.
+
+### ADR-009 — Emails transactionnels par Mailjet (SMTP)
+- **Décision** : Laravel Mail avec le **relais SMTP Mailjet** (`in-v3.mailjet.com`, port 587 en STARTTLS, `MAIL_SCHEME=null`). Identifiant = clé API, mot de passe = clé secrète SMTP **dédiée à IVOIREPEDIA**.
+- **Pourquoi** : la vérification d'adresse, la réinitialisation de mot de passe et les notifications éditoriales en dépendent dès le Sprint 1 ; le SMTP évite un paquet supplémentaire (aucun SDK à maintenir) ; le plan gratuit (6 000 emails/mois, 200/jour) couvre le MVP. L'API REST v3 est écartée pour le MVP (YAGNI).
+- **Contraintes** : l'adresse d'expédition doit être **validée** dans Mailjet (domaine recommandé, avec SPF/DKIM), sinon l'envoi est refusé en 403. Le domaine et l'adresse d'expédition restent la question ouverte Q3. En développement hors ligne, `MAIL_MAILER=log` évite de consommer le quota.
 
 ---
 
@@ -151,9 +158,10 @@ Chaque décision est numérotée. Pour en changer : ouvrir une PR qui ajoute un 
 | Backend / API | PHP 8.3+ avec Laravel, monolithe modulaire | API REST `/api/v1` JSON, règles métier testables côté serveur |
 | Administration | Filament pour Laravel (`/admin`) | Utilisateurs, catégories, tableaux de bord — accès protégé par rôle et Policy |
 | Authentification | Laravel Sanctum | Session cookie pour le web, jeton révocable pour Android |
-| Base de données | MySQL (MariaDB livré par XAMPP en local), administrée via phpMyAdmin | Stockage relationnel, migrations versionnées |
+| Base de données | MySQL/MariaDB hébergé sur **Alwaysdata** — base de dev et base de production distinctes | Stockage relationnel, migrations versionnées |
+| Hébergement | **Alwaysdata** : site PHP + SSH, MySQL, HTTPS — compte partagé avec Soutrali, ressources séparées | Développement et production sur le même moteur (ADR-008) |
 | Validation des entrées | Laravel validation (`FormRequest`) | Validation **faisant foi** côté serveur (remplace les schémas Zod) |
-| Emails | Laravel Mail (SMTP en prod, driver `log` en local) | Vérification email, reset, notifications éditoriales |
+| Emails | Laravel Mail via **SMTP Mailjet** (`in-v3.mailjet.com`, port 587) | Vérification email, reset, notifications éditoriales (ADR-009) |
 | Médias | Disque local `storage/app/public` (R2 + CDN en Phase 2) | Images de couverture et futures pièces jointes |
 | Rate-limiting | `RateLimiter` intégré à Laravel | Anti-brute-force sur login / inscription / reset |
 | Tests backend | Pest (tests `Unit` + `Feature`) | Règles métier, permissions, routes HTTP |
@@ -236,29 +244,28 @@ Filament (/admin) ────────────────────�
 
 ## 7. Installation locale (onboarding)
 
-> Guide pas-à-pas complet dans `docs/INSTALLATION.md` (créé et complété au Sprint 0, avec les versions réellement constatées). Résumé ici.
+> Guides pas-à-pas : `docs/INSTALLATION.md` (poste de travail, base distante) et `docs/DEPLOIEMENT.md` (Alwaysdata + Mailjet). Résumé ici.
 
 ### 7.1 Prérequis
-XAMPP (MySQL/MariaDB + phpMyAdmin), **PHP CLI 8.3+** (attention : souvent différent du PHP d'Apache XAMPP — vérifier `php -v`), Composer, Flutter SDK (stable), Git.
+**PHP CLI 8.3+**, Composer, Flutter SDK (stable), Git, et un **compte Alwaysdata** pour la base MySQL — plus de MySQL local (ADR-002).
 
 **Leçons tirées du dépôt Soutrali, à vérifier ici aussi :**
-- Laravel 13 exige PHP 8.3+ en CLI ; le PHP livré par XAMPP peut être plus ancien.
+- Laravel 13 exige PHP 8.3+ en CLI ; le PHP livré par XAMPP est en 8.2 et ne doit plus servir.
 - Composer peut être installé **hors du PATH** : si `composer --version` échoue alors que `backend/vendor/` existe, appeler `php <chemin>/composer.phar <commande>`.
-- XAMPP ne sert ici qu'à faire tourner **MariaDB + phpMyAdmin** ; Apache est facultatif (Laravel et Flutter ont leurs propres serveurs de dev).
+- La base distante exige une connexion Internet ; les tests n'en dépendent pas (SQLite en mémoire, `phpunit.xml`).
 
 ### 7.2 Démarrage
 
 ```bash
 git clone <url-du-depot> ivoirepedia && cd ivoirepedia
 
-# 1. Base de données — démarrer MySQL depuis le panneau XAMPP, puis via phpMyAdmin :
-#    CREATE DATABASE ivoirepedia CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-#    + créer l'utilisateur dédié ivoirepedia_dev (jamais root sans mot de passe) — cf. docs/INSTALLATION.md
+# 1. Base de données — créée dans le panneau Alwaysdata (Databases > MySQL), jamais en SQL :
+#    <compte>_ivoirepedia_dev + utilisateur dédié — cf. docs/DEPLOIEMENT.md §2
 
 # 2. Backend Laravel (terminal 1)
 cd backend
 composer install
-cp .env.example .env             # puis compléter DB_* (jamais versionné)
+cp .env.example .env             # puis compléter DB_* et MAIL_* (jamais versionné)
 php artisan key:generate
 php artisan migrate --seed       # tables + catégories + admin de dev
 php artisan serve --port 8000    # API /api/v1 + admin Filament /admin
@@ -275,7 +282,7 @@ flutter run -d web-server --web-port 8082   # site sur http://127.0.0.1:8082
 |---|---:|---|---|
 | API Laravel | `8000` | `http://127.0.0.1:8000` | Routes `/api/v1`, sessions Sanctum, panneau `/admin` |
 | Flutter Web | `8082` | `http://127.0.0.1:8082` | Site IVOIREPEDIA |
-| MariaDB (XAMPP) | `3306` | `127.0.0.1:3306` | Consommée uniquement par Laravel, jamais par Flutter |
+| MySQL Alwaysdata | `3306` | `mysql-<compte>.alwaysdata.net:3306` | Consommée uniquement par Laravel, jamais par Flutter |
 
 Les deux origines (`:8000` et `:8082`) sont distinctes **par conception** : Sanctum, cookies CSRF et CORS doivent autoriser explicitement `127.0.0.1:8082` (`SANCTUM_STATEFUL_DOMAINS` + `config/cors.php` dans `backend/`). En production, servir app, API et `/admin` sous une seule origine HTTPS.
 
@@ -301,13 +308,13 @@ APP_NAME=IVOIREPEDIA
 APP_URL=http://127.0.0.1:8000
 APP_ENV=local
 
-# Base de données (créée via phpMyAdmin)
+# Base de données — hébergée sur Alwaysdata (créée dans le panneau, jamais en SQL)
 DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
+DB_HOST="mysql-<compte>.alwaysdata.net"
 DB_PORT=3306
-DB_DATABASE=ivoirepedia
-DB_USERNAME=ivoirepedia_dev
-DB_PASSWORD=                       # mot de passe choisi par qui installe, jamais commité
+DB_DATABASE="<compte>_ivoirepedia_dev"
+DB_USERNAME="<compte>_ivoirepedia"
+DB_PASSWORD=                       # mot de passe choisi dans le panneau, jamais commité
 
 # Origines autorisées pour Sanctum / CORS (Flutter Web)
 FRONTEND_URL=http://127.0.0.1:8082
@@ -316,9 +323,14 @@ SANCTUM_STATEFUL_DOMAINS=127.0.0.1:8082,localhost:8082
 # Phase solo : un ADMIN peut valider ses propres articles (à désactiver dès le 1er éditeur)
 ALLOW_SELF_REVIEW=true
 
-# Emails — Phase 1 : driver "log" (aucun envoi réel) ; SMTP configuré en production
-MAIL_MAILER=log
-MAIL_FROM_ADDRESS="IVOIREPEDIA <no-reply@ivoirepedia.ci>"
+# Emails — SMTP Mailjet (ADR-009) ; mettre MAIL_MAILER=log pour travailler hors ligne
+MAIL_MAILER=smtp
+MAIL_HOST=in-v3.mailjet.com
+MAIL_PORT=587
+MAIL_SCHEME=null
+MAIL_USERNAME=                     # clé API Mailjet
+MAIL_PASSWORD=                     # clé secrète SMTP
+MAIL_FROM_ADDRESS="no-reply@ivoirepedia.ci"
 ```
 
 > **Règle** : aucun secret dans le dépôt. `backend/.env` est dans `.gitignore` (seul `.env.example` est versionné). Les mots de passe SQL sont choisis par la personne qui installe et ne figurent jamais dans un commit, un ticket ou une capture.
@@ -1054,7 +1066,7 @@ jobs:
 | R-07 | Qualité éditoriale / vandalisme | Moyenne | Workflow strict, pas de modification directe des articles publiés par les contributeurs |
 | R-08 | Fragmentation moteur MySQL/MariaDB (XAMPP) | Moyenne | Migrations sans fonctions propriétaires, CI sur MySQL, moteur réel consigné dans INSTALLATION |
 | R-09 | **SEO limité (Flutter Web = SPA côté client)** | Moyenne | Pages publiques sans rendu serveur : atténuer par URLs propres + métadonnées dans `web/index.html` ; réévaluer un prérendu/SSR statique en V1 si la visibilité devient critique |
-| R-10 | Dépendance à l'hébergeur de production | Moyenne | Code portable (MySQL standard, médias derrière un `MediaService`) ; PDF Phase 2 = VPS + Nginx, choix ouvert (ADR-008) |
+| R-10 | Dépendance à l'hébergeur (Alwaysdata mutualisé) | Moyenne | Code portable (MySQL standard, médias derrière un `MediaService`), dépôt Git = source de vérité permettant de redéployer ailleurs ; limites assumées dans `docs/DEPLOIEMENT.md` §7 (ADR-008) |
 
 ### 17.2 Questions ouvertes (à trancher avant la bêta publique)
 
@@ -1062,13 +1074,13 @@ jobs:
 |---|---|---|
 | Q1 | **Licence du code** (MIT, Apache-2.0, AGPL-3.0…) | Avant le 1ᵉʳ contributeur externe |
 | Q2 | **Licence du contenu** : confirmer CC BY-SA 4.0 et rédiger la charte éditoriale | Avant la bêta privée |
-| Q3 | Nom de domaine et adresse d'expédition des emails (SPF/DKIM) | Sprint 1 |
+| Q3 | Nom de domaine et adresse d'expédition des emails (SPF/DKIM) — **Mailjet retenu (ADR-009)**, le domaine d'expédition reste à trancher | Sprint 1 |
 | Q4 | Charte éditoriale : critères de notoriété, sources acceptées, neutralité, traitement de la tradition orale | Sprint 3 |
 | Q5 | Politique de modération (vandalisme, contenus sensibles, droit de réponse) | Sprint 5 |
 | Q6 | Conformité données personnelles : déclarations ARTCI, hébergement, durée de conservation | Avant la bêta publique |
 | Q7 | Stratégie de recrutement des premiers éditeurs et contributeurs | Sprint 4 |
 | Q8 | **Éditeur riche Flutter** : confirmer `flutter_quill` (choix de référence §5) ou alternative avant de coder le Sprint 2 | Avant le Sprint 2 |
-| Q9 | Hébergeur de production, sauvegardes et supervision (PDF Phase 2 : VPS + Nginx) | Avant la bêta publique |
+| Q9 | ~~Hébergeur de production~~ — **tranché le 3 nov. 2026 : Alwaysdata** (ADR-008). Restent les sauvegardes (test de restauration) et la supervision | Avant la bêta publique |
 
 ---
 
@@ -1110,5 +1122,6 @@ jobs:
 |---|---|---|
 | 2026-11-02 | 1.0 | Création : consolidation du cahier des charges, de la conception UML et de la roadmap ; décisions ADR-001 à 008 ; backlog MVP. |
 | 2026-11-02 | 1.1 | **Adaptation de la stack au modèle Soutrali** : Flutter (`app/`) + Laravel (`backend/`) + MySQL/Filament/Sanctum remplacent Next.js + Prisma + PostgreSQL + Auth.js. Schéma converti en MySQL (§8.2), workflow traduit en PHP (§9), API versionnée `/api/v1` (§11), CI à deux jobs (§15.4), divergences D9 et nouveaux risques R-05/R-08/R-09. |
+| 2026-11-03 | 1.2 | **Hébergement et emails tranchés** : Alwaysdata remplace XAMPP dès le développement (ADR-002 révisé, ADR-008 réécrit) et Mailjet devient le relais SMTP (ADR-009). §5 stack, §7 installation (base distante, ports), §7.5 variables d'environnement, R-10, Q3/Q9 mis à jour. Guides `docs/INSTALLATION.md` et `docs/DEPLOIEMENT.md`. |
 
 > **Règle de maintenance** : tout changement d'architecture, de modèle de données ou de workflow doit mettre à jour ce fichier **dans la même PR**. Un contexte obsolète est pire que pas de contexte.
