@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'theme.dart';
 
-/// Marque IVOIREPEDIA : un carré ivoire cerclé d'orange et de vert, traversé
-/// d'une tige dorée — « la défense d'ivoire » stylisée. Dessinée en code, donc
-/// nette à toutes les tailles et sans fichier binaire (le dépôt n'en contient
-/// pas encore).
+/// Marque IVOIREPEDIA : globe stylisé (méridiens et parallèles), puis le nom
+/// en serif et la devise « L'encyclopédie ivoirienne libre ». Dessinée en code :
+/// nette à toute taille, sans fichier binaire à maintenir.
 class IvoireMark extends StatelessWidget {
   const IvoireMark({super.key, this.size = 40});
 
@@ -16,67 +15,91 @@ class IvoireMark extends StatelessWidget {
     return SizedBox(
       width: size,
       height: size,
-      child: CustomPaint(painter: _MarkPainter()),
+      child: CustomPaint(painter: _GlobePainter()),
     );
   }
 }
 
-class _MarkPainter extends CustomPainter {
+class _GlobePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final w = size.width;
-    final radius = Radius.circular(w * 0.28);
-    final rect = Offset.zero & size;
+    final center = Offset(w / 2, w / 2);
+    final radius = w * 0.46;
 
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(rect, radius),
-      Paint()..color = IvoireColors.ink,
+    // Corps du globe : l'ivoire et l'orange du drapeau, en deux calottes.
+    canvas.drawCircle(center, radius, Paint()..color = IvoireColors.subtle);
+
+    canvas.save();
+    canvas.clipPath(Path()..addOval(Rect.fromCircle(center: center, radius: radius)));
+
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, w, w * 0.42),
+      Paint()..color = IvoireColors.orange.withValues(alpha: 0.28),
+    );
+    canvas.drawRect(
+      Rect.fromLTWH(0, w * 0.62, w, w * 0.4),
+      Paint()..color = IvoireColors.green.withValues(alpha: 0.24),
     );
 
-    // Bande orange (haut) et verte (bas) : rappel du drapeau.
-    final orange = Path()
-      ..moveTo(0, 0)
-      ..lineTo(w, 0)
-      ..lineTo(w, w * 0.34)
-      ..lineTo(0, w * 0.52)
-      ..close();
-    canvas.drawPath(orange, Paint()..color = IvoireColors.orange);
+    final meridian = Paint()
+      ..color = IvoireColors.ink.withValues(alpha: 0.55)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = w * 0.035;
 
-    final green = Path()
-      ..moveTo(0, w * 0.72)
-      ..lineTo(w, w * 0.56)
-      ..lineTo(w, w)
-      ..lineTo(0, w)
-      ..close();
-    canvas.drawPath(green, Paint()..color = IvoireColors.green);
+    // Méridiens (ellipses verticales) et parallèles (lignes horizontales).
+    for (final factor in [0.35, 0.7, 1.0]) {
+      canvas.drawOval(
+        Rect.fromCenter(
+          center: center,
+          width: radius * 2 * factor,
+          height: radius * 2,
+        ),
+        meridian,
+      );
+    }
 
-    // Tige ivoire, légèrement courbée : la « défense ».
-    final tusk = Path()
-      ..moveTo(w * 0.34, w * 0.22)
-      ..quadraticBezierTo(w * 0.78, w * 0.42, w * 0.52, w * 0.82);
-    canvas.drawPath(
-      tusk,
-      Paint()
-        ..color = IvoireColors.ivory
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = w * 0.11
-        ..strokeCap = StrokeCap.round,
-    );
+    for (final factor in [0.45, 0.0, -0.45]) {
+      final y = center.dy + radius * factor;
+      final halfWidth = radius * (1 - factor * factor).clamp(0.0, 1.0);
+      final chord = ((halfWidth * halfWidth) <= 0)
+          ? 0.0
+          : (radius * radius - (radius * factor) * (radius * factor));
+      final dx = chord <= 0 ? 0.0 : _sqrt(chord);
+      canvas.drawLine(
+        Offset(center.dx - dx, y),
+        Offset(center.dx + dx, y),
+        meridian,
+      );
+    }
+
+    canvas.restore();
 
     canvas.drawCircle(
-      Offset(w * 0.36, w * 0.24),
-      w * 0.055,
-      Paint()..color = IvoireColors.gold,
+      center,
+      radius,
+      Paint()
+        ..color = IvoireColors.ink.withValues(alpha: 0.75)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = w * 0.045,
     );
+  }
+
+  double _sqrt(double value) {
+    var guess = value;
+    for (var i = 0; i < 20; i++) {
+      guess = 0.5 * (guess + value / guess);
+    }
+    return guess;
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-/// Marque + nom. `compact` réduit le sous-titre pour les barres étroites.
+/// Marque + nom + devise, comme l'en-tête d'une encyclopédie.
 class IvoireLogo extends StatelessWidget {
-  const IvoireLogo({super.key, this.size = 40, this.compact = false});
+  const IvoireLogo({super.key, this.size = 44, this.compact = false});
 
   final double size;
   final bool compact;
@@ -94,22 +117,12 @@ class IvoireLogo extends StatelessWidget {
           children: [
             Text(
               'IVOIREPEDIA',
-              style: TextStyle(
-                fontWeight: FontWeight.w800,
-                letterSpacing: 1.4,
-                fontSize: size * 0.42,
-                color: IvoireColors.ink,
-              ),
+              style: serifStyle(size: size * 0.46, weight: FontWeight.w600),
             ),
-            if (!compact)
-              Text(
-                "L'encyclopédie ivoirienne",
-                style: TextStyle(
-                  fontSize: size * 0.24,
-                  color: IvoireColors.muted,
-                  letterSpacing: 0.3,
-                ),
-              ),
+            Text(
+              compact ? "L'encyclopédie libre" : "L'encyclopédie ivoirienne libre",
+              style: const TextStyle(fontSize: 11, color: IvoireColors.muted),
+            ),
           ],
         ),
       ],

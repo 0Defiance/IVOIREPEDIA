@@ -4,7 +4,7 @@
 > Chaque séance de travail ajoute une entrée datée.
 > Règle : ce journal, le dépôt local et le dépôt distant restent **au même niveau d'information**.
 
-**Version** : 1.5 · **Dernière mise à jour** : 3 novembre 2026
+**Version** : 1.6 · **Dernière mise à jour** : 3 novembre 2026
 
 **État en une phrase** : **IVOIREPEDIA est en ligne** sur son compte Alwaysdata dédié — Sprint 0 terminé, backend déployé (Laravel 13.39.0, PHP 8.4.27), le **site est lisible en ligne** (`https://ivoirepedia.alwaysdata.net/site/`) et branché sur l'API (`/api/v1/articles`, `/categories`, `/search`). Restent le contenu éditorial, l'authentification (Sprint 1) et l'éditeur (Sprint 2).
 
@@ -188,6 +188,33 @@
 3. **Sprints 2-3** : éditeur `flutter_quill`, `Workflow.php` et tests de transitions.
 4. **SEO** : le site est une SPA servie en `#/…` (limitation R-09) ; métadonnées statiques par défaut dans `web/index.html` à compléter.
 5. Mailjet, tâche planifiée et rotation des secrets (voir séance 6).
+
+---
+
+---
+
+### 3 novembre 2026 (séance 8) — Refonte visuelle : une vraie page d'encyclopédie
+
+**Motif (demande du titulaire)** : la première version était trop minimaliste ; la vue doit s'approcher de Wikipédia. Les commandes dont le backend n'existe pas encore restent visibles mais répondent honnêtement (« sera activé avec les fonctionnalités à venir ») au lieu d'être des liens morts.
+
+**Fait**
+- Nouvelle palette d'encyclopédie (fond blanc, encre `#202122`, liens `#3366CC`, filets gris) et **titres en serif** (Georgia, repli Times/serif), corps sans-serif 15 px — la hiérarchie visuelle d'une page imprimée.
+- Marque redessinée : **globe** à méridiens et parallèles (orange/vert du drapeau) + « IVOIREPEDIA » en serif + devise « L'encyclopédie ivoirienne libre ».
+- Ossature : bandeau avec recherche globale et liens de compte, **colonne de navigation** (Navigation / Contribuer / Outils, tiroir sous 1000 px), pied de page licence CC BY-SA.
+- **Page d'accueil** façon « une » : bandeau de bienvenue chiffré (articles, domaines), **Article du jour**, **Le saviez-vous ?**, **Explorer par domaine**, colonne d'outils (article au hasard, contribuer).
+- **Page article** : onglets `Article · Discussion · Lire · Modifier · Voir l'historique`, titre serif avec filet, mention « Dernière modification le … », **Sommaire** numéroté généré depuis les titres du contenu, sections avec lien « modifier », **infobox encadrée** (en-tête surligné, libellés en gras), **Notes et références**, barre **Catégories**, encart « À propos de cet article ».
+- **Page catégorie** : « Catégorie : … » avec onglets, sous-catégories et liste de pages commentées, chargement progressif.
+- **Recherche** : résultats comptés (« Résultats 1 à N sur N »), titre en lien, métadonnées et résumé.
+
+**Vérifié**
+- `flutter analyze` → « No issues found! » ; `flutter test` → **3 tests** verts (accueil refondu, article avec sommaire/infobox/références, 404).
+- Correctif de mise en page : le bandeau débordait de 51 px à 800 px de large (test) ; seuils revus (recherche ≥ 720 px, liens de compte ≥ 1040 px, menu toujours accessible).
+- Build web reconstruit et republié sous `/site/` ; rechargement vérifié dans le navigateur : `main.dart.js`, `/api/v1/categories` et `/api/v1/articles` en `200`, aucune erreur console.
+
+**Reste**
+1. Brancher les commandes affichées : connexion/inscription (Sprint 1), modification (Sprint 2), discussion et historique (Sprint 3).
+2. Contenu éditorial réel et 30 articles de qualité avant ouverture publique.
+3. Sommaire cliquable (ancres de section) — le sommaire est pour l'instant indicatif.
 
 ---
 

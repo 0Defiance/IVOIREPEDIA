@@ -40,6 +40,7 @@ class _ArticleApi implements IvoirepediaApi {
       contentOps: const [
         {'insert': 'Il est né à N’Gokro, devenu Yamoussoukro.\n'},
         {'insert': 'La présidence\n', 'attributes': {'header': 2}},
+        {'insert': 'Le RDA et la loi-cadre\n', 'attributes': {'header': 2}},
         {'insert': 'Il dirige le pays de 1960 à 1993.\n'},
       ],
       infobox: const {
@@ -77,12 +78,15 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Félix Houphouët-Boigny'), findsWidgets);
-    expect(find.text('La présidence'), findsOneWidget);
+    expect(find.text('Article'), findsOneWidget);
+    expect(find.text('Sommaire'), findsOneWidget);
+    expect(find.text('La présidence'), findsWidgets);
     expect(find.textContaining('Il dirige le pays'), findsOneWidget);
     expect(find.text('Nom complet'), findsOneWidget);
     expect(find.text('18 octobre 1905'), findsOneWidget);
-    expect(find.text('Références'.toUpperCase()), findsOneWidget);
-    expect(find.text('RGPH 2021, 2022'), findsOneWidget);
+    expect(find.text('Notes et références'), findsOneWidget);
+    expect(find.textContaining('RGPH 2021', findRichText: true), findsOneWidget);
+    expect(find.text('Catégories :'), findsOneWidget);
   });
 
   testWidgets('une erreur 404 affiche un message et un retour à l’accueil',
@@ -93,6 +97,6 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.textContaining('n’existe pas'), findsOneWidget);
-    expect(find.text('Retour à l’accueil'), findsOneWidget);
+    expect(find.text('Retour à la page d’accueil'), findsOneWidget);
   });
 }

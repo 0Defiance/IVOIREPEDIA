@@ -72,15 +72,16 @@ class FakeApi implements IvoirepediaApi {
 }
 
 void main() {
-  testWidgets('l’accueil affiche la marque, les catégories et les articles',
+  testWidgets('la page d’accueil affiche l’article du jour et les domaines',
       (tester) async {
     await tester.pumpWidget(IvoirepediaApp(api: FakeApi()));
     await tester.pumpAndSettle();
 
     expect(find.text('IVOIREPEDIA'), findsWidgets);
-    expect(find.textContaining('un savoir ivoirien'), findsOneWidget);
-    expect(find.text('Histoire · 2'), findsOneWidget);
+    expect(find.text('Bienvenue sur IVOIREPEDIA'), findsOneWidget);
+    expect(find.text('Article du jour'), findsOneWidget);
+    expect(find.text('Le saviez-vous ?'), findsOneWidget);
+    expect(find.text('Histoire (2)'), findsOneWidget);
     expect(find.text('Abidjan'), findsWidgets);
-    expect(find.text('L’attiéké'), findsOneWidget);
   });
 }

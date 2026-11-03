@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../../theme.dart';
+import '../wiki_actions.dart';
 
-/// Rend un contenu Delta Quill (ADR-003) en widgets Flutter.
-///
-/// Le backend ne stocke jamais de HTML : ce rendu est donc la seule barrière
-/// d'affichage, et il ne peut produire que du texte et des styles typographiques.
+/// Rend un contenu Delta Quill (ADR-003) comme le corps d'un article
+/// d'encyclopédie : paragraphes, sections titrées avec filet et lien
+/// « modifier », listes et citations.
 class DeltaContent extends StatelessWidget {
   const DeltaContent({required this.ops, super.key});
 
@@ -21,36 +21,35 @@ class DeltaContent extends StatelessWidget {
       final text = buffer.toString().trimRight();
       buffer.clear();
 
+      final attributes = pendingAttributes;
+      pendingAttributes = null;
+
       if (text.isEmpty) {
-        pendingAttributes = null;
         return;
       }
 
-      blocks.add(_block(context, text, pendingAttributes));
-      pendingAttributes = null;
+      blocks.add(_block(context, text, attributes));
     }
 
     for (final op in ops) {
       final insert = op['insert'];
-      if (insert is! Map) {
-        if (insert is! String) {
-          continue; // les opérations non textuelles (embeds) sont ignorées
-        }
+      if (insert is! String) {
+        continue; // les embeds ne sont pas rendus au MVP
+      }
 
-        final attributes = op['attributes'];
-        final lines = insert.split('\n');
+      final attributes = op['attributes'] is Map<String, dynamic>
+          ? op['attributes'] as Map<String, dynamic>
+          : null;
+      final lines = insert.split('\n');
 
-        for (var i = 0; i < lines.length; i++) {
-          buffer.write(lines[i]);
+      for (var i = 0; i < lines.length; i++) {
+        buffer.write(lines[i]);
 
-          if (i < lines.length - 1) {
-            pendingAttributes = (attributes is Map<String, dynamic>)
-                ? attributes
-                : pendingAttributes;
-            flush();
-          } else if (attributes is Map<String, dynamic>) {
-            pendingAttributes = attributes;
-          }
+        if (i < lines.length - 1) {
+          pendingAttributes = attributes ?? pendingAttributes;
+          flush();
+        } else if (attributes != null) {
+          pendingAttributes = attributes;
         }
       }
     }
@@ -68,40 +67,48 @@ class DeltaContent extends StatelessWidget {
     String text,
     Map<String, dynamic>? attributes,
   ) {
-    final theme = Theme.of(context);
     final header = attributes?['header'];
     final list = attributes?['list'];
     final quote = attributes?['blockquote'] == true;
 
     if (header is int) {
-      final style = switch (header) {
-        1 => theme.textTheme.headlineMedium,
-        2 => theme.textTheme.headlineSmall,
-        _ => theme.textTheme.titleLarge,
-      };
-
       return Padding(
-        padding: const EdgeInsets.only(top: 28, bottom: 10),
-        child: Text(text, style: style),
+        padding: const EdgeInsets.only(top: 26, bottom: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                Expanded(
+                  child: Text(text, style: serifStyle(size: 21, weight: FontWeight.w600)),
+                ),
+                InkWell(
+                  onTap: () => wikiNotImplemented(context, 'Modifier une section'),
+                  child: const Text(
+                    'modifier',
+                    style: TextStyle(fontSize: 12, color: IvoireColors.link),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            const Divider(height: 1, color: IvoireColors.lineSoft),
+          ],
+        ),
       );
     }
 
     if (list != null) {
-      final ordered = list == 'ordered';
       return Padding(
-        padding: const EdgeInsets.only(bottom: 8, left: 4),
+        padding: const EdgeInsets.only(bottom: 6, left: 22),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(
-              width: 24,
-              child: Text(
-                ordered ? '•' : '•',
-                style: const TextStyle(color: IvoireColors.orange, fontSize: 18),
-              ),
-            ),
+            const Text('•  ', style: TextStyle(color: IvoireColors.muted)),
             Expanded(
-              child: Text(text, style: theme.textTheme.bodyLarge),
+              child: Text(text, style: Theme.of(context).textTheme.bodyLarge),
             ),
           ],
         ),
@@ -110,30 +117,50 @@ class DeltaContent extends StatelessWidget {
 
     if (quote) {
       return Container(
-        margin: const EdgeInsets.symmetric(vertical: 16),
-        padding: const EdgeInsets.fromLTRB(18, 14, 18, 14),
+        margin: const EdgeInsets.symmetric(vertical: 14),
+        padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
         decoration: const BoxDecoration(
-          border: Border(left: BorderSide(color: IvoireColors.gold, width: 3)),
-          color: IvoireColors.sand,
+          color: IvoireColors.subtle,
+          border: Border(left: BorderSide(color: IvoireColors.line, width: 3)),
         ),
         child: Text(
           text,
-          style: theme.textTheme.bodyLarge?.copyWith(
-            fontStyle: FontStyle.italic,
-          ),
+          style: Theme.of(context)
+              .textTheme
+              .bodyLarge
+              ?.copyWith(fontStyle: FontStyle.italic),
         ),
       );
     }
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 18),
+      padding: const EdgeInsets.only(bottom: 14),
       child: Text(
         text,
-        style: theme.textTheme.bodyLarge?.copyWith(
-          fontWeight: attributes?['bold'] == true ? FontWeight.w700 : null,
-          fontStyle: attributes?['italic'] == true ? FontStyle.italic : null,
-        ),
+        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              fontWeight: attributes?['bold'] == true ? FontWeight.w700 : null,
+              fontStyle: attributes?['italic'] == true ? FontStyle.italic : null,
+            ),
       ),
     );
   }
+}
+
+/// Titres de sections d'un contenu Delta, dans l'ordre d'apparition.
+List<String> deltaSections(List<Map<String, dynamic>> ops) {
+  final titles = <String>[];
+
+  for (final op in ops) {
+    final attributes = op['attributes'];
+    final insert = op['insert'];
+
+    if (insert is String && attributes is Map && attributes['header'] is int) {
+      final title = insert.trim();
+      if (title.isNotEmpty) {
+        titles.add(title);
+      }
+    }
+  }
+
+  return titles;
 }
