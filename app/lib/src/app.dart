@@ -1,47 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+import 'api.dart';
+import 'router.dart';
+import 'theme.dart';
 
 /// Racine de l'application IVOIREPEDIA.
 ///
-/// Les routes seront enregistrées ici (go_router) au Sprint 4 —
-/// cf. CONTEXT §14. À ce stade (Sprint 0), un seul écran d'accueil.
-class IvoirepediaApp extends StatelessWidget {
-  const IvoirepediaApp({super.key});
+/// L'API est injectable : les tests fournissent une implémentation en mémoire,
+/// l'application utilise l'API HTTP (`API_BASE_URL`).
+class IvoirepediaApp extends StatefulWidget {
+  const IvoirepediaApp({this.api, super.key});
+
+  final IvoirepediaApi? api;
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'IVOIREPEDIA',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const HomeScreen(),
-    );
-  }
+  State<IvoirepediaApp> createState() => _IvoirepediaAppState();
 }
 
-/// Écran d'accueil — « hello world » du Sprint 0 : prouve que le site
-/// Flutter s'affiche. Le contenu réel (recherche, articles) vient au Sprint 4.
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+class _IvoirepediaAppState extends State<IvoirepediaApp> {
+  late final IvoirepediaApi _api = widget.api ?? HttpIvoirepediaApi();
+  late final GoRouter _router = buildRouter();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('IVOIREPEDIA')),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'IVOIREPEDIA',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            const SizedBox(height: 8),
-            const Text('Encyclopédie Inclusive Ivoirienne'),
-          ],
-        ),
+    return ApiScope(
+      api: _api,
+      child: MaterialApp.router(
+        title: 'IVOIREPEDIA',
+        debugShowCheckedModeBanner: false,
+        theme: buildIvoireTheme(),
+        routerConfig: _router,
       ),
     );
   }
