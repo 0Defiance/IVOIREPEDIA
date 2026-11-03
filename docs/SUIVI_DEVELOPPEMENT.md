@@ -4,9 +4,9 @@
 > Chaque séance de travail ajoute une entrée datée.
 > Règle : ce journal, le dépôt local et le dépôt distant restent **au même niveau d'information**.
 
-**Version** : 1.4 · **Dernière mise à jour** : 3 novembre 2026
+**Version** : 1.5 · **Dernière mise à jour** : 3 novembre 2026
 
-**État en une phrase** : **IVOIREPEDIA est en ligne** sur son compte Alwaysdata dédié — Sprint 0 terminé, backend déployé (Laravel 13.39.0, PHP 8.4.27), base de production migrée et seedée, l'endpoint `api/v1/health` répond `200` sur `https://ivoirepedia.alwaysdata.net`. Restent Mailjet, la tâche planifiée et la rotation des secrets.
+**État en une phrase** : **IVOIREPEDIA est en ligne** sur son compte Alwaysdata dédié — Sprint 0 terminé, backend déployé (Laravel 13.39.0, PHP 8.4.27), le **site est lisible en ligne** (`https://ivoirepedia.alwaysdata.net/site/`) et branché sur l'API (`/api/v1/articles`, `/categories`, `/search`). Restent le contenu éditorial, l'authentification (Sprint 1) et l'éditeur (Sprint 2).
 
 ---
 
@@ -154,6 +154,40 @@
 3. **Rotation des secrets** : le mot de passe MySQL et celui de l'administrateur ont circulé dans la conversation. À changer : panneau `Bases de données > MySQL` puis `DB_PASSWORD` dans `backend/.env` (local) et `~/ivoirepedia/backend/.env` (serveur) ; pour l'admin, dès que l'écran de connexion existera (Sprint 1).
 4. **Ancien compte** : supprimer les bases IVOIREPEDIA (prod et dev) et l'utilisateur MySQL qui y était dédié, pour que son phpMyAdmin ne montre plus que les bases de l'autre projet.
 5. **Côté autre projet** : renommer `soutrali_bd` en `soutrali_prod`, créer `soutrali_dev` (export/import phpMyAdmin), puis supprimer l'ancienne base une fois le site basculé.
+
+---
+
+---
+
+### 3 novembre 2026 (séance 7) — Le site prend vie : lecture publique de bout en bout
+
+**Fait — backend (Sprint 4, partie lecture)**
+- `App\Enums\ArticleStatus` (workflow §9.1) et `App\Enums\ArticleType` (`BIOGRAPHY`, `REGION`, `INSTITUTION`, `TOPIC`).
+- Modèles `Category`, `Article` (scopes `published`, `inCategory`, `taggedWith`, `matching`), `Tag`, `ArticleReference`, avec annotations `@property` pour Larastan.
+- Endpoints publics : `GET /api/v1/categories` (arbre + compteurs d'articles publiés), `GET /api/v1/articles` (`category`, `tag`, `q`, `page`, `limit` ≤ 20), `GET /api/v1/articles/{slug}` (contenu Delta, infobox, tags, références), `GET /api/v1/search` (limitée à 60 req/min).
+- Règles de visibilité **côté serveur** : un article non publié ou programmé renvoie `404` avec l'enveloppe d'erreur du CONTEXT §11.2.
+- `PublicContentSeeder` : 11 articles de démonstration (Abidjan, Yamoussoukro, Houphouët-Boigny, Constitution 2016, Akan, baoulé, attiéké, Banco, basilique, marche de 1949, cacao), 12 étiquettes, références institutionnelles ; toutes les catégories couvertes.
+
+**Fait — application Flutter**
+- Identité : marque vectorielle `IvoireMark` (défense d'ivoire, orange/vert/or) et thème Material 3 `buildIvoireTheme()` (ivoire, encre, orange, vert, or). Le dépôt ne contenant aucun logo binaire, la marque est dessinée en code.
+- `IvoirepediaApi` (contrat) + `HttpIvoirepediaApi` (client HTTP, `API_BASE_URL`, défaut `http://localhost:8000/api/v1`) + `ApiScope` pour l'injection ; les tests fournissent une API en mémoire.
+- `go_router` : `/`, `/categories/{slug}`, `/articles/{slug}`, `/recherche?q=` — URLs propres et partageables.
+- Écrans : accueil (héros, domaines, derniers articles), catégorie (avec « Charger plus »), article (fil d'Ariane, infobox, contenu Delta, étiquettes, références), recherche. Rendu Delta maison : aucun HTML, donc aucune injection possible.
+- Mise en page responsive (une colonne < 760 px, grilles au-delà) et en-tête/pied de page communs.
+
+**Vérifié**
+- `cd backend && composer test` → **11 tests / 32 assertions** verts, dont 8 tests HTTP de lecture publique (visibilité, pagination plafonnée, 404, recherche).
+- `composer format:check` → 53 fichiers conformes ; `composer analyse` → « No errors ».
+- `cd app && flutter analyze` → « No issues found! » ; `flutter test` → **3 tests** verts (accueil, article avec infobox et références, 404).
+- **En ligne** : `GET /api/v1/articles?limit=3` → `200`, 11 articles au total ; `/api/v1/articles/abidjan` → `200`, 11 opérations Delta + infobox ; `/api/v1/categories` → 8 catégories avec compteurs.
+- Site Flutter publié sous `https://ivoirepedia.alwaysdata.net/site/` : build web (`--base-href=/site/`, `API_BASE_URL=/api/v1`), puis vérification navigateur — `main.dart.js`, `flutter_bootstrap.js` et les trois appels API répondent `200`, aucune erreur console.
+
+**Reste**
+1. **Contenu éditorial** : les 11 articles sont des textes de démonstration ; l'ouverture publique exige 30 articles de qualité (CONTEXT §14, Sprint 5).
+2. **Sprint 1 (authentification)** : inscription, vérification email, connexion Sanctum, `GET /me`.
+3. **Sprints 2-3** : éditeur `flutter_quill`, `Workflow.php` et tests de transitions.
+4. **SEO** : le site est une SPA servie en `#/…` (limitation R-09) ; métadonnées statiques par défaut dans `web/index.html` à compléter.
+5. Mailjet, tâche planifiée et rotation des secrets (voir séance 6).
 
 ---
 

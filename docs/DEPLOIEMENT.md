@@ -4,7 +4,7 @@
 >
 > **Complément local :** [`INSTALLATION.md`](INSTALLATION.md). **État réel :** [`SUIVI_DEVELOPPEMENT.md`](SUIVI_DEVELOPPEMENT.md).
 >
-> **Version :** 2.0 · **Dernière mise à jour :** 3 novembre 2026
+> **Version :** 2.1 · **Dernière mise à jour :** 3 novembre 2026
 >
 > **Convention de lecture** : `ivoirepedia` désigne l'identifiant du compte Alwaysdata. S'il diffère, remplacer cette valeur partout (hôtes, bases, chemins) — le raisonnement ne change pas.
 
@@ -198,6 +198,30 @@ Pour le premier administrateur de production, utiliser une commande ponctuelle v
 ```
 php /home/ivoirepedia/ivoirepedia/backend/artisan schedule:run
 ```
+
+---
+
+### Publier le site Flutter (`/site/`)
+
+Le site public est une application Flutter Web servie **par le même site PHP**,
+sous le chemin `/site/` : une seule adresse suffit, et les appels API restent
+sur la même origine (pas de CORS en production).
+
+```bash
+cd app
+# Windows / Git Bash : MSYS_NO_PATHCONV=1 empêche la réécriture de /site/ en chemin local.
+MSYS_NO_PATHCONV=1 flutter build web --release   --base-href=/site/   --dart-define=API_BASE_URL=/api/v1
+
+tar -czf - -C build/web . |   ssh -i ../.deploy/ivoirepedia_ed25519 ivoirepedia@ssh-ivoirepedia.alwaysdata.net   'mkdir -p ~/ivoirepedia/backend/public/site && rm -rf ~/ivoirepedia/backend/public/site/* && tar -xzf - -C ~/ivoirepedia/backend/public/site'
+```
+
+Vérification : `https://ivoirepedia.alwaysdata.net/site/` renvoie le HTML du
+bootstrap, et la console du navigateur montre `main.dart.js` puis les appels
+`/api/v1/categories` et `/api/v1/articles` en `200`.
+
+> Le routage utilise la stratégie `#/` (SPA) : aucune règle de réécriture
+> serveur n'est nécessaire, au prix d'URLs moins lisibles pour les moteurs de
+> recherche (limitation R-09, CONTEXT §17).
 
 ---
 
