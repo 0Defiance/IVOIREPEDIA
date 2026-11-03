@@ -129,7 +129,7 @@
 - Recherche du nom de l'ancien compte dans tout le dépôt (hors `.git`, `vendor`, `node_modules`) → **aucune occurrence** dans les fichiers versionnés.
 
 **Reste**
-1. **Créer le compte Alwaysdata** (titulaire) et relever : identifiant, adresse `<compte>.alwaysdata.net`, accès SSH.
+1. ~~Créer le compte Alwaysdata~~ — **fait** : compte `ivoirepedia` (courriel `my.fat.inc@gmail.com`). Résolution DNS vérifiée le 3 nov. 2026 : `ivoirepedia.alwaysdata.net` (185.31.40.30), `ssh-ivoirepedia.alwaysdata.net` (185.31.41.84), `mysql-ivoirepedia.alwaysdata.net` (185.31.41.43). Nouvelle clé de déploiement générée dans `.deploy/ivoirepedia_ed25519` (empreinte `ivoirepedia-deploy`) ; accès SSH en attente du dépôt de la clé publique dans le panneau.
 2. **Panneau du nouveau compte** : PHP ≥ 8.3, bases `prod` et `dev` + utilisateur MySQL `app`, dépôt de la nouvelle clé publique SSH, site PHP pointant sur `~/ivoirepedia/backend/public` (§2 de `docs/DEPLOIEMENT.md`).
 3. **Nouvelle clé de déploiement** (l'ancienne appartient au compte abandonné) : `ssh-keygen` puis dépôt dans le panneau ; `.deploy/env.production` réécrit avec les valeurs du nouveau compte.
 4. Redéployer le backend (clone, `.env`, `composer install`, `migrate --seed`) et vérifier `https://<compte>.alwaysdata.net/api/v1/health`.
