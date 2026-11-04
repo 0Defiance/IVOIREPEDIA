@@ -174,39 +174,46 @@ class _ArticleBodyState extends State<_ArticleBody> {
           const SizedBox(height: 6),
           Text(
             _article.title,
-            style: titleStyle(size: 32, weight: FontWeight.w700, height: 1.15),
+            style: titleStyle(size: 30, weight: FontWeight.w600, height: 1.2),
           ),
-          const SizedBox(height: 10),
-          const WeaveRule(height: 3, opacity: 0.9),
-          const SizedBox(height: 10),
-          Wrap(
-            spacing: 14,
-            runSpacing: 6,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              Text(
-                "Un article de IVOIREPEDIA, l'encyclopédie libre.",
-                style: const TextStyle(
-                  fontSize: 12.5,
-                  color: IvoireColors.muted,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-              if (_article.publishedAt != null)
-                Text(
-                  'Dernière modification le ${formatDate(_article.publishedAt)}',
-                  style: const TextStyle(fontSize: 12.5, color: IvoireColors.faint),
-                ),
-              Text(
-                '${_article.readingMinutes} min de lecture',
-                style: const TextStyle(fontSize: 12.5, color: IvoireColors.faint),
-              ),
-              _ToolButton(
-                icon: Icons.link,
-                label: 'Copier le lien',
-                onTap: _copyLink,
-              ),
-            ],
+          const SizedBox(height: 12),
+          Container(height: 1, color: IvoireColors.line),
+          const SizedBox(height: 8),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final compact = constraints.maxWidth < 520;
+
+              return Wrap(
+                spacing: 14,
+                runSpacing: 6,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  if (!compact)
+                    Text(
+                      "Un article de IVOIREPEDIA, l'encyclopédie libre.",
+                      style: const TextStyle(
+                        fontSize: 12.5,
+                        color: IvoireColors.muted,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  if (_article.publishedAt != null)
+                    Text(
+                      'Dernière modification le ${formatDate(_article.publishedAt)}',
+                      style: const TextStyle(fontSize: 12.5, color: IvoireColors.faint),
+                    ),
+                  Text(
+                    '${_article.readingMinutes} min de lecture',
+                    style: const TextStyle(fontSize: 12.5, color: IvoireColors.faint),
+                  ),
+                  _ToolButton(
+                    icon: Icons.link,
+                    label: 'Copier le lien',
+                    onTap: _copyLink,
+                  ),
+                ],
+              );
+            },
           ),
           const SizedBox(height: 20),
           AnimatedSwitcher(
@@ -228,41 +235,58 @@ class _ArticleBodyState extends State<_ArticleBody> {
     required List<String> sections,
     required Map<String, dynamic>? infobox,
   }) {
-    final content = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (sections.length > 1) ...[
-          _Sommaire(sections: sections, onTap: _scrollTo),
-          const SizedBox(height: 22),
-        ],
-        DeltaContent(ops: _article.contentOps, sectionKeys: _sectionKeys),
-        if (_article.references.isNotEmpty) ...[
-          const SizedBox(height: 10),
-          _References(references: _article.references),
-        ],
-        _CategoryBar(article: _article),
-      ],
-    );
-
     return LayoutBuilder(
       builder: (context, constraints) {
         final wide = constraints.maxWidth >= 880;
 
-        if (!wide) {
-          return Column(
+        final aside = infobox != null
+            ? InfoboxTable(
+                infobox: infobox,
+                typeLabel: _article.typeLabel,
+                title: _article.title,
+              )
+            : (wide ? _AsideCard(article: _article) : null);
+
+        // Sur petit écran, l'infobox passe après le chapeau : le lecteur
+        // rencontre d'abord le texte, comme sur une page d'encyclopédie.
+        final Widget? afterLead =
+            sections.length > 1 || (!wide && aside != null)
+                ? Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (sections.length > 1)
+                          _Sommaire(sections: sections, onTap: _scrollTo),
+                        if (!wide && aside != null)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 18),
+                            child: aside,
+                          ),
+                      ],
+                    ),
+                  )
+                : null;
+
+        final content = ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 720),
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (infobox != null) ...[
-                InfoboxTable(
-                  infobox: infobox,
-                  typeLabel: _article.typeLabel,
-                  title: _article.title,
-                ),
-                const SizedBox(height: 22),
-              ],
-              content,
+              DeltaContent(
+                ops: _article.contentOps,
+                sectionKeys: _sectionKeys,
+                afterLead: afterLead,
+              ),
+              if (_article.references.isNotEmpty)
+                _References(references: _article.references),
+              _CategoryBar(article: _article),
             ],
-          );
+          ),
+        );
+
+        if (!wide) {
+          return content;
         }
 
         return Row(
@@ -270,16 +294,7 @@ class _ArticleBodyState extends State<_ArticleBody> {
           children: [
             Expanded(child: content),
             const SizedBox(width: 28),
-            SizedBox(
-              width: 300,
-              child: infobox != null
-                  ? InfoboxTable(
-                      infobox: infobox,
-                      typeLabel: _article.typeLabel,
-                      title: _article.title,
-                    )
-                  : _AsideCard(article: _article),
-            ),
+            SizedBox(width: 300, child: aside),
           ],
         );
       },
@@ -377,11 +392,12 @@ class _Sommaire extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      constraints: const BoxConstraints(maxWidth: 440),
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
+      constraints: const BoxConstraints(maxWidth: 380),
+      margin: const EdgeInsets.only(bottom: 22),
+      padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
       decoration: BoxDecoration(
-        color: IvoireColors.subtle,
-        borderRadius: BorderRadius.circular(10),
+        color: IvoireColors.ivory,
+        borderRadius: BorderRadius.circular(2),
         border: Border.all(color: IvoireColors.lineSoft),
       ),
       child: Column(
@@ -390,10 +406,9 @@ class _Sommaire extends StatelessWidget {
           const Text(
             'Sommaire',
             style: TextStyle(
-              fontSize: 12,
+              fontSize: 12.5,
               fontWeight: FontWeight.w700,
-              letterSpacing: 0.6,
-              color: IvoireColors.muted,
+              color: IvoireColors.ink,
             ),
           ),
           const SizedBox(height: 8),
@@ -437,13 +452,13 @@ class _References extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(top: 24, bottom: 10),
+          padding: const EdgeInsets.only(top: 18, bottom: 8),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Notes et références',
-                  style: titleStyle(size: 19, weight: FontWeight.w700)),
-              const SizedBox(height: 6),
+                  style: titleStyle(size: 21, weight: FontWeight.w600, letterSpacing: -0.3)),
+              const SizedBox(height: 7),
               const Divider(height: 1, color: IvoireColors.lineSoft),
             ],
           ),
@@ -509,7 +524,7 @@ class _CategoryBar extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.only(top: 32),
+      margin: const EdgeInsets.only(top: 22),
       padding: const EdgeInsets.only(top: 12),
       decoration: const BoxDecoration(
         border: Border(top: BorderSide(color: IvoireColors.lineSoft)),

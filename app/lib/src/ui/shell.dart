@@ -561,7 +561,8 @@ class _SidebarItemState extends State<_SidebarItem> {
   }
 }
 
-/// Onglets de page en pastilles, avec transition de couleur animée.
+/// Onglets de page plats, sur une seule ligne : le titre sélectionné est
+/// souligné d'un trait vert. Sur petit écran, la barre défile au doigt.
 class WikiTabs extends StatelessWidget {
   const WikiTabs({required this.items, super.key});
 
@@ -569,39 +570,78 @@ class WikiTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 18),
-      child: Wrap(
-        spacing: 8,
-        runSpacing: 8,
-        children: [
-          for (final item in items)
-            MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: GestureDetector(
+    return Container(
+      margin: const EdgeInsets.only(top: 16),
+      decoration: const BoxDecoration(
+        border: Border(bottom: BorderSide(color: IvoireColors.lineSoft)),
+      ),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            for (final item in items)
+              _WikiTab(
+                label: item.label,
+                selected: item.selected,
                 onTap: item.onTap,
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 160),
-                  padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: item.selected ? IvoireColors.green : IvoireColors.subtle,
-                    border: Border.all(
-                      color: item.selected ? IvoireColors.green : IvoireColors.lineSoft,
-                    ),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    item.label,
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: item.selected ? FontWeight.w600 : FontWeight.w500,
-                      color: item.selected ? Colors.white : IvoireColors.muted,
-                    ),
-                  ),
-                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _WikiTab extends StatefulWidget {
+  const _WikiTab({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  State<_WikiTab> createState() => _WikiTabState();
+}
+
+class _WikiTabState extends State<_WikiTab> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = widget.selected
+        ? IvoireColors.ink
+        : (_hovered ? IvoireColors.ink : IvoireColors.muted);
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 140),
+          padding: const EdgeInsets.fromLTRB(16, 10, 16, 9),
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: widget.selected ? IvoireColors.green : Colors.transparent,
+                width: 2,
               ),
             ),
-        ],
+          ),
+          child: Text(
+            widget.label,
+            style: TextStyle(
+              fontSize: 13.5,
+              fontWeight: widget.selected ? FontWeight.w600 : FontWeight.w400,
+              color: color,
+            ),
+          ),
+        ),
       ),
     );
   }

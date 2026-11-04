@@ -274,6 +274,30 @@
 
 ---
 
+### 4 novembre 2026 (séance 11) — Corps d'article lisible, présentation encyclopédique
+
+**Motif (demande du titulaire)** : « le contenu (body) est trop IA (vibecode) ; je veux une présentation qui ressemble un tout petit peu à Wikipédia sans que cela ne saute aux yeux, plus professionnelle et créative ».
+
+**Fait**
+- **Bogue de mise en forme corrigé** : dans `DeltaContent`, les attributs d'un titre (`{"header": 2}`) étaient reportés sur le paragraphe suivant, qui s'affichait donc en gros titre avec un lien « modifier ». La boucle de lecture des op Delta ne réapplique plus les attributs au segment vide qui suit un saut de ligne.
+- **Hiérarchie sobre** : un seul niveau de titre visible (21 px, semi-gras, filet fin), sous-titres 16,5 px, lien « modifier » réduit à 11,5 px en gris ; deux niveaux suffisent, plus de pastilles ni de grands aplats.
+- **Texte d'abord** : chapeau en 16,5 px / interligne 1,8, corps en 15,5 px / interligne 1,75, colonne limitée à 720 px pour une longueur de ligne lisible ; listes à puces et numérotées alignées, citations en retrait avec filet vertical.
+- **Ordre de lecture** : le sommaire passe **après le chapeau** ; sur petit écran l'infobox passe elle aussi après l'introduction (auparavant elle occupait tout le premier écran).
+- **Onglets plats** : la barre d'onglets quitte les pastilles pour un soulignement vert du titre actif, sur une seule ligne défilante ; le reste des repères (bandeau, barre latérale) est inchangé.
+- **Repères resserrés** : titre 30 px, filet simple à la place du dégradé, métadonnées allégées (la mention « Un article de IVOIREPEDIA » disparaît sur mobile), espacements des références et des catégories réduits.
+
+**Vérifié**
+- `flutter analyze` → « No issues found! » ; `flutter test` → **6 tests** verts, dont un nouveau qui vérifie qu'un paragraphe suivant un titre reste un paragraphe (15,5 px, graisse 400) et qu'il n'y a qu'un lien « modifier » par titre.
+- Rendus contrôlés dans le navigateur, en 1280 px et en 420 px, sur `#/articles/felix-houphouet-boigny` et `#/articles/abidjan` (chapeau, sommaire, sections, citation, références, catégories) ; captures dans `docs/captures/`.
+- Build `flutter build web --release --base-href=/site/` redéployé sur Alwaysdata ; API et fontes toujours en `200`, aucune erreur console.
+
+**Reste**
+1. Faire relire les 51 articles par un historien ou un éditeur avant toute ouverture publique.
+2. Enrichir encore : préhistoire, religions, éducation, santé, transports, médias, gastronomie régionale.
+3. Compléter les références des articles qui n'en ont pas encore.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

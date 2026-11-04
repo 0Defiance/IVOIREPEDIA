@@ -93,6 +93,26 @@ void main() {
     expect(find.text('Catégories :'), findsOneWidget);
   });
 
+  testWidgets('seuls les titres de section sont mis en forme comme des titres',
+      (tester) async {
+    await tester.pumpWidget(_wrap(const ArticlePage(slug: 'felix-houphouet-boigny')));
+    await tester.pumpAndSettle();
+
+    // Le paragraphe qui suit un titre reste un paragraphe : il héritait
+    // auparavant des attributs du titre précédent.
+    final paragraph =
+        tester.widget<Text>(find.text('Il dirige le pays de 1960 à 1993.'));
+    expect(paragraph.style?.fontSize, 15.5);
+    expect(paragraph.style?.fontWeight, FontWeight.w400);
+
+    final heading = tester.widget<Text>(find.text('La présidence').last);
+    expect(heading.style?.fontSize, 21);
+    expect(heading.style?.fontWeight, FontWeight.w600);
+
+    // Un lien « modifier » par titre seulement.
+    expect(find.text('modifier'), findsNWidgets(2));
+  });
+
   testWidgets('une erreur 404 affiche un message et un retour à l’accueil',
       (tester) async {
     await tester.pumpWidget(
