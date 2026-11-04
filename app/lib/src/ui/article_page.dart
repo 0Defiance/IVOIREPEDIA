@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
 import '../api.dart';
@@ -9,10 +10,11 @@ import 'shell.dart';
 import 'wiki_actions.dart';
 import 'widgets/delta_content.dart';
 import 'widgets/infobox_table.dart';
+import 'widgets/interactive.dart';
 import 'widgets/ivorian_patterns.dart';
 
-/// Page de lecture d'un article (`/articles/{slug}`), présentée comme une
-/// page d'encyclopédie : onglets, sommaire, infobox, références, catégories.
+/// Page de lecture d'un article (`/articles/{slug}`) : onglets, sommaire
+/// cliquable, infobox, notes et références, catégories.
 class ArticlePage extends StatefulWidget {
   const ArticlePage({required this.slug, super.key});
 
@@ -48,10 +50,7 @@ class _ArticlePageState extends State<ArticlePage> {
           }
 
           if (!snapshot.hasData) {
-            return const Padding(
-              padding: EdgeInsets.symmetric(vertical: 100),
-              child: Center(child: CircularProgressIndicator()),
-            );
+            return const _ArticleSkeleton();
           }
 
           return _ArticleBody(article: snapshot.data!);
@@ -61,60 +60,128 @@ class _ArticlePageState extends State<ArticlePage> {
   }
 }
 
-class _ArticleBody extends StatelessWidget {
+class _ArticleSkeleton extends StatelessWidget {
+  const _ArticleSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.fromLTRB(20, 24, 20, 40),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Skeleton(width: 240, height: 12),
+          SizedBox(height: 14),
+          Skeleton(width: 380, height: 32),
+          SizedBox(height: 24),
+          SkeletonParagraph(lines: 4),
+          SizedBox(height: 18),
+          SkeletonParagraph(lines: 5),
+        ],
+      ),
+    );
+  }
+}
+
+class _ArticleBody extends StatefulWidget {
   const _ArticleBody({required this.article});
 
   final ArticleDetail article;
 
   @override
+  State<_ArticleBody> createState() => _ArticleBodyState();
+}
+
+class _ArticleBodyState extends State<_ArticleBody> {
+  static const List<String> _tabs = [
+    'Article',
+    'Discussion',
+    'Lire',
+    'Modifier',
+    'Voir l’historique',
+  ];
+
+  int _tab = 0;
+  final Map<String, GlobalKey> _sectionKeys = {};
+
+  ArticleDetail get _article => widget.article;
+
+  @override
+  void initState() {
+    super.initState();
+
+    for (final title in deltaSections(_article.contentOps)) {
+      _sectionKeys[title] = GlobalKey();
+    }
+  }
+
+  void _scrollTo(String title) {
+    final context = _sectionKeys[title]?.currentContext;
+
+    if (context == null) {
+      return;
+    }
+
+    Scrollable.ensureVisible(
+      context,
+      duration: const Duration(milliseconds: 420),
+      curve: Curves.easeInOutCubic,
+      alignment: 0.02,
+    );
+  }
+
+  Future<void> _copyLink() async {
+    final messenger = ScaffoldMessenger.of(context);
+    await Clipboard.setData(
+      ClipboardData(text: 'https://ivoirepedia.alwaysdata.net/#/articles/${_article.slug}'),
+    );
+
+    messenger
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        const SnackBar(content: Text('Lien de l’article copié.')),
+      );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final sections = deltaSections(article.contentOps);
-    final infobox = article.infobox;
+    final sections = deltaSections(_article.contentOps);
+    final infobox = _article.infobox;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           WikiTabs(
             items: [
-              (label: 'Article', selected: true, onTap: () {}),
-              (
-                label: 'Discussion',
-                selected: false,
-                onTap: () => wikiNotImplemented(context, 'Discussion'),
-              ),
-              (label: 'Lire', selected: false, onTap: () {}),
-              (
-                label: 'Modifier',
-                selected: false,
-                onTap: () => wikiNotImplemented(context, 'Modifier'),
-              ),
-              (
-                label: 'Voir l’historique',
-                selected: false,
-                onTap: () => wikiNotImplemented(context, 'Voir l’historique'),
-              ),
+              for (var i = 0; i < _tabs.length; i++)
+                (
+                  label: _tabs[i],
+                  selected: _tab == i,
+                  onTap: () => setState(() => _tab = i),
+                ),
             ],
           ),
           const SizedBox(height: 20),
           Text(
             [
-              if (article.categoryName != null) article.categoryName!.toUpperCase(),
-              article.typeLabel.toUpperCase(),
+              if (_article.categoryName != null) _article.categoryName!.toUpperCase(),
+              _article.typeLabel.toUpperCase(),
             ].join('  ·  '),
             style: kickerStyle(),
           ),
           const SizedBox(height: 6),
-          Text(article.title, style: serifStyle(size: 30, height: 1.2)),
-          const SizedBox(height: 8),
-          const WeaveRule(height: 3, opacity: 0.85),
-          const SizedBox(height: 3),
-          Container(height: 1, color: IvoireColors.lineSoft),
-          const SizedBox(height: 6),
+          Text(
+            _article.title,
+            style: titleStyle(size: 32, weight: FontWeight.w700, height: 1.15),
+          ),
+          const SizedBox(height: 10),
+          const WeaveRule(height: 3, opacity: 0.9),
+          const SizedBox(height: 10),
           Wrap(
-            spacing: 12,
-            runSpacing: 4,
+            spacing: 14,
+            runSpacing: 6,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               Text(
@@ -125,88 +192,196 @@ class _ArticleBody extends StatelessWidget {
                   fontStyle: FontStyle.italic,
                 ),
               ),
-              if (article.publishedAt != null)
+              if (_article.publishedAt != null)
                 Text(
-                  'Dernière modification le ${formatDate(article.publishedAt)}',
+                  'Dernière modification le ${formatDate(_article.publishedAt)}',
                   style: const TextStyle(fontSize: 12.5, color: IvoireColors.faint),
                 ),
               Text(
-                '${article.readingMinutes} min de lecture',
+                '${_article.readingMinutes} min de lecture',
                 style: const TextStyle(fontSize: 12.5, color: IvoireColors.faint),
+              ),
+              _ToolButton(
+                icon: Icons.link,
+                label: 'Copier le lien',
+                onTap: _copyLink,
               ),
             ],
           ),
-          const SizedBox(height: 18),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final wide = constraints.maxWidth >= 900;
-
-              final content = Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (!wide && infobox != null) ...[
-                    InfoboxTable(
-                      infobox: infobox,
-                      typeLabel: article.typeLabel,
-                      title: article.title,
-                    ),
-                    const SizedBox(height: 20),
-                  ],
-                  if (sections.length > 1) ...[
-                    _Sommaire(sections: sections),
-                    const SizedBox(height: 20),
-                  ],
-                  DeltaContent(ops: article.contentOps),
-                  if (article.references.isNotEmpty) ...[
-                    const SizedBox(height: 10),
-                    _References(references: article.references),
-                  ],
-                  _CategoryBar(article: article),
-                ],
-              );
-
-              if (!wide) {
-                return content;
-              }
-
-              return Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(child: content),
-                  const SizedBox(width: 26),
-                  SizedBox(
-                    width: 300,
-                    child: infobox != null
-                        ? InfoboxTable(
-                            infobox: infobox,
-                            typeLabel: article.typeLabel,
-                            title: article.title,
-                          )
-                        : _AsideCard(article: article),
-                  ),
-                ],
-              );
-            },
+          const SizedBox(height: 20),
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 220),
+            switchInCurve: Curves.easeOut,
+            child: KeyedSubtree(
+              key: ValueKey(_tab),
+              child: _tab == 0 || _tab == 2
+                  ? _readingView(sections: sections, infobox: infobox)
+                  : _UnavailableTab(label: _tabs[_tab]),
+            ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _readingView({
+    required List<String> sections,
+    required Map<String, dynamic>? infobox,
+  }) {
+    final content = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (sections.length > 1) ...[
+          _Sommaire(sections: sections, onTap: _scrollTo),
+          const SizedBox(height: 22),
+        ],
+        DeltaContent(ops: _article.contentOps, sectionKeys: _sectionKeys),
+        if (_article.references.isNotEmpty) ...[
+          const SizedBox(height: 10),
+          _References(references: _article.references),
+        ],
+        _CategoryBar(article: _article),
+      ],
+    );
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final wide = constraints.maxWidth >= 880;
+
+        if (!wide) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (infobox != null) ...[
+                InfoboxTable(
+                  infobox: infobox,
+                  typeLabel: _article.typeLabel,
+                  title: _article.title,
+                ),
+                const SizedBox(height: 22),
+              ],
+              content,
+            ],
+          );
+        }
+
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(child: content),
+            const SizedBox(width: 28),
+            SizedBox(
+              width: 300,
+              child: infobox != null
+                  ? InfoboxTable(
+                      infobox: infobox,
+                      typeLabel: _article.typeLabel,
+                      title: _article.title,
+                    )
+                  : _AsideCard(article: _article),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _ToolButton extends StatefulWidget {
+  const _ToolButton({required this.icon, required this.label, required this.onTap});
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  State<_ToolButton> createState() => _ToolButtonState();
+}
+
+class _ToolButtonState extends State<_ToolButton> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 140),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          decoration: BoxDecoration(
+            color: _hovered ? IvoireColors.highlight : IvoireColors.subtle,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: IvoireColors.lineSoft),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(widget.icon, size: 13, color: IvoireColors.green),
+              const SizedBox(width: 6),
+              Text(
+                widget.label,
+                style: const TextStyle(fontSize: 12, color: IvoireColors.greenDeep),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _UnavailableTab extends StatelessWidget {
+  const _UnavailableTab({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 28),
+      child: Container(
+        padding: const EdgeInsets.all(22),
+        decoration: BoxDecoration(
+          color: IvoireColors.highlight,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: IvoireColors.lineSoft),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('« $label » arrive bientôt', style: titleStyle(size: 18, weight: FontWeight.w700)),
+            const SizedBox(height: 8),
+            const Text(
+              'L’onglet existe déjà pour que vous trouviez vos repères. '
+              'Il sera activé quand les comptes et l’historique des versions seront en ligne.',
+              style: TextStyle(fontSize: 14, height: 1.6),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
 class _Sommaire extends StatelessWidget {
-  const _Sommaire({required this.sections});
+  const _Sommaire({required this.sections, required this.onTap});
 
   final List<String> sections;
+  final void Function(String title) onTap;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      constraints: const BoxConstraints(maxWidth: 420),
-      padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
+      constraints: const BoxConstraints(maxWidth: 440),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
       decoration: BoxDecoration(
         color: IvoireColors.subtle,
+        borderRadius: BorderRadius.circular(10),
         border: Border.all(color: IvoireColors.lineSoft),
       ),
       child: Column(
@@ -215,8 +390,9 @@ class _Sommaire extends StatelessWidget {
           const Text(
             'Sommaire',
             style: TextStyle(
-              fontSize: 13,
+              fontSize: 12,
               fontWeight: FontWeight.w700,
+              letterSpacing: 0.6,
               color: IvoireColors.muted,
             ),
           ),
@@ -228,16 +404,17 @@ class _Sommaire extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(
-                    width: 24,
-                    child: Text('${i + 1}.',
-                        style: const TextStyle(
-                            fontSize: 13, color: IvoireColors.muted)),
+                    width: 22,
+                    child: Text(
+                      '${i + 1}.',
+                      style: const TextStyle(fontSize: 13, color: IvoireColors.faint),
+                    ),
                   ),
                   Expanded(
-                    child: Text(
-                      sections[i],
-                      style: const TextStyle(
-                          fontSize: 13, color: IvoireColors.link),
+                    child: HoverLink(
+                      label: sections[i],
+                      onTap: () => onTap(sections[i]),
+                      style: const TextStyle(fontSize: 13),
                     ),
                   ),
                 ],
@@ -260,13 +437,13 @@ class _References extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(top: 22, bottom: 8),
+          padding: const EdgeInsets.only(top: 24, bottom: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Notes et références',
-                  style: serifStyle(size: 19, weight: FontWeight.w600)),
-              const SizedBox(height: 5),
+                  style: titleStyle(size: 19, weight: FontWeight.w700)),
+              const SizedBox(height: 6),
               const Divider(height: 1, color: IvoireColors.lineSoft),
             ],
           ),
@@ -332,13 +509,14 @@ class _CategoryBar extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.only(top: 30),
-      padding: const EdgeInsets.only(top: 10),
+      margin: const EdgeInsets.only(top: 32),
+      padding: const EdgeInsets.only(top: 12),
       decoration: const BoxDecoration(
         border: Border(top: BorderSide(color: IvoireColors.lineSoft)),
       ),
       child: Wrap(
-        spacing: 6,
+        spacing: 12,
+        runSpacing: 6,
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           const Text(
@@ -346,14 +524,12 @@ class _CategoryBar extends StatelessWidget {
             style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
           ),
           for (final link in links)
-            InkWell(
+            HoverLink(
+              label: link,
               onTap: () => article.categoryName == link && article.categorySlug != null
                   ? wikiGo(context, '/categories/${article.categorySlug}')
                   : wikiNotImplemented(context, 'Étiquette « $link »'),
-              child: Text(
-                link,
-                style: const TextStyle(fontSize: 12.5, color: IvoireColors.link),
-              ),
+              style: const TextStyle(fontSize: 12.5),
             ),
         ],
       ),
@@ -369,17 +545,18 @@ class _AsideCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: IvoireColors.subtle,
+        borderRadius: BorderRadius.circular(10),
         border: Border.all(color: IvoireColors.lineSoft),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('À propos de cet article',
-              style: serifStyle(size: 15, weight: FontWeight.w600)),
-          const SizedBox(height: 8),
+              style: titleStyle(size: 15, weight: FontWeight.w700)),
+          const SizedBox(height: 10),
           _line('Type', article.typeLabel),
           if (article.categoryName != null) _line('Domaine', article.categoryName!),
           if (article.authorName != null) _line('Auteur', article.authorName!),
@@ -413,16 +590,16 @@ class _ErrorState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             notFound ? 'Page inexistante' : 'Service indisponible',
-            style: serifStyle(size: 26),
+            style: titleStyle(size: 26, weight: FontWeight.w700),
           ),
-          const SizedBox(height: 6),
-          Container(height: 1, color: IvoireColors.line),
+          const SizedBox(height: 8),
+          const WeaveRule(height: 3, opacity: 0.7),
           const SizedBox(height: 14),
           Text(message, style: const TextStyle(fontSize: 14)),
           const SizedBox(height: 20),

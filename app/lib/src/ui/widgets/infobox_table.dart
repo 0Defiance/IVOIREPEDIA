@@ -80,7 +80,7 @@ class InfoboxTable extends StatelessWidget {
                 Text(
                   title ?? typeLabel,
                   textAlign: TextAlign.center,
-                  style: serifStyle(size: 16, weight: FontWeight.w700),
+                  style: titleStyle(size: 16, weight: FontWeight.w700),
                 ),
                 const SizedBox(height: 2),
                 Text(

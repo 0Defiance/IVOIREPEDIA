@@ -6,6 +6,7 @@ import '../models/category.dart';
 import '../theme.dart';
 import 'shell.dart';
 import 'wiki_actions.dart';
+import 'widgets/interactive.dart';
 import 'widgets/ivorian_patterns.dart';
 
 /// Page de catégorie : « Catégorie : Histoire », sous-catégories et pages.
@@ -80,7 +81,7 @@ class _CategoryPageState extends State<CategoryPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Catégorie indisponible', style: serifStyle(size: 26)),
+                    Text('Catégorie indisponible', style: titleStyle(size: 26)),
                     const SizedBox(height: 10),
                     Text('${snapshot.error}'),
                     const SizedBox(height: 16),
@@ -95,8 +96,17 @@ class _CategoryPageState extends State<CategoryPage> {
 
             if (!snapshot.hasData) {
               return const Padding(
-                padding: EdgeInsets.symmetric(vertical: 90),
-                child: Center(child: CircularProgressIndicator()),
+                padding: EdgeInsets.fromLTRB(0, 28, 0, 40),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Skeleton(width: 200, height: 12),
+                    SizedBox(height: 12),
+                    Skeleton(width: 320, height: 28),
+                    SizedBox(height: 22),
+                    SkeletonParagraph(lines: 3),
+                  ],
+                ),
               );
             }
 
@@ -106,7 +116,7 @@ class _CategoryPageState extends State<CategoryPage> {
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 50),
                 child: Text('Cette catégorie n’existe pas.',
-                    style: serifStyle(size: 24)),
+                    style: titleStyle(size: 24)),
               );
             }
 
@@ -125,7 +135,7 @@ class _CategoryPageState extends State<CategoryPage> {
                 ),
                 const SizedBox(height: 18),
                 Text('Catégorie : ${category.name}',
-                    style: serifStyle(size: 28, height: 1.2)),
+                    style: titleStyle(size: 28, height: 1.2)),
                 const SizedBox(height: 8),
                 const WeaveRule(height: 3, opacity: 0.85),
                 const SizedBox(height: 3),
@@ -150,16 +160,11 @@ class _CategoryPageState extends State<CategoryPage> {
                       padding: const EdgeInsets.only(bottom: 6),
                       child: Row(
                         children: [
-                          const Text('•  ', style: TextStyle(color: IvoireColors.muted)),
-                          InkWell(
+                          const Icon(Icons.chevron_right, size: 14, color: IvoireColors.faint),
+                          HoverLink(
+                            label: child.name,
                             onTap: () => wikiGo(context, '/categories/${child.slug}'),
-                            child: Text(
-                              child.name,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: IvoireColors.link,
-                              ),
-                            ),
+                            style: const TextStyle(fontSize: 14),
                           ),
                           const SizedBox(width: 6),
                           Text('(${child.articleCount})',
@@ -181,16 +186,10 @@ class _CategoryPageState extends State<CategoryPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          InkWell(
+                          HoverLink(
+                            label: article.title,
                             onTap: () => wikiGo(context, '/articles/${article.slug}'),
-                            child: Text(
-                              article.title,
-                              style: serifStyle(
-                                size: 16,
-                                weight: FontWeight.w600,
-                                color: IvoireColors.link,
-                              ),
-                            ),
+                            style: titleStyle(size: 16, weight: FontWeight.w600),
                           ),
                           Text(
                             article.summary,
@@ -232,7 +231,7 @@ class _Heading extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: serifStyle(size: 19, weight: FontWeight.w600)),
+          Text(label, style: titleStyle(size: 19, weight: FontWeight.w600)),
           const SizedBox(height: 5),
           const Divider(height: 1, color: IvoireColors.lineSoft),
         ],

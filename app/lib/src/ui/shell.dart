@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../brand.dart';
 import '../theme.dart';
 import 'wiki_actions.dart';
+import 'widgets/interactive.dart';
 import 'widgets/ivorian_patterns.dart';
 
 /// Largeur de lecture confortable, centrée.
@@ -23,20 +24,52 @@ class PageContainer extends StatelessWidget {
   }
 }
 
-/// Enveloppe du site : fond animé, bande tissée, bandeau de recherche,
-/// colonne de navigation, feuille de lecture, pied de page.
-class SiteShell extends StatelessWidget {
+/// Enveloppe du site : fond animé, bande tissée, bandeau collant avec barre de
+/// progression de lecture, colonne de navigation, feuille de contenu.
+class SiteShell extends StatefulWidget {
   const SiteShell({required this.child, this.searchQuery = '', super.key});
 
   final Widget child;
   final String searchQuery;
 
   @override
+  State<SiteShell> createState() => _SiteShellState();
+}
+
+class _SiteShellState extends State<SiteShell> {
+  final ScrollController _scroll = ScrollController();
+  double _progress = 0;
+  bool _scrolled = false;
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    super.dispose();
+  }
+
+  bool _onScroll(ScrollNotification notification) {
+    final metrics = notification.metrics;
+    final max = metrics.maxScrollExtent;
+    final progress = max <= 0 ? 0.0 : (metrics.pixels / max).clamp(0.0, 1.0);
+    final scrolled = metrics.pixels > 4;
+
+    if ((progress - _progress).abs() > 0.005 ||
+        (_scrolled != scrolled && metrics.axis == Axis.vertical)) {
+      setState(() {
+        _progress = progress;
+        _scrolled = scrolled;
+      });
+    }
+
+    return false;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: IvoireColors.sand,
+      backgroundColor: IvoireColors.canvas,
       drawer: const Drawer(
-        backgroundColor: IvoireColors.ivory,
+        backgroundColor: IvoireColors.paper,
         child: SafeArea(child: _Sidebar(width: null)),
       ),
       body: IvorianBackdrop(
@@ -45,43 +78,50 @@ class SiteShell extends StatelessWidget {
           child: Column(
             children: [
               const KenteBand(),
-              _Header(searchQuery: searchQuery),
+              _Header(searchQuery: widget.searchQuery, elevated: _scrolled),
+              _ProgressBar(value: _progress),
               Expanded(
-                child: SingleChildScrollView(
-                  child: PageContainer(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 14, bottom: 28),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: IvoireColors.paper.withValues(alpha: 0.94),
-                          border: Border.all(color: IvoireColors.lineSoft),
-                          boxShadow: [
-                            BoxShadow(
-                              color: IvoireColors.ink.withValues(alpha: 0.06),
-                              blurRadius: 24,
-                              offset: const Offset(0, 6),
-                            ),
-                          ],
-                        ),
-                        child: LayoutBuilder(
-                          builder: (context, constraints) {
-                            final wide = constraints.maxWidth >= 1000;
+                child: NotificationListener<ScrollNotification>(
+                  onNotification: _onScroll,
+                  child: SingleChildScrollView(
+                    controller: _scroll,
+                    child: PageContainer(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 14, 10, 28),
+                        child: Container(
+                          clipBehavior: Clip.antiAlias,
+                          decoration: BoxDecoration(
+                            color: IvoireColors.paper.withValues(alpha: 0.96),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(color: IvoireColors.lineSoft),
+                            boxShadow: [
+                              BoxShadow(
+                                color: IvoireColors.ink.withValues(alpha: 0.07),
+                                blurRadius: 30,
+                                offset: const Offset(0, 8),
+                              ),
+                            ],
+                          ),
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                              final wide = constraints.maxWidth >= 1000;
 
-                            return Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (wide) const _Sidebar(width: 208),
-                                Expanded(
-                                  child: Column(
-                                    children: [
-                                      _Reveal(child: child),
-                                      const _Footer(),
-                                    ],
+                              return Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (wide) const _Sidebar(width: 224),
+                                  Expanded(
+                                    child: Column(
+                                      children: [
+                                        _Reveal(child: widget.child),
+                                        const _Footer(),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
-                            );
-                          },
+                                ],
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ),
@@ -96,17 +136,52 @@ class SiteShell extends StatelessWidget {
   }
 }
 
-class _Header extends StatelessWidget {
-  const _Header({required this.searchQuery});
+class _ProgressBar extends StatelessWidget {
+  const _ProgressBar({required this.value});
 
-  final String searchQuery;
+  final double value;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
+      height: 2.5,
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: AnimatedFractionallySizedBox(
+          duration: const Duration(milliseconds: 120),
+          widthFactor: value.clamp(0.0, 1.0),
+          heightFactor: 1,
+          child: const DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(colors: IvoireColors.weave),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _Header extends StatelessWidget {
+  const _Header({required this.searchQuery, required this.elevated});
+
+  final String searchQuery;
+  final bool elevated;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 180),
       decoration: BoxDecoration(
-        color: IvoireColors.ivory.withValues(alpha: 0.96),
+        color: IvoireColors.paper.withValues(alpha: 0.97),
         border: const Border(bottom: BorderSide(color: IvoireColors.lineSoft)),
+        boxShadow: [
+          BoxShadow(
+            color: IvoireColors.ink.withValues(alpha: elevated ? 0.07 : 0),
+            blurRadius: 18,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: PageContainer(
@@ -127,10 +202,11 @@ class _Header extends StatelessWidget {
                     ),
                   ),
                 InkWell(
+                  borderRadius: BorderRadius.circular(10),
                   onTap: () => wikiGo(context, '/'),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                    child: IvoireLogo(size: showSearch ? 42 : 34, compact: !showSearch),
+                    child: IvoireLogo(size: showSearch ? 40 : 32, compact: !showSearch),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -139,12 +215,13 @@ class _Header extends StatelessWidget {
                 else
                   const Spacer(),
                 if (showAccount) ...[
-                  const SizedBox(width: 8),
-                  TextButton(
-                    onPressed: () => wikiNotImplemented(context, 'Se connecter'),
-                    child: const Text('Se connecter'),
+                  const SizedBox(width: 10),
+                  HoverLink(
+                    label: 'Se connecter',
+                    onTap: () => wikiNotImplemented(context, 'Se connecter'),
+                    style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w500),
                   ),
-                  const SizedBox(width: 4),
+                  const SizedBox(width: 14),
                   FilledButton(
                     onPressed: () => wikiNotImplemented(context, 'Créer un compte'),
                     style: FilledButton.styleFrom(
@@ -157,7 +234,7 @@ class _Header extends StatelessWidget {
                 if (!showSearch)
                   IconButton(
                     tooltip: 'Rechercher',
-                    icon: const Icon(Icons.search, size: 22, color: IvoireColors.terracotta),
+                    icon: const Icon(Icons.search, size: 22, color: IvoireColors.green),
                     onPressed: () => wikiGo(context, '/recherche'),
                   ),
               ],
@@ -181,32 +258,60 @@ class _HeaderSearch extends StatefulWidget {
 class _HeaderSearchState extends State<_HeaderSearch> {
   late final TextEditingController _controller =
       TextEditingController(text: widget.initialQuery);
+  final FocusNode _focus = FocusNode();
+  bool _focused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focus.addListener(() => setState(() => _focused = _focus.hasFocus));
+  }
 
   @override
   void dispose() {
     _controller.dispose();
+    _focus.dispose();
     super.dispose();
+  }
+
+  void _submit(String value) {
+    final term = value.trim();
+    if (term.isEmpty) {
+      return;
+    }
+
+    _focus.unfocus();
+    wikiGo(context, '/recherche?q=${Uri.encodeQueryComponent(term)}');
   }
 
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: 460),
-      child: TextField(
-        controller: _controller,
-        textInputAction: TextInputAction.search,
-        decoration: const InputDecoration(
-          hintText: 'Rechercher dans IVOIREPEDIA',
-          prefixIcon: Icon(Icons.search, size: 20),
-          isDense: true,
-          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+      constraints: const BoxConstraints(maxWidth: 520),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 160),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: IvoireColors.green.withValues(alpha: _focused ? 0.14 : 0),
+              blurRadius: 12,
+              spreadRadius: 1,
+            ),
+          ],
         ),
-        onSubmitted: (value) {
-          final term = value.trim();
-          if (term.isNotEmpty) {
-            wikiGo(context, '/recherche?q=${Uri.encodeQueryComponent(term)}');
-          }
-        },
+        child: TextField(
+          controller: _controller,
+          focusNode: _focus,
+          textInputAction: TextInputAction.search,
+          decoration: const InputDecoration(
+            hintText: 'Rechercher un article, un lieu, une langue…',
+            prefixIcon: Icon(Icons.search, size: 20),
+            isDense: true,
+            contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          ),
+          onSubmitted: _submit,
+        ),
       ),
     );
   }
@@ -225,7 +330,7 @@ class _Reveal extends StatefulWidget {
 class _RevealState extends State<_Reveal> with SingleTickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 420),
+    duration: const Duration(milliseconds: 380),
   );
 
   late final Animation<double> _opacity = CurvedAnimation(
@@ -271,7 +376,7 @@ class _RevealState extends State<_Reveal> with SingleTickerProviderStateMixin {
   }
 }
 
-/// Colonne de navigation : teinte sable, titres terre cuite, petits losanges.
+/// Colonne de navigation : fond sable, titres capitales, survol réactif.
 class _Sidebar extends StatelessWidget {
   const _Sidebar({this.width});
 
@@ -281,54 +386,95 @@ class _Sidebar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: width,
-      padding: const EdgeInsets.fromLTRB(14, 20, 14, 24),
+      padding: const EdgeInsets.fromLTRB(16, 22, 16, 26),
       decoration: width == null
           ? null
           : const BoxDecoration(
-              color: Color(0x14A9502C),
+              color: IvoireColors.subtle,
               border: Border(right: BorderSide(color: IvoireColors.lineSoft)),
             ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const MotifDivider(),
-          const SizedBox(height: 16),
+          const SizedBox(height: 18),
           _SidebarGroup(
             title: 'La maison',
             items: [
-              _SidebarItem('Accueil', onTap: () => wikiGo(context, '/')),
-              _SidebarItem('Tous les domaines', onTap: () => wikiGo(context, '/categories/histoire')),
-              _SidebarItem('Recherche', onTap: () => wikiGo(context, '/recherche')),
-              _SidebarItem('Article au hasard', onTap: () => wikiNotImplemented(context, 'Article au hasard')),
+              _SidebarItem(
+                'Accueil',
+                icon: Icons.home_outlined,
+                onTap: () => wikiGo(context, '/'),
+              ),
+              _SidebarItem(
+                'Tous les domaines',
+                icon: Icons.category_outlined,
+                onTap: () => wikiGo(context, '/categories/histoire'),
+              ),
+              _SidebarItem(
+                'Recherche',
+                icon: Icons.search,
+                onTap: () => wikiGo(context, '/recherche'),
+              ),
+              _SidebarItem(
+                'Article au hasard',
+                icon: Icons.shuffle,
+                onTap: () => wikiNotImplemented(context, 'Article au hasard'),
+              ),
             ],
           ),
           const SizedBox(height: 20),
           _SidebarGroup(
             title: 'Écrire ensemble',
             items: [
-              _SidebarItem('Créer un article', onTap: () => wikiNotImplemented(context, 'Créer un article')),
-              _SidebarItem('Modifier', onTap: () => wikiNotImplemented(context, 'Modifier')),
-              _SidebarItem('Charte et sources', onTap: () => wikiNotImplemented(context, 'Charte et sources')),
+              _SidebarItem(
+                'Créer un article',
+                icon: Icons.edit_outlined,
+                onTap: () => wikiNotImplemented(context, 'Créer un article'),
+              ),
+              _SidebarItem(
+                'Modifier',
+                icon: Icons.drive_file_rename_outline,
+                onTap: () => wikiNotImplemented(context, 'Modifier'),
+              ),
+              _SidebarItem(
+                'Charte et sources',
+                icon: Icons.verified_outlined,
+                onTap: () => wikiNotImplemented(context, 'Charte et sources'),
+              ),
             ],
           ),
           const SizedBox(height: 20),
           _SidebarGroup(
             title: 'Sur cette page',
             items: [
-              _SidebarItem('Pages liées', onTap: () => wikiNotImplemented(context, 'Pages liées')),
-              _SidebarItem('Version imprimable', onTap: () => wikiNotImplemented(context, 'Version imprimable')),
-              _SidebarItem('Information sur la page', onTap: () => wikiNotImplemented(context, 'Information sur la page')),
+              _SidebarItem(
+                'Pages liées',
+                icon: Icons.link,
+                onTap: () => wikiNotImplemented(context, 'Pages liées'),
+              ),
+              _SidebarItem(
+                'Version imprimable',
+                icon: Icons.print_outlined,
+                onTap: () => wikiNotImplemented(context, 'Version imprimable'),
+              ),
+              _SidebarItem(
+                'Information sur la page',
+                icon: Icons.info_outline,
+                onTap: () => wikiNotImplemented(context, 'Information sur la page'),
+              ),
             ],
           ),
           const SizedBox(height: 22),
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: IvoireColors.highlight,
+              borderRadius: BorderRadius.circular(10),
               border: Border.all(color: IvoireColors.lineSoft),
             ),
             child: const Text(
-              'L’encyclopédie ivoirienne libre : chaque article cite ses sources.',
+              'Chaque article cite ses sources. Une encyclopédie se juge à ses références.',
               style: TextStyle(fontSize: 11.5, height: 1.5, color: IvoireColors.muted),
             ),
           ),
@@ -350,8 +496,8 @@ class _SidebarGroup extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 8, bottom: 6),
-          child: Text(title.toUpperCase(), style: kickerStyle()),
+          padding: const EdgeInsets.only(left: 10, bottom: 8),
+          child: Text(title.toUpperCase(), style: kickerStyle(color: IvoireColors.faint)),
         ),
         for (final item in items) item,
       ],
@@ -359,45 +505,63 @@ class _SidebarGroup extends StatelessWidget {
   }
 }
 
-class _SidebarItem extends StatelessWidget {
-  const _SidebarItem(this.label, {required this.onTap});
+class _SidebarItem extends StatefulWidget {
+  const _SidebarItem(this.label, {required this.onTap, required this.icon});
 
   final String label;
   final VoidCallback onTap;
+  final IconData icon;
+
+  @override
+  State<_SidebarItem> createState() => _SidebarItemState();
+}
+
+class _SidebarItemState extends State<_SidebarItem> {
+  bool _hovered = false;
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(14),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
-        child: Row(
-          children: [
-            Container(
-              width: 4,
-              height: 4,
-              margin: const EdgeInsets.only(right: 8),
-              decoration: const BoxDecoration(
-                color: IvoireColors.orange,
-                shape: BoxShape.circle,
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 130),
+          margin: const EdgeInsets.only(bottom: 2),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          decoration: BoxDecoration(
+            color: _hovered ? IvoireColors.paper : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                widget.icon,
+                size: 15,
+                color: _hovered ? IvoireColors.green : IvoireColors.faint,
               ),
-            ),
-            Expanded(
-              child: Text(
-                label,
-                style: const TextStyle(fontSize: 13, color: IvoireColors.link),
+              const SizedBox(width: 9),
+              Expanded(
+                child: Text(
+                  widget.label,
+                  style: TextStyle(
+                    fontSize: 12.8,
+                    fontWeight: _hovered ? FontWeight.w600 : FontWeight.w400,
+                    color: _hovered ? IvoireColors.greenDeep : IvoireColors.muted,
+                  ),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-/// Onglets de page (Article, Discussion, Lire…) en pastilles tissées plutôt
-/// qu'en boîtes grises.
+/// Onglets de page en pastilles, avec transition de couleur animée.
 class WikiTabs extends StatelessWidget {
   const WikiTabs({required this.items, super.key});
 
@@ -406,30 +570,33 @@ class WikiTabs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 16),
+      padding: const EdgeInsets.only(top: 18),
       child: Wrap(
         spacing: 8,
         runSpacing: 8,
         children: [
           for (final item in items)
-            InkWell(
-              onTap: item.onTap,
-              borderRadius: BorderRadius.circular(18),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                decoration: BoxDecoration(
-                  color: item.selected ? IvoireColors.green : IvoireColors.ivory,
-                  border: Border.all(
-                    color: item.selected ? IvoireColors.green : IvoireColors.lineSoft,
+            MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: item.onTap,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 160),
+                  padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: item.selected ? IvoireColors.green : IvoireColors.subtle,
+                    border: Border.all(
+                      color: item.selected ? IvoireColors.green : IvoireColors.lineSoft,
+                    ),
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                  borderRadius: BorderRadius.circular(18),
-                ),
-                child: Text(
-                  item.label,
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: item.selected ? FontWeight.w600 : FontWeight.w400,
-                    color: item.selected ? Colors.white : IvoireColors.link,
+                  child: Text(
+                    item.label,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: item.selected ? FontWeight.w600 : FontWeight.w500,
+                      color: item.selected ? Colors.white : IvoireColors.muted,
+                    ),
                   ),
                 ),
               ),
@@ -448,9 +615,10 @@ class _Footer extends StatelessWidget {
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(top: 36),
-      padding: const EdgeInsets.fromLTRB(16, 18, 16, 26),
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 26),
       decoration: const BoxDecoration(
         border: Border(top: BorderSide(color: IvoireColors.lineSoft)),
+        color: IvoireColors.subtle,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -463,16 +631,14 @@ class _Footer extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Wrap(
-            spacing: 16,
-            runSpacing: 6,
+            spacing: 18,
+            runSpacing: 8,
             children: [
               for (final label in ['À propos', 'Charte', 'Contact', 'Confidentialité'])
-                InkWell(
+                HoverLink(
+                  label: label,
                   onTap: () => wikiNotImplemented(context, label),
-                  child: Text(
-                    label,
-                    style: const TextStyle(fontSize: 12.5, color: IvoireColors.link),
-                  ),
+                  style: const TextStyle(fontSize: 12.5),
                 ),
             ],
           ),

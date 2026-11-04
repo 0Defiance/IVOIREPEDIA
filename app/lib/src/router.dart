@@ -7,6 +7,30 @@ import 'ui/home_page.dart';
 import 'ui/search_page.dart';
 import 'ui/shell.dart';
 
+/// Transition commune : fondu court + léger glissement, pour que la navigation
+/// réponde immédiatement sans effet spectaculaire.
+Page<void> _page(Widget child) {
+  return CustomTransitionPage<void>(
+    child: child,
+    transitionDuration: const Duration(milliseconds: 220),
+    reverseTransitionDuration: const Duration(milliseconds: 160),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      final curved = CurvedAnimation(parent: animation, curve: Curves.easeOutCubic);
+
+      return FadeTransition(
+        opacity: curved,
+        child: SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0, 0.015),
+            end: Offset.zero,
+          ).animate(curved),
+          child: child,
+        ),
+      );
+    },
+  );
+}
+
 /// URLs du site, lisibles et partageables (CONTEXT §14, Sprint 4).
 GoRouter buildRouter() {
   return GoRouter(
@@ -14,28 +38,31 @@ GoRouter buildRouter() {
     routes: [
       GoRoute(
         path: '/',
-        builder: (context, state) => const HomePage(),
+        pageBuilder: (context, state) => _page(const HomePage()),
       ),
       GoRoute(
         path: '/categories/:slug',
-        builder: (context, state) =>
-            CategoryPage(slug: state.pathParameters['slug'] ?? ''),
+        pageBuilder: (context, state) => _page(
+          CategoryPage(slug: state.pathParameters['slug'] ?? ''),
+        ),
       ),
       GoRoute(
         path: '/articles/:slug',
-        builder: (context, state) =>
-            ArticlePage(slug: state.pathParameters['slug'] ?? ''),
+        pageBuilder: (context, state) => _page(
+          ArticlePage(slug: state.pathParameters['slug'] ?? ''),
+        ),
       ),
       GoRoute(
         path: '/recherche',
-        builder: (context, state) =>
-            SearchPage(query: state.uri.queryParameters['q'] ?? ''),
+        pageBuilder: (context, state) => _page(
+          SearchPage(query: state.uri.queryParameters['q'] ?? ''),
+        ),
       ),
     ],
     errorBuilder: (context, state) => SiteShell(
       child: PageContainer(
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 80),
+          padding: const EdgeInsets.symmetric(vertical: 80, horizontal: 20),
           child: Column(
             children: [
               const Icon(Icons.explore_off, size: 36),

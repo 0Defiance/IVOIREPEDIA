@@ -2,14 +2,19 @@ import 'package:flutter/material.dart';
 
 import '../../theme.dart';
 import '../wiki_actions.dart';
+import 'interactive.dart';
 
 /// Rend un contenu Delta Quill (ADR-003) comme le corps d'un article
 /// d'encyclopédie : paragraphes, sections titrées avec filet et lien
 /// « modifier », listes et citations.
 class DeltaContent extends StatelessWidget {
-  const DeltaContent({required this.ops, super.key});
+  const DeltaContent({required this.ops, this.sectionKeys, super.key});
 
   final List<Map<String, dynamic>> ops;
+
+  /// Clés d'ancrage par titre de section : elles permettent au sommaire
+  /// de faire défiler la page jusqu'à la bonne section.
+  final Map<String, GlobalKey>? sectionKeys;
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +77,7 @@ class DeltaContent extends StatelessWidget {
     final quote = attributes?['blockquote'] == true;
 
     if (header is int) {
-      return Padding(
+      final content = Padding(
         padding: const EdgeInsets.only(top: 26, bottom: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,22 +87,24 @@ class DeltaContent extends StatelessWidget {
               textBaseline: TextBaseline.alphabetic,
               children: [
                 Expanded(
-                  child: Text(text, style: serifStyle(size: 21, weight: FontWeight.w600)),
+                  child: Text(text, style: titleStyle(size: 20, weight: FontWeight.w700)),
                 ),
-                InkWell(
+                HoverLink(
+                  label: 'modifier',
                   onTap: () => wikiNotImplemented(context, 'Modifier une section'),
-                  child: const Text(
-                    'modifier',
-                    style: TextStyle(fontSize: 12, color: IvoireColors.link),
-                  ),
+                  style: const TextStyle(fontSize: 12),
                 ),
               ],
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
             const Divider(height: 1, color: IvoireColors.lineSoft),
           ],
         ),
       );
+
+      final key = sectionKeys?[text];
+
+      return key == null ? content : KeyedSubtree(key: key, child: content);
     }
 
     if (list != null) {

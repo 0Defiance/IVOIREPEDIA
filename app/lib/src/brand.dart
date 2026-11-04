@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'theme.dart';
 
-/// Marque IVOIREPEDIA : globe stylisé (méridiens et parallèles), puis le nom
-/// en serif et la devise « L'encyclopédie ivoirienne libre ». Dessinée en code :
-/// nette à toute taille, sans fichier binaire à maintenir.
+/// Marque IVOIREPEDIA : un médaillon aux trois bandes du drapeau ivoirien
+/// (orange, blanc, vert), cerclé de vert profond. Dessiné en code : net à
+/// toute taille, aucun fichier binaire à maintenir.
 class IvoireMark extends StatelessWidget {
   const IvoireMark({super.key, this.size = 40});
 
@@ -15,63 +15,43 @@ class IvoireMark extends StatelessWidget {
     return SizedBox(
       width: size,
       height: size,
-      child: CustomPaint(painter: _GlobePainter()),
+      child: CustomPaint(painter: _MarkPainter()),
     );
   }
 }
 
-class _GlobePainter extends CustomPainter {
+class _MarkPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final w = size.width;
     final center = Offset(w / 2, w / 2);
     final radius = w * 0.46;
 
-    // Corps du globe : l'ivoire et l'orange du drapeau, en deux calottes.
-    canvas.drawCircle(center, radius, Paint()..color = IvoireColors.subtle);
+    final clip = Path()..addOval(Rect.fromCircle(center: center, radius: radius));
 
     canvas.save();
-    canvas.clipPath(Path()..addOval(Rect.fromCircle(center: center, radius: radius)));
+    canvas.clipPath(clip);
 
+    // Trois bandes verticales, comme le drapeau.
+    final band = radius * 2 / 3;
     canvas.drawRect(
-      Rect.fromLTWH(0, 0, w, w * 0.42),
-      Paint()..color = IvoireColors.orange.withValues(alpha: 0.28),
+      Rect.fromLTWH(center.dx - radius, center.dy - radius, band, radius * 2),
+      Paint()..color = IvoireColors.orange,
     );
     canvas.drawRect(
-      Rect.fromLTWH(0, w * 0.62, w, w * 0.4),
-      Paint()..color = IvoireColors.green.withValues(alpha: 0.24),
+      Rect.fromLTWH(center.dx - radius + band, center.dy - radius, band, radius * 2),
+      Paint()..color = Colors.white,
+    );
+    canvas.drawRect(
+      Rect.fromLTWH(center.dx - radius + band * 2, center.dy - radius, band, radius * 2),
+      Paint()..color = IvoireColors.green,
     );
 
-    final meridian = Paint()
-      ..color = IvoireColors.ink.withValues(alpha: 0.55)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = w * 0.035;
-
-    // Méridiens (ellipses verticales) et parallèles (lignes horizontales).
-    for (final factor in [0.35, 0.7, 1.0]) {
-      canvas.drawOval(
-        Rect.fromCenter(
-          center: center,
-          width: radius * 2 * factor,
-          height: radius * 2,
-        ),
-        meridian,
-      );
-    }
-
-    for (final factor in [0.45, 0.0, -0.45]) {
-      final y = center.dy + radius * factor;
-      final halfWidth = radius * (1 - factor * factor).clamp(0.0, 1.0);
-      final chord = ((halfWidth * halfWidth) <= 0)
-          ? 0.0
-          : (radius * radius - (radius * factor) * (radius * factor));
-      final dx = chord <= 0 ? 0.0 : _sqrt(chord);
-      canvas.drawLine(
-        Offset(center.dx - dx, y),
-        Offset(center.dx + dx, y),
-        meridian,
-      );
-    }
+    // Voile haut/bas : donne du relief au médaillon.
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, w, w * 0.34),
+      Paint()..color = Colors.white.withValues(alpha: 0.18),
+    );
 
     canvas.restore();
 
@@ -79,25 +59,17 @@ class _GlobePainter extends CustomPainter {
       center,
       radius,
       Paint()
-        ..color = IvoireColors.ink.withValues(alpha: 0.75)
+        ..color = IvoireColors.greenDeep
         ..style = PaintingStyle.stroke
-        ..strokeWidth = w * 0.045,
+        ..strokeWidth = w * 0.06,
     );
-  }
-
-  double _sqrt(double value) {
-    var guess = value;
-    for (var i = 0; i < 20; i++) {
-      guess = 0.5 * (guess + value / guess);
-    }
-    return guess;
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-/// Marque + nom + devise, comme l'en-tête d'une encyclopédie.
+/// Marque + nom + devise, dans une seule famille typographique.
 class IvoireLogo extends StatelessWidget {
   const IvoireLogo({super.key, this.size = 44, this.compact = false});
 
@@ -117,11 +89,20 @@ class IvoireLogo extends StatelessWidget {
           children: [
             Text(
               'IVOIREPEDIA',
-              style: serifStyle(size: size * 0.46, weight: FontWeight.w600),
+              style: titleStyle(
+                size: size * 0.42,
+                weight: FontWeight.w700,
+                letterSpacing: 0.2,
+              ),
             ),
             Text(
               compact ? "L'encyclopédie libre" : "L'encyclopédie ivoirienne libre",
-              style: const TextStyle(fontSize: 11, color: IvoireColors.muted),
+              style: const TextStyle(
+                fontSize: 10.5,
+                height: 1.2,
+                letterSpacing: 0.1,
+                color: IvoireColors.muted,
+              ),
             ),
           ],
         ),

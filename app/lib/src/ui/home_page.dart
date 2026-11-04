@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../api.dart';
@@ -6,10 +8,11 @@ import '../models/category.dart';
 import '../theme.dart';
 import 'shell.dart';
 import 'wiki_actions.dart';
+import 'widgets/interactive.dart';
 import 'widgets/ivorian_patterns.dart';
 
-/// Page d'accueil : une « une » d'encyclopédie — accueil, article du jour,
-/// ce qu'il faut savoir, domaines, et colonne d'outils.
+/// Page d'accueil : une « une » d'encyclopédie — bienvenue chiffrée, article
+/// du jour, ce qu'il faut savoir, domaines, et colonne d'outils.
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -34,11 +37,21 @@ class _HomePageState extends State<HomePage> {
     return (categories: categories, articles: articles);
   }
 
+  void _openRandom(PagedArticles page) {
+    if (page.items.isEmpty) {
+      wikiNotImplemented(context, 'Article au hasard');
+      return;
+    }
+
+    final pick = page.items[math.Random().nextInt(page.items.length)];
+    wikiGo(context, '/articles/${pick.slug}');
+  }
+
   @override
   Widget build(BuildContext context) {
     return SiteShell(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+        padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
         child: FutureBuilder(
           future: _future,
           builder: (context, snapshot) {
@@ -50,10 +63,7 @@ class _HomePageState extends State<HomePage> {
             }
 
             if (!snapshot.hasData) {
-              return const Padding(
-                padding: EdgeInsets.symmetric(vertical: 90),
-                child: Center(child: CircularProgressIndicator()),
-              );
+              return const _HomeSkeleton();
             }
 
             final data = snapshot.data!;
@@ -66,17 +76,15 @@ class _HomePageState extends State<HomePage> {
                   style: kickerStyle(),
                 ),
                 const SizedBox(height: 6),
-                Text("Page d'accueil", style: serifStyle(size: 30, height: 1.2)),
-                const SizedBox(height: 8),
-                const WeaveRule(height: 3, opacity: 0.85),
-                const SizedBox(height: 3),
-                Container(height: 1, color: IvoireColors.lineSoft),
-                const SizedBox(height: 16),
+                Text("Page d'accueil", style: titleStyle(size: 30, weight: FontWeight.w700)),
+                const SizedBox(height: 10),
+                const WeaveRule(height: 3, opacity: 0.9),
+                const SizedBox(height: 20),
                 _Welcome(total: data.articles.total, domains: data.categories.length),
-                const SizedBox(height: 18),
+                const SizedBox(height: 22),
                 LayoutBuilder(
                   builder: (context, constraints) {
-                    final wide = constraints.maxWidth >= 900;
+                    final wide = constraints.maxWidth >= 880;
 
                     final main = Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,13 +106,13 @@ class _HomePageState extends State<HomePage> {
                             children: [
                               const Text(
                                 'Découvrir un sujet sans le chercher.',
-                                style: TextStyle(fontSize: 13),
+                                style: TextStyle(fontSize: 13, height: 1.5),
                               ),
-                              const SizedBox(height: 10),
-                              OutlinedButton(
-                                onPressed: () => wikiNotImplemented(
-                                    context, 'Article au hasard'),
-                                child: const Text('Tirer un article'),
+                              const SizedBox(height: 12),
+                              OutlinedButton.icon(
+                                onPressed: () => _openRandom(data.articles),
+                                icon: const Icon(Icons.shuffle, size: 16),
+                                label: const Text('Tirer un article'),
                               ),
                             ],
                           ),
@@ -118,10 +126,10 @@ class _HomePageState extends State<HomePage> {
                               const Text(
                                 'IVOIREPEDIA se construit à plusieurs : chercheurs, '
                                 'enseignants, étudiants, gardiens de la mémoire.',
-                                style: TextStyle(fontSize: 13, height: 1.5),
+                                style: TextStyle(fontSize: 13, height: 1.55),
                               ),
-                              const SizedBox(height: 10),
-                              OutlinedButton(
+                              const SizedBox(height: 12),
+                              FilledButton(
                                 onPressed: () =>
                                     wikiNotImplemented(context, 'Créer un compte'),
                                 child: const Text('Créer un compte'),
@@ -142,8 +150,8 @@ class _HomePageState extends State<HomePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(child: main),
-                        const SizedBox(width: 26),
-                        SizedBox(width: 300, child: aside),
+                        const SizedBox(width: 24),
+                        SizedBox(width: 290, child: aside),
                       ],
                     );
                   },
@@ -153,6 +161,26 @@ class _HomePageState extends State<HomePage> {
           },
         ),
       ),
+    );
+  }
+}
+
+class _HomeSkeleton extends StatelessWidget {
+  const _HomeSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Skeleton(width: 260, height: 12),
+        SizedBox(height: 12),
+        Skeleton(width: 340, height: 30),
+        SizedBox(height: 20),
+        Skeleton(height: 120, radius: 12),
+        SizedBox(height: 16),
+        Skeleton(height: 180, radius: 12),
+      ],
     );
   }
 }
@@ -167,61 +195,46 @@ class _Welcome extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(18, 16, 16, 16),
+      padding: const EdgeInsets.fromLTRB(22, 18, 20, 18),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            IvoireColors.highlight,
-            IvoireColors.ivory.withValues(alpha: 0.6),
-          ],
+          colors: [IvoireColors.highlight, IvoireColors.ivory],
         ),
-        border: const Border(left: BorderSide(color: IvoireColors.orange, width: 5)),
+        borderRadius: BorderRadius.circular(12),
+        border: const Border(
+          left: BorderSide(color: IvoireColors.orange, width: 5),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('AKWABA  ·  BIENVENUE', style: kickerStyle()),
-          const SizedBox(height: 4),
-          Text(
-            "Bienvenue sur IVOIREPEDIA",
-            style: serifStyle(size: 21, weight: FontWeight.w600),
-          ),
           const SizedBox(height: 6),
+          Text(
+            'Bienvenue sur IVOIREPEDIA',
+            style: titleStyle(size: 22, weight: FontWeight.w700),
+          ),
+          const SizedBox(height: 8),
           const Text(
             "L'encyclopédie ivoirienne libre et inclusive, que chacun peut lire et enrichir. "
             'Les histoires, les territoires, les langues et les institutions de Côte d’Ivoire, '
             'avec des sources citées.',
-            style: TextStyle(fontSize: 14, height: 1.6),
+            style: TextStyle(fontSize: 14, height: 1.65),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 16),
           Wrap(
-            spacing: 16,
-            runSpacing: 4,
+            spacing: 28,
+            runSpacing: 12,
             children: [
-              _stat('$total', 'articles publiés'),
-              _stat('$domains', 'domaines'),
-              _stat('100 %', 'sources citées'),
+              AnimatedCount(value: total, label: 'articles publiés'),
+              AnimatedCount(value: domains, label: 'domaines'),
+              const AnimatedCount(value: 100, label: 'des sources citées', suffix: '%'),
             ],
           ),
         ],
       ),
-    );
-  }
-
-  Widget _stat(String value, String label) {
-    return Text.rich(
-      TextSpan(children: [
-        TextSpan(
-          text: value,
-          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
-        ),
-        TextSpan(
-          text: ' $label',
-          style: const TextStyle(fontSize: 13, color: IvoireColors.muted),
-        ),
-      ]),
     );
   }
 }
@@ -250,37 +263,38 @@ class _ArticleOfTheDay extends StatelessWidget {
           Row(
             children: [
               Flexible(
-                child: InkWell(
+                child: HoverLink(
+                  label: article.title,
                   onTap: () => wikiGo(context, '/articles/${article.slug}'),
-                  child: Text(
-                    article.title,
-                    style: serifStyle(
-                      size: 19,
-                      weight: FontWeight.w600,
-                      color: IvoireColors.link,
-                    ),
-                  ),
+                  style: titleStyle(size: 20, weight: FontWeight.w700),
+                  color: IvoireColors.ink,
+                  hoverColor: IvoireColors.green,
                 ),
               ),
-              const SizedBox(width: 8),
-              Text(
-                '· ${article.typeLabel}',
-                style: const TextStyle(fontSize: 12, color: IvoireColors.muted),
+              const SizedBox(width: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: IvoireColors.subtle,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  article.typeLabel,
+                  style: const TextStyle(fontSize: 11, color: IvoireColors.muted),
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           Text(
             article.summary,
-            style: const TextStyle(fontSize: 14, height: 1.6),
+            style: const TextStyle(fontSize: 14.5, height: 1.7),
           ),
-          const SizedBox(height: 10),
-          InkWell(
+          const SizedBox(height: 12),
+          HoverLink(
+            label: 'Lire la suite →',
             onTap: () => wikiGo(context, '/articles/${article.slug}'),
-            child: const Text(
-              'Lire la suite →',
-              style: TextStyle(fontSize: 13, color: IvoireColors.link),
-            ),
+            style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600),
           ),
         ],
       ),
@@ -308,20 +322,29 @@ class _DidYouKnow extends StatelessWidget {
         children: [
           for (final article in others)
             Padding(
-              padding: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.only(bottom: 10),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('•  ', style: TextStyle(color: IvoireColors.muted)),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 6),
+                    child: Icon(Icons.circle, size: 5, color: IvoireColors.orange),
+                  ),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Text.rich(
                       TextSpan(
                         children: [
-                          TextSpan(
-                            text: article.title,
-                            style: const TextStyle(
-                              color: IvoireColors.link,
-                              fontWeight: FontWeight.w600,
+                          WidgetSpan(
+                            alignment: PlaceholderAlignment.baseline,
+                            baseline: TextBaseline.alphabetic,
+                            child: HoverLink(
+                              label: article.title,
+                              onTap: () => wikiGo(context, '/articles/${article.slug}'),
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
                           TextSpan(
@@ -330,7 +353,7 @@ class _DidYouKnow extends StatelessWidget {
                           ),
                         ],
                       ),
-                      style: const TextStyle(fontSize: 14, height: 1.55),
+                      style: const TextStyle(fontSize: 14, height: 1.6),
                     ),
                   ),
                 ],
@@ -379,22 +402,26 @@ class _Frame extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: IvoireColors.paper,
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: IvoireColors.lineSoft),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
             decoration: const BoxDecoration(
-              color: IvoireColors.subtle,
-              border: Border(left: BorderSide(color: IvoireColors.green, width: 3)),
+              border: Border(
+                bottom: BorderSide(color: IvoireColors.lineSoft),
+                left: BorderSide(color: IvoireColors.green, width: 3),
+              ),
             ),
             child: Text(title, style: kickerStyle(color: IvoireColors.green)),
           ),
-          Padding(padding: const EdgeInsets.all(14), child: child),
+          Padding(padding: const EdgeInsets.all(16), child: child),
         ],
       ),
     );
@@ -426,7 +453,7 @@ class _ErrorBox extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Service indisponible', style: serifStyle(size: 26)),
+          Text('Service indisponible', style: titleStyle(size: 26, weight: FontWeight.w700)),
           const SizedBox(height: 10),
           Text(message),
           const SizedBox(height: 16),

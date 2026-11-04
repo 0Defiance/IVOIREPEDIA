@@ -4,7 +4,7 @@
 > Chaque séance de travail ajoute une entrée datée.
 > Règle : ce journal, le dépôt local et le dépôt distant restent **au même niveau d'information**.
 
-**Version** : 1.7 · **Dernière mise à jour** : 3 novembre 2026
+**Version** : 1.8 · **Dernière mise à jour** : 4 novembre 2026
 
 **État en une phrase** : **IVOIREPEDIA est en ligne** sur son compte Alwaysdata dédié — Sprint 0 terminé, backend déployé (Laravel 13.39.0, PHP 8.4.27), le **site est lisible en ligne** (`https://ivoirepedia.alwaysdata.net/site/`) et branché sur l'API (`/api/v1/articles`, `/categories`, `/search`). Restent le contenu éditorial, l'authentification (Sprint 1) et l'éditeur (Sprint 2).
 
@@ -241,6 +241,34 @@
 1. Contrôler le rendu sur mobile réel (le fond animé est le poste de coût principal).
 2. Brancher les commandes affichées (compte, modification, discussion, historique).
 3. Sommaire cliquable et partage social (image d'aperçu aux couleurs ivoiriennes).
+
+---
+
+---
+
+### 4 novembre 2026 (séance 10) — Réactivité, police unique et contenus élargis
+
+**Motif (demande du titulaire)** : « plus réactif et plus interactif », « les couleurs de la Côte d'Ivoire », « une police uniforme », « un visuel professionnel », et « seeder beaucoup de données à condition qu'elles soient correctes ».
+
+**Fait — interface**
+- **Police unique** : Inter (400/600/700) embarquée dans `app/assets/fonts`, déclarée dans `pubspec.yaml`. Les titres, le corps, les libellés et la navigation partagent désormais la même famille ; les anciens titres serif ont disparu (`serifStyle` → `titleStyle`).
+- **Palette drapeau** : vert `#0E7B45` pour l'action, orange `#F07C00` pour l'accent, neutres chauds pour les surfaces ; médaillon de marque aux trois bandes verticales.
+- **Réactivité** : liens avec soulignement et changement de teinte au survol, cartes qui se soulèvent, boutons qui s'enfoncent à l'appui, onglets animés, barre de progression de lecture sous le bandeau, bandeau qui prend une ombre au défilement, transitions de page en fondu, squelettes de chargement à la place des roues.
+- **Interactions réelles** : sommaire **cliquable** (défilement vers la section), bouton « Copier le lien », article au hasard fonctionnel, recherche **au fil de la frappe** avec délai de 280 ms, URL synchronisée, suggestions et état vide.
+- Onglets Discussion / Modifier / Voir l'historique : panneaux explicatifs au lieu de liens morts.
+
+**Fait — contenus**
+- `PublicContentSeeder` passe de **10 à 51 articles**, 33 étiquettes et 9 références, répartis sur les huit domaines : géographie (Bouaké, San-Pédro, Korhogo, Man, Bandama), histoire (indépendance 1960, coup d'État de 1999, crise 2002-2011, Samory Touré, royaume de Kong), personnalités (Bédié, Gbagbo, Ouattara, Guéï, Drogba, Alpha Blondy, Kourouma), institutions (président, Assemblée nationale, Sénat, Conseil constitutionnel), langues (dioula, sénoufo, bété, dan, nouchi), culture (zaouli, goli, kedjenou, coupé-décalé, zouglou), patrimoine (Grand-Bassam, Taï, Comoé, Nimba), économie (anacarde, port d'Abidjan, franc CFA, BRVM, hévéa).
+- **Règle de prudence appliquée** : faits établis uniquement, formulations prudentes quand une date ou un chiffre est discuté (pas de chiffres de population inventés, pas de résultats électoraux récents), et une référence réelle pour les articles sensibles (UNESCO, Journal officiel, INS).
+
+**Vérifié**
+- `flutter analyze` → « No issues found! » ; `flutter test` → **3 tests** verts.
+- Backend : `composer test` → **11 tests / 32 assertions**, `format:check` 53 fichiers, `analyse` « No errors ». Base locale re-seedée : **51 articles**.
+
+**Reste**
+1. Faire relire les 51 articles par un historien ou un éditeur avant toute ouverture publique (les textes sont sourcés mais restent de démonstration).
+2. Enrichir encore : préhistoire, religions, éducation, santé, transports, médias, gastronomie régionale.
+3. Vérifier le rendu du survol sur un vrai mobile (pas de souris) et l'accessibilité clavier du sommaire.
 
 ---
 

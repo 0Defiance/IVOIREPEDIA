@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -6,9 +8,11 @@ import '../models/article.dart';
 import '../theme.dart';
 import 'format.dart';
 import 'shell.dart';
+import 'widgets/interactive.dart';
 import 'widgets/ivorian_patterns.dart';
 
-/// Recherche publique (`/recherche?q=`), branchée sur `GET /api/v1/search`.
+/// Recherche publique (`/recherche?q=`) : les résultats se rafraîchissent
+/// pendant la frappe, sans bouton à presser.
 class SearchPage extends StatefulWidget {
   const SearchPage({this.query = '', super.key});
 
@@ -21,41 +25,68 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   late final TextEditingController _controller =
       TextEditingController(text: widget.query);
+  final FocusNode _focus = FocusNode();
+  Timer? _debounce;
   Future<PagedArticles>? _future;
+  String _term = '';
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _start(widget.query);
+    _search(widget.query, immediate: true);
   }
 
   @override
   void didUpdateWidget(covariant SearchPage oldWidget) {
     super.didUpdateWidget(oldWidget);
+
     if (oldWidget.query != widget.query) {
       _controller.text = widget.query;
-      _start(widget.query);
+      _search(widget.query, immediate: true);
     }
   }
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _controller.dispose();
+    _focus.dispose();
     super.dispose();
   }
 
-  void _start(String query) {
-    final term = query.trim();
-    _future = term.isEmpty ? null : ApiScope.of(context).search(term);
-  }
-
-  void _submit(String value) {
+  void _search(String value, {bool immediate = false}) {
     final term = value.trim();
-    if (term.isEmpty) {
-      return;
+    _debounce?.cancel();
+
+    void run() {
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _term = term;
+        _future = term.isEmpty ? null : ApiScope.of(context).search(term);
+      });
     }
 
-    context.go('/recherche?q=${Uri.encodeQueryComponent(term)}');
+    if (immediate) {
+      run();
+    } else {
+      _debounce = Timer(const Duration(milliseconds: 280), run);
+    }
+  }
+
+  void _onChanged(String value) {
+    _search(value);
+
+    // Reflète le terme dans l'URL sans recharger la page.
+    final target = value.trim().isEmpty
+        ? '/recherche'
+        : '/recherche?q=${Uri.encodeQueryComponent(value.trim())}';
+
+    if (GoRouterState.of(context).uri.toString() != target) {
+      context.replace(target);
+    }
   }
 
   @override
@@ -63,75 +94,103 @@ class _SearchPageState extends State<SearchPage> {
     return SiteShell(
       searchQuery: widget.query,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+        padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('RECHERCHER DANS L’ENCYCLOPÉDIE', style: kickerStyle()),
-            const SizedBox(height: 4),
-            Text('Recherche', style: serifStyle(size: 28)),
-            const SizedBox(height: 8),
-            const WeaveRule(height: 3, opacity: 0.85),
-            const SizedBox(height: 3),
-            Container(height: 1, color: IvoireColors.lineSoft),
-            const SizedBox(height: 16),
+            const SizedBox(height: 6),
+            Text('Recherche', style: titleStyle(size: 30, weight: FontWeight.w700)),
+            const SizedBox(height: 10),
+            const WeaveRule(height: 3, opacity: 0.9),
+            const SizedBox(height: 20),
             ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 620),
               child: TextField(
                 controller: _controller,
+                focusNode: _focus,
                 autofocus: true,
                 textInputAction: TextInputAction.search,
-                decoration: const InputDecoration(
+                onChanged: _onChanged,
+                onSubmitted: (value) =>
+                    context.go('/recherche?q=${Uri.encodeQueryComponent(value.trim())}'),
+                decoration: InputDecoration(
                   hintText: 'Un nom, un lieu, une langue…',
-                  prefixIcon: Icon(Icons.search, size: 20),
+                  prefixIcon: const Icon(Icons.search, size: 20),
+                  suffixIcon: _controller.text.isEmpty
+                      ? null
+                      : IconButton(
+                          tooltip: 'Effacer',
+                          icon: const Icon(Icons.close, size: 18),
+                          onPressed: () {
+                            _controller.clear();
+                            _onChanged('');
+                            _focus.requestFocus();
+                          },
+                        ),
                 ),
-                onSubmitted: _submit,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 22),
             if (_future == null)
-              const Text(
-                'Saisissez un terme pour parcourir les articles publiés.',
-                style: TextStyle(fontSize: 14, color: IvoireColors.muted),
+              _EmptyState(
+                onPick: (term) {
+                  _controller.text = term;
+                  _focus.requestFocus();
+                  _onChanged(term);
+                },
               )
             else
-              FutureBuilder<PagedArticles>(
-                future: _future,
-                builder: (context, snapshot) {
-                  if (snapshot.hasError) {
-                    return Text('${snapshot.error}',
-                        style: const TextStyle(fontSize: 14));
-                  }
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 220),
+                child: FutureBuilder<PagedArticles>(
+                  key: ValueKey(_term),
+                  future: _future,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError) {
+                      return Text('${snapshot.error}',
+                          style: const TextStyle(fontSize: 14));
+                    }
 
-                  if (!snapshot.hasData) {
-                    return const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 40),
-                      child: Center(child: CircularProgressIndicator()),
+                    if (!snapshot.hasData) {
+                      return const Column(
+                        key: ValueKey('loading'),
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Skeleton(width: 260, height: 12),
+                          SizedBox(height: 18),
+                          SkeletonParagraph(lines: 2),
+                          SizedBox(height: 12),
+                          SkeletonParagraph(lines: 2),
+                        ],
+                      );
+                    }
+
+                    final page = snapshot.data!;
+
+                    if (page.items.isEmpty) {
+                      return Text(
+                        'Aucun résultat pour « $_term ». Essayez un autre mot, '
+                        'ou parcourez les domaines depuis l’accueil.',
+                        style: const TextStyle(fontSize: 14, height: 1.6),
+                      );
+                    }
+
+                    return Column(
+                      key: ValueKey('results-$_term'),
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Résultats 1 à ${page.items.length} sur ${page.total} pour « $_term »',
+                          style: const TextStyle(
+                              fontSize: 12.5, color: IvoireColors.muted),
+                        ),
+                        const SizedBox(height: 16),
+                        for (final article in page.items) _Result(article: article),
+                      ],
                     );
-                  }
-
-                  final page = snapshot.data!;
-
-                  if (page.items.isEmpty) {
-                    return Text(
-                      'Aucun résultat pour « ${widget.query} ».',
-                      style: const TextStyle(fontSize: 14),
-                    );
-                  }
-
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Résultats 1 à ${page.items.length} sur ${page.total} pour « ${widget.query} »',
-                        style: const TextStyle(
-                            fontSize: 12.5, color: IvoireColors.muted),
-                      ),
-                      const SizedBox(height: 14),
-                      for (final article in page.items) _Result(article: article),
-                    ],
-                  );
-                },
+                  },
+                ),
               ),
           ],
         ),
@@ -140,45 +199,109 @@ class _SearchPageState extends State<SearchPage> {
   }
 }
 
-class _Result extends StatelessWidget {
+class _EmptyState extends StatelessWidget {
+  const _EmptyState({required this.onPick});
+
+  final void Function(String term) onPick;
+
+  static const List<String> _suggestions = [
+    'Abidjan',
+    'cacao',
+    'Baoulé',
+    'Yamoussoukro',
+    'attiéké',
+    'indépendance',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Saisissez un terme : les résultats apparaissent au fil de la frappe.',
+          style: TextStyle(fontSize: 14, color: IvoireColors.muted),
+        ),
+        const SizedBox(height: 18),
+        Text('SUGGESTIONS', style: kickerStyle(color: IvoireColors.faint)),
+        const SizedBox(height: 10),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            for (final suggestion in _suggestions)
+              OutlinedButton(
+                onPressed: () => onPick(suggestion),
+                child: Text(suggestion, style: const TextStyle(fontSize: 13)),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _Result extends StatefulWidget {
   const _Result({required this.article});
 
   final ArticleSummary article;
 
   @override
+  State<_Result> createState() => _ResultState();
+}
+
+class _ResultState extends State<_Result> {
+  bool _hovered = false;
+
+  @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 18),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          InkWell(
-            onTap: () => context.go('/articles/${article.slug}'),
-            child: Text(
-              article.title,
-              style: serifStyle(
-                size: 18,
-                weight: FontWeight.w600,
-                color: IvoireColors.link,
-              ),
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      child: GestureDetector(
+        onTap: () => context.go('/articles/${widget.article.slug}'),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: _hovered ? IvoireColors.highlight : IvoireColors.paper,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: _hovered ? IvoireColors.orange.withValues(alpha: 0.5) : IvoireColors.lineSoft,
             ),
           ),
-          const SizedBox(height: 2),
-          Text(
-            [
-              if (article.categoryName != null) article.categoryName!,
-              article.typeLabel,
-              if (article.publishedAt != null) formatDate(article.publishedAt),
-              '${article.readingMinutes} min',
-            ].join(' · '),
-            style: const TextStyle(fontSize: 12, color: IvoireColors.faint),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.article.title,
+                style: titleStyle(
+                  size: 17,
+                  weight: FontWeight.w700,
+                  color: _hovered ? IvoireColors.greenDeep : IvoireColors.link,
+                ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                [
+                  if (widget.article.categoryName != null) widget.article.categoryName!,
+                  widget.article.typeLabel,
+                  if (widget.article.publishedAt != null)
+                    formatDate(widget.article.publishedAt),
+                  '${widget.article.readingMinutes} min',
+                ].join(' · '),
+                style: const TextStyle(fontSize: 11.5, color: IvoireColors.faint),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                widget.article.summary,
+                style: const TextStyle(fontSize: 13.5, height: 1.6),
+              ),
+            ],
           ),
-          const SizedBox(height: 4),
-          Text(
-            article.summary,
-            style: const TextStyle(fontSize: 13.5, height: 1.55),
-          ),
-        ],
+        ),
       ),
     );
   }
