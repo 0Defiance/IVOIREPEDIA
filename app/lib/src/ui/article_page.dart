@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
 import '../api.dart';
+import '../article_export.dart';
 import '../models/article.dart';
 import '../theme.dart';
 import 'format.dart';
@@ -102,6 +103,7 @@ class _ArticleBodyState extends State<_ArticleBody> {
   ];
 
   int _tab = 0;
+  bool _exporting = false;
   final Map<String, GlobalKey> _sectionKeys = {};
 
   ArticleDetail get _article => widget.article;
@@ -130,17 +132,56 @@ class _ArticleBodyState extends State<_ArticleBody> {
     );
   }
 
-  Future<void> _copyLink() async {
-    final messenger = ScaffoldMessenger.of(context);
-    await Clipboard.setData(
-      ClipboardData(text: 'https://ivoirepedia.alwaysdata.net/#/articles/${_article.slug}'),
-    );
-
+  /// Message de confirmation, sur le messager saisi avant l'attente :
+  /// l'utilisateur peut changer de page pendant la copie ou la génération.
+  void _notify(ScaffoldMessengerState messenger, String message) {
     messenger
       ..hideCurrentSnackBar()
-      ..showSnackBar(
-        const SnackBar(content: Text('Lien de l’article copié.')),
+      ..showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  Future<void> _copyLink() async {
+    final messenger = ScaffoldMessenger.of(context);
+    await Clipboard.setData(ClipboardData(text: articleUrl(_article.slug)));
+    _notify(messenger, 'Lien de l’article copié.');
+  }
+
+  Future<void> _copyArticle() async {
+    final messenger = ScaffoldMessenger.of(context);
+    await Clipboard.setData(ClipboardData(text: articleAsText(_article)));
+    _notify(messenger, 'Article copié : titre, texte et références.');
+  }
+
+  Future<void> _copySection(String title) async {
+    final messenger = ScaffoldMessenger.of(context);
+    await Clipboard.setData(
+      ClipboardData(text: sectionAsText(_article, title)),
+    );
+    _notify(messenger, 'Section « $title » copiée.');
+  }
+
+  Future<void> _downloadPdf() async {
+    if (_exporting) {
+      return;
+    }
+
+    final messenger = ScaffoldMessenger.of(context);
+    setState(() => _exporting = true);
+    _notify(messenger, 'Préparation du PDF…');
+
+    try {
+      final name = await downloadArticlePdf(_article);
+      _notify(messenger, '« $name » téléchargé.');
+    } catch (_) {
+      _notify(
+        messenger,
+        'Le PDF n’a pas pu être généré. Réessayez dans un instant.',
       );
+    } finally {
+      if (mounted) {
+        setState(() => _exporting = false);
+      }
+    }
   }
 
   @override
@@ -205,6 +246,16 @@ class _ArticleBodyState extends State<_ArticleBody> {
                   Text(
                     '${_article.readingMinutes} min de lecture',
                     style: const TextStyle(fontSize: 12.5, color: IvoireColors.faint),
+                  ),
+                  _ToolButton(
+                    icon: Icons.copy_all_outlined,
+                    label: 'Copier l’article',
+                    onTap: _copyArticle,
+                  ),
+                  _ToolButton(
+                    icon: Icons.picture_as_pdf_outlined,
+                    label: _exporting ? 'Préparation…' : 'Télécharger en PDF',
+                    onTap: _downloadPdf,
                   ),
                   _ToolButton(
                     icon: Icons.link,
@@ -277,6 +328,7 @@ class _ArticleBodyState extends State<_ArticleBody> {
                 ops: _article.contentOps,
                 sectionKeys: _sectionKeys,
                 afterLead: afterLead,
+                onCopySection: _copySection,
               ),
               if (_article.references.isNotEmpty)
                 _References(references: _article.references),

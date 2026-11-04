@@ -15,10 +15,14 @@ class DeltaContent extends StatelessWidget {
     required this.ops,
     this.sectionKeys,
     this.afterLead,
+    this.onCopySection,
     super.key,
   });
 
   final List<Map<String, dynamic>> ops;
+
+  /// Copie le texte d'une section seule (offert à côté de « modifier »).
+  final void Function(String title)? onCopySection;
 
   /// Bloc inséré juste après le chapeau (le sommaire, comme sur une page
   /// d'encyclopédie, se place après l'introduction).
@@ -119,12 +123,14 @@ class DeltaContent extends StatelessWidget {
 
     if (header is int) {
       final key = sectionKeys?[text];
-      final content = KeyedSubtree(
+      return KeyedSubtree(
         key: key,
-        child: _SectionHeading(text: text, level: header),
+        child: _SectionHeading(
+          text: text,
+          level: header,
+          onCopy: onCopySection == null ? null : () => onCopySection!(text),
+        ),
       );
-
-      return content;
     }
 
     if (list != null) {
@@ -180,10 +186,15 @@ class DeltaContent extends StatelessWidget {
 /// Titre de section : deux niveaux seulement, filet fin, lien « modifier »
 /// réduit à l'essentiel comme sur une page d'encyclopédie.
 class _SectionHeading extends StatelessWidget {
-  const _SectionHeading({required this.text, required this.level});
+  const _SectionHeading({
+    required this.text,
+    required this.level,
+    this.onCopy,
+  });
 
   final String text;
   final int level;
+  final VoidCallback? onCopy;
 
   @override
   Widget build(BuildContext context) {
@@ -210,6 +221,16 @@ class _SectionHeading extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 10),
+              if (onCopy != null) ...[
+                HoverLink(
+                  label: 'copier',
+                  color: IvoireColors.faint,
+                  hoverColor: IvoireColors.link,
+                  onTap: onCopy!,
+                  style: const TextStyle(fontSize: 11.5, height: 1.2),
+                ),
+                const SizedBox(width: 10),
+              ],
               HoverLink(
                 label: 'modifier',
                 color: IvoireColors.faint,

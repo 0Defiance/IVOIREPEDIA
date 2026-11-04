@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:ivoirepedia/src/api.dart';
+import 'package:ivoirepedia/src/article_export.dart';
 import 'package:ivoirepedia/src/models/article.dart';
 import 'package:ivoirepedia/src/models/category.dart';
 import 'package:ivoirepedia/src/theme.dart';
@@ -111,6 +113,71 @@ void main() {
 
     // Un lien « modifier » par titre seulement.
     expect(find.text('modifier'), findsNWidgets(2));
+  });
+
+  testWidgets('l’article se copie en entier, puis section par section',
+      (tester) async {
+    final clipboard = <String>[];
+    final messenger = tester.binding.defaultBinaryMessenger;
+
+    messenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
+      if (call.method == 'Clipboard.setData') {
+        clipboard.add((call.arguments as Map)['text'] as String);
+      }
+      return null;
+    });
+    addTearDown(
+      () => messenger.setMockMethodCallHandler(SystemChannels.platform, null),
+    );
+
+    await tester.pumpWidget(_wrap(const ArticlePage(slug: 'felix-houphouet-boigny')));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Copier l’article'));
+    await tester.pumpAndSettle();
+
+    expect(clipboard, hasLength(1));
+    expect(clipboard.last, startsWith('Félix Houphouët-Boigny'));
+    expect(clipboard.last, contains('Il est né à N’Gokro'));
+    expect(clipboard.last, contains('La présidence'));
+    expect(clipboard.last, contains('1. RGPH 2021, 2022'));
+    expect(clipboard.last, contains('Catégories : Personnalités, Indépendance'));
+    expect(clipboard.last, contains('$kSiteUrl/#/articles/felix-houphouet-boigny'));
+
+    // Chaque titre de section offre sa propre copie.
+    expect(find.text('copier'), findsNWidgets(2));
+
+    final sectionLink = find.text('copier').last;
+    await tester.ensureVisible(sectionLink);
+    await tester.pumpAndSettle();
+    await tester.tap(sectionLink);
+    await tester.pumpAndSettle();
+
+    expect(clipboard, hasLength(2));
+    expect(clipboard.last, startsWith('Le RDA et la loi-cadre'));
+    expect(clipboard.last, contains('Il dirige le pays de 1960 à 1993.'));
+    expect(clipboard.last, isNot(contains('La présidence')));
+    expect(clipboard.last, contains('$kSiteUrl/#/articles/felix-houphouet-boigny'));
+  });
+
+  test('l’article se télécharge aussi en PDF', () async {
+    final article = await _ArticleApi().fetchArticle('felix-houphouet-boigny');
+    String? savedName;
+    Uint8List? savedBytes;
+
+    final name = await downloadArticlePdf(
+      article,
+      fonts: await ArticlePdfFonts.load(),
+      save: (name, bytes) async {
+        savedName = name;
+        savedBytes = bytes;
+      },
+    );
+
+    expect(name, 'felix-houphouet-boigny.pdf');
+    expect(savedName, 'felix-houphouet-boigny');
+    expect(String.fromCharCodes(savedBytes!.take(5)), '%PDF-');
+    expect(savedBytes!.length, greaterThan(2000));
   });
 
   testWidgets('une erreur 404 affiche un message et un retour à l’accueil',

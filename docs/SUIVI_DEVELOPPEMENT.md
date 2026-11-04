@@ -299,6 +299,28 @@
 
 ---
 
+### 4 novembre 2026 (séance 12) — Copier et télécharger un article
+
+**Motif (demande du titulaire)** : pouvoir copier un article, y compris section par section, et le télécharger en PDF.
+
+**Fait**
+- **Un seul texte source** : `app/lib/src/article_export.dart` lit le contenu Delta une fois (`articleBlocks`) et en tire le texte du presse-papiers comme celui du PDF. Le rendu à l'écran garde son propre lecteur, mais les trois sorties décrivent les mêmes blocs (chapeau, titres, listes, citations).
+- **Copier l'article** : bouton dans la ligne de métadonnées. Le presse-papiers reçoit le titre, le corps mis à plat, les références numérotées, les catégories, puis la source (`https://ivoirepedia.alwaysdata.net/site/#/articles/{slug}`) et la licence CC BY-SA 4.0.
+- **Copier une section** : chaque titre de section porte désormais, à côté de « modifier », un lien « copier » qui ne prend que cette section — son titre, ses paragraphes, puis la source.
+- **Télécharger en PDF** : `pdf` construit un A4 (`MultiPage`) avec la police Inter embarquée — nécessaire car Latin-1 ne couvre ni l'apostrophe courbe ni le tiret cadratin —, un chapeau de métadonnées, le corps, les références, les catégories et une notice de licence, avec la source et la pagination en pied de page. `file_saver` déclenche le téléchargement du navigateur sous `{slug}.pdf`.
+- **Lien de partage corrigé** : le bouton « Copier le lien » produisait une adresse sans `/site/` (donc inexistante) ; l'URL est maintenant construite par `articleUrl()`.
+
+**Vérifié**
+- `flutter analyze` → « No issues found! » ; `flutter test` → **9 tests** verts, dont deux nouveaux : la copie de l'article complet puis d'une seule section (presse-papiers intercepté, contenu et provenance vérifiés), et la génération du PDF avec les vraies polices Inter (en-tête `%PDF-`, taille non triviale).
+- Boutons visibles et actionnés dans le navigateur sur `#/articles/abidjan` : « Copier l'article » affiche « Article copié : titre, texte et références. »
+
+**Reste**
+1. Vérifier le téléchargement PDF dans Chrome, Firefox et Safari (le déclenchement du téléchargement par le navigateur ne se prête pas au test automatisé).
+2. Faire relire les 51 articles par un historien ou un éditeur avant toute ouverture publique.
+3. Enrichir encore : préhistoire, religions, éducation, santé, transports, médias, gastronomie régionale.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
