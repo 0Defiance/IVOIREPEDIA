@@ -7,7 +7,6 @@ import '../theme.dart';
 import 'shell.dart';
 import 'wiki_actions.dart';
 import 'widgets/interactive.dart';
-import 'widgets/ivorian_patterns.dart';
 
 /// Page de catégorie : « Catégorie : Histoire », sous-catégories et pages.
 class CategoryPage extends StatefulWidget {
@@ -71,7 +70,7 @@ class _CategoryPageState extends State<CategoryPage> {
   Widget build(BuildContext context) {
     return SiteShell(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
         child: FutureBuilder(
           future: _future,
           builder: (context, snapshot) {
@@ -134,23 +133,23 @@ class _CategoryPageState extends State<CategoryPage> {
                   ],
                 ),
                 const SizedBox(height: 18),
-                Text('Catégorie : ${category.name}',
-                    style: titleStyle(size: 28, height: 1.2)),
-                const SizedBox(height: 8),
-                const WeaveRule(height: 3, opacity: 0.85),
-                const SizedBox(height: 3),
-                Container(height: 1, color: IvoireColors.lineSoft),
+                Text(
+                  'Catégorie : ${category.name}',
+                  style: titleStyle(size: 27, weight: FontWeight.w600, height: 1.2),
+                ),
+                const SizedBox(height: 12),
+                Container(height: 1, color: IvoireColors.line),
                 const SizedBox(height: 14),
                 Text(
                   category.description?.isNotEmpty == true
                       ? category.description!
                       : 'Articles publiés dans ce domaine de l’encyclopédie.',
-                  style: const TextStyle(fontSize: 14, height: 1.6),
+                  style: const TextStyle(fontSize: 14.5, height: 1.7),
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 12),
                 Text(
                   '${category.articleCount} page${category.articleCount > 1 ? 's' : ''} dans cette catégorie.',
-                  style: const TextStyle(fontSize: 12.5, color: IvoireColors.muted),
+                  style: const TextStyle(fontSize: 12, color: IvoireColors.faint),
                 ),
                 if (category.children.isNotEmpty) ...[
                   const SizedBox(height: 22),
@@ -231,8 +230,8 @@ class _Heading extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: titleStyle(size: 19, weight: FontWeight.w600)),
-          const SizedBox(height: 5),
+          Text(label, style: titleStyle(size: 18.5, weight: FontWeight.w600)),
+          const SizedBox(height: 7),
           const Divider(height: 1, color: IvoireColors.lineSoft),
         ],
       ),

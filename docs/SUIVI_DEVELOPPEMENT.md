@@ -285,10 +285,11 @@
 - **Ordre de lecture** : le sommaire passe **après le chapeau** ; sur petit écran l'infobox passe elle aussi après l'introduction (auparavant elle occupait tout le premier écran).
 - **Onglets plats** : la barre d'onglets quitte les pastilles pour un soulignement vert du titre actif, sur une seule ligne défilante ; le reste des repères (bandeau, barre latérale) est inchangé.
 - **Repères resserrés** : titre 30 px, filet simple à la place du dégradé, métadonnées allégées (la mention « Un article de IVOIREPEDIA » disparaît sur mobile), espacements des références et des catégories réduits.
+- **Même langage sur les autres pages** : l'accueil abandonne l'encadré dégradé, les cartes à en-tête vert et les pastilles pour une introduction en chapeau suivie de sections séparées par un filet fin ; les domaines deviennent une liste de liens avec leur nombre d'articles, en deux colonnes sur grand écran. La recherche remplace ses suggestions en pastilles par une ligne de liens et ses résultats encadrés par une liste de lignes séparées d'un filet. La page de catégorie remplace le filet tricolore par un trait simple.
 
 **Vérifié**
-- `flutter analyze` → « No issues found! » ; `flutter test` → **6 tests** verts, dont un nouveau qui vérifie qu'un paragraphe suivant un titre reste un paragraphe (15,5 px, graisse 400) et qu'il n'y a qu'un lien « modifier » par titre.
-- Rendus contrôlés dans le navigateur, en 1280 px et en 420 px, sur `#/articles/felix-houphouet-boigny` et `#/articles/abidjan` (chapeau, sommaire, sections, citation, références, catégories) ; captures dans `docs/captures/`.
+- `flutter analyze` → « No issues found! » ; `flutter test` → **7 tests** verts, dont un nouveau qui vérifie qu'un paragraphe suivant un titre reste un paragraphe (15,5 px, graisse 400) et qu'il n'y a qu'un lien « modifier » par titre, et un second qui rend l'accueil en 1280 × 1000 pour couvrir la disposition à deux colonnes.
+- Rendus contrôlés dans le navigateur, en 1280 px et en 420 px, sur `#/articles/felix-houphouet-boigny`, `#/articles/abidjan`, l'accueil, `#/recherche` et `#/categories/histoire` ; captures dans `docs/captures/`. Un « → » isolé s'affichant en carré (glyphe absent d'Inter), le lien de l'accueil s'en tient au texte.
 - Build `flutter build web --release --base-href=/site/` redéployé sur Alwaysdata ; API et fontes toujours en `200`, aucune erreur console.
 
 **Reste**

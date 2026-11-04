@@ -9,7 +9,6 @@ import '../theme.dart';
 import 'format.dart';
 import 'shell.dart';
 import 'widgets/interactive.dart';
-import 'widgets/ivorian_patterns.dart';
 
 /// Recherche publique (`/recherche?q=`) : les résultats se rafraîchissent
 /// pendant la frappe, sans bouton à presser.
@@ -91,10 +90,10 @@ class _SearchPageState extends State<SearchPage> {
           children: [
             Text('RECHERCHER DANS L’ENCYCLOPÉDIE', style: kickerStyle()),
             const SizedBox(height: 6),
-            Text('Recherche', style: titleStyle(size: 30, weight: FontWeight.w700)),
-            const SizedBox(height: 10),
-            const WeaveRule(height: 3, opacity: 0.9),
-            const SizedBox(height: 20),
+            Text('Recherche', style: titleStyle(size: 30, weight: FontWeight.w600)),
+            const SizedBox(height: 12),
+            Container(height: 1, color: IvoireColors.line),
+            const SizedBox(height: 18),
             ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 620),
               child: TextField(
@@ -214,16 +213,17 @@ class _EmptyState extends StatelessWidget {
           style: TextStyle(fontSize: 14, color: IvoireColors.muted),
         ),
         const SizedBox(height: 18),
-        Text('SUGGESTIONS', style: kickerStyle(color: IvoireColors.faint)),
-        const SizedBox(height: 10),
+        Text('Quelques sujets :', style: titleStyle(size: 14, weight: FontWeight.w600)),
+        const SizedBox(height: 8),
         Wrap(
-          spacing: 8,
-          runSpacing: 8,
+          spacing: 16,
+          runSpacing: 6,
           children: [
             for (final suggestion in _suggestions)
-              OutlinedButton(
-                onPressed: () => onPick(suggestion),
-                child: Text(suggestion, style: const TextStyle(fontSize: 13)),
+              HoverLink(
+                label: suggestion,
+                onTap: () => onPick(suggestion),
+                style: const TextStyle(fontSize: 14),
               ),
           ],
         ),
@@ -253,14 +253,12 @@ class _ResultState extends State<_Result> {
       child: GestureDetector(
         onTap: () => context.go('/articles/${widget.article.slug}'),
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
-          margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(14),
+          duration: const Duration(milliseconds: 140),
+          padding: const EdgeInsets.fromLTRB(12, 12, 12, 14),
           decoration: BoxDecoration(
-            color: _hovered ? IvoireColors.highlight : IvoireColors.paper,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: _hovered ? IvoireColors.orange.withValues(alpha: 0.5) : IvoireColors.lineSoft,
+            color: _hovered ? IvoireColors.ivory : Colors.transparent,
+            border: const Border(
+              bottom: BorderSide(color: IvoireColors.lineSoft),
             ),
           ),
           child: Column(
@@ -270,7 +268,7 @@ class _ResultState extends State<_Result> {
                 widget.article.title,
                 style: titleStyle(
                   size: 17,
-                  weight: FontWeight.w700,
+                  weight: FontWeight.w600,
                   color: _hovered ? IvoireColors.greenDeep : IvoireColors.link,
                 ),
               ),
@@ -283,12 +281,12 @@ class _ResultState extends State<_Result> {
                     formatDate(widget.article.publishedAt),
                   '${widget.article.readingMinutes} min',
                 ].join(' · '),
-                style: const TextStyle(fontSize: 11.5, color: IvoireColors.faint),
+                style: const TextStyle(fontSize: 12, color: IvoireColors.faint),
               ),
               const SizedBox(height: 6),
               Text(
                 widget.article.summary,
-                style: const TextStyle(fontSize: 13.5, height: 1.6),
+                style: const TextStyle(fontSize: 13.5, height: 1.65),
               ),
             ],
           ),

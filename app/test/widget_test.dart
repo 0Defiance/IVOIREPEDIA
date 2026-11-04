@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:ivoirepedia/src/api.dart';
@@ -82,10 +83,24 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('IVOIREPEDIA'), findsWidgets);
-    expect(find.text('Bienvenue sur IVOIREPEDIA'), findsOneWidget);
+    expect(find.textContaining('encyclopédie libre consacrée'), findsOneWidget);
     expect(find.text('Article du jour'), findsOneWidget);
     expect(find.text('Le saviez-vous ?'), findsOneWidget);
-    expect(find.text('Histoire (2)'), findsOneWidget);
+    expect(find.text('Explorer par domaine'), findsOneWidget);
+    expect(find.text('Histoire'), findsWidgets);
     expect(find.text('Abidjan'), findsWidgets);
+  });
+
+  testWidgets('la page d’accueil se rend aussi en grand écran', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1280, 1000);
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(IvoirepediaApp(api: FakeApi()));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Article du jour'), findsOneWidget);
+    expect(find.text('Explorer par domaine'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 }
