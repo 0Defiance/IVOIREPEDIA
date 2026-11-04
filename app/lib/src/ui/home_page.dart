@@ -230,7 +230,14 @@ class _Welcome extends StatelessWidget {
             children: [
               AnimatedCount(value: total, label: 'articles publiés'),
               AnimatedCount(value: domains, label: 'domaines'),
-              const AnimatedCount(value: 100, label: 'des sources citées', suffix: '%'),
+              const Text(
+                'Sans publicité, sans traceur',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: IvoireColors.greenDeep,
+                ),
+              ),
             ],
           ),
         ],

@@ -76,18 +76,9 @@ class _SearchPageState extends State<SearchPage> {
     }
   }
 
-  void _onChanged(String value) {
-    _search(value);
-
-    // Reflète le terme dans l'URL sans recharger la page.
-    final target = value.trim().isEmpty
-        ? '/recherche'
-        : '/recherche?q=${Uri.encodeQueryComponent(value.trim())}';
-
-    if (GoRouterState.of(context).uri.toString() != target) {
-      context.replace(target);
-    }
-  }
+  // La frappe relance seulement la recherche : l'URL est mise à jour à la
+  // validation, pour ne pas empiler deux requêtes par caractère.
+  void _onChanged(String value) => _search(value);
 
   @override
   Widget build(BuildContext context) {

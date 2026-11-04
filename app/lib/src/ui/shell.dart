@@ -474,7 +474,7 @@ class _Sidebar extends StatelessWidget {
               border: Border.all(color: IvoireColors.lineSoft),
             ),
             child: const Text(
-              'Chaque article cite ses sources. Une encyclopédie se juge à ses références.',
+              'Les articles qui s’appuient sur des sources les citent en bas de page.',
               style: TextStyle(fontSize: 11.5, height: 1.5, color: IvoireColors.muted),
             ),
           ),

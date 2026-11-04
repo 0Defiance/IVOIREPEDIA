@@ -262,8 +262,10 @@
 - **Règle de prudence appliquée** : faits établis uniquement, formulations prudentes quand une date ou un chiffre est discuté (pas de chiffres de population inventés, pas de résultats électoraux récents), et une référence réelle pour les articles sensibles (UNESCO, Journal officiel, INS).
 
 **Vérifié**
-- `flutter analyze` → « No issues found! » ; `flutter test` → **3 tests** verts.
-- Backend : `composer test` → **11 tests / 32 assertions**, `format:check` 53 fichiers, `analyse` « No errors ». Base locale re-seedée : **51 articles**.
+- `flutter analyze` → « No issues found! » ; `flutter test` → **5 tests** verts, dont deux nouveaux sur la recherche (`search_page_test.dart` : terme passé dans l'URL, relance après la frappe).
+- Backend : `composer test` → **11 tests / 32 assertions**, `format:check` 53 fichiers, `analyse` « No errors ». Base locale et base de production re-seedées : **51 articles**.
+- En ligne : `/site/` charge `main.dart.js`, les trois fontes Inter (400/600/700) et `/api/v1/...` en `200`, sans erreur console ; lien profond `#/articles/bouake` et `#/recherche?q=cacao` vérifiés (requêtes `articles/bouake` et `search?q=cacao` en `200`).
+- Correctif d'exploitation : la page racine du site renvoyait `500` (clé `APP_KEY` absente de l'environnement de production) ; clé régénérée, `/` répond `200`.
 
 **Reste**
 1. Faire relire les 51 articles par un historien ou un éditeur avant toute ouverture publique (les textes sont sourcés mais restent de démonstration).
