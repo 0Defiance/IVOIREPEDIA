@@ -4,7 +4,7 @@
 > Chaque séance de travail ajoute une entrée datée.
 > Règle : ce journal, le dépôt local et le dépôt distant restent **au même niveau d'information**.
 
-**Version** : 1.6 · **Dernière mise à jour** : 3 novembre 2026
+**Version** : 1.7 · **Dernière mise à jour** : 3 novembre 2026
 
 **État en une phrase** : **IVOIREPEDIA est en ligne** sur son compte Alwaysdata dédié — Sprint 0 terminé, backend déployé (Laravel 13.39.0, PHP 8.4.27), le **site est lisible en ligne** (`https://ivoirepedia.alwaysdata.net/site/`) et branché sur l'API (`/api/v1/articles`, `/categories`, `/search`). Restent le contenu éditorial, l'authentification (Sprint 1) et l'éditeur (Sprint 2).
 
@@ -215,6 +215,32 @@
 1. Brancher les commandes affichées : connexion/inscription (Sprint 1), modification (Sprint 2), discussion et historique (Sprint 3).
 2. Contenu éditorial réel et 30 articles de qualité avant ouverture publique.
 3. Sommaire cliquable (ancres de section) — le sommaire est pour l'instant indicatif.
+
+---
+
+---
+
+### 3 novembre 2026 (séance 9) — Identité ivoirienne et fond animé
+
+**Motif (demande du titulaire)** : la refonte précédente ressemblait trop à Wikipédia ; il faut une **touche ivoirienne** et un site **plus vivant**, avec un fond qui bouge et des motifs liés à la Côte d'Ivoire.
+
+**Fait**
+- **Palette** réancrée sur le pays : ivoire chaud, sable, terre cuite, pourpre, orange et vert du drapeau, or des tissus. Les liens passent du bleu encyclopédique au **vert forêt** ; l'orange porte l'accent éditorial.
+- **Typographie** : une ligne de « kicker » (domaine · type) en capitales terre cuite au-dessus des titres, titre serif, puis un **filet tissé orange → or → vert** (`WeaveRule`).
+- **Bande kente animée** en haut de page : blocs de couleurs irréguliers et trame tissée, peints en code, défilement lent.
+- **Onglets en pastilles** (vert plein pour l'onglet actif) au lieu des boîtes grises ; colonne de navigation sur fond sable avec titres terre cuite, puces losange et encart « l'encyclopédie cite ses sources ».
+- **Fond animé** (`IvorianBackdrop`) : lavis orange → vert et **champ de motifs de pagne** (losanges baoulé, cercles de Korhogo, chevrons, sabliers, croix, spirales) qui dérive très lentement. Tout est `CustomPainter`, **aucune image binaire** dans le dépôt.
+- **Vie maîtrisée** : cadence du fond limitée à **20 images/s** (le déplacement est de quelques pixels par seconde), apparition douce du contenu à l'ouverture d'une page, respect de la préférence système « réduire les animations ».
+- Le bandeau n'affiche plus le menu à côté de la colonne de navigation sur grand écran (seuil 1000 px cohérent avec l'affichage de la colonne).
+
+**Vérifié**
+- `flutter analyze` → « No issues found! » ; `flutter test` → **3 tests** verts. Les tests désactivent le mouvement (`ivoireMotionEnabled = false`) pour que `pumpAndSettle` se stabilise ; l'animation est donc vérifiée en ligne, pas en test unitaire.
+- Site republié sous `/site/` ; accueil rechargé : `main.dart.js`, `/api/v1/categories`, `/api/v1/articles` en `200`, aucune erreur console ; route `#/articles/abidjan` rechargée : `/api/v1/articles/abidjan` en `200`, aucune erreur console.
+
+**Reste**
+1. Contrôler le rendu sur mobile réel (le fond animé est le poste de coût principal).
+2. Brancher les commandes affichées (compte, modification, discussion, historique).
+3. Sommaire cliquable et partage social (image d'aperçu aux couleurs ivoiriennes).
 
 ---
 

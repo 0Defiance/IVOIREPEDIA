@@ -6,6 +6,7 @@ import '../models/category.dart';
 import '../theme.dart';
 import 'shell.dart';
 import 'wiki_actions.dart';
+import 'widgets/ivorian_patterns.dart';
 
 /// Page de catégorie : « Catégorie : Histoire », sous-catégories et pages.
 class CategoryPage extends StatefulWidget {
@@ -125,8 +126,10 @@ class _CategoryPageState extends State<CategoryPage> {
                 const SizedBox(height: 18),
                 Text('Catégorie : ${category.name}',
                     style: serifStyle(size: 28, height: 1.2)),
-                const SizedBox(height: 6),
-                Container(height: 1, color: IvoireColors.line),
+                const SizedBox(height: 8),
+                const WeaveRule(height: 3, opacity: 0.85),
+                const SizedBox(height: 3),
+                Container(height: 1, color: IvoireColors.lineSoft),
                 const SizedBox(height: 14),
                 Text(
                   category.description?.isNotEmpty == true

@@ -5,6 +5,7 @@ import 'package:ivoirepedia/src/api.dart';
 import 'package:ivoirepedia/src/models/article.dart';
 import 'package:ivoirepedia/src/models/category.dart';
 import 'package:ivoirepedia/src/theme.dart';
+import 'package:ivoirepedia/src/ui/widgets/ivorian_patterns.dart';
 import 'package:ivoirepedia/src/ui/article_page.dart';
 
 class _ArticleApi implements IvoirepediaApi {
@@ -72,6 +73,9 @@ Widget _wrap(Widget child, {IvoirepediaApi? api}) {
 }
 
 void main() {
+  // Pas d'animation de fond : `pumpAndSettle` doit pouvoir se stabiliser.
+  setUp(() => ivoireMotionEnabled = false);
+
   testWidgets('la page article affiche titre, infobox, contenu et références',
       (tester) async {
     await tester.pumpWidget(_wrap(const ArticlePage(slug: 'felix-houphouet-boigny')));

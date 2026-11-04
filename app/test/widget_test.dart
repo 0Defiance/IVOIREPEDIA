@@ -4,6 +4,7 @@ import 'package:ivoirepedia/src/api.dart';
 import 'package:ivoirepedia/src/app.dart';
 import 'package:ivoirepedia/src/models/article.dart';
 import 'package:ivoirepedia/src/models/category.dart';
+import 'package:ivoirepedia/src/ui/widgets/ivorian_patterns.dart';
 
 /// API en mémoire : les parcours d'interface sont testés sans réseau.
 class FakeApi implements IvoirepediaApi {
@@ -72,6 +73,9 @@ class FakeApi implements IvoirepediaApi {
 }
 
 void main() {
+  // Pas d'animation de fond : `pumpAndSettle` doit pouvoir se stabiliser.
+  setUp(() => ivoireMotionEnabled = false);
+
   testWidgets('la page d’accueil affiche l’article du jour et les domaines',
       (tester) async {
     await tester.pumpWidget(IvoirepediaApp(api: FakeApi()));

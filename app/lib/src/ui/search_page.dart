@@ -6,6 +6,7 @@ import '../models/article.dart';
 import '../theme.dart';
 import 'format.dart';
 import 'shell.dart';
+import 'widgets/ivorian_patterns.dart';
 
 /// Recherche publique (`/recherche?q=`), branchée sur `GET /api/v1/search`.
 class SearchPage extends StatefulWidget {
@@ -66,9 +67,13 @@ class _SearchPageState extends State<SearchPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Text('RECHERCHER DANS L’ENCYCLOPÉDIE', style: kickerStyle()),
+            const SizedBox(height: 4),
             Text('Recherche', style: serifStyle(size: 28)),
-            const SizedBox(height: 6),
-            Container(height: 1, color: IvoireColors.line),
+            const SizedBox(height: 8),
+            const WeaveRule(height: 3, opacity: 0.85),
+            const SizedBox(height: 3),
+            Container(height: 1, color: IvoireColors.lineSoft),
             const SizedBox(height: 16),
             ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 620),

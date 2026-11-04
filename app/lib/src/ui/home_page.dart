@@ -6,6 +6,7 @@ import '../models/category.dart';
 import '../theme.dart';
 import 'shell.dart';
 import 'wiki_actions.dart';
+import 'widgets/ivorian_patterns.dart';
 
 /// Page d'accueil : une « une » d'encyclopédie — accueil, article du jour,
 /// ce qu'il faut savoir, domaines, et colonne d'outils.
@@ -60,9 +61,16 @@ class _HomePageState extends State<HomePage> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Page d'accueil", style: serifStyle(size: 30, height: 1.2)),
+                Text(
+                  "L'ENCYCLOPÉDIE IVOIRIENNE LIBRE  ·  ABIDJAN",
+                  style: kickerStyle(),
+                ),
                 const SizedBox(height: 6),
-                Container(height: 1, color: IvoireColors.line),
+                Text("Page d'accueil", style: serifStyle(size: 30, height: 1.2)),
+                const SizedBox(height: 8),
+                const WeaveRule(height: 3, opacity: 0.85),
+                const SizedBox(height: 3),
+                Container(height: 1, color: IvoireColors.lineSoft),
                 const SizedBox(height: 16),
                 _Welcome(total: data.articles.total, domains: data.categories.length),
                 const SizedBox(height: 18),
@@ -159,14 +167,23 @@ class _Welcome extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(18, 16, 16, 16),
       decoration: BoxDecoration(
-        color: IvoireColors.highlight,
-        border: Border.all(color: IvoireColors.lineSoft),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            IvoireColors.highlight,
+            IvoireColors.ivory.withValues(alpha: 0.6),
+          ],
+        ),
+        border: const Border(left: BorderSide(color: IvoireColors.orange, width: 5)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Text('AKWABA  ·  BIENVENUE', style: kickerStyle()),
+          const SizedBox(height: 4),
           Text(
             "Bienvenue sur IVOIREPEDIA",
             style: serifStyle(size: 21, weight: FontWeight.w600),
@@ -370,16 +387,12 @@ class _Frame extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Container(
-            color: IvoireColors.subtle,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-            child: Text(
-              title,
-              style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                color: IvoireColors.muted,
-              ),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: const BoxDecoration(
+              color: IvoireColors.subtle,
+              border: Border(left: BorderSide(color: IvoireColors.green, width: 3)),
             ),
+            child: Text(title, style: kickerStyle(color: IvoireColors.green)),
           ),
           Padding(padding: const EdgeInsets.all(14), child: child),
         ],

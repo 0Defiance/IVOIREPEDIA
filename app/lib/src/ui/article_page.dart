@@ -9,6 +9,7 @@ import 'shell.dart';
 import 'wiki_actions.dart';
 import 'widgets/delta_content.dart';
 import 'widgets/infobox_table.dart';
+import 'widgets/ivorian_patterns.dart';
 
 /// Page de lecture d'un article (`/articles/{slug}`), présentée comme une
 /// page d'encyclopédie : onglets, sommaire, infobox, références, catégories.
@@ -96,10 +97,20 @@ class _ArticleBody extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 18),
-          Text(article.title, style: serifStyle(size: 30, height: 1.2)),
+          const SizedBox(height: 20),
+          Text(
+            [
+              if (article.categoryName != null) article.categoryName!.toUpperCase(),
+              article.typeLabel.toUpperCase(),
+            ].join('  ·  '),
+            style: kickerStyle(),
+          ),
           const SizedBox(height: 6),
-          Container(height: 1, color: IvoireColors.line),
+          Text(article.title, style: serifStyle(size: 30, height: 1.2)),
+          const SizedBox(height: 8),
+          const WeaveRule(height: 3, opacity: 0.85),
+          const SizedBox(height: 3),
+          Container(height: 1, color: IvoireColors.lineSoft),
           const SizedBox(height: 6),
           Wrap(
             spacing: 12,

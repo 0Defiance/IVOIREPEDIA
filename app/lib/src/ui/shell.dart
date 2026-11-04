@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../brand.dart';
 import '../theme.dart';
 import 'wiki_actions.dart';
+import 'widgets/ivorian_patterns.dart';
 
 /// Largeur de lecture confortable, centrée.
 class PageContainer extends StatelessWidget {
@@ -22,7 +23,8 @@ class PageContainer extends StatelessWidget {
   }
 }
 
-/// Enveloppe du site : bandeau, colonne de navigation, contenu, pied de page.
+/// Enveloppe du site : fond animé, bande tissée, bandeau de recherche,
+/// colonne de navigation, feuille de lecture, pied de page.
 class SiteShell extends StatelessWidget {
   const SiteShell({required this.child, this.searchQuery = '', super.key});
 
@@ -32,40 +34,62 @@ class SiteShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: IvoireColors.paper,
-      drawer: const Drawer(child: _Sidebar()),
-      body: SafeArea(
-        bottom: false,
-        child: Column(
-          children: [
-            _Header(searchQuery: searchQuery),
-            Expanded(
-              child: SingleChildScrollView(
-                child: PageContainer(
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      final wide = constraints.maxWidth >= 1000;
-
-                      return Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (wide) const _Sidebar(),
-                          Expanded(
-                            child: Column(
-                              children: [
-                                child,
-                                const _Footer(),
-                              ],
+      backgroundColor: IvoireColors.sand,
+      drawer: const Drawer(
+        backgroundColor: IvoireColors.ivory,
+        child: SafeArea(child: _Sidebar(width: null)),
+      ),
+      body: IvorianBackdrop(
+        child: SafeArea(
+          bottom: false,
+          child: Column(
+            children: [
+              const KenteBand(),
+              _Header(searchQuery: searchQuery),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: PageContainer(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 14, bottom: 28),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: IvoireColors.paper.withValues(alpha: 0.94),
+                          border: Border.all(color: IvoireColors.lineSoft),
+                          boxShadow: [
+                            BoxShadow(
+                              color: IvoireColors.ink.withValues(alpha: 0.06),
+                              blurRadius: 24,
+                              offset: const Offset(0, 6),
                             ),
-                          ),
-                        ],
-                      );
-                    },
+                          ],
+                        ),
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            final wide = constraints.maxWidth >= 1000;
+
+                            return Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (wide) const _Sidebar(width: 208),
+                                Expanded(
+                                  child: Column(
+                                    children: [
+                                      _Reveal(child: child),
+                                      const _Footer(),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -80,31 +104,32 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: IvoireColors.paper,
-        border: Border(bottom: BorderSide(color: IvoireColors.lineSoft)),
+      decoration: BoxDecoration(
+        color: IvoireColors.ivory.withValues(alpha: 0.96),
+        border: const Border(bottom: BorderSide(color: IvoireColors.lineSoft)),
       ),
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: PageContainer(
         child: LayoutBuilder(
           builder: (context, constraints) {
             final width = constraints.maxWidth;
             final showSearch = width >= 720;
-            final showAccount = width >= 1040;
+            final showAccount = width >= 1000;
 
             return Row(
               children: [
-                Builder(
-                  builder: (context) => IconButton(
-                    tooltip: 'Menu',
-                    icon: const Icon(Icons.menu, size: 22),
-                    onPressed: () => Scaffold.of(context).openDrawer(),
+                if (width < 1000)
+                  Builder(
+                    builder: (context) => IconButton(
+                      tooltip: 'Menu',
+                      icon: const Icon(Icons.menu, size: 22, color: IvoireColors.ink),
+                      onPressed: () => Scaffold.of(context).openDrawer(),
+                    ),
                   ),
-                ),
                 InkWell(
                   onTap: () => wikiGo(context, '/'),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
                     child: IvoireLogo(size: showSearch ? 42 : 34, compact: !showSearch),
                   ),
                 ),
@@ -114,20 +139,25 @@ class _Header extends StatelessWidget {
                 else
                   const Spacer(),
                 if (showAccount) ...[
-                  const SizedBox(width: 6),
-                  _HeaderLink(
-                    label: 'Créer un compte',
-                    onTap: () => wikiNotImplemented(context, 'Créer un compte'),
+                  const SizedBox(width: 8),
+                  TextButton(
+                    onPressed: () => wikiNotImplemented(context, 'Se connecter'),
+                    child: const Text('Se connecter'),
                   ),
-                  _HeaderLink(
-                    label: 'Se connecter',
-                    onTap: () => wikiNotImplemented(context, 'Se connecter'),
+                  const SizedBox(width: 4),
+                  FilledButton(
+                    onPressed: () => wikiNotImplemented(context, 'Créer un compte'),
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+                      textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                    ),
+                    child: const Text('Créer un compte'),
                   ),
                 ],
                 if (!showSearch)
                   IconButton(
                     tooltip: 'Rechercher',
-                    icon: const Icon(Icons.search, size: 22),
+                    icon: const Icon(Icons.search, size: 22, color: IvoireColors.terracotta),
                     onPressed: () => wikiGo(context, '/recherche'),
                   ),
               ],
@@ -167,9 +197,9 @@ class _HeaderSearchState extends State<_HeaderSearch> {
         textInputAction: TextInputAction.search,
         decoration: const InputDecoration(
           hintText: 'Rechercher dans IVOIREPEDIA',
-          prefixIcon: Icon(Icons.search, size: 20, color: IvoireColors.faint),
+          prefixIcon: Icon(Icons.search, size: 20),
           isDense: true,
-          contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 11),
         ),
         onSubmitted: (value) {
           final term = value.trim();
@@ -182,63 +212,125 @@ class _HeaderSearchState extends State<_HeaderSearch> {
   }
 }
 
-class _HeaderLink extends StatelessWidget {
-  const _HeaderLink({required this.label, required this.onTap});
+/// Apparition douce du contenu (une seule fois par page).
+class _Reveal extends StatefulWidget {
+  const _Reveal({required this.child});
 
-  final String label;
-  final VoidCallback onTap;
+  final Widget child;
+
+  @override
+  State<_Reveal> createState() => _RevealState();
+}
+
+class _RevealState extends State<_Reveal> with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 420),
+  );
+
+  late final Animation<double> _opacity = CurvedAnimation(
+    parent: _controller,
+    curve: Curves.easeOut,
+  );
+  late final Animation<Offset> _offset = Tween<Offset>(
+    begin: const Offset(0, 0.012),
+    end: Offset.zero,
+  ).animate(_opacity);
+
+  bool _started = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (_started) {
+      return;
+    }
+
+    _started = true;
+
+    if (ivoireMotionAllowed(context)) {
+      _controller.forward();
+    } else {
+      _controller.value = 1;
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: onTap,
-      style: TextButton.styleFrom(
-        foregroundColor: IvoireColors.link,
-        textStyle: const TextStyle(fontSize: 13.5),
-      ),
-      child: Text(label),
+    return FadeTransition(
+      opacity: _opacity,
+      child: SlideTransition(position: _offset, child: widget.child),
     );
   }
 }
 
-/// Colonne de navigation, comme le menu latéral d'une encyclopédie en ligne.
+/// Colonne de navigation : teinte sable, titres terre cuite, petits losanges.
 class _Sidebar extends StatelessWidget {
-  const _Sidebar();
+  const _Sidebar({this.width});
+
+  final double? width;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 200,
-      padding: const EdgeInsets.fromLTRB(12, 20, 12, 24),
+      width: width,
+      padding: const EdgeInsets.fromLTRB(14, 20, 14, 24),
+      decoration: width == null
+          ? null
+          : const BoxDecoration(
+              color: Color(0x14A9502C),
+              border: Border(right: BorderSide(color: IvoireColors.lineSoft)),
+            ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const MotifDivider(),
+          const SizedBox(height: 16),
           _SidebarGroup(
-            title: 'Navigation',
+            title: 'La maison',
             items: [
               _SidebarItem('Accueil', onTap: () => wikiGo(context, '/')),
-              _SidebarItem('Catégories', onTap: () => wikiGo(context, '/categories/histoire')),
+              _SidebarItem('Tous les domaines', onTap: () => wikiGo(context, '/categories/histoire')),
               _SidebarItem('Recherche', onTap: () => wikiGo(context, '/recherche')),
               _SidebarItem('Article au hasard', onTap: () => wikiNotImplemented(context, 'Article au hasard')),
             ],
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 20),
           _SidebarGroup(
-            title: 'Contribuer',
+            title: 'Écrire ensemble',
             items: [
               _SidebarItem('Créer un article', onTap: () => wikiNotImplemented(context, 'Créer un article')),
               _SidebarItem('Modifier', onTap: () => wikiNotImplemented(context, 'Modifier')),
-              _SidebarItem('Aide', onTap: () => wikiNotImplemented(context, 'Aide')),
+              _SidebarItem('Charte et sources', onTap: () => wikiNotImplemented(context, 'Charte et sources')),
             ],
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 20),
           _SidebarGroup(
-            title: 'Outils',
+            title: 'Sur cette page',
             items: [
               _SidebarItem('Pages liées', onTap: () => wikiNotImplemented(context, 'Pages liées')),
               _SidebarItem('Version imprimable', onTap: () => wikiNotImplemented(context, 'Version imprimable')),
               _SidebarItem('Information sur la page', onTap: () => wikiNotImplemented(context, 'Information sur la page')),
             ],
+          ),
+          const SizedBox(height: 22),
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: IvoireColors.highlight,
+              border: Border.all(color: IvoireColors.lineSoft),
+            ),
+            child: const Text(
+              'L’encyclopédie ivoirienne libre : chaque article cite ses sources.',
+              style: TextStyle(fontSize: 11.5, height: 1.5, color: IvoireColors.muted),
+            ),
           ),
         ],
       ),
@@ -259,15 +351,7 @@ class _SidebarGroup extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 8, bottom: 6),
-          child: Text(
-            title,
-            style: const TextStyle(
-              fontSize: 11.5,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.3,
-              color: IvoireColors.muted,
-            ),
-          ),
+          child: Text(title.toUpperCase(), style: kickerStyle()),
         ),
         for (final item in items) item,
       ],
@@ -285,18 +369,35 @@ class _SidebarItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
-        child: Text(
-          label,
-          style: const TextStyle(fontSize: 13, color: IvoireColors.link),
+        child: Row(
+          children: [
+            Container(
+              width: 4,
+              height: 4,
+              margin: const EdgeInsets.only(right: 8),
+              decoration: const BoxDecoration(
+                color: IvoireColors.orange,
+                shape: BoxShape.circle,
+              ),
+            ),
+            Expanded(
+              child: Text(
+                label,
+                style: const TextStyle(fontSize: 13, color: IvoireColors.link),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-/// Onglets d'article : « Article · Discussion · Lire · Modifier · Historique ».
+/// Onglets de page (Article, Discussion, Lire…) en pastilles tissées plutôt
+/// qu'en boîtes grises.
 class WikiTabs extends StatelessWidget {
   const WikiTabs({required this.items, super.key});
 
@@ -304,44 +405,35 @@ class WikiTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(top: 14),
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: IvoireColors.line)),
-      ),
-      child: Row(
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 8,
         children: [
           for (final item in items)
             InkWell(
               onTap: item.onTap,
+              borderRadius: BorderRadius.circular(18),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 decoration: BoxDecoration(
-                  color: item.selected
-                      ? IvoireColors.paper
-                      : IvoireColors.subtle,
-                  border: Border(
-                    top: BorderSide(
-                      color: item.selected ? IvoireColors.orange : Colors.transparent,
-                      width: 3,
-                    ),
-                    left: const BorderSide(color: IvoireColors.lineSoft),
-                    right: const BorderSide(color: IvoireColors.lineSoft),
+                  color: item.selected ? IvoireColors.green : IvoireColors.ivory,
+                  border: Border.all(
+                    color: item.selected ? IvoireColors.green : IvoireColors.lineSoft,
                   ),
+                  borderRadius: BorderRadius.circular(18),
                 ),
                 child: Text(
                   item.label,
                   style: TextStyle(
-                    fontSize: 13.5,
-                    color: item.selected
-                        ? IvoireColors.ink
-                        : IvoireColors.link,
+                    fontSize: 13,
                     fontWeight: item.selected ? FontWeight.w600 : FontWeight.w400,
+                    color: item.selected ? Colors.white : IvoireColors.link,
                   ),
                 ),
               ),
             ),
-          const Spacer(),
         ],
       ),
     );
@@ -355,23 +447,26 @@ class _Footer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.only(top: 40),
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 28),
+      margin: const EdgeInsets.only(top: 36),
+      padding: const EdgeInsets.fromLTRB(16, 18, 16, 26),
       decoration: const BoxDecoration(
         border: Border(top: BorderSide(color: IvoireColors.lineSoft)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const MotifDivider(),
+          const SizedBox(height: 12),
           const Text(
             'Le contenu est disponible sous licence CC BY-SA 4.0, sauf mention contraire.',
             style: TextStyle(fontSize: 12.5, color: IvoireColors.muted),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Wrap(
-            spacing: 14,
+            spacing: 16,
+            runSpacing: 6,
             children: [
-              for (final label in ['À propos', 'Aide', 'Contact', 'Confidentialité'])
+              for (final label in ['À propos', 'Charte', 'Contact', 'Confidentialité'])
                 InkWell(
                   onTap: () => wikiNotImplemented(context, label),
                   child: Text(
