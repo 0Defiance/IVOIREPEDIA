@@ -29,6 +29,7 @@ Une seule base de code pour le web puis Android. Détails et ADR-001→009 dans 
 | [`AGENTS.md`](AGENTS.md) | **Règle de travail** : définition de « fait », vérifications avant commit, parité permanente local / distant |
 | [`docs/INSTALLATION.md`](docs/INSTALLATION.md) | Installation et démarrage sur le poste de travail (base MySQL distante) |
 | [`docs/DEPLOIEMENT.md`](docs/DEPLOIEMENT.md) | Mise en ligne sur Alwaysdata + configuration Mailjet |
+| [`docs/SOURCES_INFORMATION.md`](docs/SOURCES_INFORMATION.md) | Répertoire des sources documentaires : 176 plateformes vérifiées (institutions ivoiriennes, statistiques, patrimoine, archives, recherche, presse, droit, langues, images), avec statut, licence et règles de citation |
 | [`docs/SUIVI_DEVELOPPEMENT.md`](docs/SUIVI_DEVELOPPEMENT.md) | Journal technique : fait / vérifié / reste, à alimenter à chaque séance |
 | [`docs/`](docs/) | Documents source : cahier des charges et stacks techniques phases 1/2 (PDF) |
 | [`LICENSE`](LICENSE) | Licence MIT du code |

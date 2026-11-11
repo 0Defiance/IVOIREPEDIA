@@ -58,6 +58,7 @@
 | Stack Phase 1 — local | XAMPP, phpMyAdmin, Laravel, MySQL : environnement de développement | `docs/EII_Stack_Technique_Phase1_Local.pdf` |
 | Stack Phase 2 — production | VPS Nginx, API `/api/v1` + Sanctum, application mobile, SMS/USSD | `docs/EII_Stack_Technique_Phase2_Production.pdf` |
 | Vision produit | Multilingue, sources orales, géolocalisation, hors-ligne (statuts ✅ 🟡 ❓) | `docs/IVOIREPEDIA_Document_de_Contextualisation.md` |
+| Répertoire des sources | Où chercher l'information : institutions ivoiriennes, statistiques, patrimoine, archives, recherche, presse, droit, langues, images ; statut de chaque adresse | `docs/SOURCES_INFORMATION.md` |
 | Règle de travail | Définition de « fait », vérifications avant commit | `AGENTS.md` |
 
 ### 2.1 Divergences connues entre les documents (⚠️ à lire)
@@ -1123,6 +1124,7 @@ jobs:
 | 2026-11-02 | 1.0 | Création : consolidation du cahier des charges, de la conception UML et de la roadmap ; décisions ADR-001 à 008 ; backlog MVP. |
 | 2026-11-02 | 1.1 | **Adaptation de la stack au modèle Flutter + Laravel** : Flutter (`app/`) + Laravel (`backend/`) + MySQL/Filament/Sanctum remplacent Next.js + Prisma + PostgreSQL + Auth.js. Schéma converti en MySQL (§8.2), workflow traduit en PHP (§9), API versionnée `/api/v1` (§11), CI à deux jobs (§15.4), divergences D9 et nouveaux risques R-05/R-08/R-09. |
 | 2026-11-03 | 1.2 | **Hébergement et emails tranchés** : Alwaysdata remplace XAMPP dès le développement (ADR-002 révisé, ADR-008 réécrit) et Mailjet devient le relais SMTP (ADR-009). §5 stack, §7 installation (base distante, ports), §7.5 variables d'environnement, R-10, Q3/Q9 mis à jour. Guides `docs/INSTALLATION.md` et `docs/DEPLOIEMENT.md`. |
+| 2026-11-11 | 1.4 | **Répertoire des sources documentaires** : `docs/SOURCES_INFORMATION.md` recense environ 150 plateformes (institutions ivoiriennes, statistiques internationales, cartographie, patrimoine, archives, recherche, presse, droit, langues, images), chacune vérifiée par requête HTTP le 11 novembre 2026 et assortie de son statut, de sa licence et des règles de citation. Ajouté au §2 comme document de référence. |
 | 2026-11-03 | 1.3 | **Compte d'hébergement dédié** : IVOIREPEDIA quitte le compte Alwaysdata partagé (ADR-008) — compte, site `ivoirepedia.alwaysdata.net`, dossier, bases `ivoirepedia_prod`/`ivoirepedia_dev` et utilisateur MySQL propres, phpMyAdmin par compte. §5, §7, ADR-002 et ADR-008 alignés ; aucune référence à un autre projet ne subsiste dans le dépôt. |
 
 > **Règle de maintenance** : tout changement d'architecture, de modèle de données ou de workflow doit mettre à jour ce fichier **dans la même PR**. Un contexte obsolète est pire que pas de contexte.

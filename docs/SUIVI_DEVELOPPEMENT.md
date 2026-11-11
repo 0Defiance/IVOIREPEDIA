@@ -321,6 +321,28 @@
 
 ---
 
+### 11 novembre 2026 (séance 13) — Répertoire des sources documentaires
+
+**Motif (demande du titulaire)** : « J'ai besoin d'un puits d'informations divers » — recenser toutes les plateformes où trouver des informations pour l'encyclopédie, au-delà de Wikipédia : sites du gouvernement, institutions, statistiques, archives, presse, recherche.
+
+**Fait**
+- **`docs/SOURCES_INFORMATION.md`** : répertoire en dix-huit sections — encyclopédies et bases générales ; exécutif et ministères ivoiriens ; Parlement, justice, élections, opérateurs et collectivités ; statistiques internationales ; cartographie, toponymie et climat ; patrimoine, archives et musées ; recherche et thèses ; presse et audiovisuel ; droit et jurisprudence ; langues ; sport ; économie et entreprises ; organisations internationales — puis un guide « par où commencer selon le sujet », huit règles de sourçage, les angles morts assumés et le journal de vérification.
+- **Vérification, pas compilation** : 176 adresses testées par requête HTTP le 11 novembre 2026, avec code de statut et redirection suivie. Les réponses 403 sont distinguées des sites morts — la Présidence et le portail du Gouvernement refusent les robots mais ont été ouvertes dans un navigateur pour le confirmer ; les échecs réels (502 du BNETD, 503 de JORCI, certificat expiré de `www.sgg.gouv.ci`) sont datés plutôt que masqués.
+- **Écartés après test** : `ccja.ci`, `cge.ci`, `justice.gouv.ci`, `interieur.gouv.ci`, `sports.gouv.ci`, `rti.ci` (502), `olympics.com`, Our World in Data (pas de page pays), Human Rights Watch (page pays introuvable). `coursupreme.ci` reste cité comme site historique, avec la mise en garde sur le découpage Cour de cassation / Conseil d'État.
+- **Ce que le répertoire ajoute au projet** : la distinction entre accès libre et droit de réutilisation, la règle du millésime pour tout chiffre, la nécessité de recouper le politique, et l'indication des gisements réellement exploitables pour les images (Commons, Met Open Access) contre ceux qui exigent un accord (presse, musées).
+- **`IVOIREPEDIA_CONTEXT.md`** : le répertoire entre au §2 comme document de référence ; historique du document en version 1.4.
+
+**Vérifié**
+- 322 lignes, aucune adresse laissée sans statut ; les liens les plus critiques ont été rouverts individuellement (Présidence, Gouvernement, SGG, ANStat, GeoNames, Banque mondiale).
+- Aucun code applicatif modifié : `flutter analyze` et `flutter test` restent ceux de la séance 12 (neuf tests verts).
+
+**Reste**
+1. Porter les sources les plus utiles dans la page « Charte et sources » de l'application, pour que les contributeurs les trouvent sans lire un fichier Markdown.
+2. Constituer une bibliographie ivoirienne de référence (ouvrages imprimés) : le répertoire recense des plateformes, pas encore les titres.
+3. Faire relire les 51 articles par un historien ou un éditeur avant toute ouverture publique.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
