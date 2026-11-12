@@ -358,8 +358,9 @@
 **Vérifié**
 - `phpstan` niveau 5 : aucune erreur ; `pint --test` : 65 fichiers conformes ; **16 tests PHP** verts, dont deux nouveaux fichiers : l'API statistique (structure, format français « 31 934 230 habitants », source et série) et l'import hors ligne du recensement (29 389 150, 6 321 017 pour Abidjan, 832 371 pour Bouaké, 31 régions, 14 districts) ; l'enrichissement (infobox, références, idempotence, référence éditoriale préservée).
 - `flutter analyze` : aucune remarque ; **10 tests Flutter** verts, dont la page statistique atteinte en cliquant « Statistiques » dans la barre latérale, avec vérification de la population du recensement, d'un indicateur et des divisions.
-- API contrôlée en local : 80 ko de JSON, en-tête `32 711 547 habitants` (2025), PIB 99,8 milliards USD, 14/31/40 divisions.
-- Build web reconstruit et redéployé ; pages `#/statistiques` et `#/articles/abidjan` contrôlées en production.
+- API contrôlée en local puis en production : 80 ko de JSON, en-tête `32 711 547 habitants` (2025), PIB 99,8 milliards USD, 14 districts / 31 régions / 40 villes ; `GET /api/v1/articles/bouake` renvoie l'infobox `CITY` 832 371 (2021) et la référence RGPH.
+- Base de production migrée, peuplée (55 indicateurs, 1 500 points, 85 divisions) et articles enrichis (22 examinés, 5 infobox, 24 références) ; build web redéployé (bundle de 3,5 Mo contenant la route `/statistiques`).
+- **Non vérifié visuellement** : l'onglet de prévisualisation reste masqué (`document.visibilityState = "hidden"`), Flutter n'initialise donc pas son canvas et la capture est blanche. Le rendu n'est prouvé que par les tests de widgets.
 
 **Reste**
 1. Références pour les articles qui n'en ont pas encore de vérifiable : biographies (Kourouma, Gbagbo, Guéi, Samory Touré), langues (Glottolog à identifier), culture populaire (zouglou, coupé-décalé, goli, kedjenou) — mieux vaut pas de référence qu'une référence décorative.
