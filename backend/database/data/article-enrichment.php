@@ -45,7 +45,7 @@ return [
     ],
 
     'bouake' => [
-        'infobox' => ['population' => 832371, 'populationYear' => 2021],
+        'infobox' => ['level' => 'CITY', 'population' => 832371, 'populationYear' => 2021],
         'references' => [
             [
                 'kind' => 'REPORT',
@@ -59,7 +59,7 @@ return [
     ],
 
     'korhogo' => [
-        'infobox' => ['population' => 440926, 'populationYear' => 2021],
+        'infobox' => ['level' => 'CITY', 'population' => 440926, 'populationYear' => 2021],
         'references' => [
             [
                 'kind' => 'REPORT',
@@ -73,7 +73,7 @@ return [
     ],
 
     'man' => [
-        'infobox' => ['population' => 241969, 'populationYear' => 2021],
+        'infobox' => ['level' => 'CITY', 'population' => 241969, 'populationYear' => 2021],
         'references' => [
             [
                 'kind' => 'REPORT',
@@ -87,7 +87,7 @@ return [
     ],
 
     'san-pedro' => [
-        'infobox' => ['population' => 390654, 'populationYear' => 2021],
+        'infobox' => ['level' => 'CITY', 'population' => 390654, 'populationYear' => 2021],
         'references' => [
             [
                 'kind' => 'REPORT',

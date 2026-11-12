@@ -43,6 +43,7 @@ class InfoboxTable extends StatelessWidget {
     'REGION': 'Région',
     'DEPARTMENT': 'Département',
     'SUB_PREFECTURE': 'Sous-préfecture',
+    'CITY': 'Ville',
     'VILLAGE': 'Village',
   };
 

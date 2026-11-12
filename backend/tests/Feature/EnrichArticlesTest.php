@@ -50,7 +50,7 @@ function makeEnrichedArticle(string $slug, array $infobox = [], array $reference
 }
 
 it('complète la population et ajoute les références vérifiées', function () {
-    $bouake = makeEnrichedArticle('bouake', ['level' => 'VILLE', 'languages' => ['Français']]);
+    $bouake = makeEnrichedArticle('bouake', ['level' => 'DEPARTMENT', 'languages' => ['Français']]);
 
     $this->artisan('articles:enrich-sources')->assertSuccessful();
 
@@ -58,8 +58,10 @@ it('complète la population et ajoute les références vérifiées', function ()
 
     expect(data_get($bouake->infobox, 'population'))->toBe(832371)
         ->and(data_get($bouake->infobox, 'populationYear'))->toBe(2021)
-        // Les clés existantes ne sont pas écrasées.
-        ->and(data_get($bouake->infobox, 'level'))->toBe('VILLE')
+        // L'effectif communal impose l'étiquette « ville »…
+        ->and(data_get($bouake->infobox, 'level'))->toBe('CITY')
+        // …et les autres clés restent intactes.
+        ->and(data_get($bouake->infobox, 'languages'))->toBe(['Français'])
         ->and($bouake->references()->count())->toBe(1)
         ->and($bouake->references()->first()->url)
         ->toBe('https://plan.gouv.ci/uploads/publications/RGPH2021-RESULTATS-GLOBAUX-VF.pdf');
