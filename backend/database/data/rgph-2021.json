@@ -1,0 +1,1512 @@
+{
+  "source": {
+    "title": "RGPH-2021 — Résultats globaux définitifs (table par circonscription)",
+    "publisher": "Ministère de l'Économie, du Plan et du Développement — ANStat (ex-INS)",
+    "date": "2022-07-22",
+    "url": "https://plan.gouv.ci/uploads/publications/RGPH2021-RESULTATS-GLOBAUX-VF.pdf",
+    "licence": "Licence Ouverte / Open Licence (portail data.gouv.ci)",
+    "retrievedAt": "2026-11-11"
+  },
+  "national": {
+    "department": "TEHINI",
+    "name": "Ensemble CÔTE D'IVOIRE",
+    "men": 15344990,
+    "women": 14044160,
+    "total": 29389150,
+    "households": 5616487,
+    "averageSize": 5.2
+  },
+  "districts": [
+    {
+      "department": "ABIDJAN",
+      "name": "ABIDJAN",
+      "men": 3210983,
+      "women": 3110034,
+      "total": 6321017,
+      "households": 1414136,
+      "averageSize": 4.5
+    },
+    {
+      "department": "YAMOUSSOUKRO",
+      "name": "YAMOUSSOUKRO",
+      "men": 217176,
+      "women": 204897,
+      "total": 422072,
+      "households": 82760,
+      "averageSize": 5.1
+    },
+    {
+      "department": "SASSANDRA",
+      "name": "BAS-SASSANDRA",
+      "men": 1441965,
+      "women": 1245211,
+      "total": 2687176,
+      "households": 492768,
+      "averageSize": 5.5
+    },
+    {
+      "department": "TIAPOUM",
+      "name": "COMOE",
+      "men": 789300,
+      "women": 712036,
+      "total": 1501336,
+      "households": 308055,
+      "averageSize": 4.9
+    },
+    {
+      "department": "MINIGNAN",
+      "name": "DENGUELE",
+      "men": 227296,
+      "women": 208719,
+      "total": 436015,
+      "households": 66628,
+      "averageSize": 6.5
+    },
+    {
+      "department": "LAKOTA",
+      "name": "GÔH-DJIBOUA",
+      "men": 1093255,
+      "women": 995185,
+      "total": 2088440,
+      "households": 384634,
+      "averageSize": 5.4
+    },
+    {
+      "department": "M'BATTO",
+      "name": "LACS",
+      "men": 777010,
+      "women": 711521,
+      "total": 1488531,
+      "households": 289847,
+      "averageSize": 5.1
+    },
+    {
+      "department": "YAKASSE-ATTOBROU",
+      "name": "LAGUNES",
+      "men": 1077341,
+      "women": 965282,
+      "total": 2042623,
+      "households": 359966,
+      "averageSize": 5.7
+    },
+    {
+      "department": "KOUIBLY",
+      "name": "MONTAGNES",
+      "men": 1639381,
+      "women": 1387641,
+      "total": 3027023,
+      "households": 572097,
+      "averageSize": 5.3
+    },
+    {
+      "department": "ZUENOULA",
+      "name": "SASSANDRA-MARAHOUE",
+      "men": 1441897,
+      "women": 1278980,
+      "total": 2720876,
+      "households": 464807,
+      "averageSize": 5.9
+    },
+    {
+      "department": "TENGRELA",
+      "name": "SAVANES",
+      "men": 1098798,
+      "women": 1060636,
+      "total": 2159434,
+      "households": 338693,
+      "averageSize": 6.4
+    },
+    {
+      "department": "NIAKARAMADOUGOU",
+      "name": "VALLEE DU BANDAMAN",
+      "men": 1021583,
+      "women": 943346,
+      "total": 1964929,
+      "households": 355708,
+      "averageSize": 5.5
+    },
+    {
+      "department": "TOUBA",
+      "name": "WOROBA",
+      "men": 619061,
+      "women": 565752,
+      "total": 1184813,
+      "households": 210046,
+      "averageSize": 5.6
+    },
+    {
+      "department": "TEHINI",
+      "name": "ZANZAN",
+      "men": 689945,
+      "women": 654920,
+      "total": 1344865,
+      "households": 276342,
+      "averageSize": 4.9
+    }
+  ],
+  "regions": [
+    {
+      "department": "TABOU",
+      "name": "SAN-PEDRO",
+      "men": 570701,
+      "women": 490023,
+      "total": 1060724,
+      "households": 198065,
+      "averageSize": 5.4
+    },
+    {
+      "department": "SOUBRE",
+      "name": "NAWA",
+      "men": 620869,
+      "women": 544603,
+      "total": 1165472,
+      "households": 209612,
+      "averageSize": 5.6
+    },
+    {
+      "department": "SASSANDRA",
+      "name": "GBOKLE",
+      "men": 250395,
+      "women": 210585,
+      "total": 460980,
+      "households": 85091,
+      "averageSize": 5.4
+    },
+    {
+      "department": "BETTIE",
+      "name": "INDENIE-DJUABLIN",
+      "men": 381684,
+      "women": 334759,
+      "total": 716443,
+      "households": 146141,
+      "averageSize": 4.9
+    },
+    {
+      "department": "TIAPOUM",
+      "name": "SUD-COMOE",
+      "men": 407615,
+      "women": 377278,
+      "total": 784893,
+      "households": 161914,
+      "averageSize": 4.8
+    },
+    {
+      "department": "SEGUELON",
+      "name": "KABADOUGOU",
+      "men": 151394,
+      "women": 138411,
+      "total": 289806,
+      "households": 48116,
+      "averageSize": 6.0
+    },
+    {
+      "department": "MINIGNAN",
+      "name": "FOLON",
+      "men": 75902,
+      "women": 70307,
+      "total": 146209,
+      "households": 18512,
+      "averageSize": 7.9
+    },
+    {
+      "department": "OUME",
+      "name": "GÔH",
+      "men": 515602,
+      "women": 469680,
+      "total": 985282,
+      "households": 184549,
+      "averageSize": 5.3
+    },
+    {
+      "department": "LAKOTA",
+      "name": "LÔH-DJIBOUA",
+      "men": 577653,
+      "women": 525505,
+      "total": 1103158,
+      "households": 200085,
+      "averageSize": 5.5
+    },
+    {
+      "department": "TOUMODI",
+      "name": "BELIER",
+      "men": 213448,
+      "women": 202145,
+      "total": 415593,
+      "households": 80381,
+      "averageSize": 5.2
+    },
+    {
+      "department": "PRIKRO",
+      "name": "IFFOU",
+      "men": 196717,
+      "women": 181843,
+      "total": 378560,
+      "households": 74416,
+      "averageSize": 5.1
+    },
+    {
+      "department": "KOUASSI-KOUASSIKRO",
+      "name": "N'ZI",
+      "men": 129386,
+      "women": 125237,
+      "total": 254623,
+      "households": 48625,
+      "averageSize": 5.2
+    },
+    {
+      "department": "M'BATTO",
+      "name": "MORONOU",
+      "men": 237458,
+      "women": 202297,
+      "total": 439755,
+      "households": 86425,
+      "averageSize": 5.1
+    },
+    {
+      "department": "JACQUEVILLE",
+      "name": "GRANDS PONTS",
+      "men": 235759,
+      "women": 214249,
+      "total": 450007,
+      "households": 93160,
+      "averageSize": 4.8
+    },
+    {
+      "department": "TIASSALE",
+      "name": "AGNEBY-TIASSA",
+      "men": 458756,
+      "women": 407195,
+      "total": 865951,
+      "households": 158762,
+      "averageSize": 5.5
+    },
+    {
+      "department": "YAKASSE-ATTOBROU",
+      "name": "LA ME",
+      "men": 382827,
+      "women": 343838,
+      "total": 726665,
+      "households": 108044,
+      "averageSize": 6.7
+    },
+    {
+      "department": "ZOUAN-HOUNIEN",
+      "name": "TONKPI",
+      "men": 740936,
+      "women": 646973,
+      "total": 1387909,
+      "households": 268651,
+      "averageSize": 5.2
+    },
+    {
+      "department": "TOULEPLEU",
+      "name": "CAVALLY",
+      "men": 394576,
+      "women": 313666,
+      "total": 708241,
+      "households": 139544,
+      "averageSize": 5.1
+    },
+    {
+      "department": "KOUIBLY",
+      "name": "GUEMON",
+      "men": 503870,
+      "women": 427003,
+      "total": 930873,
+      "households": 163902,
+      "averageSize": 5.7
+    },
+    {
+      "department": "ZOUKOUGBEU",
+      "name": "HAUT-SASSANDRA",
+      "men": 920422,
+      "women": 819275,
+      "total": 1739697,
+      "households": 287502,
+      "averageSize": 6.1
+    },
+    {
+      "department": "ZUENOULA",
+      "name": "MARAHOUE",
+      "men": 521475,
+      "women": 459704,
+      "total": 981180,
+      "households": 177305,
+      "averageSize": 5.5
+    },
+    {
+      "department": "SINEMATIALI",
+      "name": "PORO",
+      "men": 524531,
+      "women": 515929,
+      "total": 1040461,
+      "households": 180173,
+      "averageSize": 5.8
+    },
+    {
+      "department": "OUANGOLODOUGOU",
+      "name": "TCHOLOGO",
+      "men": 309037,
+      "women": 294046,
+      "total": 603084,
+      "households": 89716,
+      "averageSize": 6.7
+    },
+    {
+      "department": "TENGRELA",
+      "name": "BAGOUE",
+      "men": 265229,
+      "women": 250661,
+      "total": 515890,
+      "households": 68804,
+      "averageSize": 7.5
+    },
+    {
+      "department": "SAKASSOU",
+      "name": "GBEKE",
+      "men": 699816,
+      "women": 653085,
+      "total": 1352900,
+      "households": 238022,
+      "averageSize": 5.7
+    },
+    {
+      "department": "NIAKARAMADOUGOU",
+      "name": "HAMBOL",
+      "men": 321767,
+      "women": 290261,
+      "total": 612029,
+      "households": 117686,
+      "averageSize": 5.2
+    },
+    {
+      "department": "SEGUELA",
+      "name": "WORODOUGOU",
+      "men": 225557,
+      "women": 204255,
+      "total": 429812,
+      "households": 82275,
+      "averageSize": 5.2
+    },
+    {
+      "department": "MANKONO",
+      "name": "BERE",
+      "men": 256585,
+      "women": 235566,
+      "total": 492151,
+      "households": 81553,
+      "averageSize": 6.0
+    },
+    {
+      "department": "TOUBA",
+      "name": "BAFING",
+      "men": 136919,
+      "women": 125932,
+      "total": 262850,
+      "households": 46218,
+      "averageSize": 5.7
+    },
+    {
+      "department": "TANDA",
+      "name": "GONTOUGO",
+      "men": 473635,
+      "women": 444193,
+      "total": 917828,
+      "households": 209750,
+      "averageSize": 4.4
+    },
+    {
+      "department": "TEHINI",
+      "name": "BOUNKANI",
+      "men": 216310,
+      "women": 210727,
+      "total": 427037,
+      "households": 66592,
+      "averageSize": 6.4
+    }
+  ],
+  "cities": [
+    {
+      "department": "BOUAKE",
+      "name": "BOUAKE",
+      "men": 433752,
+      "women": 398619,
+      "total": 832371,
+      "households": 152187,
+      "averageSize": 5.4
+    },
+    {
+      "department": "KORHOGO",
+      "name": "KORHOGO",
+      "men": 225190,
+      "women": 215736,
+      "total": 440926,
+      "households": 81738,
+      "averageSize": 5.4
+    },
+    {
+      "department": "DALOA",
+      "name": "DALOA",
+      "men": 217633,
+      "women": 204246,
+      "total": 421879,
+      "households": 80584,
+      "averageSize": 5.2
+    },
+    {
+      "department": "SAN-PEDRO",
+      "name": "SAN-PEDRO",
+      "men": 205927,
+      "women": 184727,
+      "total": 390654,
+      "households": 75903,
+      "averageSize": 5.1
+    },
+    {
+      "department": "YAMOUSSOUKRO",
+      "name": "YAMOUSSOUKRO",
+      "men": 173978,
+      "women": 166256,
+      "total": 340234,
+      "households": 67394,
+      "averageSize": 4.9
+    },
+    {
+      "department": "DIVO",
+      "name": "DIVO",
+      "men": 151916,
+      "women": 142643,
+      "total": 294559,
+      "households": 54662,
+      "averageSize": 5.4
+    },
+    {
+      "department": "GAGNOA",
+      "name": "GAGNOA",
+      "men": 143167,
+      "women": 133877,
+      "total": 277044,
+      "households": 56063,
+      "averageSize": 4.9
+    },
+    {
+      "department": "SOUBRE",
+      "name": "SOUBRE",
+      "men": 146075,
+      "women": 126698,
+      "total": 272773,
+      "households": 56747,
+      "averageSize": 4.8
+    },
+    {
+      "department": "MAN",
+      "name": "MAN",
+      "men": 127234,
+      "women": 114735,
+      "total": 241969,
+      "households": 49052,
+      "averageSize": 4.9
+    },
+    {
+      "department": "DUEKOUE",
+      "name": "DUEKOUE",
+      "men": 118759,
+      "women": 102193,
+      "total": 220953,
+      "households": 43377,
+      "averageSize": 5.1
+    },
+    {
+      "department": "BOUAFLE",
+      "name": "BOUAFLE",
+      "men": 114524,
+      "women": 99443,
+      "total": 213967,
+      "households": 45210,
+      "averageSize": 4.7
+    },
+    {
+      "department": "GUIGLO",
+      "name": "GUIGLO",
+      "men": 93037,
+      "women": 78417,
+      "total": 171454,
+      "households": 31791,
+      "averageSize": 5.4
+    },
+    {
+      "department": "LAKOTA",
+      "name": "LAKOTA",
+      "men": 90337,
+      "women": 78993,
+      "total": 169330,
+      "households": 33968,
+      "averageSize": 5.0
+    },
+    {
+      "department": "ABENGOUROU",
+      "name": "ABENGOUROU",
+      "men": 84725,
+      "women": 79699,
+      "total": 164424,
+      "households": 32376,
+      "averageSize": 5.0
+    },
+    {
+      "department": "FERKESSEDOUGOU",
+      "name": "FERKESSEDOUGOU",
+      "men": 81600,
+      "women": 78667,
+      "total": 160267,
+      "households": 29865,
+      "averageSize": 5.4
+    },
+    {
+      "department": "ADZOPE",
+      "name": "ADZOPE",
+      "men": 80832,
+      "women": 75657,
+      "total": 156488,
+      "households": 25668,
+      "averageSize": 6.0
+    },
+    {
+      "department": "MEAGUI",
+      "name": "MEAGUI",
+      "men": 81472,
+      "women": 72011,
+      "total": 153483,
+      "households": 33047,
+      "averageSize": 4.6
+    },
+    {
+      "department": "BONDOUKOU",
+      "name": "BONDOUKOU",
+      "men": 73549,
+      "women": 68019,
+      "total": 141568,
+      "households": 36959,
+      "averageSize": 3.8
+    },
+    {
+      "department": "DABOU",
+      "name": "DABOU",
+      "men": 70221,
+      "women": 67862,
+      "total": 138083,
+      "households": 29086,
+      "averageSize": 4.7
+    },
+    {
+      "department": "SINFRA",
+      "name": "SINFRA",
+      "men": 70669,
+      "women": 66541,
+      "total": 137210,
+      "households": 24635,
+      "averageSize": 5.6
+    },
+    {
+      "department": "AGBOVILLE",
+      "name": "AGBOVILLE",
+      "men": 69015,
+      "women": 66067,
+      "total": 135082,
+      "households": 27333,
+      "averageSize": 4.9
+    },
+    {
+      "department": "VAVOUA",
+      "name": "VAVOUA",
+      "men": 70170,
+      "women": 62358,
+      "total": 132528,
+      "households": 21222,
+      "averageSize": 6.2
+    },
+    {
+      "department": "DANANE",
+      "name": "DANANE",
+      "men": 70095,
+      "women": 61491,
+      "total": 131586,
+      "households": 26004,
+      "averageSize": 5.0
+    },
+    {
+      "department": "OUME",
+      "name": "OUME",
+      "men": 67028,
+      "women": 60125,
+      "total": 127153,
+      "households": 25028,
+      "averageSize": 5.1
+    },
+    {
+      "department": "ISSIA",
+      "name": "ISSIA",
+      "men": 67600,
+      "women": 58651,
+      "total": 126252,
+      "households": 23248,
+      "averageSize": 5.4
+    },
+    {
+      "department": "GRAND-BASSAM",
+      "name": "GRAND-BASSAM",
+      "men": 63206,
+      "women": 61362,
+      "total": 124567,
+      "households": 27232,
+      "averageSize": 4.5
+    },
+    {
+      "department": "BLOLEQUIN",
+      "name": "BLOLEQUIN",
+      "men": 69946,
+      "women": 53188,
+      "total": 123133,
+      "households": 24448,
+      "averageSize": 5.0
+    },
+    {
+      "department": "BONON",
+      "name": "BONON",
+      "men": 62522,
+      "women": 54349,
+      "total": 116871,
+      "households": 18735,
+      "averageSize": 6.2
+    },
+    {
+      "department": "ZOUAN-HOUNIEN",
+      "name": "ZOUAN-HOUNIEN",
+      "men": 58155,
+      "women": 52945,
+      "total": 111099,
+      "households": 20792,
+      "averageSize": 5.3
+    },
+    {
+      "department": "SEGUELA",
+      "name": "SEGUELA",
+      "men": 53841,
+      "women": 50139,
+      "total": 103980,
+      "households": 18775,
+      "averageSize": 5.5
+    },
+    {
+      "department": "DAOUKRO",
+      "name": "DAOUKRO",
+      "men": 52558,
+      "women": 48577,
+      "total": 101136,
+      "households": 23632,
+      "averageSize": 4.2
+    },
+    {
+      "department": "ABOISSO",
+      "name": "ABOISSO",
+      "men": 52456,
+      "women": 48447,
+      "total": 100903,
+      "households": 23098,
+      "averageSize": 4.3
+    },
+    {
+      "department": "BUYO",
+      "name": "BUYO",
+      "men": 53489,
+      "women": 47358,
+      "total": 100848,
+      "households": 15769,
+      "averageSize": 6.4
+    },
+    {
+      "department": "AGNIBILEKROU",
+      "name": "AGNIBILEKROU",
+      "men": 52868,
+      "women": 46633,
+      "total": 99501,
+      "households": 23896,
+      "averageSize": 4.2
+    },
+    {
+      "department": "BOUNA",
+      "name": "BOUNA",
+      "men": 48232,
+      "women": 46651,
+      "total": 94883,
+      "households": 17285,
+      "averageSize": 5.5
+    },
+    {
+      "department": "BOUNDIALI",
+      "name": "BOUNDIALI",
+      "men": 47877,
+      "women": 44915,
+      "total": 92792,
+      "households": 13905,
+      "averageSize": 6.6
+    },
+    {
+      "department": "TENGRELA",
+      "name": "TENGRELA",
+      "men": 47172,
+      "women": 45282,
+      "total": 92454,
+      "households": 13496,
+      "averageSize": 6.8
+    },
+    {
+      "department": "SIKENSI",
+      "name": "SIKENSI",
+      "men": 48124,
+      "women": 42908,
+      "total": 91032,
+      "households": 16715,
+      "averageSize": 5.4
+    },
+    {
+      "department": "KATIOLA",
+      "name": "KATIOLA",
+      "men": 47583,
+      "women": 43058,
+      "total": 90641,
+      "households": 18052,
+      "averageSize": 5.0
+    },
+    {
+      "department": "TOUMODI",
+      "name": "TOUMODI",
+      "men": 45004,
+      "women": 43576,
+      "total": 88580,
+      "households": 17809,
+      "averageSize": 4.9
+    }
+  ],
+  "localities": [
+    {
+      "department": "ABIDJAN",
+      "name": "YOPOUGON",
+      "men": 795443,
+      "women": 775622,
+      "total": 1571065,
+      "households": 349480,
+      "averageSize": 4.5
+    },
+    {
+      "department": "ABIDJAN",
+      "name": "ABOBO",
+      "men": 680422,
+      "women": 659661,
+      "total": 1340083,
+      "households": 280206,
+      "averageSize": 4.8
+    },
+    {
+      "department": "BOUAKE",
+      "name": "BOUAKE",
+      "men": 433752,
+      "women": 398619,
+      "total": 832371,
+      "households": 152187,
+      "averageSize": 5.4
+    },
+    {
+      "department": "ABIDJAN",
+      "name": "COCODY",
+      "men": 330016,
+      "women": 362566,
+      "total": 692583,
+      "households": 169438,
+      "averageSize": 4.1
+    },
+    {
+      "department": "ABIDJAN",
+      "name": "PORT-BOUET",
+      "men": 321726,
+      "women": 297070,
+      "total": 618795,
+      "households": 146903,
+      "averageSize": 4.2
+    },
+    {
+      "department": "KORHOGO",
+      "name": "KORHOGO",
+      "men": 225190,
+      "women": 215736,
+      "total": 440926,
+      "households": 81738,
+      "averageSize": 5.4
+    },
+    {
+      "department": "DALOA",
+      "name": "DALOA",
+      "men": 217633,
+      "women": 204246,
+      "total": 421879,
+      "households": 80584,
+      "averageSize": 5.2
+    },
+    {
+      "department": "ABIDJAN",
+      "name": "KOUMASSI",
+      "men": 209098,
+      "women": 203184,
+      "total": 412282,
+      "households": 97794,
+      "averageSize": 4.2
+    },
+    {
+      "department": "SAN-PEDRO",
+      "name": "SAN-PEDRO",
+      "men": 205927,
+      "women": 184727,
+      "total": 390654,
+      "households": 75903,
+      "averageSize": 5.1
+    },
+    {
+      "department": "ABIDJAN",
+      "name": "ANYAMA",
+      "men": 200517,
+      "women": 189076,
+      "total": 389592,
+      "households": 80147,
+      "averageSize": 4.8
+    },
+    {
+      "department": "ABIDJAN",
+      "name": "ADJAME",
+      "men": 180917,
+      "women": 159974,
+      "total": 340892,
+      "households": 72671,
+      "averageSize": 4.7
+    },
+    {
+      "department": "YAMOUSSOUKRO",
+      "name": "YAMOUSSOUKRO",
+      "men": 173978,
+      "women": 166256,
+      "total": 340234,
+      "households": 67394,
+      "averageSize": 4.9
+    },
+    {
+      "department": "ABIDJAN",
+      "name": "ATTECOUBE",
+      "men": 163989,
+      "women": 149146,
+      "total": 313135,
+      "households": 67683,
+      "averageSize": 4.6
+    },
+    {
+      "department": "DIVO",
+      "name": "DIVO",
+      "men": 151916,
+      "women": 142643,
+      "total": 294559,
+      "households": 54662,
+      "averageSize": 5.4
+    },
+    {
+      "department": "GAGNOA",
+      "name": "GAGNOA",
+      "men": 143167,
+      "women": 133877,
+      "total": 277044,
+      "households": 56063,
+      "averageSize": 4.9
+    },
+    {
+      "department": "SOUBRE",
+      "name": "SOUBRE",
+      "men": 146075,
+      "women": 126698,
+      "total": 272773,
+      "households": 56747,
+      "averageSize": 4.8
+    },
+    {
+      "department": "MAN",
+      "name": "MAN",
+      "men": 127234,
+      "women": 114735,
+      "total": 241969,
+      "households": 49052,
+      "averageSize": 4.9
+    },
+    {
+      "department": "DUEKOUE",
+      "name": "DUEKOUE",
+      "men": 118759,
+      "women": 102193,
+      "total": 220953,
+      "households": 43377,
+      "averageSize": 5.1
+    },
+    {
+      "department": "ABIDJAN",
+      "name": "MARCORY",
+      "men": 110458,
+      "women": 103603,
+      "total": 214061,
+      "households": 50945,
+      "averageSize": 4.2
+    },
+    {
+      "department": "BOUAFLE",
+      "name": "BOUAFLE",
+      "men": 114524,
+      "women": 99443,
+      "total": 213967,
+      "households": 45210,
+      "averageSize": 4.7
+    },
+    {
+      "department": "ABIDJAN",
+      "name": "BINGERVILLE",
+      "men": 101397,
+      "women": 103259,
+      "total": 204656,
+      "households": 46607,
+      "averageSize": 4.4
+    },
+    {
+      "department": "GUIGLO",
+      "name": "GUIGLO",
+      "men": 93037,
+      "women": 78417,
+      "total": 171454,
+      "households": 31791,
+      "averageSize": 5.4
+    },
+    {
+      "department": "LAKOTA",
+      "name": "LAKOTA",
+      "men": 90337,
+      "women": 78993,
+      "total": 169330,
+      "households": 33968,
+      "averageSize": 5.0
+    },
+    {
+      "department": "ABENGOUROU",
+      "name": "ABENGOUROU",
+      "men": 84725,
+      "women": 79699,
+      "total": 164424,
+      "households": 32376,
+      "averageSize": 5.0
+    },
+    {
+      "department": "FERKESSEDOUGOU",
+      "name": "FERKESSEDOUGOU",
+      "men": 81600,
+      "women": 78667,
+      "total": 160267,
+      "households": 29865,
+      "averageSize": 5.4
+    },
+    {
+      "department": "ADZOPE",
+      "name": "ADZOPE",
+      "men": 80832,
+      "women": 75657,
+      "total": 156488,
+      "households": 25668,
+      "averageSize": 6.0
+    },
+    {
+      "department": "MEAGUI",
+      "name": "MEAGUI",
+      "men": 81472,
+      "women": 72011,
+      "total": 153483,
+      "households": 33047,
+      "averageSize": 4.6
+    },
+    {
+      "department": "BONDOUKOU",
+      "name": "BONDOUKOU",
+      "men": 73549,
+      "women": 68019,
+      "total": 141568,
+      "households": 36959,
+      "averageSize": 3.8
+    },
+    {
+      "department": "DABOU",
+      "name": "DABOU",
+      "men": 70221,
+      "women": 67862,
+      "total": 138083,
+      "households": 29086,
+      "averageSize": 4.7
+    },
+    {
+      "department": "SINFRA",
+      "name": "SINFRA",
+      "men": 70669,
+      "women": 66541,
+      "total": 137210,
+      "households": 24635,
+      "averageSize": 5.6
+    },
+    {
+      "department": "AGBOVILLE",
+      "name": "AGBOVILLE",
+      "men": 69015,
+      "women": 66067,
+      "total": 135082,
+      "households": 27333,
+      "averageSize": 4.9
+    },
+    {
+      "department": "VAVOUA",
+      "name": "VAVOUA",
+      "men": 70170,
+      "women": 62358,
+      "total": 132528,
+      "households": 21222,
+      "averageSize": 6.2
+    },
+    {
+      "department": "DANANE",
+      "name": "DANANE",
+      "men": 70095,
+      "women": 61491,
+      "total": 131586,
+      "households": 26004,
+      "averageSize": 5.0
+    },
+    {
+      "department": "SAN-PEDRO",
+      "name": "GRAND-BEREBY",
+      "men": 69343,
+      "women": 59997,
+      "total": 129340,
+      "households": 26269,
+      "averageSize": 4.9
+    },
+    {
+      "department": "OUME",
+      "name": "OUME",
+      "men": 67028,
+      "women": 60125,
+      "total": 127153,
+      "households": 25028,
+      "averageSize": 5.1
+    },
+    {
+      "department": "ISSIA",
+      "name": "ISSIA",
+      "men": 67600,
+      "women": 58651,
+      "total": 126252,
+      "households": 23248,
+      "averageSize": 5.4
+    },
+    {
+      "department": "GRAND-BASSAM",
+      "name": "GRAND-BASSAM",
+      "men": 63206,
+      "women": 61362,
+      "total": 124567,
+      "households": 27232,
+      "averageSize": 4.5
+    },
+    {
+      "department": "BLOLEQUIN",
+      "name": "BLOLEQUIN",
+      "men": 69946,
+      "women": 53188,
+      "total": 123133,
+      "households": 24448,
+      "averageSize": 5.0
+    },
+    {
+      "department": "SOUBRE",
+      "name": "OKROUYO",
+      "men": 63932,
+      "women": 56121,
+      "total": 120053,
+      "households": 19805,
+      "averageSize": 6.0
+    },
+    {
+      "department": "GRAND-BASSAM",
+      "name": "BONOUA",
+      "men": 61118,
+      "women": 57270,
+      "total": 118388,
+      "households": 27302,
+      "averageSize": 4.3
+    },
+    {
+      "department": "BONON",
+      "name": "BONON",
+      "men": 62522,
+      "women": 54349,
+      "total": 116871,
+      "households": 18735,
+      "averageSize": 6.2
+    },
+    {
+      "department": "SAN-PEDRO",
+      "name": "GABIADJI",
+      "men": 60478,
+      "women": 52892,
+      "total": 113369,
+      "households": 20666,
+      "averageSize": 5.5
+    },
+    {
+      "department": "SOUBRE",
+      "name": "GRAND-ZATTRY",
+      "men": 58525,
+      "women": 53524,
+      "total": 112049,
+      "households": 17399,
+      "averageSize": 6.4
+    },
+    {
+      "department": "ZOUAN-HOUNIEN",
+      "name": "ZOUAN-HOUNIEN",
+      "men": 58155,
+      "women": 52945,
+      "total": 111099,
+      "households": 20792,
+      "averageSize": 5.3
+    },
+    {
+      "department": "VAVOUA",
+      "name": "SEITIFLA",
+      "men": 58512,
+      "women": 50740,
+      "total": 109252,
+      "households": 14250,
+      "averageSize": 7.7
+    },
+    {
+      "department": "VAVOUA",
+      "name": "DANIA",
+      "men": 57959,
+      "women": 48653,
+      "total": 106612,
+      "households": 14938,
+      "averageSize": 7.1
+    },
+    {
+      "department": "ABIDJAN",
+      "name": "TREICHVILLE",
+      "men": 55910,
+      "women": 50642,
+      "total": 106552,
+      "households": 25046,
+      "averageSize": 4.2
+    },
+    {
+      "department": "SEGUELA",
+      "name": "SEGUELA",
+      "men": 53841,
+      "women": 50139,
+      "total": 103980,
+      "households": 18775,
+      "averageSize": 5.5
+    },
+    {
+      "department": "DAOUKRO",
+      "name": "DAOUKRO",
+      "men": 52558,
+      "women": 48577,
+      "total": 101136,
+      "households": 23632,
+      "averageSize": 4.2
+    },
+    {
+      "department": "ABOISSO",
+      "name": "ABOISSO",
+      "men": 52456,
+      "women": 48447,
+      "total": 100903,
+      "households": 23098,
+      "averageSize": 4.3
+    },
+    {
+      "department": "BUYO",
+      "name": "BUYO",
+      "men": 53489,
+      "women": 47358,
+      "total": 100848,
+      "households": 15769,
+      "averageSize": 6.4
+    },
+    {
+      "department": "ISSIA",
+      "name": "SAÏOUA",
+      "men": 54047,
+      "women": 46038,
+      "total": 100085,
+      "households": 17517,
+      "averageSize": 5.7
+    },
+    {
+      "department": "AGNIBILEKROU",
+      "name": "AGNIBILEKROU",
+      "men": 52868,
+      "women": 46633,
+      "total": 99501,
+      "households": 23896,
+      "averageSize": 4.2
+    },
+    {
+      "department": "BONDOUKOU",
+      "name": "LAOUDI-BA",
+      "men": 51234,
+      "women": 46819,
+      "total": 98053,
+      "households": 23639,
+      "averageSize": 4.1
+    },
+    {
+      "department": "TIASSALE",
+      "name": "N'DOUCI",
+      "men": 52034,
+      "women": 45160,
+      "total": 97194,
+      "households": 17644,
+      "averageSize": 5.4
+    },
+    {
+      "department": "SAN-PEDRO",
+      "name": "DOBA",
+      "men": 52162,
+      "women": 43084,
+      "total": 95246,
+      "households": 17498,
+      "averageSize": 5.4
+    },
+    {
+      "department": "BOUNA",
+      "name": "BOUNA",
+      "men": 48232,
+      "women": 46651,
+      "total": 94883,
+      "households": 17285,
+      "averageSize": 5.5
+    },
+    {
+      "department": "BOUNDIALI",
+      "name": "BOUNDIALI",
+      "men": 47877,
+      "women": 44915,
+      "total": 92792,
+      "households": 13905,
+      "averageSize": 6.6
+    },
+    {
+      "department": "TENGRELA",
+      "name": "TENGRELA",
+      "men": 47172,
+      "women": 45282,
+      "total": 92454,
+      "households": 13496,
+      "averageSize": 6.8
+    },
+    {
+      "department": "TABOU",
+      "name": "DJOUROUTOU",
+      "men": 50289,
+      "women": 41027,
+      "total": 91316,
+      "households": 15377,
+      "averageSize": 5.9
+    },
+    {
+      "department": "SASSANDRA",
+      "name": "SAGO",
+      "men": 49631,
+      "women": 41508,
+      "total": 91140,
+      "households": 17190,
+      "averageSize": 5.3
+    },
+    {
+      "department": "SIKENSI",
+      "name": "SIKENSI",
+      "men": 48124,
+      "women": 42908,
+      "total": 91032,
+      "households": 16715,
+      "averageSize": 5.4
+    },
+    {
+      "department": "KATIOLA",
+      "name": "KATIOLA",
+      "men": 47583,
+      "women": 43058,
+      "total": 90641,
+      "households": 18052,
+      "averageSize": 5.0
+    },
+    {
+      "department": "ABIDJAN",
+      "name": "SONGON",
+      "men": 46833,
+      "women": 42945,
+      "total": 89778,
+      "households": 20544,
+      "averageSize": 4.4
+    },
+    {
+      "department": "TOUMODI",
+      "name": "TOUMODI",
+      "men": 45004,
+      "women": 43576,
+      "total": 88580,
+      "households": 17809,
+      "averageSize": 4.9
+    },
+    {
+      "department": "SASSANDRA",
+      "name": "SASSANDRA",
+      "men": 47950,
+      "women": 39995,
+      "total": 87945,
+      "households": 18028,
+      "averageSize": 4.8
+    },
+    {
+      "department": "ODIENNE",
+      "name": "ODIENNE",
+      "men": 45843,
+      "women": 40436,
+      "total": 86279,
+      "households": 20193,
+      "averageSize": 4.3
+    },
+    {
+      "department": "BEOUMI",
+      "name": "BEOUMI",
+      "men": 44710,
+      "women": 40889,
+      "total": 85600,
+      "households": 15381,
+      "averageSize": 5.5
+    },
+    {
+      "department": "OUANGOLODOUGOU",
+      "name": "DIAWALA",
+      "men": 44288,
+      "women": 41046,
+      "total": 85334,
+      "households": 8067,
+      "averageSize": 10.6
+    },
+    {
+      "department": "DALOA",
+      "name": "BEDIALA",
+      "men": 44246,
+      "women": 40228,
+      "total": 84474,
+      "households": 12125,
+      "averageSize": 7.0
+    },
+    {
+      "department": "LAKOTA",
+      "name": "NIAMBEZARIA",
+      "men": 44842,
+      "women": 39461,
+      "total": 84303,
+      "households": 14338,
+      "averageSize": 5.9
+    },
+    {
+      "department": "MEAGUI",
+      "name": "GNAMANGUI",
+      "men": 45039,
+      "women": 38755,
+      "total": 83794,
+      "households": 13047,
+      "averageSize": 6.4
+    },
+    {
+      "department": "TIASSALE",
+      "name": "TIASSALE",
+      "men": 44043,
+      "women": 39605,
+      "total": 83648,
+      "households": 19135,
+      "averageSize": 4.4
+    },
+    {
+      "department": "OUANGOLODOUGOU",
+      "name": "OUANGOLODOUGOU",
+      "men": 42626,
+      "women": 40174,
+      "total": 82801,
+      "households": 13218,
+      "averageSize": 6.3
+    },
+    {
+      "department": "SOUBRE",
+      "name": "LILIYO",
+      "men": 43859,
+      "women": 38707,
+      "total": 82566,
+      "households": 14682,
+      "averageSize": 5.6
+    },
+    {
+      "department": "GUITRY",
+      "name": "GUITRY",
+      "men": 40946,
+      "women": 38286,
+      "total": 79231,
+      "households": 14257,
+      "averageSize": 5.6
+    },
+    {
+      "department": "AKOUPE",
+      "name": "AKOUPE",
+      "men": 39799,
+      "women": 39266,
+      "total": 79065,
+      "households": 11500,
+      "averageSize": 6.9
+    },
+    {
+      "department": "DABAKALA",
+      "name": "DABAKALA",
+      "men": 40831,
+      "women": 37803,
+      "total": 78634,
+      "households": 14894,
+      "averageSize": 5.3
+    },
+    {
+      "department": "ZUENOULA",
+      "name": "ZUENOULA",
+      "men": 41887,
+      "women": 36726,
+      "total": 78613,
+      "households": 14815,
+      "averageSize": 5.3
+    },
+    {
+      "department": "NIAKARAMADOUGOU",
+      "name": "NIAKARAMADOUGOU",
+      "men": 41561,
+      "women": 36740,
+      "total": 78301,
+      "households": 14306,
+      "averageSize": 5.4
+    }
+  ]
+}

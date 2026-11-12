@@ -417,6 +417,11 @@ class _Sidebar extends StatelessWidget {
                 onTap: () => wikiGo(context, '/recherche'),
               ),
               _SidebarItem(
+                'Statistiques',
+                icon: Icons.insights_outlined,
+                onTap: () => wikiGo(context, '/statistiques'),
+              ),
+              _SidebarItem(
                 'Article au hasard',
                 icon: Icons.shuffle,
                 onTap: () => wikiNotImplemented(context, 'Article au hasard'),

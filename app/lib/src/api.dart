@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 
 import 'models/article.dart';
 import 'models/category.dart';
+import 'models/statistics.dart';
 
 /// Racine de l'API. En développement : `php artisan serve` sur le port 8000 ;
 /// en production : même origine (`--dart-define=API_BASE_URL=/api/v1`).
@@ -40,6 +41,8 @@ abstract interface class IvoirepediaApi {
   Future<ArticleDetail> fetchArticle(String slug);
 
   Future<PagedArticles> search(String query, {int page = 1, int limit = 12});
+
+  Future<StatisticsSnapshot> fetchStatistics();
 }
 
 /// Client HTTP de l'API publique.
@@ -89,6 +92,13 @@ class HttpIvoirepediaApi implements IvoirepediaApi {
     });
 
     return PagedArticles.fromJson(payload);
+  }
+
+  @override
+  Future<StatisticsSnapshot> fetchStatistics() async {
+    final payload = await _get('/statistics');
+
+    return StatisticsSnapshot.fromJson(payload);
   }
 
   @override

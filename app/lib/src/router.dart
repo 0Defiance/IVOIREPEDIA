@@ -6,6 +6,7 @@ import 'ui/category_page.dart';
 import 'ui/home_page.dart';
 import 'ui/search_page.dart';
 import 'ui/shell.dart';
+import 'ui/statistics_page.dart';
 
 /// Transition commune : fondu court + léger glissement, pour que la navigation
 /// réponde immédiatement sans effet spectaculaire.
@@ -57,6 +58,10 @@ GoRouter buildRouter() {
         pageBuilder: (context, state) => _page(
           SearchPage(query: state.uri.queryParameters['q'] ?? ''),
         ),
+      ),
+      GoRoute(
+        path: '/statistiques',
+        pageBuilder: (context, state) => _page(const StatisticsPage()),
       ),
     ],
     errorBuilder: (context, state) => SiteShell(

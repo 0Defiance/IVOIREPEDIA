@@ -509,6 +509,16 @@ CREATE TABLE editorial_actions (      -- append-only : jamais d'UPDATE ni de DEL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ```
 
+**Tables statistiques (séance 14)** — hors périmètre éditorial, alimentées par commande :
+
+| Table | Rôle | Alimentation |
+|---|---|---|
+| `country_indicators` | Dernière valeur connue d'un indicateur national + provenance (organisme, URL, licence) | `php artisan country:sync-statistics` |
+| `country_indicator_points` | Série annuelle d'un indicateur (une ligne par année) | idem |
+| `census_divisions` | Districts, régions et villes du RGPH 2021 (population, ménages, taille moyenne) | idem, depuis `database/data/rgph-2021.json` |
+
+Ces tables sont en **lecture seule** pour l'API publique (`GET /api/v1/statistics`, cache 6 h) ; aucune route d'écriture n'existe. Les données du recensement sont figées dans `backend/database/data/rgph-2021.json`, avec l'URL et la licence du document officiel, pour que l'import soit reproductible sans réseau.
+
 **Règles de données**
 - `editorial_actions` est **append-only** : jamais de `update` ni `delete` (hors purge programmée).
 - `articles.deleted_at` = suppression douce (trait Laravel `SoftDeletes`). Purge définitive après 90 jours (tâche V1).
@@ -788,6 +798,7 @@ Base : `/api/v1`. Format JSON. Authentification : session Sanctum (cookie) côt�
 | GET | `/api/v1/review/queue` | EDITOR+ | Articles `SUBMITTED` / `IN_REVIEW` | WF-01 |
 | GET | `/api/v1/search?q=&page=` | public | Recherche dans les articles publiés | RCH-01 |
 | GET | `/api/v1/categories` | public | Arbre des catégories | CAT |
+| GET | `/api/v1/statistics` | public | Indicateurs du pays par thème + divisions du RGPH 2021 (cache 6 h) | STAT |
 | POST | `/api/v1/articles/{id}/cover` | CONTRIBUTOR+ | Upload d'image (multipart) : MIME vérifié côté serveur, `alt` obligatoire | ART-06 |
 
 *Gestion des catégories et des utilisateurs : **panneau Filament `/admin`** (ressources + Policies), pas de routes API admin dédiées au MVP.*
@@ -1124,6 +1135,7 @@ jobs:
 | 2026-11-02 | 1.0 | Création : consolidation du cahier des charges, de la conception UML et de la roadmap ; décisions ADR-001 à 008 ; backlog MVP. |
 | 2026-11-02 | 1.1 | **Adaptation de la stack au modèle Flutter + Laravel** : Flutter (`app/`) + Laravel (`backend/`) + MySQL/Filament/Sanctum remplacent Next.js + Prisma + PostgreSQL + Auth.js. Schéma converti en MySQL (§8.2), workflow traduit en PHP (§9), API versionnée `/api/v1` (§11), CI à deux jobs (§15.4), divergences D9 et nouveaux risques R-05/R-08/R-09. |
 | 2026-11-03 | 1.2 | **Hébergement et emails tranchés** : Alwaysdata remplace XAMPP dès le développement (ADR-002 révisé, ADR-008 réécrit) et Mailjet devient le relais SMTP (ADR-009). §5 stack, §7 installation (base distante, ports), §7.5 variables d'environnement, R-10, Q3/Q9 mis à jour. Guides `docs/INSTALLATION.md` et `docs/DEPLOIEMENT.md`. |
+| 2026-11-11 | 1.5 | **Statistiques nationales et articles enrichis** : trois tables (`country_indicators`, `country_indicator_points`, `census_divisions`), endpoint public `GET /api/v1/statistics`, page Flutter `/statistiques`, commandes `country:sync-statistics` (Banque mondiale + RGPH 2021) et `articles:enrich-sources` (infobox et références vérifiées). §8.2 et §11.1 mis à jour. |
 | 2026-11-11 | 1.4 | **Répertoire des sources documentaires** : `docs/SOURCES_INFORMATION.md` recense environ 150 plateformes (institutions ivoiriennes, statistiques internationales, cartographie, patrimoine, archives, recherche, presse, droit, langues, images), chacune vérifiée par requête HTTP le 11 novembre 2026 et assortie de son statut, de sa licence et des règles de citation. Ajouté au §2 comme document de référence. |
 | 2026-11-03 | 1.3 | **Compte d'hébergement dédié** : IVOIREPEDIA quitte le compte Alwaysdata partagé (ADR-008) — compte, site `ivoirepedia.alwaysdata.net`, dossier, bases `ivoirepedia_prod`/`ivoirepedia_dev` et utilisateur MySQL propres, phpMyAdmin par compte. §5, §7, ADR-002 et ADR-008 alignés ; aucune référence à un autre projet ne subsiste dans le dépôt. |
 

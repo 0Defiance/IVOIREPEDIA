@@ -4,6 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ivoirepedia/src/api.dart';
 import 'package:ivoirepedia/src/models/article.dart';
 import 'package:ivoirepedia/src/models/category.dart';
+import 'package:ivoirepedia/src/models/statistics.dart';
+
+import 'support/statistics_fixture.dart';
 import 'package:ivoirepedia/src/theme.dart';
 import 'package:ivoirepedia/src/ui/search_page.dart';
 import 'package:ivoirepedia/src/ui/widgets/ivorian_patterns.dart';
@@ -29,6 +32,9 @@ class _SearchApi implements IvoirepediaApi {
   @override
   Future<ArticleDetail> fetchArticle(String slug) async =>
       throw const ApiException('non utilisé');
+
+  @override
+  Future<StatisticsSnapshot> fetchStatistics() async => statisticsFixture();
 
   @override
   Future<PagedArticles> search(String query, {int page = 1, int limit = 12}) async {

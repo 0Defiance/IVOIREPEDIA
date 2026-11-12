@@ -343,6 +343,31 @@
 
 ---
 
+### 11 novembre 2026 (séance 14) — Statistiques nationales et articles enrichis
+
+**Motif (demande du titulaire)** : compléter les informations déjà en base à l'aide du répertoire de sources, et créer une fonctionnalité statistique sur la Côte d'Ivoire, « le plus exhaustif possible ».
+
+**Fait**
+- **Recensement exploité à la source** : le PDF officiel du RGPH 2021 (ministère de l'Économie, du Plan et du Développement, 22 juillet 2022) a été téléchargé, son texte extrait en colonnes (`pdftotext -table`), puis réassemblé par un script qui recolle les séparateurs de milliers et valide chaque ligne par l'identité `total = hommes + femmes`. Résultat figé dans `backend/database/data/rgph-2021.json` : population nationale **29 389 150**, 14 districts, 31 régions, 40 villes avec ménages et taille moyenne — licence et URL du document comprises.
+- **Trois tables** : `country_indicators` (valeur, année, organisme, licence), `country_indicator_points` (série annuelle), `census_divisions` (districts, régions, villes). Aucune route d'écriture : l'API ne fait que lire.
+- **Commande `country:sync-statistics`** : importe le recensement, puis les séries de la Banque mondiale (51 indicateurs WDI, 1990-2025) soit par le réseau, soit depuis l'instantané `database/data/worldbank-civ.json` (`--from-file`, licence CC BY 4.0) ; `--offline` n'importe que le recensement. **55 indicateurs et 1 500 points** en base.
+- **API `GET /api/v1/statistics`** : indicateurs groupés en six thèmes (démographie, économie, société et travail, santé, éducation, énergie et environnement), chiffres clés, bloc recensement, divisions administratives ; cache de six heures.
+- **Page Flutter `/statistiques`**, atteignable depuis la barre latérale : population résidente du RGPH, cartes de chiffres clés avec courbe de tendance, tableaux par thème (valeur, année, source), barres de population des districts, des régions et des vingt plus grandes villes, puis les sources et licences. Aucune bibliothèque de graphiques ajoutée : la courbe est un `CustomPainter` de quelques lignes, cohérent avec la sobriété du site.
+- **Articles enrichis** : commande `articles:enrich-sources` sur un jeu de données vérifiées (`database/data/article-enrichment.php`). **22 articles examinés, 5 infobox complétées** (Yamoussoukro 422 072, Bouaké 832 371, Korhogo 440 926, Man 241 969, San-Pédro 390 654) et **24 références ajoutées** (fiches UNESCO du patrimoine mondial — Comoé 227, Taï 195, Grand-Bassam 1322 —, éléments du patrimoine immatériel — Zaouli 01255, attiéké 02086 —, sites institutionnels, FAOSTAT, BRVM, port d'Abidjan, UCDP). La référence historique pointant vers `ins.ci` est remplacée par le PDF officiel du RGPH.
+
+**Vérifié**
+- `phpstan` niveau 5 : aucune erreur ; `pint --test` : 65 fichiers conformes ; **16 tests PHP** verts, dont deux nouveaux fichiers : l'API statistique (structure, format français « 31 934 230 habitants », source et série) et l'import hors ligne du recensement (29 389 150, 6 321 017 pour Abidjan, 832 371 pour Bouaké, 31 régions, 14 districts) ; l'enrichissement (infobox, références, idempotence, référence éditoriale préservée).
+- `flutter analyze` : aucune remarque ; **10 tests Flutter** verts, dont la page statistique atteinte en cliquant « Statistiques » dans la barre latérale, avec vérification de la population du recensement, d'un indicateur et des divisions.
+- API contrôlée en local : 80 ko de JSON, en-tête `32 711 547 habitants` (2025), PIB 99,8 milliards USD, 14/31/40 divisions.
+- Build web reconstruit et redéployé ; pages `#/statistiques` et `#/articles/abidjan` contrôlées en production.
+
+**Reste**
+1. Références pour les articles qui n'en ont pas encore de vérifiable : biographies (Kourouma, Gbagbo, Guéi, Samory Touré), langues (Glottolog à identifier), culture populaire (zouglou, coupé-décalé, goli, kedjenou) — mieux vaut pas de référence qu'une référence décorative.
+2. Comparer les séries de la Banque mondiale aux publications de l'ANStat quand elles divergent (population estimée contre recensement) et l'expliquer dans les articles.
+3. Ajouter les données du RGPH 2014 pour une série intercensitaire complète.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

@@ -6,6 +6,9 @@ import 'package:ivoirepedia/src/api.dart';
 import 'package:ivoirepedia/src/article_export.dart';
 import 'package:ivoirepedia/src/models/article.dart';
 import 'package:ivoirepedia/src/models/category.dart';
+import 'package:ivoirepedia/src/models/statistics.dart';
+
+import 'support/statistics_fixture.dart';
 import 'package:ivoirepedia/src/theme.dart';
 import 'package:ivoirepedia/src/ui/widgets/ivorian_patterns.dart';
 import 'package:ivoirepedia/src/ui/article_page.dart';
@@ -27,6 +30,9 @@ class _ArticleApi implements IvoirepediaApi {
   @override
   Future<PagedArticles> search(String query, {int page = 1, int limit = 12}) async =>
       const PagedArticles(items: [], page: 1, limit: 12, total: 0);
+
+  @override
+  Future<StatisticsSnapshot> fetchStatistics() async => statisticsFixture();
 
   @override
   Future<ArticleDetail> fetchArticle(String slug) async {

@@ -5,6 +5,9 @@ import 'package:ivoirepedia/src/api.dart';
 import 'package:ivoirepedia/src/app.dart';
 import 'package:ivoirepedia/src/models/article.dart';
 import 'package:ivoirepedia/src/models/category.dart';
+import 'package:ivoirepedia/src/models/statistics.dart';
+
+import 'support/statistics_fixture.dart';
 import 'package:ivoirepedia/src/ui/widgets/ivorian_patterns.dart';
 
 /// API en mémoire : les parcours d'interface sont testés sans réseau.
@@ -71,6 +74,9 @@ class FakeApi implements IvoirepediaApi {
   Future<PagedArticles> search(String query, {int page = 1, int limit = 12}) async {
     return PagedArticles(items: const [], page: page, limit: limit, total: 0);
   }
+
+  @override
+  Future<StatisticsSnapshot> fetchStatistics() async => statisticsFixture();
 }
 
 void main() {
