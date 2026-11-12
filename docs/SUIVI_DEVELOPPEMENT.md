@@ -360,7 +360,19 @@
 - `flutter analyze` : aucune remarque ; **10 tests Flutter** verts, dont la page statistique atteinte en cliquant « Statistiques » dans la barre latérale, avec vérification de la population du recensement, d'un indicateur et des divisions.
 - API contrôlée en local puis en production : 80 ko de JSON, en-tête `32 711 547 habitants` (2025), PIB 99,8 milliards USD, 14 districts / 31 régions / 40 villes ; `GET /api/v1/articles/bouake` renvoie l'infobox `CITY` 832 371 (2021) et la référence RGPH.
 - Base de production migrée, peuplée (55 indicateurs, 1 500 points, 85 divisions) et articles enrichis (22 examinés, 5 infobox, 24 références) ; build web redéployé (bundle de 3,5 Mo contenant la route `/statistiques`).
-- **Non vérifié visuellement** : l'onglet de prévisualisation reste masqué (`document.visibilityState = "hidden"`), Flutter n'initialise donc pas son canvas et la capture est blanche. Le rendu n'est prouvé que par les tests de widgets.
+- Rendu de la page contrôlé dans le navigateur en production après l'incident du 12 novembre (capture : `docs/captures/statistiques.png`).
+
+**Incident du 12 novembre — page blanche en production**
+
+Signalement : `https://ivoirepedia.alwaysdata.net/site/#/statistiques` n'affichait qu'une page blanche. Diagnostic : le navigateur ne recevait jamais `main.dart.js` en entier. Mesures au `curl` et dans la page : Apache d'Alwaysdata compressait les fichiers à la volée en **Brotli**, ce qui ramenait le débit du bundle à 6 ko/s (733 ko en 120 s) ; la connexion était coupée vers 40 s, le script ne s'exécutait donc pas et Flutter ne créait jamais sa vue (aucune requête à l'API, aucun `flutter-view`). Un test du même fichier en gzip donnait 29 ko/s, d'où la cause.
+
+Correctifs livrés :
+- `app/web/.htaccess` (copié dans le build) désactive Brotli pour `js`, `wasm`, `json` et les polices ; gzip reste actif et sert le bundle en ~28 s au lieu de 120 s.
+- `app/web/index.html` affiche un écran de chargement (« Chargement de l'encyclopédie… ») qui disparaît dès que la vue Flutter existe, signale la lenteur au bout de 12 s et propose de recharger au bout de 90 s : plus de page blanche muette.
+- En-têtes de cache : `no-cache` pour le code et les manifestes (déploiement visible immédiatement), un jour pour CanvasKit et les polices (plusieurs mégaoctets stables).
+- Un test de non-régression rend la page avec la **charge réelle** de l'API, enregistrée dans `app/test/support/statistics_payload.json` : 11 tests Flutter verts.
+
+Leçon à retenir pour les prochains déploiements : la compression à la volée du serveur fait partie du chemin critique d'une application Flutter web ; à vérifier en même temps que le code.
 
 **Reste**
 1. Références pour les articles qui n'en ont pas encore de vérifiable : biographies (Kourouma, Gbagbo, Guéi, Samory Touré), langues (Glottolog à identifier), culture populaire (zouglou, coupé-décalé, goli, kedjenou) — mieux vaut pas de référence qu'une référence décorative.

@@ -18,7 +18,7 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  <meta name="description" content="IVOIREPEDIA — l’encyclopédie de la Côte d’Ivoire.">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
@@ -29,18 +29,111 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>ivoirepedia</title>
+  <title>IVOIREPEDIA</title>
   <link rel="manifest" href="manifest.json">
+
+  <!--
+    Flutter charge son moteur (plusieurs centaines de ko, puis CanvasKit) avant
+    de peindre quoi que ce soit. Sur une connexion lente, l'écran restait blanc
+    plusieurs minutes sans explication : cet écran de chargement le remplace et
+    disparaît dès que la première vue Flutter existe.
+  -->
+  <style>
+    #loading {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      background: #FBF9F4;
+      color: #33302B;
+      font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+      z-index: 9999;
+    }
+
+    #loading .mark {
+      font-size: 13px;
+      letter-spacing: 3px;
+      font-weight: 600;
+      color: #1F5F3F;
+    }
+
+    #loading .spinner {
+      width: 26px;
+      height: 26px;
+      border: 2px solid rgba(31, 95, 63, 0.2);
+      border-top-color: #1F5F3F;
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+
+    #loading .hint {
+      max-width: 320px;
+      font-size: 12.5px;
+      line-height: 1.6;
+      text-align: center;
+      color: #6B665D;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
 </head>
 <body>
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
+  <div id="loading" role="status" aria-live="polite">
+    <div class="mark">IVOIREPEDIA</div>
+    <div class="spinner"></div>
+    <div class="hint" id="hint">Chargement de l’encyclopédie…</div>
+  </div>
 
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
+  <script>
+    (function () {
+      var start = Date.now();
+
+      // Message honnête quand la connexion est lente : le moteur fait plus de
+      // 800 ko et ne peint rien tant qu'il n'est pas arrivé.
+      var slow = setTimeout(function () {
+        var hint = document.getElementById('hint');
+        if (hint) {
+          hint.textContent = 'Le chargement prend plus de temps que prévu. '
+            + 'Sur une connexion lente, comptez jusqu’à une minute.';
+        }
+      }, 12000);
+
+      function ready() {
+        return document.querySelector('flt-glass-pane, flutter-view');
+      }
+
+      function clear() {
+        var node = document.getElementById('loading');
+        if (node) {
+          node.style.opacity = '0';
+          node.style.transition = 'opacity 200ms';
+          setTimeout(function () { node.remove(); }, 220);
+        }
+        clearTimeout(slow);
+      }
+
+      var timer = setInterval(function () {
+        if (ready()) {
+          clearInterval(timer);
+          clear();
+        } else if (Date.now() - start > 90000) {
+          // Au-delà d'une minute trente, mieux vaut proposer de réessayer.
+          clearInterval(timer);
+          var hint = document.getElementById('hint');
+          if (hint) {
+            hint.textContent = 'La page ne répond pas. Vérifiez la connexion, puis ';
+            hint.innerHTML += '<a href="" style="color:#1F5F3F">rechargez</a>.';
+          }
+        }
+      }, 200);
+    })();
+  </script>
+
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

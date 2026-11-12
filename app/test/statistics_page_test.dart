@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -44,6 +47,20 @@ class _StatisticsApi implements IvoirepediaApi {
       const PagedArticles(items: [], page: 1, limit: 12, total: 0);
 }
 
+/// Charge réellement renvoyée par `GET /api/v1/statistics` en production,
+/// enregistrée telle quelle : elle vérifie que la page supporte la vraie
+/// réponse de l'API, pas seulement un jeu écrit à la main.
+class _PayloadApi extends _StatisticsApi {
+  @override
+  Future<StatisticsSnapshot> fetchStatistics() async {
+    final payload = jsonDecode(
+      File('test/support/statistics_payload.json').readAsStringSync(),
+    ) as Map<String, dynamic>;
+
+    return StatisticsSnapshot.fromJson(payload);
+  }
+}
+
 void main() {
   setUp(() => ivoireMotionEnabled = false);
 
@@ -74,5 +91,21 @@ void main() {
     expect(find.text('Bouaké'), findsWidgets);
     expect(find.textContaining('CC BY 4.0'), findsWidgets);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('la réponse réelle de l’API se rend sans erreur', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1280, 1400);
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(IvoirepediaApp(api: _PayloadApi()));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Statistiques').first);
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('La Côte d’Ivoire en chiffres'), findsOneWidget);
+    expect(find.text('29\u202f389\u202f150'), findsOneWidget);
+    expect(find.text('Abidjan'), findsWidgets);
   });
 }

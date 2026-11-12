@@ -279,6 +279,8 @@ php artisan config:cache && php artisan route:cache
 
 `--ff-only` échoue volontairement si le serveur a divergé : c'est le signal qu'un fichier a été modifié à la main en production.
 
+**Site Flutter (dossier `public/site`)** : le fichier `app/web/.htaccess` est recopié dans le build et déployé avec le reste. Il désactive Brotli pour les fichiers `js`/`wasm`/`json`/polices (la compression à la volée d'Alwaysdata fait tomber le débit du bundle à 6 ko/s et empêche la page de se charger) et fixe les en-têtes de cache. Si le dossier est remplacé par un `tar`, vérifier que ce fichier caché est bien extrait : `ls -a ~/ivoirepedia/backend/public/site | grep htaccess`.
+
 ---
 
 ## 6. Vérifications après déploiement

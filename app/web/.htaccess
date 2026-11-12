@@ -1,0 +1,25 @@
+# Réglages du serveur Apache d'Alwaysdata pour l'application Flutter.
+#
+# Brotli à la volée divise par cinq le débit des gros fichiers (mesuré sur
+# main.dart.js : 733 ko en 120 s en brotli contre 833 ko en 28 s en gzip).
+# Comme l'application pèse plus de 800 ko de JavaScript, la compression brotli
+# empêchait la page de se charger. On la désactive pour les fichiers lourds :
+# gzip reste actif et suffit.
+<IfModule mod_brotli.c>
+  SetEnvIfNoCase Request_URI "\.(js|wasm|json|ttf|otf|woff2?)$" no-brotli
+</IfModule>
+
+<IfModule mod_headers.c>
+  # Le code doit être revalidé à chaque visite : une réponse 304 coûte quelques
+  # centaines d'octets et un déploiement est visible immédiatement.
+  <FilesMatch "\.(html|js|json)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+
+  # CanvasKit et les polices pèsent plusieurs mégaoctets et ne changent qu'avec
+  # une montée de version de Flutter : un jour de cache évite de les reprendre
+  # à chaque visite, sans figer durablement une version périmée.
+  <FilesMatch "\.(wasm|ttf|otf|woff2?|png)$">
+    Header set Cache-Control "public, max-age=86400"
+  </FilesMatch>
+</IfModule>
