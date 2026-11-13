@@ -939,10 +939,12 @@ class _SourceLine extends StatelessWidget {
 }
 
 /// Courbe de tendance minimale : une ligne, sans axes ni libellés.
+/// Vignette de série annuelle, avec ses années de début et de fin : sans
+/// elles, une courbe ne dit pas la période qu'elle couvre.
 class Sparkline extends StatelessWidget {
   const Sparkline({
     required this.points,
-    this.width = 80,
+    this.width = 88,
     this.height = 24,
     super.key,
   });
@@ -953,10 +955,36 @@ class Sparkline extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (points.length < 2) {
+      return const SizedBox.shrink();
+    }
+
     return SizedBox(
       width: width,
-      height: height,
-      child: CustomPaint(painter: _SparklinePainter(points)),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            width: width,
+            height: height,
+            child: CustomPaint(painter: _SparklinePainter(points)),
+          ),
+          const SizedBox(height: 1),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '${points.first.year}',
+                style: const TextStyle(fontSize: 9, color: IvoireColors.faint),
+              ),
+              Text(
+                '${points.last.year}',
+                style: const TextStyle(fontSize: 9, color: IvoireColors.faint),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

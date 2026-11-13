@@ -72,7 +72,12 @@ StatisticsSnapshot statisticsFixture() {
             label: 'Espérance de vie à la naissance',
             display: '62,1 ans',
             year: 2024,
-            series: [],
+            series: [
+              StatisticPoint(year: 2000, value: 54.4),
+              StatisticPoint(year: 2010, value: 58.3),
+              StatisticPoint(year: 2020, value: 60.9),
+              StatisticPoint(year: 2024, value: 62.1),
+            ],
             source: source,
           ),
         ],

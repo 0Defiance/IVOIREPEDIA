@@ -114,6 +114,16 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('les vignettes de série portent leur année de début et de fin',
+      (tester) async {
+    await openStatistics(tester);
+
+    // Espérance de vie : série 2000-2024, bornes affichées sous la courbe.
+    expect(find.text('2000'), findsOneWidget);
+    expect(find.text('2024'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('la pluviométrie affiche les mois et les cumuls annuels',
       (tester) async {
     await openStatistics(tester);

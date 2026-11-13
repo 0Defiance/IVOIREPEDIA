@@ -60,7 +60,7 @@ class _YearChartPainter extends CustomPainter {
   final int decimals;
 
   static const double _left = 58;
-  static const double _bottom = 18;
+  static const double _bottom = 20;
   static const double _top = 10;
 
   @override
@@ -122,20 +122,30 @@ class _YearChartPainter extends CustomPainter {
     final middle = points[points.length ~/ 2].year;
     final last = points.last.year;
 
-    _text(canvas, '$first', Offset(chart.left, chart.bottom + 3), size: 9.5);
+    // Les deux bornes sont plus marquées que l'année médiane : ce sont elles
+    // qui donnent la période de la courbe quand on la lit seule.
+    _text(
+      canvas,
+      '$first',
+      Offset(chart.left, chart.bottom + 4),
+      size: 10,
+      color: IvoireColors.muted,
+    );
     _text(
       canvas,
       '$middle',
-      Offset(chart.center.dx, chart.bottom + 3),
+      Offset(chart.center.dx, chart.bottom + 4),
       align: _Align.center,
-      size: 9.5,
+      size: 9,
     );
     _text(
       canvas,
       '$last',
-      Offset(chart.right, chart.bottom + 3),
+      Offset(chart.right, chart.bottom + 4),
       align: _Align.right,
-      size: 9.5,
+      size: 10,
+      color: IvoireColors.muted,
+      bold: true,
     );
 
     // Aire + courbe.

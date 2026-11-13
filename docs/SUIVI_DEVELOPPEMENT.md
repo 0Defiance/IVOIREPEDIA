@@ -501,10 +501,12 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 **Fait — côté application**
 - Page statistique : bandeau « Séries annuelles à jour jusqu'en 2025 · recensement : RGPH 2021 », croissance annuelle dans le panneau du recensement, et sous chaque indicateur (cartes de tête comme tableaux par thème) son évolution annuelle moyenne, flèche verte à la hausse, orange à la baisse.
 - Fiche de lieu : la population du RGPH 2021 est suivie de « ≈ N habitants en 2026 », de la méthode (« RGPH 2021 extrapolé avec la croissance nationale de 2,4 % par an (2025) ») et de la réserve sur son statut d'estimation.
+- Courbes : chaque graphique porte sa période. Les grandes courbes affichent l'année de début, l'année médiane et l'année de fin (les deux bornes plus marquées), et les vignettes des tableaux affichent leur année de début et de fin sous la courbe : une courbe se lit désormais sans remonter au libellé de l'indicateur.
+- La page gagne une vignette par indicateur dans les tableaux, en 88 px, pour laisser la place aux deux années sans écraser la valeur.
 
 **Vérifié**
 - `pest` : **33 tests** verts (+2 : évolution annuelle et croissance du recensement, extrapolation 2026 non présentée comme officielle) ; `pint --test` : 80 fichiers conformes ; `phpstan` : aucune erreur.
-- `flutter analyze` : aucune remarque ; **21 tests Flutter** verts (+1 : chaque indicateur porte son évolution annuelle).
+- `flutter analyze` : aucune remarque ; **22 tests Flutter** verts (+2 : évolution annuelle par indicateur, années de début et de fin des vignettes).
 
 **Limites assumées**
 - L'extrapolation 2026 utilise la croissance **nationale** : elle ne capture ni la dynamique propre d'Abidjan ni une éventuelle baisse locale, et ne remplace pas un recensement.
