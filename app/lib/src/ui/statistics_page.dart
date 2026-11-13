@@ -102,6 +102,27 @@ class _StatisticsBody extends StatelessWidget {
               ),
             ),
           ),
+          if (data.dataThrough != null) ...[
+            const SizedBox(height: 14),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(Icons.update, size: 15, color: IvoireColors.green),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    'Séries annuelles à jour jusqu’en ${data.dataThrough} · '
+                    'recensement : RGPH ${data.census.year}.',
+                    style: const TextStyle(
+                      fontSize: 12.5,
+                      height: 1.5,
+                      color: IvoireColors.muted,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
           const SizedBox(height: 24),
           _CensusPanel(census: census),
           if (data.headline.isNotEmpty) ...[
@@ -205,14 +226,70 @@ class _CensusPanel extends StatelessWidget {
                 label: 'Part des femmes',
                 value: '${_decimal(census.womenShare)} %',
               ),
+              if (census.growthPercent != null)
+                _MiniFact(
+                  label: 'Croissance annuelle',
+                  value: '${_decimal(census.growthPercent!)} % '
+                      '(${census.growthYear ?? ''})',
+                ),
             ],
           ),
+          if (census.growthPercent != null) ...[
+            const SizedBox(height: 12),
+            Text(
+              'Avec cette croissance, la population de 2021 correspond à environ '
+              '${_thousands((census.population * math.pow(1 + census.growthPercent! / 100, 2026 - census.year)).round())} '
+              'habitants en 2026 : une estimation, pas un recensement.',
+              style: const TextStyle(
+                fontSize: 12,
+                height: 1.55,
+                color: IvoireColors.muted,
+              ),
+            ),
+          ],
           if (census.source?.name != null) ...[
             const SizedBox(height: 14),
             _SourceLine(source: census.source),
           ],
         ],
       ),
+    );
+  }
+}
+
+/// Évolution annuelle moyenne : la flèche dit le sens, le texte la valeur.
+class _TrendLabel extends StatelessWidget {
+  const _TrendLabel({required this.trend, required this.fontSize});
+
+  final StatisticTrend trend;
+  final double fontSize;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = trend.isUp
+        ? IvoireColors.green
+        : (trend.isDown ? IvoireColors.orangeDeep : IvoireColors.faint);
+    final icon = trend.isUp
+        ? Icons.trending_up
+        : (trend.isDown ? Icons.trending_down : Icons.trending_flat);
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: fontSize + 1, color: color),
+        const SizedBox(width: 4),
+        Expanded(
+          child: Text(
+            trend.display,
+            style: TextStyle(
+              fontSize: fontSize,
+              height: 1.4,
+              color: color,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -324,6 +401,10 @@ class _HeadlineCard extends StatelessWidget {
             indicator.year == null ? '' : 'Donnée ${indicator.year}',
             style: const TextStyle(fontSize: 11, color: IvoireColors.faint),
           ),
+          if (indicator.trend != null) ...[
+            const SizedBox(height: 4),
+            _TrendLabel(trend: indicator.trend!, fontSize: 11.5),
+          ],
           if (indicator.series.length > 2) ...[
             const SizedBox(height: 8),
             YearLineChart(points: indicator.series, height: 96),
@@ -397,6 +478,10 @@ class _IndicatorRow extends StatelessWidget {
                   ].join(' · '),
                   style: const TextStyle(fontSize: 10.5, color: IvoireColors.faint),
                 ),
+                if (indicator.trend != null) ...[
+                  const SizedBox(height: 3),
+                  _TrendLabel(trend: indicator.trend!, fontSize: 11),
+                ],
               ],
             ),
           ),

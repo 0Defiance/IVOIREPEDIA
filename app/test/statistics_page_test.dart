@@ -98,6 +98,22 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('chaque indicateur porte son évolution annuelle moyenne',
+      (tester) async {
+    await openStatistics(tester);
+
+    // Année la plus récente publiée, affichée en tête de page.
+    expect(find.textContaining('à jour jusqu’en 2025'), findsOneWidget);
+    expect(find.text('+2,5 % par an (2020-2025)'), findsOneWidget);
+    expect(find.text('CROISSANCE ANNUELLE'), findsOneWidget);
+    // Le recensement est daté, et l'extrapolation 2026 annoncée comme telle.
+    expect(
+      find.textContaining('habitants en 2026 : une estimation'),
+      findsOneWidget,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('la pluviométrie affiche les mois et les cumuls annuels',
       (tester) async {
     await openStatistics(tester);

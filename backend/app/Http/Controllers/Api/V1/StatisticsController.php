@@ -83,6 +83,7 @@ class StatisticsController extends Controller
                     'average_size' => $averageSize === null ? 0.0 : (float) $averageSize->value,
                     'women_share' => $womenShare === null ? 0.0 : (float) $womenShare->value,
                     'source' => $this->sourcePayload($population),
+                    'growth' => $this->censusGrowth(),
                 ],
                 'headline' => $headline,
                 'themes' => $themes,
@@ -96,6 +97,13 @@ class StatisticsController extends Controller
             'meta' => [
                 'updated_at' => $indicators->max(fn (CountryIndicator $indicator) => $indicator->updated_at)?->toIso8601String(),
                 'indicators' => $indicators->count(),
+                // Année la plus récente publiée, tous indicateurs confondus :
+                // c'est la date affichée en tête de page.
+                'data_through' => $indicators->max(fn (CountryIndicator $indicator) => $indicator->year),
+                'census_year' => 2021,
+                'census_note' => 'Le RGPH 2021 est le dernier recensement publié : '
+                    .'les effectifs de districts, régions et villes datent du 14 décembre 2021 '
+                    .'et ne sont pas remplacés par des estimations.',
                 'sources' => collect($themes)
                     ->flatMap(fn (array $theme) => $theme['indicators'])
                     ->pluck('source.name')
@@ -120,10 +128,85 @@ class StatisticsController extends Controller
             'display' => $indicator->displayValue(),
             'year' => $indicator->year,
             'source' => $this->sourcePayload($indicator),
+            // Évolution annuelle moyenne des cinq dernières années : c'est
+            // l'information qu'une valeur seule ne donne pas.
+            'trend' => $this->trend($indicator),
             'series' => $indicator->points
                 ->map(fn ($point) => ['year' => $point->year, 'value' => (float) $point->value])
                 ->values()
                 ->all(),
+        ];
+    }
+
+    /**
+     * Évolution annuelle moyenne sur les cinq dernières années disponibles.
+     *
+     * Le pourcentage est un taux de croissance composé ; pour un indicateur
+     * déjà exprimé en pourcentage (alphabétisation, chômage…), il n'a pas de
+     * sens et l'écart est donné en points.
+     *
+     * @return array<string, mixed>|null
+     */
+    private function trend(CountryIndicator $indicator): ?array
+    {
+        $points = $indicator->points->sortBy('year')->values();
+
+        if ($points->count() < 2) {
+            return null;
+        }
+
+        $last = $points->last();
+        $first = $points->filter(fn ($point): bool => $point->year >= $last->year - 5)->first() ?? $points->first();
+        $span = $last->year - $first->year;
+        $start = (float) $first->value;
+        $end = (float) $last->value;
+
+        if ($span <= 0 || $start == 0.0) {
+            return null;
+        }
+
+        $perYear = ($end - $start) / $span;
+        $isPercentage = str_contains((string) $indicator->unit, '%');
+        $percent = $isPercentage || $start <= 0
+            ? null
+            : (pow($end / $start, 1 / $span) - 1) * 100;
+
+        $amount = number_format(abs($perYear), $perYear >= 0 && abs($perYear) < 10 ? 2 : 0, ',', ' ');
+        $label = $isPercentage
+            ? sprintf('%+.2f point par an (%d-%d)', $perYear, $first->year, $last->year)
+            : ($percent === null
+                ? sprintf('%s %s par an (%d-%d)', $perYear >= 0 ? '+' : '-', $amount, $first->year, $last->year)
+                : sprintf('%+.1f %% par an (%d-%d)', $percent, $first->year, $last->year));
+
+        return [
+            'from_year' => $first->year,
+            'to_year' => $last->year,
+            'span_years' => $span,
+            'absolute_per_year' => round($perYear, 3),
+            'percent_per_year' => $percent === null ? null : round($percent, 2),
+            'direction' => $end > $start ? 'hausse' : ($end < $start ? 'baisse' : 'stable'),
+            'display' => str_replace('.', ',', $label),
+        ];
+    }
+
+    /**
+     * Croissance démographique nationale la plus récente (série SP.POP.GROW).
+     *
+     * @return array<string, mixed>|null
+     */
+    private function censusGrowth(): ?array
+    {
+        $indicator = CountryIndicator::query()->with('points')->where('code', 'SP.POP.GROW')->first();
+        $last = $indicator?->points->sortBy('year')->last();
+
+        if ($last === null) {
+            return null;
+        }
+
+        return [
+            'percent_per_year' => round((float) $last->value, 2),
+            'year' => $last->year,
+            'source' => $this->sourcePayload($indicator),
         ];
     }
 

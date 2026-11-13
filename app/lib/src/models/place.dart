@@ -96,6 +96,39 @@ class PlaceChild {
   }
 }
 
+/// Extrapolation de la population pour l'année en cours.
+///
+/// Aucun recensement n'a été publié après 2021 : l'API extrapole les effectifs
+/// du RGPH avec la croissance nationale récente, et donne la méthode employée.
+class PlaceEstimate {
+  const PlaceEstimate({
+    required this.year,
+    required this.population,
+    this.growthPercent,
+    this.growthYear,
+    this.basis,
+    this.note,
+  });
+
+  final int year;
+  final int population;
+  final double? growthPercent;
+  final int? growthYear;
+  final String? basis;
+  final String? note;
+
+  factory PlaceEstimate.fromJson(Map<String, dynamic> json) {
+    return PlaceEstimate(
+      year: (json['year'] as num?)?.toInt() ?? 0,
+      population: (json['population'] as num?)?.toInt() ?? 0,
+      growthPercent: (json['growth_percent'] as num?)?.toDouble(),
+      growthYear: (json['growth_year'] as num?)?.toInt(),
+      basis: json['basis'] as String?,
+      note: json['note'] as String?,
+    );
+  }
+}
+
 /// Fiche géographique complète (`GET /api/v1/places/{slug}`).
 class PlaceDetail {
   const PlaceDetail({
@@ -105,6 +138,7 @@ class PlaceDetail {
     required this.entries,
     this.parent,
     this.climate,
+    this.estimate,
     this.articles = const <ArticleSummary>[],
     this.sourceName,
     this.sourceUrl,
@@ -119,6 +153,7 @@ class PlaceDetail {
   /// d'une région : `parent` est le département, et le champ le dit).
   final String? parent;
   final PlaceClimate? climate;
+  final PlaceEstimate? estimate;
   final List<ArticleSummary> articles;
   final String? sourceName;
   final String? sourceUrl;
@@ -139,6 +174,9 @@ class PlaceDetail {
       climate: json['climate'] == null
           ? null
           : PlaceClimate.fromJson(json['climate'] as Map<String, dynamic>),
+      estimate: json['estimate'] == null
+          ? null
+          : PlaceEstimate.fromJson(json['estimate'] as Map<String, dynamic>),
       articles: ((json['articles'] as List<dynamic>?) ?? const [])
           .map((article) => ArticleSummary.fromJson(article as Map<String, dynamic>))
           .toList(growable: false),

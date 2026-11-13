@@ -16,6 +16,8 @@ StatisticsSnapshot statisticsFixture() {
       households: 5616487,
       averageSize: 5.2,
       womenShare: 47.8,
+      growthPercent: 2.4,
+      growthYear: 2025,
       source: StatisticSource(
         name: 'ANStat — RGPH 2021',
         url: 'https://plan.gouv.ci/',
@@ -33,6 +35,14 @@ StatisticsSnapshot statisticsFixture() {
           StatisticPoint(year: 2024, value: 31934230),
           StatisticPoint(year: 2025, value: 32711547),
         ],
+        trend: StatisticTrend(
+          fromYear: 2020,
+          toYear: 2025,
+          display: '+2,5 % par an (2020-2025)',
+          percentPerYear: 2.49,
+          absolutePerYear: 757219.6,
+          direction: 'hausse',
+        ),
         source: source,
       ),
       StatisticIndicator(
@@ -160,6 +170,11 @@ StatisticsSnapshot statisticsFixture() {
       ],
     ),
     updatedAt: DateTime(2026, 11, 11),
+    dataThrough: 2025,
+    censusNote:
+        'Le RGPH 2021 est le dernier recensement publié : les effectifs de '
+        'districts, régions et villes datent du 14 décembre 2021 et ne sont pas '
+        'remplacés par des estimations.',
     sources: const ['Banque mondiale — WDI'],
   );
 }

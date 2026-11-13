@@ -35,6 +35,41 @@ class StatisticPoint {
   }
 }
 
+/// Évolution annuelle moyenne calculée par l'API sur les cinq dernières
+/// années disponibles (taux composé, ou points par an pour les pourcentages).
+class StatisticTrend {
+  const StatisticTrend({
+    required this.fromYear,
+    required this.toYear,
+    required this.display,
+    this.percentPerYear,
+    this.absolutePerYear,
+    this.direction = 'stable',
+  });
+
+  final int fromYear;
+  final int toYear;
+  final String display;
+  final double? percentPerYear;
+  final double? absolutePerYear;
+  final String direction;
+
+  bool get isUp => direction == 'hausse';
+
+  bool get isDown => direction == 'baisse';
+
+  factory StatisticTrend.fromJson(Map<String, dynamic> json) {
+    return StatisticTrend(
+      fromYear: (json['from_year'] as num?)?.toInt() ?? 0,
+      toYear: (json['to_year'] as num?)?.toInt() ?? 0,
+      display: json['display'] as String? ?? '',
+      percentPerYear: (json['percent_per_year'] as num?)?.toDouble(),
+      absolutePerYear: (json['absolute_per_year'] as num?)?.toDouble(),
+      direction: json['direction'] as String? ?? 'stable',
+    );
+  }
+}
+
 class StatisticIndicator {
   const StatisticIndicator({
     required this.code,
@@ -44,6 +79,7 @@ class StatisticIndicator {
     required this.series,
     this.unit,
     this.source,
+    this.trend,
   });
 
   final String code;
@@ -53,6 +89,7 @@ class StatisticIndicator {
   final int? year;
   final StatisticSource? source;
   final List<StatisticPoint> series;
+  final StatisticTrend? trend;
 
   factory StatisticIndicator.fromJson(Map<String, dynamic> json) {
     final series = (json['series'] as List<dynamic>?) ?? const <dynamic>[];
@@ -65,6 +102,9 @@ class StatisticIndicator {
       year: (json['year'] as num?)?.toInt(),
       source: json['source'] is Map<String, dynamic>
           ? StatisticSource.fromJson(json['source'] as Map<String, dynamic>)
+          : null,
+      trend: json['trend'] is Map<String, dynamic>
+          ? StatisticTrend.fromJson(json['trend'] as Map<String, dynamic>)
           : null,
       series: series
           .map((item) => StatisticPoint.fromJson(item as Map<String, dynamic>))
@@ -134,6 +174,8 @@ class CensusSummary {
     required this.averageSize,
     required this.womenShare,
     this.source,
+    this.growthPercent,
+    this.growthYear,
   });
 
   final int year;
@@ -142,6 +184,11 @@ class CensusSummary {
   final double averageSize;
   final double womenShare;
   final StatisticSource? source;
+
+  /// Croissance démographique nationale la plus récente (Banque mondiale) :
+  /// elle sert à extrapoler les effectifs du recensement pour 2026.
+  final double? growthPercent;
+  final int? growthYear;
 
   factory CensusSummary.fromJson(Map<String, dynamic> json) {
     return CensusSummary(
@@ -153,6 +200,14 @@ class CensusSummary {
       source: json['source'] is Map<String, dynamic>
           ? StatisticSource.fromJson(json['source'] as Map<String, dynamic>)
           : null,
+      growthPercent: (json['growth'] is Map<String, dynamic>
+              ? (json['growth'] as Map<String, dynamic>)['percent_per_year'] as num?
+              : null)
+          ?.toDouble(),
+      growthYear: (json['growth'] is Map<String, dynamic>
+              ? (json['growth'] as Map<String, dynamic>)['year'] as num?
+              : null)
+          ?.toInt(),
     );
   }
 }
@@ -168,6 +223,8 @@ class StatisticsSnapshot {
     this.climate = ClimateSnapshot.empty,
     this.updatedAt,
     this.sources = const <String>[],
+    this.dataThrough,
+    this.censusNote,
   });
 
   final CensusSummary census;
@@ -179,6 +236,10 @@ class StatisticsSnapshot {
   final ClimateSnapshot climate;
   final DateTime? updatedAt;
   final List<String> sources;
+
+  /// Année la plus récente publiée, tous indicateurs confondus.
+  final int? dataThrough;
+  final String? censusNote;
 
   factory StatisticsSnapshot.fromJson(Map<String, dynamic> payload) {
     final data = (payload['data'] as Map<String, dynamic>?) ?? const <String, dynamic>{};
@@ -209,6 +270,8 @@ class StatisticsSnapshot {
         (data['climate'] as Map<String, dynamic>?) ?? const <String, dynamic>{},
       ),
       updatedAt: DateTime.tryParse(meta['updated_at'] as String? ?? ''),
+      dataThrough: (meta['data_through'] as num?)?.toInt(),
+      censusNote: meta['census_note'] as String?,
 
       sources: ((meta['sources'] as List<dynamic>?) ?? const <dynamic>[])
           .map((item) => item.toString())

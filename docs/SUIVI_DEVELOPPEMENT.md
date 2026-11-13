@@ -483,6 +483,35 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 19 — 13 novembre 2026 · Des chiffres à jour, et ce qu'ils font dans le temps
+
+**Demande**
+- Utiliser les données statistiques les plus récentes possibles, et afficher à côté de chaque statistique la moyenne annuelle (croissance ou décroissance).
+
+**Constat après vérification**
+- L'instantané de la Banque mondiale était déjà le plus récent publié : séries annuelles **1990-2025**, dernière publication du 11 novembre 2026 (vérifié à l'API le 13). Il n'existe donc pas de chiffre 2026 officiel : 2025 est la dernière année disponible.
+- En revanche l'affichage ne disait pas la fraîcheur des séries, et une valeur seule (RGPH 2021, « 6 321 017 habitants ») ne dit pas si la population monte ou baisse.
+
+**Fait — côté API**
+- Chaque indicateur porte `trend` : fenêtre des cinq dernières années, variation absolue par an, taux de croissance composé par an, sens (`hausse`, `baisse`, `stable`) et libellé prêt à afficher (« +2,5 % par an (2020-2025) »). Pour un indicateur déjà en pourcentage, la variation s'exprime en **points par an** : un taux de croissance d'un taux n'a pas de sens.
+- `meta.data_through` (dernière année publiée), `meta.census_year` et `meta.census_note` : le recensement de 2021 est présenté comme le dernier publié, pas comme un chiffre périmé.
+- `data.census.growth` : croissance démographique nationale la plus récente, avec sa source.
+- `GET /api/v1/places/{slug}` gagne `estimate` : population extrapolée pour 2026 à partir du RGPH 2021 et de la croissance nationale, avec la méthode et la mention « estimation, pas un recensement ». Aucun chiffre officiel n'est inventé.
+
+**Fait — côté application**
+- Page statistique : bandeau « Séries annuelles à jour jusqu'en 2025 · recensement : RGPH 2021 », croissance annuelle dans le panneau du recensement, et sous chaque indicateur (cartes de tête comme tableaux par thème) son évolution annuelle moyenne, flèche verte à la hausse, orange à la baisse.
+- Fiche de lieu : la population du RGPH 2021 est suivie de « ≈ N habitants en 2026 », de la méthode (« RGPH 2021 extrapolé avec la croissance nationale de 2,4 % par an (2025) ») et de la réserve sur son statut d'estimation.
+
+**Vérifié**
+- `pest` : **33 tests** verts (+2 : évolution annuelle et croissance du recensement, extrapolation 2026 non présentée comme officielle) ; `pint --test` : 80 fichiers conformes ; `phpstan` : aucune erreur.
+- `flutter analyze` : aucune remarque ; **21 tests Flutter** verts (+1 : chaque indicateur porte son évolution annuelle).
+
+**Limites assumées**
+- L'extrapolation 2026 utilise la croissance **nationale** : elle ne capture ni la dynamique propre d'Abidjan ni une éventuelle baisse locale, et ne remplace pas un recensement.
+- La climatologie reste une normale 1991-2020 : c'est la période de référence publiée, pas une donnée périmée.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

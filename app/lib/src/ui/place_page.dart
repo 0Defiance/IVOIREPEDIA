@@ -232,6 +232,29 @@ class _PopulationBlock extends StatelessWidget {
               Text('habitants', style: TextStyle(fontSize: 13, color: tone.muted)),
             ],
           ),
+          if (place.estimate != null) ...[
+            const SizedBox(height: 14),
+            Container(height: 1, color: tone.lineSoft),
+            const SizedBox(height: 12),
+            Text(
+              '≈ ${formatNumber(place.estimate!.population)} habitants en '
+              '${place.estimate!.year}',
+              style: titleStyle(size: 17, weight: FontWeight.w600, color: tone.ink),
+            ),
+            const SizedBox(height: 4),
+            if (place.estimate!.basis != null)
+              Text(
+                place.estimate!.basis!,
+                style: TextStyle(fontSize: 12, height: 1.5, color: tone.muted),
+              ),
+            if (place.estimate!.note != null) ...[
+              const SizedBox(height: 2),
+              Text(
+                place.estimate!.note!,
+                style: TextStyle(fontSize: 11.5, height: 1.5, color: tone.faint),
+              ),
+            ],
+          ],
         ],
       ),
     );

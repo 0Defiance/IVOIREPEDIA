@@ -64,6 +64,10 @@ it('expose les indicateurs par thème, avec source, année et série', function 
         ->and($demographie['indicators'][0]['year'])->toBe(2024)
         ->and($demographie['indicators'][0]['source']['licence'])->toBe('CC BY 4.0')
         ->and($demographie['indicators'][0]['series'])->toHaveCount(2)
+        // 31 165 654 → 31 934 230 en un an : +2,5 % par an.
+        ->and($demographie['indicators'][0]['trend']['display'])->toBe('+2,5 % par an (2023-2024)')
+        ->and($demographie['indicators'][0]['trend']['direction'])->toBe('hausse')
+        ->and($response->json('meta.data_through'))->toBe(2024)
         ->and($response->json('data.divisions.districts.0.name'))->toBe('Abidjan')
         ->and($response->json('data.divisions.districts.0.population'))->toBe(6321017)
         ->and($response->json('meta.sources'))->toContain('Banque mondiale — WDI');
@@ -101,8 +105,41 @@ it('importe la climatologie des villes sans réseau', function () {
         ->and($abidjan->source_licence)->toBe('CC BY 4.0');
 });
 
+it('donne l’évolution annuelle moyenne et la croissance du recensement', function () {
+    $this->artisan('country:sync-statistics', ['--from-file' => 'database/data/worldbank-civ.json'])->assertSuccessful();
+
+    $response = $this->getJson('/api/v1/statistics')->assertOk();
+    $population = collect($response->json('data.headline'))->firstWhere('code', 'SP.POP.TOTL');
+    $growth = $response->json('data.census.growth');
+
+    // Les séries vont jusqu’en 2025 : c’est la dernière année publiée.
+    expect($response->json('meta.data_through'))->toBe(2025)
+        ->and($response->json('meta.census_year'))->toBe(2021)
+        ->and($response->json('meta.census_note'))->toContain('dernier recensement')
+        ->and($population['year'])->toBe(2025)
+        ->and($population['trend']['to_year'])->toBe(2025)
+        ->and($population['trend']['from_year'])->toBe(2020)
+        ->and($population['trend']['percent_per_year'])->toBeGreaterThan(2.0)
+        ->and($population['trend']['display'])->toStartWith('+')
+        ->and($growth['year'])->toBe(2025)
+        ->and($growth['percent_per_year'])->toBeGreaterThan(2.0);
+});
+
+it('extrapole la population d’un lieu pour 2026 sans la présenter comme officielle', function () {
+    $this->artisan('country:sync-statistics', ['--from-file' => 'database/data/worldbank-civ.json'])->assertSuccessful();
+
+    $response = $this->getJson('/api/v1/places/abidjan')->assertOk();
+    $estimate = $response->json('data.estimate');
+
+    expect($estimate['year'])->toBe(2026)
+        ->and($estimate['population'])->toBeGreaterThan(6321017)
+        ->and($estimate['growth_percent'])->toBeGreaterThan(2.0)
+        ->and($estimate['basis'])->toContain('RGPH 2021')
+        ->and($estimate['note'])->toContain('Estimation');
+});
+
 it('expose la pluviométrie mensuelle et annuelle par ville', function () {
-    $this->artisan('country:sync-statistics', ['--offline' => true])->assertSuccessful();
+    $this->artisan('country:sync-statistics', ['--from-file' => 'database/data/worldbank-civ.json'])->assertSuccessful();
 
     $response = $this->getJson('/api/v1/statistics')->assertOk();
 

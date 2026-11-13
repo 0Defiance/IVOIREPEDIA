@@ -7,6 +7,7 @@ use App\Http\Resources\ArticleSummaryResource;
 use App\Models\Article;
 use App\Models\CensusDivision;
 use App\Models\ClimateCity;
+use App\Models\CountryIndicator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -111,6 +112,7 @@ class PlaceController extends Controller
                 'average_size' => $division->average_size === null ? null : (float) $division->average_size,
             ])->all(),
             'climate' => $this->climate($primary->name),
+            'estimate' => $this->estimate($primary),
             'articles' => $this->articles($primary->name),
             'source' => self::SOURCE,
         ];
@@ -123,6 +125,42 @@ class PlaceController extends Controller
     private function parentOf(CensusDivision $division): ?string
     {
         return $division->level === CensusDivision::DISTRICT ? null : $division->parent;
+    }
+
+    /**
+     * Estimation pour l'année en cours.
+     *
+     * Aucun recensement n'a été publié depuis 2021 : on extrapole les effectifs
+     * du RGPH avec la croissance démographique nationale la plus récente de la
+     * Banque mondiale. Le calcul est affiché avec sa méthode, et présenté comme
+     * une estimation — jamais comme un chiffre officiel.
+     *
+     * @return array<string, mixed>|null
+     */
+    private function estimate(CensusDivision $division): ?array
+    {
+        $indicator = CountryIndicator::query()->with('points')->where('code', 'SP.POP.GROW')->first();
+        $last = $indicator?->points->sortBy('year')->last();
+
+        if ($last === null) {
+            return null;
+        }
+
+        $rate = (float) $last->value / 100;
+        $years = max(0, 2026 - 2021);
+
+        return [
+            'year' => 2026,
+            'population' => (int) round($division->population * (1 + $rate) ** $years),
+            'growth_percent' => round((float) $last->value, 2),
+            'growth_year' => $last->year,
+            'basis' => sprintf(
+                'RGPH 2021 extrapolé avec la croissance nationale de %.1f %% par an (%d)',
+                (float) $last->value,
+                $last->year,
+            ),
+            'note' => 'Estimation de calcul : aucun recensement n’a été publié après 2021.',
+        ];
     }
 
     /**
