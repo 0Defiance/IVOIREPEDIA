@@ -11,7 +11,11 @@ import 'shell.dart';
 /// le texte et la source. Rien n'est affirmé sans document, et le document est
 /// affiché avec le récit — pas caché en bas de page.
 class HistoryPage extends StatefulWidget {
-  const HistoryPage({super.key});
+  const HistoryPage({this.story, super.key});
+
+  /// Slug du récit à ouvrir d'emblée (`/histoires?recit=...`), pour que la
+  /// frise chronologique puisse pointer vers un récit précis.
+  final String? story;
 
   @override
   State<HistoryPage> createState() => _HistoryPageState();
@@ -50,7 +54,7 @@ class _HistoryPageState extends State<HistoryPage> {
             return const _Message(text: 'Aucun récit publié pour le moment.');
           }
 
-          return _HistoryBody(stories: stories);
+          return _HistoryBody(stories: stories, open: widget.story);
         },
       ),
     );
@@ -58,9 +62,10 @@ class _HistoryPageState extends State<HistoryPage> {
 }
 
 class _HistoryBody extends StatelessWidget {
-  const _HistoryBody({required this.stories});
+  const _HistoryBody({required this.stories, this.open});
 
   final List<HistoryStory> stories;
+  final String? open;
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +110,11 @@ class _HistoryBody extends StatelessWidget {
           ),
           const SizedBox(height: 26),
           for (var index = 0; index < stories.length; index++) ...[
-            _StoryCard(story: stories[index], index: index + 1),
+            _StoryCard(
+              story: stories[index],
+              index: index + 1,
+              initiallyOpen: stories[index].slug == open,
+            ),
             if (index < stories.length - 1) const SizedBox(height: 14),
           ],
         ],
@@ -115,17 +124,22 @@ class _HistoryBody extends StatelessWidget {
 }
 
 class _StoryCard extends StatefulWidget {
-  const _StoryCard({required this.story, required this.index});
+  const _StoryCard({
+    required this.story,
+    required this.index,
+    this.initiallyOpen = false,
+  });
 
   final HistoryStory story;
   final int index;
+  final bool initiallyOpen;
 
   @override
   State<_StoryCard> createState() => _StoryCardState();
 }
 
 class _StoryCardState extends State<_StoryCard> {
-  bool _open = false;
+  late bool _open = widget.initiallyOpen;
 
   @override
   Widget build(BuildContext context) {

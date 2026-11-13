@@ -1,7 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:ivoirepedia/src/api.dart';
 import 'package:ivoirepedia/src/app.dart';
 import 'package:ivoirepedia/src/models/article.dart';
 import 'package:ivoirepedia/src/models/category.dart';
@@ -12,9 +11,10 @@ import 'package:ivoirepedia/src/models/history.dart';
 import 'support/history_fixture.dart';
 import 'support/statistics_fixture.dart';
 import 'package:ivoirepedia/src/ui/widgets/ivorian_patterns.dart';
+import 'support/fake_api.dart';
 
 /// API en mémoire : les parcours d'interface sont testés sans réseau.
-class FakeApi implements IvoirepediaApi {
+class FakeApi extends FakeIvoirepediaApi {
   @override
   Future<List<Category>> fetchCategories() async => const [
         Category(name: 'Histoire', slug: 'histoire', articleCount: 2),

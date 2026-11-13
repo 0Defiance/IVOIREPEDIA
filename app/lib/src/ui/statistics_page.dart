@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../api.dart';
 import '../models/statistics.dart';
@@ -496,8 +497,14 @@ class _DivisionRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ratio = (division.population / max).clamp(0.02, 1.0);
+    final slug = division.slug;
 
-    return Padding(
+    return GestureDetector(
+      onTap: slug == null || slug.isEmpty
+          ? null
+          : () => context.go('/lieux/$slug'),
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -548,6 +555,7 @@ class _DivisionRow extends StatelessWidget {
             ],
           ),
         ],
+      ),
       ),
     );
   }

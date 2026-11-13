@@ -1,6 +1,8 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import '../../theme.dart';
+import '../display_settings.dart';
 import '../wiki_actions.dart';
 import 'interactive.dart';
 
@@ -9,13 +11,16 @@ import 'interactive.dart';
 ///
 /// La présentation reste volontairement sobre — mesure de lecture courte,
 /// titres discrets, filet fin — pour que le texte porte la page plutôt que
-/// les décors.
+/// les décors. Les appels de note `[1]` du texte deviennent cliquables et
+/// renvoient à la référence correspondante.
 class DeltaContent extends StatelessWidget {
   const DeltaContent({
     required this.ops,
     this.sectionKeys,
     this.afterLead,
     this.onCopySection,
+    this.onCopySectionLink,
+    this.onFootnote,
     super.key,
   });
 
@@ -23,6 +28,12 @@ class DeltaContent extends StatelessWidget {
 
   /// Copie le texte d'une section seule (offert à côté de « modifier »).
   final void Function(String title)? onCopySection;
+
+  /// Copie le lien profond d'une section (`/articles/{slug}#ancre`).
+  final void Function(String title)? onCopySectionLink;
+
+  /// Ouvre la référence numérotée correspondant à un appel `[n]`.
+  final void Function(int number)? onFootnote;
 
   /// Bloc inséré juste après le chapeau (le sommaire, comme sur une page
   /// d'encyclopédie, se place après l'introduction).
@@ -117,6 +128,7 @@ class DeltaContent extends StatelessWidget {
     required bool lead,
     required int orderedIndex,
   }) {
+    final tone = ToneColors.from(context);
     final header = attributes?['header'];
     final list = attributes?['list'];
     final quote = attributes?['blockquote'] == true;
@@ -129,6 +141,8 @@ class DeltaContent extends StatelessWidget {
           text: text,
           level: header,
           onCopy: onCopySection == null ? null : () => onCopySection!(text),
+          onCopyLink:
+              onCopySectionLink == null ? null : () => onCopySectionLink!(text),
         ),
       );
     }
@@ -140,6 +154,7 @@ class DeltaContent extends StatelessWidget {
         text: text,
         marker: ordered ? null : '•',
         index: orderedIndex,
+        onFootnote: onFootnote,
       );
     }
 
@@ -147,17 +162,19 @@ class DeltaContent extends StatelessWidget {
       return Container(
         margin: const EdgeInsets.only(top: 6, bottom: 18),
         padding: const EdgeInsets.fromLTRB(16, 2, 12, 2),
-        decoration: const BoxDecoration(
-          border: Border(left: BorderSide(color: IvoireColors.line, width: 2)),
+        decoration: BoxDecoration(
+          border: Border(left: BorderSide(color: tone.line, width: 2)),
         ),
-        child: Text(
-          text,
-          style: const TextStyle(
+        child: _RichText(
+          text: text,
+          style: TextStyle(
+            fontFamily: kFont,
             fontSize: 15,
             height: 1.7,
             fontStyle: FontStyle.italic,
-            color: IvoireColors.muted,
+            color: tone.muted,
           ),
+          onFootnote: onFootnote,
         ),
       );
     }
@@ -167,14 +184,14 @@ class DeltaContent extends StatelessWidget {
 
     return Padding(
       padding: EdgeInsets.only(bottom: lead ? 18 : 14),
-      child: Text(
-        text,
-        textAlign: TextAlign.left,
+      child: _RichText(
+        text: text,
+        onFootnote: onFootnote,
         style: TextStyle(
           fontFamily: kFont,
           fontSize: lead ? 16.5 : 15.5,
           height: lead ? 1.8 : 1.75,
-          color: bold || lead ? IvoireColors.ink : const Color(0xFF28322C),
+          color: bold || lead ? tone.ink : tone.body,
           fontWeight: bold ? FontWeight.w600 : FontWeight.w400,
           fontStyle: italic ? FontStyle.italic : FontStyle.normal,
         ),
@@ -183,21 +200,113 @@ class DeltaContent extends StatelessWidget {
   }
 }
 
-/// Titre de section : deux niveaux seulement, filet fin, lien « modifier »
-/// réduit à l'essentiel comme sur une page d'encyclopédie.
+/// Texte d'un paragraphe, avec appels de note cliquables.
+///
+/// Les `[n]` sont rendus en exposant vert et renvoient à la référence n ;
+/// le reste du texte reste un simple `TextSpan`, donc sélectionnable.
+class _RichText extends StatefulWidget {
+  const _RichText({
+    required this.text,
+    required this.style,
+    this.onFootnote,
+  });
+
+  final String text;
+  final TextStyle style;
+  final void Function(int number)? onFootnote;
+
+  @override
+  State<_RichText> createState() => _RichTextState();
+}
+
+class _RichTextState extends State<_RichText> {
+  static final RegExp _marker = RegExp(r'\[(\d{1,3})\]');
+
+  final List<TapGestureRecognizer> _recognizers = [];
+
+  @override
+  void dispose() {
+    for (final recognizer in _recognizers) {
+      recognizer.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    for (final recognizer in _recognizers) {
+      recognizer.dispose();
+    }
+    _recognizers.clear();
+
+    final onFootnote = widget.onFootnote;
+
+    if (onFootnote == null || !widget.text.contains('[')) {
+      return Text(widget.text, textAlign: TextAlign.left, style: widget.style);
+    }
+
+    final spans = <InlineSpan>[];
+    var index = 0;
+
+    for (final match in _marker.allMatches(widget.text)) {
+      if (match.start > index) {
+        spans.add(TextSpan(text: widget.text.substring(index, match.start)));
+      }
+
+      final number = int.tryParse(match.group(1) ?? '');
+
+      if (number == null) {
+        spans.add(TextSpan(text: match.group(0)));
+      } else {
+        final recognizer = TapGestureRecognizer()
+          ..onTap = () => onFootnote(number);
+        _recognizers.add(recognizer);
+
+        spans.add(
+          TextSpan(
+            text: '[${match.group(1)}]',
+            style: const TextStyle(
+              color: IvoireColors.green,
+              fontWeight: FontWeight.w600,
+              fontSize: 11.5,
+            ),
+            recognizer: recognizer,
+          ),
+        );
+      }
+
+      index = match.end;
+    }
+
+    if (index < widget.text.length) {
+      spans.add(TextSpan(text: widget.text.substring(index)));
+    }
+
+    return Text.rich(
+      TextSpan(style: widget.style, children: spans),
+      textAlign: TextAlign.left,
+    );
+  }
+}
+
+/// Titre de section : deux niveaux seulement, filet fin, liens réduits à
+/// l'essentiel comme sur une page d'encyclopédie.
 class _SectionHeading extends StatelessWidget {
   const _SectionHeading({
     required this.text,
     required this.level,
     this.onCopy,
+    this.onCopyLink,
   });
 
   final String text;
   final int level;
   final VoidCallback? onCopy;
+  final VoidCallback? onCopyLink;
 
   @override
   Widget build(BuildContext context) {
+    final tone = ToneColors.from(context);
     final primary = level <= 2;
 
     return Padding(
@@ -217,14 +326,26 @@ class _SectionHeading extends StatelessWidget {
                     weight: FontWeight.w600,
                     height: 1.3,
                     letterSpacing: -0.3,
+                    color: tone.ink,
                   ),
                 ),
               ),
               const SizedBox(width: 10),
+              if (onCopyLink != null)
+                Tooltip(
+                  message: 'Copier le lien de cette section',
+                  child: IconButton(
+                    onPressed: onCopyLink,
+                    visualDensity: VisualDensity.compact,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(minWidth: 26, minHeight: 26),
+                    icon: Icon(Icons.link, size: 14, color: tone.faint),
+                  ),
+                ),
               if (onCopy != null) ...[
                 HoverLink(
                   label: 'copier',
-                  color: IvoireColors.faint,
+                  color: tone.faint,
                   hoverColor: IvoireColors.link,
                   onTap: onCopy!,
                   style: const TextStyle(fontSize: 11.5, height: 1.2),
@@ -233,7 +354,7 @@ class _SectionHeading extends StatelessWidget {
               ],
               HoverLink(
                 label: 'modifier',
-                color: IvoireColors.faint,
+                color: tone.faint,
                 hoverColor: IvoireColors.link,
                 onTap: () => wikiNotImplemented(context, 'Modifier une section'),
                 style: const TextStyle(fontSize: 11.5, height: 1.2),
@@ -242,7 +363,7 @@ class _SectionHeading extends StatelessWidget {
           ),
           if (primary) ...[
             const SizedBox(height: 7),
-            const Divider(height: 1, thickness: 1, color: IvoireColors.lineSoft),
+            Divider(height: 1, thickness: 1, color: tone.lineSoft),
           ],
         ],
       ),
@@ -256,14 +377,18 @@ class _ListRow extends StatelessWidget {
     required this.text,
     required this.marker,
     required this.index,
+    this.onFootnote,
   });
 
   final String text;
   final String? marker;
   final int index;
+  final void Function(int number)? onFootnote;
 
   @override
   Widget build(BuildContext context) {
+    final tone = ToneColors.from(context);
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
       child: Row(
@@ -273,21 +398,18 @@ class _ListRow extends StatelessWidget {
             width: 20,
             child: Text(
               marker ?? '${index + 1}.',
-              style: const TextStyle(
-                fontSize: 15.5,
-                height: 1.7,
-                color: IvoireColors.muted,
-              ),
+              style: TextStyle(fontSize: 15.5, height: 1.7, color: tone.muted),
             ),
           ),
           Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(
+            child: _RichText(
+              text: text,
+              onFootnote: onFootnote,
+              style: TextStyle(
                 fontFamily: kFont,
                 fontSize: 15.5,
                 height: 1.7,
-                color: Color(0xFF28322C),
+                color: tone.body,
               ),
             ),
           ),

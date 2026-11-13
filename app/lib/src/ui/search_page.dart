@@ -5,7 +5,10 @@ import 'package:go_router/go_router.dart';
 
 import '../api.dart';
 import '../models/article.dart';
+import '../models/suggestion.dart';
+import '../storage.dart';
 import '../theme.dart';
+import 'display_settings.dart';
 import 'format.dart';
 import 'shell.dart';
 import 'widgets/interactive.dart';
@@ -26,8 +29,11 @@ class _SearchPageState extends State<SearchPage> {
       TextEditingController(text: widget.query);
   final FocusNode _focus = FocusNode();
   Timer? _debounce;
+  Timer? _suggestDebounce;
   Future<PagedArticles>? _future;
+  List<SearchSuggestion> _suggestions = const [];
   String _term = '';
+  String _suggestTerm = '';
 
   @override
   void didChangeDependencies() {
@@ -48,9 +54,48 @@ class _SearchPageState extends State<SearchPage> {
   @override
   void dispose() {
     _debounce?.cancel();
+    _suggestDebounce?.cancel();
     _controller.dispose();
     _focus.dispose();
     super.dispose();
+  }
+
+  /// Suggestions affichées pendant la frappe : une requête légère, limitée à
+  /// six titres, distincte de la recherche complète.
+  void _loadSuggestions(String value) {
+    final term = value.trim();
+    _suggestTerm = term;
+    _suggestDebounce?.cancel();
+
+    if (term.length < 2) {
+      if (_suggestions.isNotEmpty) {
+        setState(() => _suggestions = const []);
+      }
+      return;
+    }
+
+    _suggestDebounce = Timer(const Duration(milliseconds: 180), () async {
+      try {
+        final suggestions = await ApiScope.of(context).suggest(term);
+        if (mounted && _suggestTerm == term) {
+          setState(() => _suggestions = suggestions);
+        }
+      } catch (_) {
+        // Une suggestion manquée ne doit pas interrompre la saisie.
+      }
+    });
+  }
+
+  void _submit(String value) {
+    final term = value.trim();
+    if (term.isEmpty) {
+      return;
+    }
+
+    AppStorage.instance.recordSearch(term);
+    _focus.unfocus();
+    setState(() => _suggestions = const []);
+    context.go('/recherche?q=${Uri.encodeQueryComponent(term)}');
   }
 
   void _search(String value, {bool immediate = false}) {
@@ -65,8 +110,13 @@ class _SearchPageState extends State<SearchPage> {
       setState(() {
         _term = term;
         _future = term.isEmpty ? null : ApiScope.of(context).search(term);
+        if (term.isEmpty) {
+          _suggestions = const [];
+        }
       });
     }
+
+    _loadSuggestions(term);
 
     if (immediate) {
       run();
@@ -102,8 +152,7 @@ class _SearchPageState extends State<SearchPage> {
                 autofocus: true,
                 textInputAction: TextInputAction.search,
                 onChanged: _onChanged,
-                onSubmitted: (value) =>
-                    context.go('/recherche?q=${Uri.encodeQueryComponent(value.trim())}'),
+                onSubmitted: _submit,
                 decoration: InputDecoration(
                   hintText: 'Un nom, un lieu, une langue…',
                   prefixIcon: const Icon(Icons.search, size: 20),
@@ -121,6 +170,19 @@ class _SearchPageState extends State<SearchPage> {
                 ),
               ),
             ),
+            if (_suggestions.isNotEmpty) ...[
+              const SizedBox(height: 10),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 620),
+                child: _Suggestions(
+                  suggestions: _suggestions,
+                  onPick: (suggestion) {
+                    AppStorage.instance.recordSearch(_term);
+                    context.go('/articles/${suggestion.slug}');
+                  },
+                ),
+              ),
+            ],
             const SizedBox(height: 22),
             if (_future == null)
               _EmptyState(
@@ -129,6 +191,7 @@ class _SearchPageState extends State<SearchPage> {
                   _focus.requestFocus();
                   _onChanged(term);
                 },
+                onSubmit: (term) => _submit(term),
               )
             else
               AnimatedSwitcher(
@@ -189,10 +252,80 @@ class _SearchPageState extends State<SearchPage> {
   }
 }
 
+/// Panneau de suggestions : titres indexés, ouverts d'un clic.
+class _Suggestions extends StatelessWidget {
+  const _Suggestions({required this.suggestions, required this.onPick});
+
+  final List<SearchSuggestion> suggestions;
+  final void Function(SearchSuggestion suggestion) onPick;
+
+  @override
+  Widget build(BuildContext context) {
+    final tone = ToneColors.from(context);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: tone.paper,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: tone.lineSoft),
+        boxShadow: [
+          BoxShadow(
+            color: tone.ink.withValues(alpha: 0.06),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(14, 10, 14, 6),
+            child: Text('SUGGESTIONS', style: kickerStyle(color: tone.faint)),
+          ),
+          for (final suggestion in suggestions)
+            MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: () => onPick(suggestion),
+                behavior: HitTestBehavior.opaque,
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+                  decoration: BoxDecoration(
+                    border: Border(top: BorderSide(color: tone.lineSoft)),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.search, size: 14, color: IvoireColors.green),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          suggestion.title,
+                          style: TextStyle(fontSize: 13.5, color: tone.ink),
+                        ),
+                      ),
+                      if (suggestion.category != null)
+                        Text(
+                          suggestion.category!,
+                          style: TextStyle(fontSize: 11.5, color: tone.faint),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
 class _EmptyState extends StatelessWidget {
-  const _EmptyState({required this.onPick});
+  const _EmptyState({required this.onPick, required this.onSubmit});
 
   final void Function(String term) onPick;
+  final void Function(String term) onSubmit;
 
   static const List<String> _suggestions = [
     'Abidjan',
@@ -213,6 +346,56 @@ class _EmptyState extends StatelessWidget {
           style: TextStyle(fontSize: 14, color: IvoireColors.muted),
         ),
         const SizedBox(height: 18),
+        ValueListenableBuilder<List<String>>(
+          valueListenable: AppStorage.instance.searchHistory,
+          builder: (context, history, _) {
+            if (history.isEmpty) {
+              return const SizedBox.shrink();
+            }
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text('Recherches récentes',
+                        style: titleStyle(size: 14, weight: FontWeight.w600)),
+                    const SizedBox(width: 10),
+                    HoverLink(
+                      label: 'effacer',
+                      color: IvoireColors.faint,
+                      onTap: () => AppStorage.instance.clearSearchHistory(),
+                      style: const TextStyle(fontSize: 11.5),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 6,
+                  children: [
+                    for (final term in history)
+                      GestureDetector(
+                        onTap: () => onSubmit(term),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: IvoireColors.subtle,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: IvoireColors.lineSoft),
+                          ),
+                          child: Text(term,
+                              style: const TextStyle(fontSize: 12.5)),
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+              ],
+            );
+          },
+        ),
         Text('Quelques sujets :', style: titleStyle(size: 14, weight: FontWeight.w600)),
         const SizedBox(height: 8),
         Wrap(

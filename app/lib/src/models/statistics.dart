@@ -101,12 +101,14 @@ class StatisticDivision {
   const StatisticDivision({
     required this.name,
     required this.population,
+    this.slug,
     this.parent,
     this.households,
     this.averageSize,
   });
 
   final String name;
+  final String? slug;
   final String? parent;
   final int population;
   final int? households;
@@ -115,6 +117,7 @@ class StatisticDivision {
   factory StatisticDivision.fromJson(Map<String, dynamic> json) {
     return StatisticDivision(
       name: json['name'] as String? ?? '',
+      slug: json['slug'] as String?,
       parent: json['parent'] as String?,
       population: (json['population'] as num?)?.toInt() ?? 0,
       households: (json['households'] as num?)?.toInt(),

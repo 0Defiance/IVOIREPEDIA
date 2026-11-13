@@ -13,8 +13,9 @@ import 'support/statistics_fixture.dart';
 import 'package:ivoirepedia/src/theme.dart';
 import 'package:ivoirepedia/src/ui/widgets/ivorian_patterns.dart';
 import 'package:ivoirepedia/src/ui/article_page.dart';
+import 'support/fake_api.dart';
 
-class _ArticleApi implements IvoirepediaApi {
+class _ArticleApi extends FakeIvoirepediaApi {
   @override
   Future<List<Category>> fetchCategories() async => const [];
 

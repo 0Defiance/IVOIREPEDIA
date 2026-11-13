@@ -453,6 +453,36 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+### 13 novembre 2026 (séance 18) — Frise, fiches de lieux, partage et confort de lecture
+
+**Motif (demande du titulaire)** : intégrer les fonctionnalités de la liste de recherche — frise chronologique, fiches géographiques, partage, recherche instantanée, favoris, réglages de lecture, sommaire suivi, notes cliquables.
+
+**Fait — côté API**
+- `GET /api/v1/timeline` : la frise n'a pas de contenu propre, elle est construite à partir des récits datés (`history_stories.year`, nouvelle colonne alimentée par `history:sync-stories`). Ajouter un récit daté ajoute un jalon.
+- `GET /api/v1/places` et `/places/{slug}` : districts, régions et villes du RGPH 2021, une fiche rassemblant les niveaux qui partagent un slug (Abidjan est district, pas ville), avec climat (rapprochement des noms normalisés : « BOUAKE » côté recensement, « Bouaké » côté climatologie) et articles liés par titre ou chapeau.
+- `GET /api/v1/search/suggest?q=` : six titres au maximum, à partir de deux caractères, pour la recherche instantanée.
+
+**Fait — côté application**
+- **Frise du temps** (`/chronologie`) : jalons groupés par siècle, année, période et accroche ; chaque ligne ouvre le récit correspondant (`/histoires?recit=slug`, que la page des récits déplie à l'arrivée).
+- **Villes et régions** (`/lieux`, `/lieux/{slug}`) : annuaire filtrable, fiche avec population, hommes, femmes, ménages, taille moyenne, climat et articles liés ; les lignes de la page statistique mènent désormais à ces fiches.
+- **Partage** : WhatsApp, X, Facebook, LinkedIn et copie du lien sous le titre ; liens profonds par section (`/articles/{slug}#ancre`), l'ancre étant calculée depuis le titre.
+- **Recherche instantanée** : suggestions sous le champ pendant la frappe et historique des huit dernières recherches, effaçable.
+- **Ma bibliothèque** (`/ma-bibliotheque`) : favoris et lectures récentes dans le stockage du navigateur, sans compte ; bouton « Garder » sur chaque article.
+- **Confort de lecture** : thème papier / sépia / nuit, taille du texte de 85 à 150 %, mode lecture seule qui masque le menu et le pied de page ; réglages conservés sur l'appareil. Le thème s'applique à l'en-tête, à la colonne, à la feuille et au corps de l'article.
+- **Sommaire suivi** : colonne de gauche collante sur grand écran, la section en cours de lecture s'allume ; le sommaire reste après le chapeau sur mobile.
+- **Notes cliquables** : un `[1]` dans le texte ouvre la référence 1, chaque référence offre un retour au texte, et un bouton copie le lien de la section.
+
+**Vérifié**
+- `pest` : **31 tests** verts (+5 : frise ordonnée et sourcée, annuaire, fiche de lieu multi-niveaux avec climat, 404, suggestions sans brouillon) ; `pint --test` : 80 fichiers conformes ; `phpstan` : aucune erreur.
+- `flutter analyze` : aucune remarque ; **20 tests Flutter** verts, dont 5 nouveaux : frise atteinte depuis la barre latérale, annuaire → fiche avec climat, suggestions de recherche, article avec références et favori, URL de partage sans dièse avec ancre.
+
+**Limites assumées**
+- Le mode nuit est un thème de lecture (interface, feuille et texte) : les cartes de données de la page statistique gardent leur papier clair, par choix de lisibilité des graphiques.
+- Les articles n'utilisent pas encore d'appels de note `[n]` dans leur texte : le mécanisme est en place et testé, il s'activera à la première note rédigée.
+- Le rendu reste côté client : les nouvelles pages ne sont pas prérendues (R-09).
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

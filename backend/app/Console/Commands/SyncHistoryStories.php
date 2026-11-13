@@ -38,6 +38,7 @@ class SyncHistoryStories extends Command
                 [
                     'title' => $story['title'],
                     'period' => $story['period'] ?? null,
+                    'year' => $story['year'] ?? null,
                     'teaser' => $story['teaser'],
                     'paragraphs' => $story['paragraphs'],
                     'figures' => $story['figures'] ?? null,

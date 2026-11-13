@@ -22,6 +22,22 @@ String formatDate(DateTime? date) {
   return '${date.day} ${_months[date.month - 1]} ${date.year}';
 }
 
+/// « 6 321 017 » — séparateur de milliers insécable, sans dépendre d'une
+/// locale installée dans le navigateur.
+String formatNumber(int value) {
+  final digits = value.abs().toString();
+  final buffer = StringBuffer();
+
+  for (var i = 0; i < digits.length; i++) {
+    if (i > 0 && (digits.length - i) % 3 == 0) {
+      buffer.write('\u00A0');
+    }
+    buffer.write(digits[i]);
+  }
+
+  return '${value < 0 ? '−' : ''}$buffer';
+}
+
 /// « 4 min de lecture ».
 String formatReadingTime(int minutes) =>
     '$minutes min de lecture';

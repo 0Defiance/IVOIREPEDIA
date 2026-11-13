@@ -6,7 +6,10 @@ import 'package:http/http.dart' as http;
 import 'models/article.dart';
 import 'models/category.dart';
 import 'models/history.dart';
+import 'models/place.dart';
 import 'models/statistics.dart';
+import 'models/suggestion.dart';
+import 'models/timeline.dart';
 
 /// Racine de l'API. En développement : `php artisan serve` sur le port 8000 ;
 /// en production : même origine (`--dart-define=API_BASE_URL=/api/v1`).
@@ -46,6 +49,14 @@ abstract interface class IvoirepediaApi {
   Future<StatisticsSnapshot> fetchStatistics();
 
   Future<List<HistoryStory>> fetchHistory();
+
+  Future<List<TimelineEvent>> fetchTimeline();
+
+  Future<PlaceDirectory> fetchPlaces();
+
+  Future<PlaceDetail> fetchPlace(String slug);
+
+  Future<List<SearchSuggestion>> suggest(String query);
 }
 
 /// Client HTTP de l'API publique.
@@ -111,6 +122,43 @@ class HttpIvoirepediaApi implements IvoirepediaApi {
 
     return data
         .map((item) => HistoryStory.fromJson(item as Map<String, dynamic>))
+        .toList(growable: false);
+  }
+
+  @override
+  Future<List<TimelineEvent>> fetchTimeline() async {
+    final payload = await _get('/timeline');
+    final data = (payload['data'] as List<dynamic>?) ?? const <dynamic>[];
+
+    return data
+        .map((item) => TimelineEvent.fromJson(item as Map<String, dynamic>))
+        .toList(growable: false);
+  }
+
+  @override
+  Future<PlaceDirectory> fetchPlaces() async {
+    return PlaceDirectory.fromJson(await _get('/places'));
+  }
+
+  @override
+  Future<PlaceDetail> fetchPlace(String slug) async {
+    final payload = await _get('/places/$slug');
+    final data = payload['data'] as Map<String, dynamic>?;
+
+    if (data == null) {
+      throw const ApiException('Réponse inattendue du serveur.');
+    }
+
+    return PlaceDetail.fromJson(data);
+  }
+
+  @override
+  Future<List<SearchSuggestion>> suggest(String query) async {
+    final payload = await _get('/search/suggest', {'q': query});
+    final data = (payload['data'] as List<dynamic>?) ?? const <dynamic>[];
+
+    return data
+        .map((item) => SearchSuggestion.fromJson(item as Map<String, dynamic>))
         .toList(growable: false);
   }
 

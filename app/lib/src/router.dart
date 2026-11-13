@@ -5,9 +5,13 @@ import 'ui/article_page.dart';
 import 'ui/category_page.dart';
 import 'ui/history_page.dart';
 import 'ui/home_page.dart';
+import 'ui/library_page.dart';
+import 'ui/place_page.dart';
+import 'ui/places_page.dart';
 import 'ui/search_page.dart';
 import 'ui/shell.dart';
 import 'ui/statistics_page.dart';
+import 'ui/timeline_page.dart';
 
 /// Transition commune : fondu court + léger glissement, pour que la navigation
 /// réponde immédiatement sans effet spectaculaire.
@@ -51,7 +55,10 @@ GoRouter buildRouter() {
       GoRoute(
         path: '/articles/:slug',
         pageBuilder: (context, state) => _page(
-          ArticlePage(slug: state.pathParameters['slug'] ?? ''),
+          ArticlePage(
+            slug: state.pathParameters['slug'] ?? '',
+            section: state.uri.fragment.isEmpty ? null : state.uri.fragment,
+          ),
         ),
       ),
       GoRoute(
@@ -66,7 +73,27 @@ GoRouter buildRouter() {
       ),
       GoRoute(
         path: '/histoires',
-        pageBuilder: (context, state) => _page(const HistoryPage()),
+        pageBuilder: (context, state) => _page(
+          HistoryPage(story: state.uri.queryParameters['recit']),
+        ),
+      ),
+      GoRoute(
+        path: '/chronologie',
+        pageBuilder: (context, state) => _page(const TimelinePage()),
+      ),
+      GoRoute(
+        path: '/lieux',
+        pageBuilder: (context, state) => _page(const PlacesPage()),
+      ),
+      GoRoute(
+        path: '/lieux/:slug',
+        pageBuilder: (context, state) => _page(
+          PlacePage(slug: state.pathParameters['slug'] ?? ''),
+        ),
+      ),
+      GoRoute(
+        path: '/ma-bibliotheque',
+        pageBuilder: (context, state) => _page(const LibraryPage()),
       ),
     ],
     errorBuilder: (context, state) => SiteShell(

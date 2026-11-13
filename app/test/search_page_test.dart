@@ -11,10 +11,11 @@ import 'support/statistics_fixture.dart';
 import 'package:ivoirepedia/src/theme.dart';
 import 'package:ivoirepedia/src/ui/search_page.dart';
 import 'package:ivoirepedia/src/ui/widgets/ivorian_patterns.dart';
+import 'support/fake_api.dart';
 
 /// API de recherche en mémoire : elle note chaque terme reçu, ce qui permet
 /// de vérifier que la page interroge bien le service.
-class _SearchApi implements IvoirepediaApi {
+class _SearchApi extends FakeIvoirepediaApi {
   final List<String> queries = <String>[];
 
   @override

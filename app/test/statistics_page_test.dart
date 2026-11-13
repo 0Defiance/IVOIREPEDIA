@@ -13,10 +13,11 @@ import 'package:ivoirepedia/src/models/statistics.dart';
 import 'package:ivoirepedia/src/ui/widgets/ivorian_patterns.dart';
 
 import 'support/statistics_fixture.dart';
+import 'support/fake_api.dart';
 
 /// API minimale : seules les statistiques et les catégories sont demandées au
 /// premier écran ; le reste lève une erreur explicite si le parcours dérape.
-class _StatisticsApi implements IvoirepediaApi {
+class _StatisticsApi extends FakeIvoirepediaApi {
   int statisticsCalls = 0;
 
   @override

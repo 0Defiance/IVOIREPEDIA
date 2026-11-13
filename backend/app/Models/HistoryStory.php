@@ -14,13 +14,14 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $slug
  * @property string $title
  * @property string|null $period
+ * @property int|null $year
  * @property string $teaser
  * @property array<int, string> $paragraphs
  * @property array<int, array<string, string>>|null $figures
  * @property int $position
  */
 #[Fillable([
-    'slug', 'title', 'period', 'teaser', 'paragraphs', 'figures',
+    'slug', 'title', 'period', 'year', 'teaser', 'paragraphs', 'figures',
     'source_title', 'source_publisher', 'source_year', 'source_url', 'position',
 ])]
 class HistoryStory extends Model
@@ -35,6 +36,7 @@ class HistoryStory extends Model
         return [
             'paragraphs' => 'array',
             'figures' => 'array',
+            'year' => 'integer',
             'source_year' => 'integer',
             'position' => 'integer',
         ];

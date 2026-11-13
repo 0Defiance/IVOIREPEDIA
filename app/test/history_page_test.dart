@@ -11,9 +11,10 @@ import 'package:ivoirepedia/src/ui/widgets/ivorian_patterns.dart';
 
 import 'support/history_fixture.dart';
 import 'support/statistics_fixture.dart';
+import 'support/fake_api.dart';
 
 /// API minimale : la section n'a besoin que des récits et des catégories.
-class _HistoryApi implements IvoirepediaApi {
+class _HistoryApi extends FakeIvoirepediaApi {
   @override
   Future<List<HistoryStory>> fetchHistory() async => historyFixture();
 

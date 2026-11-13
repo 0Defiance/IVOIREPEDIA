@@ -17,6 +17,7 @@ return [
         'slug' => 'indenie-abengourou',
         'title' => 'Abengourou, fondée par un chef qui cherchait la paix',
         'period' => '1701-1870',
+        'year' => 1701,
         'teaser' => 'Les Agni Ndénian viennent du royaume d’Aowin, dans le Ghana actuel. Chassés par les guerres ashanti, ils traversent la Comoé en plusieurs étapes ; au XIXe siècle, Mian Kouadio fonde Abengourou.',
         'paragraphs' => [
             'Le foyer d’origine des Agni Ndénian est le royaume Aowin, fondé par Ano Assoman après des conflits avec le Denkyira, dans l’actuel Ghana. C’est de là que part leur histoire connue.',
@@ -37,6 +38,7 @@ return [
         'slug' => 'baoule-traversee-du-comoe',
         'title' => 'Le nom qui vient d’un cri',
         'period' => 'XVIIIe siècle',
+        'year' => 1730,
         'teaser' => 'Les Baoulé descendent de migrants akan conduits par la reine Abla Pokou, fuyant les troubles du pays ashanti. La tradition fait naître leur nom du sacrifice qui leur ouvrit la traversée du Comoé.',
         'paragraphs' => [
             'Les traditions d’origine baoulé rattachent l’installation du peuple au XVIIIe siècle, à la suite d’un exode depuis le pays akan, dans l’actuel Ghana. L’exode est conduit par Abla Pokou, figure à la fois historique et légendaire, qui fuit les querelles dynastiques et les guerres.',
@@ -57,6 +59,7 @@ return [
         'slug' => 'sanwi-balahinma-manlan-ahua',
         'title' => 'La femme qui tenait le royaume face aux Français',
         'period' => '1843-1898',
+        'year' => 1843,
         'teaser' => 'En 1843, le roi du Sanvi signe un traité avec la France. Cinquante ans plus tard, c’est une femme, la balahinma Manlan Ahua, qui défend l’intégrité du royaume akan jusqu’à sa mort, en 1898.',
         'paragraphs' => [
             'Au milieu du XIXe siècle, le Sanvi, royaume akan du sud-est de la Côte d’Ivoire, est prospère : son souverain Amun Ndufu contrôle ses partenaires commerciaux et le royaume est un passage obligé pour les produits de la traite.',
@@ -77,6 +80,7 @@ return [
         'slug' => 'grand-bassam-capitale-abandonnee',
         'title' => 'La capitale abandonnée à cause des moustiques',
         'period' => '1893-1900',
+        'year' => 1893,
         'teaser' => 'Première capitale de la Côte d’Ivoire, Grand-Bassam a été désertée par l’administration coloniale, chassée par les épidémies de fièvre jaune. Ses maisons à véranda sont aujourd’hui classées au patrimoine mondial.',
         'paragraphs' => [
             'Grand-Bassam s’est construite face à l’océan, à l’embouchure de la lagune Ouladine, sur un cordon de sable. C’est là que s’installe, à la fin du XIXe siècle, la capitale de la colonie française, avec son quartier administratif, ses entrepôts et ses maisons de commerce.',
@@ -97,6 +101,7 @@ return [
         'slug' => 'samory-guelemou-1898',
         'title' => 'La capture sans un coup de feu',
         'period' => '29 septembre 1898',
+        'year' => 1898,
         'teaser' => 'À l’aube, deux cents tirailleurs du capitaine Gouraud surgissent dans le camp de Samory Touré, à Guélémou. L’almamy, qui résiste aux Français depuis quinze ans, est pris sans que personne ne tire.',
         'paragraphs' => [
             'Samory Touré, fondateur de l’empire wassoulou, résiste à la pénétration française en Afrique de l’Ouest depuis les années 1880. Replié vers l’est, il gagne l’ouest de l’actuelle Côte d’Ivoire, poursuivi par les colonnes françaises.',
@@ -117,6 +122,7 @@ return [
         'slug' => 'comoe-derniere-grande-savane',
         'title' => 'Le parc traversé par un fleuve qui déborde',
         'period' => 'Inscrit en 1983',
+        'year' => 1983,
         'teaser' => 'Le parc national de la Comoé est l’une des plus vastes aires protégées d’Afrique de l’Ouest. Le fleuve qui lui donne son nom sort de son lit chaque année et redessine les savanes.',
         'paragraphs' => [
             'Le parc occupe le nord-est du pays, entre savanes soudaniennes et îlots de forêt, et suit le cours du Comoé sur toute sa longueur. Sa superficie en fait l’une des plus grandes aires protégées de la sous-région.',
@@ -137,6 +143,7 @@ return [
         'slug' => 'tai-foret-primaire',
         'title' => 'La forêt où survit un hippopotame de la taille d’un mouton',
         'period' => 'Inscrit en 1982',
+        'year' => 1982,
         'teaser' => 'Le parc national de Taï abrite l’un des derniers massifs de forêt tropicale primaire d’Afrique de l’Ouest — et un hippopotame pygmée, discret au point d’être rarement observé.',
         'paragraphs' => [
             'Taï protège un bloc de forêt dense humide resté à l’écart des routes et des plantations, dans le sud-ouest du pays, près de la frontière libérienne. C’est l’un des derniers grands massifs de forêt primaire de la région.',
@@ -157,6 +164,7 @@ return [
         'slug' => 'zaouli-masque-feminin',
         'title' => 'Le masque masculin qui danse comme une femme',
         'period' => 'Depuis les années 1950',
+        'year' => 1950,
         'teaser' => 'Le Zaouli, né dans les années 1950 chez les Gouro, associe un masque sculpté, des tissus et une danse dont les pas imitent ceux d’une femme. L’UNESCO l’a inscrit en 2017.',
         'paragraphs' => [
             'La danse Zaouli est apparue dans le centre-ouest du pays, dans les communautés gouro, au cours des années 1950. Elle prolonge un répertoire plus ancien de masques et de danses de village.',
@@ -177,6 +185,7 @@ return [
         'slug' => 'attieke-savoir-faire-feminin',
         'title' => 'L’attiéké, le manioc fermenté devenu patrimoine de l’humanité',
         'period' => 'Inscrit en 2024',
+        'year' => 2024,
         'teaser' => 'Semoule de manioc fermentée, l’attiéké accompagne les repas ivoiriens depuis longtemps. Ce sont des savoir-faire portés par les femmes qui sont inscrits au patrimoine culturel immatériel.',
         'paragraphs' => [
             'L’attiéké est une semoule obtenue à partir de manioc : les racines sont râpées, pressées, laissées à fermenter, puis cuites à la vapeur. Le grain léger et légèrement acide distingue l’attiéké d’autres préparations de manioc.',
@@ -197,6 +206,7 @@ return [
         'slug' => 'cacao-premier-producteur-mondial',
         'title' => 'Le pays qui fournit le cacao du monde',
         'period' => 'Depuis les années 1970',
+        'year' => 1970,
         'teaser' => 'La Côte d’Ivoire est le premier producteur mondial de fèves de cacao. Deux récoltes par an, une forêt qui a reculé, et une filière dont dépendent des millions de personnes.',
         'paragraphs' => [
             'Le cacao arrive dans le pays au début du XXe siècle. Après l’indépendance, l’État encourage la plantation : la forêt du sud-ouest recule à mesure que les cacaoyers avancent, et le pays devient le premier producteur mondial dans les années 1970.',
@@ -217,6 +227,7 @@ return [
         'slug' => 'abidjan-six-millions',
         'title' => 'Abidjan, six millions d’habitants sur une lagune',
         'period' => 'RGPH 2021',
+        'year' => 2021,
         'teaser' => 'Le district autonome d’Abidjan réunit 6 321 017 habitants au recensement de 2021, sur un territoire posé entre lagune et océan. Un cinquième du pays tient dans une agglomération.',
         'paragraphs' => [
             'Abidjan s’est développée sur la rive nord de la lagune Ébrié, autour du port ouvert en 1950. La ville a absorbé les villages de la rive, puis les communes de l’intérieur, jusqu’à former un district autonome.',
