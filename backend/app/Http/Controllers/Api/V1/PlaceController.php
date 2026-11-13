@@ -155,8 +155,8 @@ class PlaceController extends Controller
             'growth_percent' => round((float) $last->value, 2),
             'growth_year' => $last->year,
             'basis' => sprintf(
-                'RGPH 2021 extrapolé avec la croissance nationale de %.1f %% par an (%d)',
-                (float) $last->value,
+                'RGPH 2021 extrapolé avec la croissance nationale de %s %% par an (%d)',
+                number_format((float) $last->value, 1, ',', ' '),
                 $last->year,
             ),
             'note' => 'Estimation de calcul : aucun recensement n’a été publié après 2021.',
