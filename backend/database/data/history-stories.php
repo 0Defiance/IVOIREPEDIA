@@ -14,6 +14,66 @@
 return [
 
     [
+        'slug' => 'indenie-abengourou',
+        'title' => 'Abengourou, fondée par un chef qui cherchait la paix',
+        'period' => '1701-1870',
+        'teaser' => 'Les Agni Ndénian viennent du royaume d’Aowin, dans le Ghana actuel. Chassés par les guerres ashanti, ils traversent la Comoé en plusieurs étapes ; au XIXe siècle, Mian Kouadio fonde Abengourou.',
+        'paragraphs' => [
+            'Le foyer d’origine des Agni Ndénian est le royaume Aowin, fondé par Ano Assoman après des conflits avec le Denkyira, dans l’actuel Ghana. C’est de là que part leur histoire connue.',
+            'Fuyant les guerres et la domination ashanti au XVIIIe siècle, ils entreprennent une migration en plusieurs étapes, conduite par Ahi Abayé, qui passe par Konvi Andé, Afewa puis Zaranou. Cette marche, éprouvante mais porteuse d’une forte cohésion spirituelle et sociale, pose les bases de l’Indénié.',
+            'Les clans s’installent ensuite le long de la Comoé et dans différents villages, consolidant une identité commune. Au XIXe siècle, Mian Kouadio fonde Abengourou, motivé par la quête de paix et l’abondance des ressources naturelles : sols fertiles, forêts et eaux font de la région un espace propice à l’agriculture et à la vie communautaire.',
+        ],
+        'figures' => [
+            ['label' => 'Début de la période étudiée', 'value' => '1701'],
+            ['label' => 'Fondation d’Abengourou', 'value' => 'XIXe s.'],
+        ],
+        'source_title' => 'Origines et mise en place des Agni Ndénian à Abengourou (1701-1870)',
+        'source_publisher' => 'AKIRI — Revue des sciences humaines et sociales (AJOL)',
+        'source_year' => 2026,
+        'source_url' => 'https://www.ajol.info/index.php/akiri/article/view/328069',
+    ],
+
+    [
+        'slug' => 'baoule-traversee-du-comoe',
+        'title' => 'Le nom qui vient d’un cri',
+        'period' => 'XVIIIe siècle',
+        'teaser' => 'Les Baoulé descendent de migrants akan conduits par la reine Abla Pokou, fuyant les troubles du pays ashanti. La tradition fait naître leur nom du sacrifice qui leur ouvrit la traversée du Comoé.',
+        'paragraphs' => [
+            'Les traditions d’origine baoulé rattachent l’installation du peuple au XVIIIe siècle, à la suite d’un exode depuis le pays akan, dans l’actuel Ghana. L’exode est conduit par Abla Pokou, figure à la fois historique et légendaire, qui fuit les querelles dynastiques et les guerres.',
+            'Le récit le plus célèbre se déroule au fleuve Comoé : les migrants ne peuvent pas le franchir, et Pokou sacrifie son enfant unique pour ouvrir le passage. De ce sacrifice viendrait le nom du peuple — « baoulé », de « l’enfant est mort » —, formule transmise par la tradition orale et reprise par les écrits anthropologiques et littéraires.',
+            'Au-delà du récit, l’histoire retient une migration akan vers le centre de l’actuelle Côte d’Ivoire au XVIIIe siècle, puis un essaimage progressif des villages. La mémoire de Pokou reste, elle, l’un des récits fondateurs les plus racontés du pays.',
+        ],
+        'figures' => [
+            ['label' => 'Migration akan', 'value' => 'XVIIIe s.'],
+            ['label' => 'Fleuve traversé', 'value' => 'Comoé'],
+        ],
+        'source_title' => 'Reliques d’une tradition : Abla Pokou et le peuple baoulé',
+        'source_publisher' => 'Akofena — Revue scientifique des lettres, langues et sciences humaines',
+        'source_year' => 2026,
+        'source_url' => 'https://www.revueakofena.com/hs-19_27/',
+    ],
+
+    [
+        'slug' => 'sanwi-balahinma-manlan-ahua',
+        'title' => 'La femme qui tenait le royaume face aux Français',
+        'period' => '1843-1898',
+        'teaser' => 'En 1843, le roi du Sanvi signe un traité avec la France. Cinquante ans plus tard, c’est une femme, la balahinma Manlan Ahua, qui défend l’intégrité du royaume akan jusqu’à sa mort, en 1898.',
+        'paragraphs' => [
+            'Au milieu du XIXe siècle, le Sanvi, royaume akan du sud-est de la Côte d’Ivoire, est prospère : son souverain Amun Ndufu contrôle ses partenaires commerciaux et le royaume est un passage obligé pour les produits de la traite.',
+            'En 1843, Amun Ndufu négocie un traité avec la France, qui souhaite s’installer à Assinie. Le royaume devient un protectorat français : le roi conserve ses droits de souveraineté sur son territoire, mais ne peut plus avoir de relations avec d’autres puissances. Amun Ndufu meurt en 1885.',
+            'Son successeur, Aka Siman Adu, sort affaibli de conflits familiaux au moment de son élection. La balahinma Manlan Ahua, représentante du bia et du matriarcat, veille à la moralité, à l’ordre et au bien-être de la population ; ses interventions spectaculaires en font l’un des principaux acteurs de l’intégrité du royaume face à l’occupant. Ce n’est qu’après sa mort, en 1898, et celle du roi, que les Français ont la haute main sur les affaires du Sanvi.',
+        ],
+        'figures' => [
+            ['label' => 'Traité avec la France', 'value' => '1843'],
+            ['label' => 'Mort de la balahinma', 'value' => '1898'],
+        ],
+        'source_title' => 'Le Sanvi : un royaume Akan, 1701-1901 (recension)',
+        'source_publisher' => 'Académie des sciences d’outre-mer — Henriette Dagri Diabaté',
+        'source_year' => 2013,
+        'source_url' => 'https://www.academieoutremer.fr/images/files/Sanvi-Royaume-Akan-(59_300).pdf',
+    ],
+
+    [
         'slug' => 'grand-bassam-capitale-abandonnee',
         'title' => 'La capitale abandonnée à cause des moustiques',
         'period' => '1893-1900',
@@ -31,6 +91,26 @@ return [
         'source_publisher' => 'UNESCO, Centre du patrimoine mondial',
         'source_year' => 2012,
         'source_url' => 'https://whc.unesco.org/fr/list/1322',
+    ],
+
+    [
+        'slug' => 'samory-guelemou-1898',
+        'title' => 'La capture sans un coup de feu',
+        'period' => '29 septembre 1898',
+        'teaser' => 'À l’aube, deux cents tirailleurs du capitaine Gouraud surgissent dans le camp de Samory Touré, à Guélémou. L’almamy, qui résiste aux Français depuis quinze ans, est pris sans que personne ne tire.',
+        'paragraphs' => [
+            'Samory Touré, fondateur de l’empire wassoulou, résiste à la pénétration française en Afrique de l’Ouest depuis les années 1880. Replié vers l’est, il gagne l’ouest de l’actuelle Côte d’Ivoire, poursuivi par les colonnes françaises.',
+            'Au petit matin du 29 septembre 1898, une colonne de deux cents tirailleurs placée sous le commandement du capitaine Henri Gouraud surgit dans son camp de Guélémou. La surprise est totale : l’almamy est capturé sans un coup de feu, avec ses principaux fils et toute sa maison.',
+            'Mis devant le fait accompli, les chefs, les marabouts et les quelque 1 800 sofas qui constituent les restes de son armée déposent les armes. Samory Touré est déporté au Gabon, où il meurt en 1900.',
+        ],
+        'figures' => [
+            ['label' => 'Date de la capture', 'value' => '29 sept. 1898'],
+            ['label' => 'Sofas désarmés', 'value' => '1 800'],
+        ],
+        'source_title' => 'Julie d’Andurain, « La capture de Samory (1898) » — recension',
+        'source_publisher' => 'Revue historique des armées, no 271',
+        'source_year' => 2013,
+        'source_url' => 'https://journals.openedition.org/rha/7701',
     ],
 
     [

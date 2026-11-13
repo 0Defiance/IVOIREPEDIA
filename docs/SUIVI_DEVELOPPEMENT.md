@@ -407,6 +407,29 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+### 13 novembre 2026 (séance 16) — Quatre récits d'histoire plus anciens
+
+**Motif (demande du titulaire)** : ajouter des récits d'histoire plus anciens — royaumes akan, Samory Touré, migrations baoulé — « en vérifiant chaque source avant publication ».
+
+**Méthode** : aucune source n'a été reprise d'un souvenir ou d'un site de vulgarisation. Chaque récit a été rattaché à un document daté, puis son URL a été contrôlée en HTTP (code 200) avant publication.
+
+**Fait — quatre récits, quatre documents**
+- **Abengourou et les Agni Ndénian (1701-1870)** — Silué, Diabaté & Diabagaté, *Origines et mise en place des Agni Ndénian à Abengourou (1701-1870)*, AKIRI 4 (2), 2026, via AJOL. Foyer Aowin fondé par Ano Assoman après les conflits avec le Denkyira, migration conduite par Ahi Abayé (Konvi Andé, Afewa, Zaranou), installation le long de la Comoé, fondation d'Abengourou par Mian Kouadio au XIXe siècle.
+- **La traversée du Comoé et le nom baoulé (XVIIIe siècle)** — Amenan Larissa Diby, *Reliques d'une tradition : Abla Pokou et le peuple baoulé*, Akofena. L'exode est daté du XVIIIe siècle, le sacrifice de l'enfant unique est présenté comme le récit transmis par la tradition orale, et le nom « baoulé » comme « l'enfant est mort ».
+- **Le Sanvi et la balahinma Manlan Ahua (1843-1898)** — recension par l'Académie des sciences d'outre-mer de la thèse d'Henriette Dagri Diabaté, *Le Sanvi : un royaume Akan, 1701-1901* (CERAP-IRD-Karthala, 2013). Traité de 1843 avec la France, protectorat, mort d'Amun Ndufu en 1885, rôle de la balahinma jusqu'à sa mort en 1898.
+- **La capture de Samory Touré à Guélémou (29 septembre 1898)** — recension dans la *Revue historique des armées* (no 271, 2013) de l'ouvrage de Julie d'Andurain, *La capture de Samory (1898)*. Colonne de deux cents tirailleurs du capitaine Henri Gouraud, capture au petit matin sans un coup de feu, reddition des chefs et des quelque 1 800 sofas, déportation au Gabon.
+
+**Choix éditorial** : chaque récit reste strictement dans ce que dit son document. Là où la tradition orale est la source — Pokou, le sens du nom baoulé —, le texte l'écrit comme telle au lieu de la présenter comme un fait établi. Les récits sont ordonnés du plus ancien au plus récent et précédent désormais Grand-Bassam dans la page.
+
+**Vérifié**
+- Les quatre URL répondent en 200 (AJOL, Akofena, Académie des sciences d'outre-mer, OpenEdition) ; Akofena redirige vers sa variante avec barre oblique finale, c'est celle qui est enregistrée.
+- `pint --test` : 75 fichiers conformes ; `phpstan` : aucune erreur ; **26 tests PHP** verts (+5) : import des quatre récits anciens avec leur URL exacte, contrôle que chaque récit publié porte une source `https`, un titre et une année, ordre de l'API et position de Grand-Bassam.
+- Aucun changement Flutter : la page `/histoires` lit l'API et affiche les récits dans l'ordre reçu, les quatre nouveaux apparaissent sans modification de code.
+
+**Limite assumée** : les dates de la migration baoulé varient selon les auteurs (XVIIIe siècle ; installation située entre 1730 et 1760 par l'*Encyclopaedia Universalis*) ; le récit retient la formulation large de la source citée plutôt qu'une date précise non vérifiée.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
