@@ -6,6 +6,7 @@ import '../api.dart';
 import '../models/statistics.dart';
 import '../theme.dart';
 import 'shell.dart';
+import 'widgets/charts.dart';
 
 /// Page des statistiques nationales : recensement, indicateurs annuels et
 /// divisions administratives, avec la source et l'année de chaque chiffre.
@@ -105,6 +106,10 @@ class _StatisticsBody extends StatelessWidget {
           if (data.headline.isNotEmpty) ...[
             const SizedBox(height: 28),
             _HeadlineGrid(indicators: data.headline),
+          ],
+          if (!data.climate.isEmpty) ...[
+            const SizedBox(height: 34),
+            _ClimateSection(climate: data.climate),
           ],
           for (final theme in data.themes) ...[
             const SizedBox(height: 34),
@@ -320,7 +325,7 @@ class _HeadlineCard extends StatelessWidget {
           ),
           if (indicator.series.length > 2) ...[
             const SizedBox(height: 8),
-            Sparkline(points: indicator.series, width: double.infinity, height: 26),
+            YearLineChart(points: indicator.series, height: 96),
           ],
         ],
       ),
@@ -543,6 +548,231 @@ class _DivisionRow extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Pluviométrie : le régime des pluies mois par mois, et sa variabilité d'une
+/// année à l'autre. Une moyenne annuelle seule ne dit rien de la saison.
+class _ClimateSection extends StatefulWidget {
+  const _ClimateSection({required this.climate});
+
+  final ClimateSnapshot climate;
+
+  @override
+  State<_ClimateSection> createState() => _ClimateSectionState();
+}
+
+class _ClimateSectionState extends State<_ClimateSection> {
+  int _selected = 0;
+
+  static const List<String> _monthNames = [
+    'janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin',
+    'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final climate = widget.climate;
+
+    if (climate.cities.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final selected = climate.cities[_selected.clamp(0, climate.cities.length - 1)];
+    final wettest = selected.wettest;
+    final years = selected.years
+        .map((year) => StatisticPoint(year: year.year, value: year.rainMm))
+        .toList(growable: false);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const Text(
+              'PLUVIOMÉTRIE',
+              style: TextStyle(
+                fontSize: 11.5,
+                letterSpacing: 1.6,
+                fontWeight: FontWeight.w700,
+                color: IvoireColors.green,
+              ),
+            ),
+            if (climate.periodStart != null && climate.periodEnd != null) ...[
+              const SizedBox(width: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: IvoireColors.subtle,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: IvoireColors.lineSoft),
+                ),
+                child: Text(
+                  'Normales ${climate.periodStart}–${climate.periodEnd}',
+                  style: const TextStyle(fontSize: 10.5, color: IvoireColors.muted),
+                ),
+              ),
+            ],
+          ],
+        ),
+        const SizedBox(height: 4),
+        Container(height: 1, color: IvoireColors.lineSoft),
+        const SizedBox(height: 8),
+        ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 720),
+          child: Text(
+            'Cumuls mensuels moyens et température moyenne, calculés sur '
+            '${climate.periodStart ?? 1991}–${climate.periodEnd ?? 2020} à partir de la '
+            'réanalyse ERA5 (grille d’environ 9 km). Une année donnée s’écarte '
+            'toujours de cette moyenne : la courbe du bas montre l’amplitude '
+            'réelle des trente années observées.',
+            style: const TextStyle(fontSize: 12, height: 1.7, color: IvoireColors.faint),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            for (var index = 0; index < climate.cities.length; index++)
+              _CityChip(
+                label: climate.cities[index].name,
+                selected: index == _selected,
+                onTap: () => setState(() => _selected = index),
+              ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Container(
+          padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+          decoration: BoxDecoration(
+            color: IvoireColors.paper,
+            border: Border.all(color: IvoireColors.line),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Wrap(
+                spacing: 30,
+                runSpacing: 10,
+                crossAxisAlignment: WrapCrossAlignment.end,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'PLUIE PAR AN · ${selected.name.toUpperCase()}',
+                        style: const TextStyle(
+                          fontSize: 10,
+                          letterSpacing: 1.3,
+                          fontWeight: FontWeight.w700,
+                          color: IvoireColors.faint,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text.rich(
+                        TextSpan(
+                          children: [
+                            TextSpan(
+                              text: _thousands(selected.annualRainMm.round()),
+                              style: const TextStyle(
+                                fontSize: 30,
+                                height: 1.1,
+                                fontWeight: FontWeight.w600,
+                                color: IvoireColors.ink,
+                              ),
+                            ),
+                            const TextSpan(
+                              text: ' mm',
+                              style: TextStyle(fontSize: 13, color: IvoireColors.muted),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (wettest != null)
+                    _MiniFact(
+                      label: 'Mois le plus arrosé',
+                      value: '${_monthNames[wettest.month - 1]} · '
+                          '${wettest.rainMm.round()} mm',
+                    ),
+                  if (selected.driestYear != null)
+                    _MiniFact(
+                      label: 'Année la plus sèche',
+                      value: '${_thousands(selected.driestYear!.round())} mm',
+                    ),
+                  if (selected.wettestYear != null)
+                    _MiniFact(
+                      label: 'Année la plus arrosée',
+                      value: '${_thousands(selected.wettestYear!.round())} mm',
+                    ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              MonthlyRainChart(months: selected.months),
+              if (years.length > 2) ...[
+                const SizedBox(height: 18),
+                const Text(
+                  'CUMULS ANNUELS OBSERVÉS',
+                  style: TextStyle(
+                    fontSize: 10,
+                    letterSpacing: 1.3,
+                    fontWeight: FontWeight.w700,
+                    color: IvoireColors.faint,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                YearLineChart(points: years, height: 140),
+              ],
+              if (climate.source?.name != null) ...[
+                const SizedBox(height: 10),
+                _SourceLine(source: climate.source),
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _CityChip extends StatelessWidget {
+  const _CityChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 7),
+        decoration: BoxDecoration(
+          color: selected ? IvoireColors.green : IvoireColors.paper,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: selected ? IvoireColors.green : IvoireColors.line,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 12.5,
+            fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+            color: selected ? Colors.white : IvoireColors.muted,
+          ),
+        ),
       ),
     );
   }

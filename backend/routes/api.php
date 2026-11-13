@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\ArticleController;
 use App\Http\Controllers\Api\V1\CategoryController;
+use App\Http\Controllers\Api\V1\HistoryController;
 use App\Http\Controllers\Api\V1\SearchController;
 use App\Http\Controllers\Api\V1\StatisticsController;
 use Illuminate\Support\Facades\Route;
@@ -24,8 +25,12 @@ Route::prefix('v1')->group(function () {
 
     Route::get('/categories', CategoryController::class);
 
-    // Statistiques publiques du pays : indicateurs annuels + recensement.
+    // Statistiques publiques du pays : indicateurs annuels, recensement et
+    // climatologie des villes.
     Route::get('/statistics', StatisticsController::class);
+
+    // Récits sourcés de la section « Histoire incroyable ».
+    Route::get('/history', HistoryController::class);
     Route::get('/articles', [ArticleController::class, 'index']);
     Route::get('/articles/{slug}', [ArticleController::class, 'show']);
 

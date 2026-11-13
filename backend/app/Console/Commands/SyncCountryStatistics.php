@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\CensusDivision;
+use App\Models\ClimateCity;
 use App\Models\CountryIndicator;
 use App\Models\CountryIndicatorPoint;
 use Illuminate\Console\Command;
@@ -35,6 +36,7 @@ class SyncCountryStatistics extends Command
     public function handle(): int
     {
         $this->importCensus();
+        $this->importClimate();
 
         if (! $this->option('offline')) {
             $this->importWorldBank();
@@ -153,6 +155,79 @@ class SyncCountryStatistics extends Command
                 ],
             );
         }
+    }
+
+    /**
+     * Climatologie : normales mensuelles et cumuls annuels par ville.
+     *
+     * L'instantané `climate-normals.json` est produit par
+     * `database/data/fetch-climate-normals.py` à partir de la réanalyse ERA5
+     * (Open-Meteo, CC BY 4.0). Il est importé même en mode `--offline` : la
+     * climatologie ne dépend donc pas du réseau au moment du déploiement.
+     */
+    private function importClimate(): void
+    {
+        $path = database_path('data/climate-normals.json');
+
+        if (! File::exists($path)) {
+            $this->warn('Fichier climatologique absent : '.$path);
+
+            return;
+        }
+
+        /** @var array<string, mixed> $data */
+        $data = json_decode((string) File::get($path), true, 512, JSON_THROW_ON_ERROR);
+        $source = $data['source'];
+        $period = $data['period'];
+        $months = 0;
+
+        foreach ((array) $data['cities'] as $index => $row) {
+            $city = ClimateCity::query()->updateOrCreate(
+                ['slug' => $row['slug']],
+                [
+                    'name' => $row['name'],
+                    'latitude' => (float) $row['latitude'],
+                    'longitude' => (float) $row['longitude'],
+                    'annual_rain_mm' => (float) $row['annual_rain_mm'],
+                    'period_start' => (int) substr((string) $period['start'], 0, 4),
+                    'period_end' => (int) substr((string) $period['end'], 0, 4),
+                    'source_name' => $source['name'],
+                    'source_url' => $source['url'],
+                    'source_licence' => $source['licence'],
+                    'position' => $index,
+                ],
+            );
+
+            // Les enfants sont remplacés : une correction de l'instantané ne
+            // doit pas laisser traîner d'anciennes valeurs.
+            $city->months()->delete();
+            $city->years()->delete();
+
+            foreach ((array) $row['months'] as $month) {
+                $city->months()->create([
+                    'month' => (int) $month['month'],
+                    'rain_mm' => (float) $month['rain_mm'],
+                    'rain_days' => isset($month['rain_days']) ? (float) $month['rain_days'] : null,
+                    'temperature_c' => isset($month['temperature_c']) ? (float) $month['temperature_c'] : null,
+                ]);
+                $months++;
+            }
+
+            foreach ((array) $row['years'] as $year) {
+                $city->years()->create([
+                    'year' => (int) $year['year'],
+                    'rain_mm' => (float) $year['rain_mm'],
+                ]);
+            }
+        }
+
+        $this->line(sprintf(
+            'Climat %d-%d : %d villes, %d normales mensuelles.',
+            $period['start'],
+            $period['end'],
+            count((array) $data['cities']),
+            $months,
+        ));
     }
 
     /**

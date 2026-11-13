@@ -110,6 +110,55 @@ StatisticsSnapshot statisticsFixture() {
         averageSize: 5.4,
       ),
     ],
+    climate: const ClimateSnapshot(
+      periodStart: 1991,
+      periodEnd: 2020,
+      source: StatisticSource(
+        name: 'Open-Meteo — réanalyse ERA5 (Copernicus)',
+        url: 'https://open-meteo.com/en/docs/historical-weather-api',
+        licence: 'CC BY 4.0',
+      ),
+      cities: [
+        ClimateCity(
+          slug: 'abidjan',
+          name: 'Abidjan',
+          annualRainMm: 1851.5,
+          months: [
+            ClimateMonth(month: 1, rainMm: 85.9, rainDays: 17, temperatureC: 26.3),
+            ClimateMonth(month: 2, rainMm: 106.7, rainDays: 20, temperatureC: 26.8),
+            ClimateMonth(month: 3, rainMm: 149.9, rainDays: 25.1, temperatureC: 27),
+            ClimateMonth(month: 4, rainMm: 157.2, rainDays: 25.2, temperatureC: 26.9),
+            ClimateMonth(month: 5, rainMm: 237.7, rainDays: 29, temperatureC: 26.2),
+            ClimateMonth(month: 6, rainMm: 253.1, rainDays: 27.9, temperatureC: 25.1),
+            ClimateMonth(month: 7, rainMm: 145.8, rainDays: 24.8, temperatureC: 24.4),
+            ClimateMonth(month: 8, rainMm: 84.7, rainDays: 21.7, temperatureC: 24.1),
+            ClimateMonth(month: 9, rainMm: 151, rainDays: 26.6, temperatureC: 24.5),
+            ClimateMonth(month: 10, rainMm: 199.2, rainDays: 29.8, temperatureC: 25.1),
+            ClimateMonth(month: 11, rainMm: 164.7, rainDays: 27.7, temperatureC: 25.7),
+            ClimateMonth(month: 12, rainMm: 115.4, rainDays: 23.2, temperatureC: 26.1),
+          ],
+          years: [
+            ClimateYear(year: 2018, rainMm: 1720.4),
+            ClimateYear(year: 2019, rainMm: 2104.9),
+            ClimateYear(year: 2020, rainMm: 1691.8),
+            ClimateYear(year: 2021, rainMm: 1435.3),
+          ],
+        ),
+        ClimateCity(
+          slug: 'korhogo',
+          name: 'Korhogo',
+          annualRainMm: 1057.7,
+          months: [
+            ClimateMonth(month: 1, rainMm: 6.1, rainDays: 1.4, temperatureC: 27.4),
+          ],
+          years: [
+            ClimateYear(year: 2019, rainMm: 1053.4),
+            ClimateYear(year: 2020, rainMm: 858.1),
+            ClimateYear(year: 2021, rainMm: 1100.2),
+          ],
+        ),
+      ],
+    ),
     updatedAt: DateTime(2026, 11, 11),
     sources: const ['Banque mondiale — WDI'],
   );

@@ -516,6 +516,8 @@ CREATE TABLE editorial_actions (      -- append-only : jamais d'UPDATE ni de DEL
 | `country_indicators` | Dernière valeur connue d'un indicateur national + provenance (organisme, URL, licence) | `php artisan country:sync-statistics` |
 | `country_indicator_points` | Série annuelle d'un indicateur (une ligne par année) | idem |
 | `census_divisions` | Districts, régions et villes du RGPH 2021 (population, ménages, taille moyenne) | idem, depuis `database/data/rgph-2021.json` |
+| `climate_cities`, `climate_months`, `climate_years` | Normales mensuelles et cumuls annuels 1991-2020 par ville (réanalyse ERA5, CC BY 4.0) | idem, depuis `database/data/climate-normals.json` |
+| `history_stories` | Récits de la section « Histoire incroyable », avec leur source datée | `php artisan history:sync-stories`, depuis `database/data/history-stories.php` |
 
 Ces tables sont en **lecture seule** pour l'API publique (`GET /api/v1/statistics`, cache 6 h) ; aucune route d'écriture n'existe. Les données du recensement sont figées dans `backend/database/data/rgph-2021.json`, avec l'URL et la licence du document officiel, pour que l'import soit reproductible sans réseau.
 
@@ -798,7 +800,8 @@ Base : `/api/v1`. Format JSON. Authentification : session Sanctum (cookie) côt�
 | GET | `/api/v1/review/queue` | EDITOR+ | Articles `SUBMITTED` / `IN_REVIEW` | WF-01 |
 | GET | `/api/v1/search?q=&page=` | public | Recherche dans les articles publiés | RCH-01 |
 | GET | `/api/v1/categories` | public | Arbre des catégories | CAT |
-| GET | `/api/v1/statistics` | public | Indicateurs du pays par thème + divisions du RGPH 2021 (cache 6 h) | STAT |
+| GET | `/api/v1/statistics` | public | Indicateurs du pays par thème, divisions du RGPH 2021 et climatologie des villes (cache 6 h) | STAT |
+| GET | `/api/v1/history` | public | Récits sourcés de la section « Histoire incroyable » (cache 6 h) | HIS |
 | POST | `/api/v1/articles/{id}/cover` | CONTRIBUTOR+ | Upload d'image (multipart) : MIME vérifié côté serveur, `alt` obligatoire | ART-06 |
 
 *Gestion des catégories et des utilisateurs : **panneau Filament `/admin`** (ressources + Policies), pas de routes API admin dédiées au MVP.*
@@ -1135,6 +1138,7 @@ jobs:
 | 2026-11-02 | 1.0 | Création : consolidation du cahier des charges, de la conception UML et de la roadmap ; décisions ADR-001 à 008 ; backlog MVP. |
 | 2026-11-02 | 1.1 | **Adaptation de la stack au modèle Flutter + Laravel** : Flutter (`app/`) + Laravel (`backend/`) + MySQL/Filament/Sanctum remplacent Next.js + Prisma + PostgreSQL + Auth.js. Schéma converti en MySQL (§8.2), workflow traduit en PHP (§9), API versionnée `/api/v1` (§11), CI à deux jobs (§15.4), divergences D9 et nouveaux risques R-05/R-08/R-09. |
 | 2026-11-03 | 1.2 | **Hébergement et emails tranchés** : Alwaysdata remplace XAMPP dès le développement (ADR-002 révisé, ADR-008 réécrit) et Mailjet devient le relais SMTP (ADR-009). §5 stack, §7 installation (base distante, ports), §7.5 variables d'environnement, R-10, Q3/Q9 mis à jour. Guides `docs/INSTALLATION.md` et `docs/DEPLOIEMENT.md`. |
+| 2026-11-13 | 1.6 | **Pluviométrie et Histoire incroyable** : trois tables de climatologie (ERA5 1991-2020, six villes), `data.climate` dans l'API statistique, graphiques à axes et barres mensuelles, table `history_stories`, endpoint `/api/v1/history`, page Flutter `/histoires`. §8.2 et §11.1 mis à jour. |
 | 2026-11-11 | 1.5 | **Statistiques nationales et articles enrichis** : trois tables (`country_indicators`, `country_indicator_points`, `census_divisions`), endpoint public `GET /api/v1/statistics`, page Flutter `/statistiques`, commandes `country:sync-statistics` (Banque mondiale + RGPH 2021) et `articles:enrich-sources` (infobox et références vérifiées). §8.2 et §11.1 mis à jour. |
 | 2026-11-11 | 1.4 | **Répertoire des sources documentaires** : `docs/SOURCES_INFORMATION.md` recense environ 150 plateformes (institutions ivoiriennes, statistiques internationales, cartographie, patrimoine, archives, recherche, presse, droit, langues, images), chacune vérifiée par requête HTTP le 11 novembre 2026 et assortie de son statut, de sa licence et des règles de citation. Ajouté au §2 comme document de référence. |
 | 2026-11-03 | 1.3 | **Compte d'hébergement dédié** : IVOIREPEDIA quitte le compte Alwaysdata partagé (ADR-008) — compte, site `ivoirepedia.alwaysdata.net`, dossier, bases `ivoirepedia_prod`/`ivoirepedia_dev` et utilisateur MySQL propres, phpMyAdmin par compte. §5, §7, ADR-002 et ADR-008 alignés ; aucune référence à un autre projet ne subsiste dans le dépôt. |

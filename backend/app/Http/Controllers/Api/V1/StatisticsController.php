@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\CensusDivision;
+use App\Models\ClimateCity;
 use App\Models\CountryIndicator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
@@ -85,6 +86,7 @@ class StatisticsController extends Controller
                 ],
                 'headline' => $headline,
                 'themes' => $themes,
+                'climate' => $this->climate(),
                 'divisions' => [
                     'districts' => $this->divisions(CensusDivision::DISTRICT),
                     'regions' => $this->divisions(CensusDivision::REGION),
@@ -134,6 +136,52 @@ class StatisticsController extends Controller
             'name' => $indicator?->source_name,
             'url' => $indicator?->source_url,
             'licence' => $indicator?->source_licence,
+        ];
+    }
+
+    /**
+     * Climatologie des villes : normales mensuelles et cumuls annuels.
+     *
+     * Les normales viennent de la réanalyse ERA5 (Open-Meteo, CC BY 4.0) et
+     * couvrent 1991-2020 : c'est une moyenne de trente ans, pas une mesure de
+     * l'année en cours, et l'API le dit dans `period`.
+     *
+     * @return array<string, mixed>
+     */
+    private function climate(): array
+    {
+        $cities = ClimateCity::query()
+            ->with(['months', 'years'])
+            ->orderBy('position')
+            ->get();
+
+        $first = $cities->first();
+
+        return [
+            'period' => $first === null ? null : [
+                'start' => $first->period_start,
+                'end' => $first->period_end,
+            ],
+            'source' => [
+                'name' => $first?->source_name,
+                'url' => $first?->source_url,
+                'licence' => $first?->source_licence,
+            ],
+            'cities' => $cities->map(fn (ClimateCity $city): array => [
+                'slug' => $city->slug,
+                'name' => $city->name,
+                'annual_rain_mm' => (float) $city->annual_rain_mm,
+                'months' => $city->months->map(fn ($month): array => [
+                    'month' => $month->month,
+                    'rain_mm' => (float) $month->rain_mm,
+                    'rain_days' => $month->rain_days === null ? null : (float) $month->rain_days,
+                    'temperature_c' => $month->temperature_c === null ? null : (float) $month->temperature_c,
+                ])->values()->all(),
+                'years' => $city->years->map(fn ($year): array => [
+                    'year' => $year->year,
+                    'rain_mm' => (float) $year->rain_mm,
+                ])->values()->all(),
+            ])->values()->all(),
         ];
     }
 

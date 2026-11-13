@@ -381,6 +381,32 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+### 13 novembre 2026 (séance 15) — Pluviométrie et « Histoire incroyable »
+
+**Motif (demande du titulaire)** : rendre la page statistique « plus réaliste et non simpliste, avec une simple courbe », ajouter des statistiques pluviométriques, et ouvrir une section « Histoire incroyable » sur la Côte d'Ivoire.
+
+**Fait — climatologie**
+- Nouvelle source : la réanalyse **ERA5** (service Copernicus Climate Change, diffusée par Open-Meteo, licence CC BY 4.0), interrogeé par un script reproductible `database/data/fetch-climate-normals.py`, qui agrège le journalier en normales mensuelles et cumuls annuels. Période de référence **1991-2020**, six villes (Abidjan, Bouaké, Korhogo, San-Pédro, Yamoussoukro, Man). Instantané figé dans `database/data/climate-normals.json` : **72 normales mensuelles** et **180 cumuls annuels**.
+- Trois tables : `climate_cities`, `climate_months` (pluie, jours de pluie, température) et `climate_years`. Importées par `country:sync-statistics`, y compris en mode `--offline` : le déploiement ne dépend d'aucun appel réseau.
+- `GET /api/v1/statistics` expose désormais `data.climate` : période, source et licence, puis par ville les douze mois et les trente années.
+
+**Fait — graphiques**
+- La vignette « courbe » des cartes de chiffres clés est remplacée par un vrai graphique à axes (`YearLineChart`) : grille, graduations compactes (k/M/Md), années repères, aire dégradée et point final.
+- Nouvelle section **Pluviométrie** : sélecteur de ville, cumul annuel, mois le plus arrosé, années les plus sèches et les plus arrosées, **barres mensuelles** (le mois le plus arrosé est mis en avant et étiquetté) avec la **courbe de température** en surimpression, puis la courbe des cumuls annuels 1991-2020. Deux villes à 1 400 mm n'ont pas la même saison : les barres le montrent, une moyenne annuelle le cache.
+
+**Fait — Histoire incroyable**
+- Table `history_stories`, commande `history:sync-stories`, endpoint `GET /api/v1/history` (cache 6 h) et page Flutter `/histoires`, atteignable depuis l'entrée « Histoire incroyable » de la barre latérale.
+- **Sept récits** courts, chacun adossé à un document : Grand-Bassam capitale abandonnée (UNESCO, 2012), la Comoé (UNESCO, 1983), Taï et son hippopotame pygmée (UNESCO, 1982), le Zaouli gouro (UNESCO, 2017), l'attiéké (UNESCO, 2024), le cacao premier producteur mondial (FAOSTAT) et Abidjan, 6 321 017 habitants (RGPH 2021). Chaque récit se déplie sur place et affiche sa source, son éditeur, son année et son URL.
+
+**Vérifié**
+- `pint --test` : 75 fichiers conformes ; `phpstan` : aucune erreur ; **21 tests PHP** verts, dont trois nouveaux : import de la climatologie sans réseau (6 villes, 12 mois, 30 ans, licence CC BY 4.0), exposition de `data.climate` (juin = mois le plus arrosé à Abidjan), et import/API des récits (ordre, source, idempotence).
+- `flutter analyze` : aucune remarque ; **14 tests Flutter** verts, dont la section pluviométrie (chips de villes, cumul annuel, mois le plus arrosé), l'accès à « Histoire incroyable » depuis la barre latérale et le dépliage d'un récit avec sa source.
+- Données contrôlées : Abidjan 1 851,5 mm/an (juin 253 mm, août 85 mm), Korhogo 1 057,7 mm/an, Man 1 511,4 mm/an — ordres de grandeur conformes au climat ivoirien.
+
+**Limite assumée** : ERA5 est une réanalyse sur grille (~9 km) ; elle lisse les extrêmes locaux et sous-estime les cumuls des stations côtières (Abidjan ~1 850 mm contre ~2 000 mm en station). La page le dit explicitement, et la source est citée avec sa licence.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

@@ -1,0 +1,1233 @@
+{
+  "source": {
+    "name": "Open-Meteo — réanalyse ERA5 (Copernicus)",
+    "url": "https://open-meteo.com/en/docs/historical-weather-api",
+    "licence": "CC BY 4.0",
+    "dataset": "ERA5-Land / ERA5, service Copernicus Climate Change"
+  },
+  "period": {
+    "start": "1991-01-01",
+    "end": "2020-12-31"
+  },
+  "generated_at": "2026-11-13",
+  "cities": [
+    {
+      "slug": "abidjan",
+      "name": "Abidjan",
+      "latitude": 5.354,
+      "longitude": -4.008,
+      "annual_rain_mm": 1851.5,
+      "months": [
+        {
+          "month": 1,
+          "rain_mm": 85.9,
+          "rain_days": 17.0,
+          "temperature_c": 26.3
+        },
+        {
+          "month": 2,
+          "rain_mm": 106.7,
+          "rain_days": 20.0,
+          "temperature_c": 26.8
+        },
+        {
+          "month": 3,
+          "rain_mm": 149.9,
+          "rain_days": 25.1,
+          "temperature_c": 27.0
+        },
+        {
+          "month": 4,
+          "rain_mm": 157.2,
+          "rain_days": 25.2,
+          "temperature_c": 26.9
+        },
+        {
+          "month": 5,
+          "rain_mm": 237.7,
+          "rain_days": 29.0,
+          "temperature_c": 26.2
+        },
+        {
+          "month": 6,
+          "rain_mm": 253.1,
+          "rain_days": 27.9,
+          "temperature_c": 25.1
+        },
+        {
+          "month": 7,
+          "rain_mm": 145.8,
+          "rain_days": 24.8,
+          "temperature_c": 24.4
+        },
+        {
+          "month": 8,
+          "rain_mm": 84.7,
+          "rain_days": 21.7,
+          "temperature_c": 24.1
+        },
+        {
+          "month": 9,
+          "rain_mm": 151.0,
+          "rain_days": 26.6,
+          "temperature_c": 24.5
+        },
+        {
+          "month": 10,
+          "rain_mm": 199.2,
+          "rain_days": 29.8,
+          "temperature_c": 25.1
+        },
+        {
+          "month": 11,
+          "rain_mm": 164.7,
+          "rain_days": 27.7,
+          "temperature_c": 25.7
+        },
+        {
+          "month": 12,
+          "rain_mm": 115.4,
+          "rain_days": 23.2,
+          "temperature_c": 26.1
+        }
+      ],
+      "years": [
+        {
+          "year": 1991,
+          "rain_mm": 1963.7
+        },
+        {
+          "year": 1992,
+          "rain_mm": 1721.8
+        },
+        {
+          "year": 1993,
+          "rain_mm": 1844.2
+        },
+        {
+          "year": 1994,
+          "rain_mm": 1719.2
+        },
+        {
+          "year": 1995,
+          "rain_mm": 1917.3
+        },
+        {
+          "year": 1996,
+          "rain_mm": 2039.8
+        },
+        {
+          "year": 1997,
+          "rain_mm": 1816.0
+        },
+        {
+          "year": 1998,
+          "rain_mm": 1628.1
+        },
+        {
+          "year": 1999,
+          "rain_mm": 2154.8
+        },
+        {
+          "year": 2000,
+          "rain_mm": 1435.3
+        },
+        {
+          "year": 2001,
+          "rain_mm": 1680.3
+        },
+        {
+          "year": 2002,
+          "rain_mm": 1871.2
+        },
+        {
+          "year": 2003,
+          "rain_mm": 1764.5
+        },
+        {
+          "year": 2004,
+          "rain_mm": 1703.2
+        },
+        {
+          "year": 2005,
+          "rain_mm": 1636.4
+        },
+        {
+          "year": 2006,
+          "rain_mm": 1777.7
+        },
+        {
+          "year": 2007,
+          "rain_mm": 1762.8
+        },
+        {
+          "year": 2008,
+          "rain_mm": 2148.8
+        },
+        {
+          "year": 2009,
+          "rain_mm": 1801.9
+        },
+        {
+          "year": 2010,
+          "rain_mm": 2008.4
+        },
+        {
+          "year": 2011,
+          "rain_mm": 1762.4
+        },
+        {
+          "year": 2012,
+          "rain_mm": 1770.3
+        },
+        {
+          "year": 2013,
+          "rain_mm": 1691.1
+        },
+        {
+          "year": 2014,
+          "rain_mm": 1988.2
+        },
+        {
+          "year": 2015,
+          "rain_mm": 1651.5
+        },
+        {
+          "year": 2016,
+          "rain_mm": 1777.8
+        },
+        {
+          "year": 2017,
+          "rain_mm": 2672.0
+        },
+        {
+          "year": 2018,
+          "rain_mm": 2136.4
+        },
+        {
+          "year": 2019,
+          "rain_mm": 2009.6
+        },
+        {
+          "year": 2020,
+          "rain_mm": 1691.8
+        }
+      ]
+    },
+    {
+      "slug": "bouake",
+      "name": "Bouaké",
+      "latitude": 7.69,
+      "longitude": -5.03,
+      "annual_rain_mm": 1300.6,
+      "months": [
+        {
+          "month": 1,
+          "rain_mm": 18.6,
+          "rain_days": 3.3,
+          "temperature_c": 26.8
+        },
+        {
+          "month": 2,
+          "rain_mm": 45.5,
+          "rain_days": 7.2,
+          "temperature_c": 27.6
+        },
+        {
+          "month": 3,
+          "rain_mm": 94.6,
+          "rain_days": 14.8,
+          "temperature_c": 27.5
+        },
+        {
+          "month": 4,
+          "rain_mm": 119.2,
+          "rain_days": 17.6,
+          "temperature_c": 27.0
+        },
+        {
+          "month": 5,
+          "rain_mm": 124.3,
+          "rain_days": 18.7,
+          "temperature_c": 26.3
+        },
+        {
+          "month": 6,
+          "rain_mm": 142.1,
+          "rain_days": 20.3,
+          "temperature_c": 25.0
+        },
+        {
+          "month": 7,
+          "rain_mm": 146.7,
+          "rain_days": 22.4,
+          "temperature_c": 24.1
+        },
+        {
+          "month": 8,
+          "rain_mm": 181.2,
+          "rain_days": 24.3,
+          "temperature_c": 23.9
+        },
+        {
+          "month": 9,
+          "rain_mm": 221.0,
+          "rain_days": 26.3,
+          "temperature_c": 24.3
+        },
+        {
+          "month": 10,
+          "rain_mm": 141.4,
+          "rain_days": 22.0,
+          "temperature_c": 24.9
+        },
+        {
+          "month": 11,
+          "rain_mm": 51.9,
+          "rain_days": 10.6,
+          "temperature_c": 25.7
+        },
+        {
+          "month": 12,
+          "rain_mm": 14.2,
+          "rain_days": 3.5,
+          "temperature_c": 26.2
+        }
+      ],
+      "years": [
+        {
+          "year": 1991,
+          "rain_mm": 1455.3
+        },
+        {
+          "year": 1992,
+          "rain_mm": 1298.5
+        },
+        {
+          "year": 1993,
+          "rain_mm": 1434.6
+        },
+        {
+          "year": 1994,
+          "rain_mm": 1262.6
+        },
+        {
+          "year": 1995,
+          "rain_mm": 1540.8
+        },
+        {
+          "year": 1996,
+          "rain_mm": 1367.8
+        },
+        {
+          "year": 1997,
+          "rain_mm": 1222.5
+        },
+        {
+          "year": 1998,
+          "rain_mm": 1284.8
+        },
+        {
+          "year": 1999,
+          "rain_mm": 1563.0
+        },
+        {
+          "year": 2000,
+          "rain_mm": 1249.6
+        },
+        {
+          "year": 2001,
+          "rain_mm": 1008.7
+        },
+        {
+          "year": 2002,
+          "rain_mm": 1241.1
+        },
+        {
+          "year": 2003,
+          "rain_mm": 1288.0
+        },
+        {
+          "year": 2004,
+          "rain_mm": 1077.5
+        },
+        {
+          "year": 2005,
+          "rain_mm": 1315.1
+        },
+        {
+          "year": 2006,
+          "rain_mm": 1143.7
+        },
+        {
+          "year": 2007,
+          "rain_mm": 1514.7
+        },
+        {
+          "year": 2008,
+          "rain_mm": 1347.7
+        },
+        {
+          "year": 2009,
+          "rain_mm": 1302.3
+        },
+        {
+          "year": 2010,
+          "rain_mm": 1244.0
+        },
+        {
+          "year": 2011,
+          "rain_mm": 1241.0
+        },
+        {
+          "year": 2012,
+          "rain_mm": 1284.0
+        },
+        {
+          "year": 2013,
+          "rain_mm": 1016.4
+        },
+        {
+          "year": 2014,
+          "rain_mm": 1320.7
+        },
+        {
+          "year": 2015,
+          "rain_mm": 1173.8
+        },
+        {
+          "year": 2016,
+          "rain_mm": 1195.6
+        },
+        {
+          "year": 2017,
+          "rain_mm": 1163.9
+        },
+        {
+          "year": 2018,
+          "rain_mm": 1461.4
+        },
+        {
+          "year": 2019,
+          "rain_mm": 1828.6
+        },
+        {
+          "year": 2020,
+          "rain_mm": 1170.2
+        }
+      ]
+    },
+    {
+      "slug": "korhogo",
+      "name": "Korhogo",
+      "latitude": 9.458,
+      "longitude": -5.629,
+      "annual_rain_mm": 1057.7,
+      "months": [
+        {
+          "month": 1,
+          "rain_mm": 5.9,
+          "rain_days": 1.0,
+          "temperature_c": 26.0
+        },
+        {
+          "month": 2,
+          "rain_mm": 12.5,
+          "rain_days": 2.6,
+          "temperature_c": 28.0
+        },
+        {
+          "month": 3,
+          "rain_mm": 36.3,
+          "rain_days": 6.9,
+          "temperature_c": 29.4
+        },
+        {
+          "month": 4,
+          "rain_mm": 72.4,
+          "rain_days": 13.6,
+          "temperature_c": 29.0
+        },
+        {
+          "month": 5,
+          "rain_mm": 100.8,
+          "rain_days": 16.4,
+          "temperature_c": 27.9
+        },
+        {
+          "month": 6,
+          "rain_mm": 108.9,
+          "rain_days": 17.4,
+          "temperature_c": 26.5
+        },
+        {
+          "month": 7,
+          "rain_mm": 183.3,
+          "rain_days": 23.5,
+          "temperature_c": 24.9
+        },
+        {
+          "month": 8,
+          "rain_mm": 247.2,
+          "rain_days": 26.7,
+          "temperature_c": 24.3
+        },
+        {
+          "month": 9,
+          "rain_mm": 188.0,
+          "rain_days": 24.0,
+          "temperature_c": 24.6
+        },
+        {
+          "month": 10,
+          "rain_mm": 83.7,
+          "rain_days": 14.8,
+          "temperature_c": 25.6
+        },
+        {
+          "month": 11,
+          "rain_mm": 16.4,
+          "rain_days": 3.6,
+          "temperature_c": 26.6
+        },
+        {
+          "month": 12,
+          "rain_mm": 2.4,
+          "rain_days": 0.5,
+          "temperature_c": 26.1
+        }
+      ],
+      "years": [
+        {
+          "year": 1991,
+          "rain_mm": 1155.4
+        },
+        {
+          "year": 1992,
+          "rain_mm": 1096.3
+        },
+        {
+          "year": 1993,
+          "rain_mm": 1029.3
+        },
+        {
+          "year": 1994,
+          "rain_mm": 1256.7
+        },
+        {
+          "year": 1995,
+          "rain_mm": 1355.9
+        },
+        {
+          "year": 1996,
+          "rain_mm": 1173.2
+        },
+        {
+          "year": 1997,
+          "rain_mm": 993.3
+        },
+        {
+          "year": 1998,
+          "rain_mm": 1121.8
+        },
+        {
+          "year": 1999,
+          "rain_mm": 1220.4
+        },
+        {
+          "year": 2000,
+          "rain_mm": 1032.5
+        },
+        {
+          "year": 2001,
+          "rain_mm": 913.1
+        },
+        {
+          "year": 2002,
+          "rain_mm": 1006.4
+        },
+        {
+          "year": 2003,
+          "rain_mm": 1115.4
+        },
+        {
+          "year": 2004,
+          "rain_mm": 913.3
+        },
+        {
+          "year": 2005,
+          "rain_mm": 993.9
+        },
+        {
+          "year": 2006,
+          "rain_mm": 1003.2
+        },
+        {
+          "year": 2007,
+          "rain_mm": 1148.3
+        },
+        {
+          "year": 2008,
+          "rain_mm": 1219.6
+        },
+        {
+          "year": 2009,
+          "rain_mm": 1064.0
+        },
+        {
+          "year": 2010,
+          "rain_mm": 1196.7
+        },
+        {
+          "year": 2011,
+          "rain_mm": 897.9
+        },
+        {
+          "year": 2012,
+          "rain_mm": 975.3
+        },
+        {
+          "year": 2013,
+          "rain_mm": 862.7
+        },
+        {
+          "year": 2014,
+          "rain_mm": 900.2
+        },
+        {
+          "year": 2015,
+          "rain_mm": 1042.0
+        },
+        {
+          "year": 2016,
+          "rain_mm": 929.3
+        },
+        {
+          "year": 2017,
+          "rain_mm": 925.3
+        },
+        {
+          "year": 2018,
+          "rain_mm": 1204.6
+        },
+        {
+          "year": 2019,
+          "rain_mm": 1125.8
+        },
+        {
+          "year": 2020,
+          "rain_mm": 858.1
+        }
+      ]
+    },
+    {
+      "slug": "san-pedro",
+      "name": "San-Pédro",
+      "latitude": 4.748,
+      "longitude": -6.641,
+      "annual_rain_mm": 1388.3,
+      "months": [
+        {
+          "month": 1,
+          "rain_mm": 50.6,
+          "rain_days": 13.6,
+          "temperature_c": 26.3
+        },
+        {
+          "month": 2,
+          "rain_mm": 56.9,
+          "rain_days": 14.4,
+          "temperature_c": 26.6
+        },
+        {
+          "month": 3,
+          "rain_mm": 73.5,
+          "rain_days": 18.2,
+          "temperature_c": 26.8
+        },
+        {
+          "month": 4,
+          "rain_mm": 87.7,
+          "rain_days": 20.2,
+          "temperature_c": 26.8
+        },
+        {
+          "month": 5,
+          "rain_mm": 201.3,
+          "rain_days": 27.0,
+          "temperature_c": 26.1
+        },
+        {
+          "month": 6,
+          "rain_mm": 275.0,
+          "rain_days": 25.7,
+          "temperature_c": 25.2
+        },
+        {
+          "month": 7,
+          "rain_mm": 139.7,
+          "rain_days": 19.9,
+          "temperature_c": 24.7
+        },
+        {
+          "month": 8,
+          "rain_mm": 83.4,
+          "rain_days": 17.5,
+          "temperature_c": 24.4
+        },
+        {
+          "month": 9,
+          "rain_mm": 127.1,
+          "rain_days": 22.4,
+          "temperature_c": 24.6
+        },
+        {
+          "month": 10,
+          "rain_mm": 119.4,
+          "rain_days": 24.5,
+          "temperature_c": 25.2
+        },
+        {
+          "month": 11,
+          "rain_mm": 101.8,
+          "rain_days": 22.9,
+          "temperature_c": 25.7
+        },
+        {
+          "month": 12,
+          "rain_mm": 72.1,
+          "rain_days": 18.4,
+          "temperature_c": 26.1
+        }
+      ],
+      "years": [
+        {
+          "year": 1991,
+          "rain_mm": 1267.8
+        },
+        {
+          "year": 1992,
+          "rain_mm": 1518.4
+        },
+        {
+          "year": 1993,
+          "rain_mm": 1159.5
+        },
+        {
+          "year": 1994,
+          "rain_mm": 1182.3
+        },
+        {
+          "year": 1995,
+          "rain_mm": 1345.5
+        },
+        {
+          "year": 1996,
+          "rain_mm": 1427.9
+        },
+        {
+          "year": 1997,
+          "rain_mm": 1205.4
+        },
+        {
+          "year": 1998,
+          "rain_mm": 1150.5
+        },
+        {
+          "year": 1999,
+          "rain_mm": 1201.8
+        },
+        {
+          "year": 2000,
+          "rain_mm": 1021.0
+        },
+        {
+          "year": 2001,
+          "rain_mm": 1502.3
+        },
+        {
+          "year": 2002,
+          "rain_mm": 1224.5
+        },
+        {
+          "year": 2003,
+          "rain_mm": 1296.6
+        },
+        {
+          "year": 2004,
+          "rain_mm": 1354.2
+        },
+        {
+          "year": 2005,
+          "rain_mm": 1412.3
+        },
+        {
+          "year": 2006,
+          "rain_mm": 1393.7
+        },
+        {
+          "year": 2007,
+          "rain_mm": 1301.4
+        },
+        {
+          "year": 2008,
+          "rain_mm": 1496.7
+        },
+        {
+          "year": 2009,
+          "rain_mm": 1178.9
+        },
+        {
+          "year": 2010,
+          "rain_mm": 1959.3
+        },
+        {
+          "year": 2011,
+          "rain_mm": 1182.0
+        },
+        {
+          "year": 2012,
+          "rain_mm": 1458.7
+        },
+        {
+          "year": 2013,
+          "rain_mm": 1244.9
+        },
+        {
+          "year": 2014,
+          "rain_mm": 1637.4
+        },
+        {
+          "year": 2015,
+          "rain_mm": 1326.3
+        },
+        {
+          "year": 2016,
+          "rain_mm": 1767.2
+        },
+        {
+          "year": 2017,
+          "rain_mm": 2043.7
+        },
+        {
+          "year": 2018,
+          "rain_mm": 1538.7
+        },
+        {
+          "year": 2019,
+          "rain_mm": 1475.3
+        },
+        {
+          "year": 2020,
+          "rain_mm": 1373.8
+        }
+      ]
+    },
+    {
+      "slug": "yamoussoukro",
+      "name": "Yamoussoukro",
+      "latitude": 6.827,
+      "longitude": -5.29,
+      "annual_rain_mm": 1050.9,
+      "months": [
+        {
+          "month": 1,
+          "rain_mm": 20.0,
+          "rain_days": 4.2,
+          "temperature_c": 27.1
+        },
+        {
+          "month": 2,
+          "rain_mm": 49.5,
+          "rain_days": 8.4,
+          "temperature_c": 27.8
+        },
+        {
+          "month": 3,
+          "rain_mm": 93.9,
+          "rain_days": 16.9,
+          "temperature_c": 27.6
+        },
+        {
+          "month": 4,
+          "rain_mm": 113.1,
+          "rain_days": 18.9,
+          "temperature_c": 27.2
+        },
+        {
+          "month": 5,
+          "rain_mm": 109.6,
+          "rain_days": 20.4,
+          "temperature_c": 26.5
+        },
+        {
+          "month": 6,
+          "rain_mm": 116.1,
+          "rain_days": 20.6,
+          "temperature_c": 25.3
+        },
+        {
+          "month": 7,
+          "rain_mm": 90.3,
+          "rain_days": 17.6,
+          "temperature_c": 24.6
+        },
+        {
+          "month": 8,
+          "rain_mm": 114.1,
+          "rain_days": 18.7,
+          "temperature_c": 24.5
+        },
+        {
+          "month": 9,
+          "rain_mm": 157.5,
+          "rain_days": 22.8,
+          "temperature_c": 24.8
+        },
+        {
+          "month": 10,
+          "rain_mm": 115.1,
+          "rain_days": 22.0,
+          "temperature_c": 25.1
+        },
+        {
+          "month": 11,
+          "rain_mm": 54.9,
+          "rain_days": 12.8,
+          "temperature_c": 25.5
+        },
+        {
+          "month": 12,
+          "rain_mm": 16.7,
+          "rain_days": 4.2,
+          "temperature_c": 26.2
+        }
+      ],
+      "years": [
+        {
+          "year": 1991,
+          "rain_mm": 1116.2
+        },
+        {
+          "year": 1992,
+          "rain_mm": 968.7
+        },
+        {
+          "year": 1993,
+          "rain_mm": 1109.5
+        },
+        {
+          "year": 1994,
+          "rain_mm": 927.6
+        },
+        {
+          "year": 1995,
+          "rain_mm": 1085.4
+        },
+        {
+          "year": 1996,
+          "rain_mm": 1194.9
+        },
+        {
+          "year": 1997,
+          "rain_mm": 857.4
+        },
+        {
+          "year": 1998,
+          "rain_mm": 940.4
+        },
+        {
+          "year": 1999,
+          "rain_mm": 1216.7
+        },
+        {
+          "year": 2000,
+          "rain_mm": 808.0
+        },
+        {
+          "year": 2001,
+          "rain_mm": 727.8
+        },
+        {
+          "year": 2002,
+          "rain_mm": 907.9
+        },
+        {
+          "year": 2003,
+          "rain_mm": 997.8
+        },
+        {
+          "year": 2004,
+          "rain_mm": 1007.3
+        },
+        {
+          "year": 2005,
+          "rain_mm": 894.6
+        },
+        {
+          "year": 2006,
+          "rain_mm": 887.4
+        },
+        {
+          "year": 2007,
+          "rain_mm": 1160.5
+        },
+        {
+          "year": 2008,
+          "rain_mm": 1095.5
+        },
+        {
+          "year": 2009,
+          "rain_mm": 1039.8
+        },
+        {
+          "year": 2010,
+          "rain_mm": 1065.9
+        },
+        {
+          "year": 2011,
+          "rain_mm": 887.4
+        },
+        {
+          "year": 2012,
+          "rain_mm": 1015.1
+        },
+        {
+          "year": 2013,
+          "rain_mm": 906.9
+        },
+        {
+          "year": 2014,
+          "rain_mm": 1259.7
+        },
+        {
+          "year": 2015,
+          "rain_mm": 918.8
+        },
+        {
+          "year": 2016,
+          "rain_mm": 849.4
+        },
+        {
+          "year": 2017,
+          "rain_mm": 1395.2
+        },
+        {
+          "year": 2018,
+          "rain_mm": 1720.7
+        },
+        {
+          "year": 2019,
+          "rain_mm": 1558.1
+        },
+        {
+          "year": 2020,
+          "rain_mm": 1005.0
+        }
+      ]
+    },
+    {
+      "slug": "man",
+      "name": "Man",
+      "latitude": 7.412,
+      "longitude": -7.554,
+      "annual_rain_mm": 1511.4,
+      "months": [
+        {
+          "month": 1,
+          "rain_mm": 25.2,
+          "rain_days": 4.9,
+          "temperature_c": 26.6
+        },
+        {
+          "month": 2,
+          "rain_mm": 57.6,
+          "rain_days": 9.4,
+          "temperature_c": 27.2
+        },
+        {
+          "month": 3,
+          "rain_mm": 118.1,
+          "rain_days": 18.6,
+          "temperature_c": 26.7
+        },
+        {
+          "month": 4,
+          "rain_mm": 121.8,
+          "rain_days": 20.8,
+          "temperature_c": 26.3
+        },
+        {
+          "month": 5,
+          "rain_mm": 151.7,
+          "rain_days": 22.4,
+          "temperature_c": 25.8
+        },
+        {
+          "month": 6,
+          "rain_mm": 169.2,
+          "rain_days": 24.7,
+          "temperature_c": 24.7
+        },
+        {
+          "month": 7,
+          "rain_mm": 180.9,
+          "rain_days": 25.3,
+          "temperature_c": 23.8
+        },
+        {
+          "month": 8,
+          "rain_mm": 214.9,
+          "rain_days": 26.0,
+          "temperature_c": 23.6
+        },
+        {
+          "month": 9,
+          "rain_mm": 244.6,
+          "rain_days": 27.7,
+          "temperature_c": 24.0
+        },
+        {
+          "month": 10,
+          "rain_mm": 147.1,
+          "rain_days": 24.7,
+          "temperature_c": 24.5
+        },
+        {
+          "month": 11,
+          "rain_mm": 59.4,
+          "rain_days": 13.6,
+          "temperature_c": 25.0
+        },
+        {
+          "month": 12,
+          "rain_mm": 20.9,
+          "rain_days": 4.9,
+          "temperature_c": 25.7
+        }
+      ],
+      "years": [
+        {
+          "year": 1991,
+          "rain_mm": 1547.2
+        },
+        {
+          "year": 1992,
+          "rain_mm": 1465.7
+        },
+        {
+          "year": 1993,
+          "rain_mm": 1554.2
+        },
+        {
+          "year": 1994,
+          "rain_mm": 1322.8
+        },
+        {
+          "year": 1995,
+          "rain_mm": 1651.7
+        },
+        {
+          "year": 1996,
+          "rain_mm": 1634.9
+        },
+        {
+          "year": 1997,
+          "rain_mm": 1415.5
+        },
+        {
+          "year": 1998,
+          "rain_mm": 1535.0
+        },
+        {
+          "year": 1999,
+          "rain_mm": 1664.4
+        },
+        {
+          "year": 2000,
+          "rain_mm": 1300.5
+        },
+        {
+          "year": 2001,
+          "rain_mm": 1293.4
+        },
+        {
+          "year": 2002,
+          "rain_mm": 1473.2
+        },
+        {
+          "year": 2003,
+          "rain_mm": 1666.2
+        },
+        {
+          "year": 2004,
+          "rain_mm": 1550.6
+        },
+        {
+          "year": 2005,
+          "rain_mm": 1517.0
+        },
+        {
+          "year": 2006,
+          "rain_mm": 1445.5
+        },
+        {
+          "year": 2007,
+          "rain_mm": 1429.1
+        },
+        {
+          "year": 2008,
+          "rain_mm": 1623.5
+        },
+        {
+          "year": 2009,
+          "rain_mm": 1316.9
+        },
+        {
+          "year": 2010,
+          "rain_mm": 1646.4
+        },
+        {
+          "year": 2011,
+          "rain_mm": 1293.3
+        },
+        {
+          "year": 2012,
+          "rain_mm": 1419.3
+        },
+        {
+          "year": 2013,
+          "rain_mm": 1262.6
+        },
+        {
+          "year": 2014,
+          "rain_mm": 1526.8
+        },
+        {
+          "year": 2015,
+          "rain_mm": 1310.8
+        },
+        {
+          "year": 2016,
+          "rain_mm": 1372.6
+        },
+        {
+          "year": 2017,
+          "rain_mm": 1487.3
+        },
+        {
+          "year": 2018,
+          "rain_mm": 2133.9
+        },
+        {
+          "year": 2019,
+          "rain_mm": 1962.8
+        },
+        {
+          "year": 2020,
+          "rain_mm": 1519.0
+        }
+      ]
+    }
+  ]
+}

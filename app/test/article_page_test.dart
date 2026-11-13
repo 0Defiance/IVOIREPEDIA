@@ -6,6 +6,7 @@ import 'package:ivoirepedia/src/api.dart';
 import 'package:ivoirepedia/src/article_export.dart';
 import 'package:ivoirepedia/src/models/article.dart';
 import 'package:ivoirepedia/src/models/category.dart';
+import 'package:ivoirepedia/src/models/history.dart';
 import 'package:ivoirepedia/src/models/statistics.dart';
 
 import 'support/statistics_fixture.dart';
@@ -33,6 +34,9 @@ class _ArticleApi implements IvoirepediaApi {
 
   @override
   Future<StatisticsSnapshot> fetchStatistics() async => statisticsFixture();
+
+  @override
+  Future<List<HistoryStory>> fetchHistory() async => const [];
 
   @override
   Future<ArticleDetail> fetchArticle(String slug) async {

@@ -7,6 +7,9 @@ import 'package:ivoirepedia/src/models/article.dart';
 import 'package:ivoirepedia/src/models/category.dart';
 import 'package:ivoirepedia/src/models/statistics.dart';
 
+import 'package:ivoirepedia/src/models/history.dart';
+
+import 'support/history_fixture.dart';
 import 'support/statistics_fixture.dart';
 import 'package:ivoirepedia/src/ui/widgets/ivorian_patterns.dart';
 
@@ -77,6 +80,9 @@ class FakeApi implements IvoirepediaApi {
 
   @override
   Future<StatisticsSnapshot> fetchStatistics() async => statisticsFixture();
+
+  @override
+  Future<List<HistoryStory>> fetchHistory() async => historyFixture();
 }
 
 void main() {

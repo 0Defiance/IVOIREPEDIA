@@ -8,6 +8,7 @@ import 'package:ivoirepedia/src/api.dart';
 import 'package:ivoirepedia/src/app.dart';
 import 'package:ivoirepedia/src/models/article.dart';
 import 'package:ivoirepedia/src/models/category.dart';
+import 'package:ivoirepedia/src/models/history.dart';
 import 'package:ivoirepedia/src/models/statistics.dart';
 import 'package:ivoirepedia/src/ui/widgets/ivorian_patterns.dart';
 
@@ -24,6 +25,9 @@ class _StatisticsApi implements IvoirepediaApi {
 
     return statisticsFixture();
   }
+
+  @override
+  Future<List<HistoryStory>> fetchHistory() async => const [];
 
   @override
   Future<List<Category>> fetchCategories() async => const [];
@@ -90,6 +94,20 @@ void main() {
     expect(find.text('Abidjan'), findsWidgets);
     expect(find.text('Bouaké'), findsWidgets);
     expect(find.textContaining('CC BY 4.0'), findsWidgets);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('la pluviométrie affiche les mois et les cumuls annuels',
+      (tester) async {
+    await openStatistics(tester);
+
+    expect(find.text('PLUVIOMÉTRIE'), findsOneWidget);
+    expect(find.textContaining('Normales 1991–2020'), findsOneWidget);
+    expect(find.text('Abidjan'), findsWidgets);
+    expect(find.text('Korhogo'), findsWidgets);
+    // Cumul annuel d'Abidjan et mois le plus arrosé (juin, 253 mm).
+    expect(find.textContaining('1\u202f852'), findsWidgets);
+    expect(find.textContaining('juin · 253 mm'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 

@@ -162,6 +162,7 @@ class StatisticsSnapshot {
     required this.districts,
     required this.regions,
     required this.cities,
+    this.climate = ClimateSnapshot.empty,
     this.updatedAt,
     this.sources = const <String>[],
   });
@@ -172,6 +173,7 @@ class StatisticsSnapshot {
   final List<StatisticDivision> districts;
   final List<StatisticDivision> regions;
   final List<StatisticDivision> cities;
+  final ClimateSnapshot climate;
   final DateTime? updatedAt;
   final List<String> sources;
 
@@ -200,9 +202,139 @@ class StatisticsSnapshot {
       districts: read('districts'),
       regions: read('regions'),
       cities: read('cities'),
+      climate: ClimateSnapshot.fromJson(
+        (data['climate'] as Map<String, dynamic>?) ?? const <String, dynamic>{},
+      ),
       updatedAt: DateTime.tryParse(meta['updated_at'] as String? ?? ''),
+
       sources: ((meta['sources'] as List<dynamic>?) ?? const <dynamic>[])
           .map((item) => item.toString())
+          .toList(growable: false),
+    );
+  }
+}
+
+/// Normale d'un mois : cumul de pluie, nombre de jours de pluie et température.
+class ClimateMonth {
+  const ClimateMonth({
+    required this.month,
+    required this.rainMm,
+    this.rainDays,
+    this.temperatureC,
+  });
+
+  final int month;
+  final double rainMm;
+  final double? rainDays;
+  final double? temperatureC;
+
+  factory ClimateMonth.fromJson(Map<String, dynamic> json) {
+    return ClimateMonth(
+      month: (json['month'] as num?)?.toInt() ?? 1,
+      rainMm: (json['rain_mm'] as num?)?.toDouble() ?? 0,
+      rainDays: (json['rain_days'] as num?)?.toDouble(),
+      temperatureC: (json['temperature_c'] as num?)?.toDouble(),
+    );
+  }
+}
+
+/// Cumul de pluie d'une année.
+class ClimateYear {
+  const ClimateYear({required this.year, required this.rainMm});
+
+  final int year;
+  final double rainMm;
+
+  factory ClimateYear.fromJson(Map<String, dynamic> json) {
+    return ClimateYear(
+      year: (json['year'] as num?)?.toInt() ?? 0,
+      rainMm: (json['rain_mm'] as num?)?.toDouble() ?? 0,
+    );
+  }
+}
+
+/// Climatologie d'une ville : moyennes mensuelles et années observées.
+class ClimateCity {
+  const ClimateCity({
+    required this.slug,
+    required this.name,
+    required this.annualRainMm,
+    required this.months,
+    required this.years,
+  });
+
+  final String slug;
+  final String name;
+  final double annualRainMm;
+  final List<ClimateMonth> months;
+  final List<ClimateYear> years;
+
+  /// Mois le plus arrosé — le repère qui décrit la saison des pluies.
+  ClimateMonth? get wettest {
+    if (months.isEmpty) {
+      return null;
+    }
+
+    return months.reduce((a, b) => a.rainMm >= b.rainMm ? a : b);
+  }
+
+  /// Année la plus sèche et la plus arrosée de la période de référence.
+  double? get driestYear => years.isEmpty
+      ? null
+      : years.map((year) => year.rainMm).reduce((a, b) => a < b ? a : b);
+
+  double? get wettestYear => years.isEmpty
+      ? null
+      : years.map((year) => year.rainMm).reduce((a, b) => a > b ? a : b);
+
+  factory ClimateCity.fromJson(Map<String, dynamic> json) {
+    final months = (json['months'] as List<dynamic>?) ?? const <dynamic>[];
+    final years = (json['years'] as List<dynamic>?) ?? const <dynamic>[];
+
+    return ClimateCity(
+      slug: json['slug'] as String? ?? '',
+      name: json['name'] as String? ?? '',
+      annualRainMm: (json['annual_rain_mm'] as num?)?.toDouble() ?? 0,
+      months: months
+          .map((item) => ClimateMonth.fromJson(item as Map<String, dynamic>))
+          .toList(growable: false),
+      years: years
+          .map((item) => ClimateYear.fromJson(item as Map<String, dynamic>))
+          .toList(growable: false),
+    );
+  }
+}
+
+/// Bloc climatologique complet, avec sa période de référence et sa licence.
+class ClimateSnapshot {
+  const ClimateSnapshot({
+    this.periodStart,
+    this.periodEnd,
+    this.source,
+    this.cities = const <ClimateCity>[],
+  });
+
+  static const ClimateSnapshot empty = ClimateSnapshot();
+
+  final int? periodStart;
+  final int? periodEnd;
+  final StatisticSource? source;
+  final List<ClimateCity> cities;
+
+  bool get isEmpty => cities.isEmpty;
+
+  factory ClimateSnapshot.fromJson(Map<String, dynamic> json) {
+    final period = (json['period'] as Map<String, dynamic>?) ?? const <String, dynamic>{};
+    final cities = (json['cities'] as List<dynamic>?) ?? const <dynamic>[];
+
+    return ClimateSnapshot(
+      periodStart: (period['start'] as num?)?.toInt(),
+      periodEnd: (period['end'] as num?)?.toInt(),
+      source: json['source'] is Map<String, dynamic>
+          ? StatisticSource.fromJson(json['source'] as Map<String, dynamic>)
+          : null,
+      cities: cities
+          .map((item) => ClimateCity.fromJson(item as Map<String, dynamic>))
           .toList(growable: false),
     );
   }

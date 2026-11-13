@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\CensusDivision;
+use App\Models\ClimateCity;
 use App\Models\CountryIndicator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -83,4 +84,38 @@ it('importe le recensement et ses divisions sans réseau', function () {
         ->and($bouake->population)->toBe(832371)
         ->and(CensusDivision::query()->ofLevel('region')->count())->toBe(31)
         ->and(CensusDivision::query()->ofLevel('district')->count())->toBe(14);
+});
+
+it('importe la climatologie des villes sans réseau', function () {
+    $this->artisan('country:sync-statistics', ['--offline' => true])->assertSuccessful();
+
+    $abidjan = ClimateCity::query()->where('slug', 'abidjan')->first();
+
+    expect(ClimateCity::query()->count())->toBe(6)
+        ->and($abidjan)->not->toBeNull()
+        ->and((float) $abidjan->annual_rain_mm)->toBeGreaterThan(1500.0)
+        ->and($abidjan->months()->count())->toBe(12)
+        ->and($abidjan->years()->count())->toBe(30)
+        ->and($abidjan->period_start)->toBe(1991)
+        ->and($abidjan->period_end)->toBe(2020)
+        ->and($abidjan->source_licence)->toBe('CC BY 4.0');
+});
+
+it('expose la pluviométrie mensuelle et annuelle par ville', function () {
+    $this->artisan('country:sync-statistics', ['--offline' => true])->assertSuccessful();
+
+    $response = $this->getJson('/api/v1/statistics')->assertOk();
+
+    $abidjan = collect($response->json('data.climate.cities'))->firstWhere('slug', 'abidjan');
+    $june = collect($abidjan['months'])->firstWhere('month', 6);
+
+    expect($response->json('data.climate.period.start'))->toBe(1991)
+        ->and($response->json('data.climate.period.end'))->toBe(2020)
+        ->and($response->json('data.climate.source.licence'))->toBe('CC BY 4.0')
+        ->and($abidjan['months'])->toHaveCount(12)
+        ->and($abidjan['years'])->toHaveCount(30)
+        ->and($june['rain_mm'])->toBeGreaterThan(200.0)
+        // Juin est le mois le plus arrosé de l'année à Abidjan.
+        ->and(collect($abidjan['months'])->sortByDesc('rain_mm')->first()['month'])->toBe(6)
+        ->and($abidjan['annual_rain_mm'])->toBeGreaterThan(1500.0);
 });

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import 'ui/article_page.dart';
 import 'ui/category_page.dart';
+import 'ui/history_page.dart';
 import 'ui/home_page.dart';
 import 'ui/search_page.dart';
 import 'ui/shell.dart';
@@ -62,6 +63,10 @@ GoRouter buildRouter() {
       GoRoute(
         path: '/statistiques',
         pageBuilder: (context, state) => _page(const StatisticsPage()),
+      ),
+      GoRoute(
+        path: '/histoires',
+        pageBuilder: (context, state) => _page(const HistoryPage()),
       ),
     ],
     errorBuilder: (context, state) => SiteShell(
