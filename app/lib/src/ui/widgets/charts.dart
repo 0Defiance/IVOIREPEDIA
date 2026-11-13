@@ -59,7 +59,7 @@ class _YearChartPainter extends CustomPainter {
   final String unit;
   final int decimals;
 
-  static const double _left = 52;
+  static const double _left = 58;
   static const double _bottom = 18;
   static const double _top = 10;
 
@@ -91,6 +91,17 @@ class _YearChartPainter extends CustomPainter {
       ..color = IvoireColors.lineSoft
       ..strokeWidth = 1;
 
+    // Une seule unité pour toute l'échelle : mélanger « 996,8 M » et « 36,4 Md »
+    // sur le même axe rend la lecture fausse.
+    final magnitude = math.max(high.abs(), low.abs());
+    final unit = magnitude >= 1e9
+        ? (factor: 1e9, suffix: ' Md', decimals: 1)
+        : magnitude >= 1e6
+            ? (factor: 1e6, suffix: ' M', decimals: 1)
+            : magnitude >= 1e4
+                ? (factor: 1e3, suffix: ' k', decimals: 0)
+                : (factor: 1.0, suffix: '', decimals: decimals);
+
     for (var step = 0; step <= 3; step++) {
       final value = low + (high - low) * step / 3;
       final y = yFor(value);
@@ -98,7 +109,7 @@ class _YearChartPainter extends CustomPainter {
       canvas.drawLine(Offset(chart.left, y), Offset(chart.right, y), gridPaint);
       _text(
         canvas,
-        _compact(value),
+        '${(value / unit.factor).toStringAsFixed(unit.decimals).replaceAll('.', ',')}${unit.suffix}',
         Offset(chart.left - 8, y),
         align: _Align.rightCenter,
         color: IvoireColors.faint,
@@ -176,21 +187,6 @@ class _YearChartPainter extends CustomPainter {
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1.8,
     );
-  }
-
-  String _compact(double value) {
-    final magnitude = value.abs();
-    if (magnitude >= 1000000000) {
-      return '${(value / 1000000000).toStringAsFixed(1).replaceAll('.', ',')} Md';
-    }
-    if (magnitude >= 1000000) {
-      return '${(value / 1000000).toStringAsFixed(1).replaceAll('.', ',')} M';
-    }
-    if (magnitude >= 10000) {
-      return '${(value / 1000).toStringAsFixed(0)} k';
-    }
-
-    return value.toStringAsFixed(decimals).replaceAll('.', ',');
   }
 
   @override

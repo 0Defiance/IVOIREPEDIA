@@ -25,7 +25,7 @@ return [
         ],
         'figures' => [
             ['label' => 'Inscription au patrimoine mondial', 'value' => '2012'],
-            ['label' => 'Statut', 'value' => 'Première capitale'],
+            ['label' => 'Première capitale du pays', 'value' => '1893'],
         ],
         'source_title' => 'Ville historique de Grand-Bassam — liste du patrimoine mondial',
         'source_publisher' => 'UNESCO, Centre du patrimoine mondial',

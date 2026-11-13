@@ -423,7 +423,7 @@ class _Sidebar extends StatelessWidget {
               ),
               _SidebarItem(
                 'Histoire incroyable',
-                icon: Icons.auto_stories_outlined,
+                icon: Icons.menu_book_outlined,
                 onTap: () => wikiGo(context, '/histoires'),
               ),
               _SidebarItem(
