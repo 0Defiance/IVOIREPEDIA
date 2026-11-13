@@ -5,6 +5,7 @@ use App\Enums\ArticleType;
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\User;
+use Database\Seeders\PublicContentSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 
@@ -102,4 +103,30 @@ it('conserve une référence éditoriale déjà présente', function () {
     expect($cacao->references()->count())->toBe(2)
         ->and($cacao->references()->pluck('title')->all())
         ->toContain('Rapport annuel du Conseil café-cacao');
+});
+
+it('publie des articles de fond, pas des notices', function () {
+    $this->seed(CategorySeeder::class);
+    $this->seed(PublicContentSeeder::class);
+
+    $words = function (string $slug): int {
+        $article = Article::query()->where('slug', $slug)->firstOrFail();
+        $text = collect($article->content['ops'])->pluck('insert')->implode(' ');
+
+        return count(preg_split('/\s+/u', trim($text)) ?: []);
+    };
+
+    $abidjan = Article::query()->where('slug', 'abidjan')->firstOrFail();
+    $headings = collect($abidjan->content['ops'])
+        ->filter(fn (array $op): bool => ($op['attributes']['header'] ?? null) === 2)
+        ->count();
+
+    expect($words('abidjan'))->toBeGreaterThan(650)
+        ->and($headings)->toBeGreaterThanOrEqual(7)
+        ->and($words('bouake'))->toBeGreaterThan(300)
+        ->and($words('korhogo'))->toBeGreaterThan(300)
+        ->and(data_get(
+            Article::query()->where('slug', 'bouake')->firstOrFail()->infobox,
+            'population',
+        ))->toBe(832371);
 });

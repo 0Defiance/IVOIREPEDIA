@@ -538,6 +538,29 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 21 — 13 novembre 2026 · Des articles, pas des notices
+
+**Demande**
+- Les textes publiés étaient trop courts : l'article Abidjan se lisait en trois paragraphes.
+
+**Constat**
+- Les 51 articles du contenu public venaient d'un seeder de démonstration, avec deux ou trois sections de deux phrases. La structure (Delta Quill, sommaires, références) était prête, le fond manquait.
+
+**Fait**
+- Les articles de territoires sont réécrits en articles de fond : **Abidjan** (dix sections : site et lagune, capitale économique, dix communes, ponts, port, métropole ouest-africaine, culture, défis environnementaux), et autour d'elle **Yamoussoukro**, **Bouaké**, **San-Pédro**, **Korhogo**, **Man**, **Grand-Bassam**, **Le Bandama**, **Le port d'Abidjan**.
+- Chaque texte appuie ses affirmations sur ce que l'on sait du pays sans inventer de chiffre : les effectifs cités sont ceux du RGPH 2021 déjà en base (6 321 017 à Abidjan, 832 371 à Bouaké, 440 926 à Korhogo, 390 654 à San-Pédro, 241 969 à Man, 124 567 à Grand-Bassam, 422 072 pour le district de Yamoussoukro).
+- Les infobox des villes portent désormais leur population et son année, au lieu d'un champ vide.
+- Références conservées (INS RGPH 2021, UNESCO pour Grand-Bassam, etc.) : aucune source inventée.
+
+**Vérifié**
+- `pest` : **34 tests** verts (+1 : Abidjan dépasse 650 mots et 7 sections, Bouaké et Korhogo dépassent 300 mots, la population de Bouaké est en infobox) ; `pint --test` : 80 fichiers conformes ; `phpstan` : aucune erreur.
+- Aucun changement Flutter : `flutter analyze` et `flutter test` ne sont pas relancés.
+
+**Reste**
+- Les 42 autres articles (personnalités, institutions, langues, culture, patrimoine, économie) gardent leur format court : ils demanderont le même travail, sujet par sujet.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
