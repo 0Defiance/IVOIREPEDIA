@@ -447,6 +447,7 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 **Vérifié**
 - `flutter analyze` : aucune remarque ; **15 tests Flutter** verts (+1 : `articleUrl()` renvoie une adresse sans dièse).
 - En ligne : `/` renvoie le HTML du bootstrap, `/statistiques` et `/histoires` répondent `200` avec le même document, `/api/v1/history` et `/api/v1/statistics` restent en `200`, les assets et `main.dart.js` sont servis depuis la racine.
+- Navigateur, adresse directe `https://ivoirepedia.alwaysdata.net/statistiques` : la page se rend (graphiques, pluviométrie) et appelle `/api/v1/statistics` en `200`, sans erreur console ; `https://ivoirepedia.alwaysdata.net/histoires` charge `/api/v1/history` en `200`. Capture `docs/captures/statistiques.png` refaite depuis cette adresse (elle datait d'un build antérieur au correctif d'unités).
 
 **Limite assumée** : le rendu reste côté client (R-09) ; les crawlers voient un HTML unique pour toutes les routes. Un prérendu statique par route reste au backlog V1.
 
