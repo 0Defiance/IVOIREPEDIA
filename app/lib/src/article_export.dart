@@ -8,13 +8,13 @@ import 'package:pdf/widgets.dart' as pw;
 import 'models/article.dart';
 
 /// Adresse publique du site : sert aux liens copiés, au PDF et au partage.
-/// Le site est publié sous `/site/` ; l'API reste sous `/api/v1`.
-const String kSiteUrl = 'https://ivoirepedia.alwaysdata.net/site';
+/// Le site occupe la racine du domaine ; l'API reste sous `/api/v1`.
+const String kSiteUrl = 'https://ivoirepedia.alwaysdata.net';
 
 /// Licence du texte, rappelée à chaque export (CONTEXT §13).
 const String kContentLicense = 'CC BY-SA 4.0';
 
-String articleUrl(String slug) => '$kSiteUrl/#/articles/$slug';
+String articleUrl(String slug) => '$kSiteUrl/articles/$slug';
 
 /// Un bloc de texte d'article, extrait du Delta Quill (ADR-003).
 ///

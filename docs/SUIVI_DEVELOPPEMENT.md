@@ -430,6 +430,28 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+### 13 novembre 2026 (séance 17) — Le site à la racine, avec des adresses propres
+
+**Motif (signalement du titulaire)** : le site n'était accessible que sous `https://ivoirepedia.alwaysdata.net/site/#/statistiques` — un sous-dossier et un dièse qui ne font pas une adresse de site professionnelle.
+
+**Fait — adresses**
+- `usePathUrlStrategy()` dans `app/lib/main.dart` remplace la stratégie `#/` : les adresses deviennent `/statistiques`, `/histoires`, `/articles/{slug}`, `/categories/{slug}`, `/recherche?q=…`. Elles se partagent et se rechargent telles quelles.
+- `articleUrl()` et `kSiteUrl` (`app/lib/src/article_export.dart`) pointent désormais vers la racine, sans dièse : les liens copiés, le presse-papiers et le PDF citent `https://ivoirepedia.alwaysdata.net/articles/{slug}`.
+
+**Fait — service à la racine**
+- Le build est produit avec `--base-href=/` et déployé dans `backend/public/`, la racine du document, à côté de `index.php`.
+- `backend/public/.htaccess` répartit les requêtes : `/api`, `/admin`, `/livewire`, `/sanctum` à Laravel ; fichier ou dossier réel servi directement (assets, CanvasKit, polices) ; toute autre adresse reçoit `index.html`, ce qui rend les routes Flutter rechargeables.
+- Les anciennes adresses `/site/...` sont redirigées en 301 vers la racine, pour ne pas casser les liens déjà partagés. L'ancien dossier `site/` est supprimé au déploiement.
+- `app/web/.htaccess` est supprimé : ses règles (brotli, cache) sont reprises dans `backend/public/.htaccess`, seule source de vérité pour la racine. Un `.htaccess` livré avec le build aurait écrasé les règles Laravel et cassé l'API.
+
+**Vérifié**
+- `flutter analyze` : aucune remarque ; **15 tests Flutter** verts (+1 : `articleUrl()` renvoie une adresse sans dièse).
+- En ligne : `/` renvoie le HTML du bootstrap, `/statistiques` et `/histoires` répondent `200` avec le même document, `/api/v1/history` et `/api/v1/statistics` restent en `200`, les assets et `main.dart.js` sont servis depuis la racine.
+
+**Limite assumée** : le rendu reste côté client (R-09) ; les crawlers voient un HTML unique pour toutes les routes. Un prérendu statique par route reste au backlog V1.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

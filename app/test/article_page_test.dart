@@ -152,7 +152,7 @@ void main() {
     expect(clipboard.last, contains('La présidence'));
     expect(clipboard.last, contains('1. RGPH 2021, 2022'));
     expect(clipboard.last, contains('Catégories : Personnalités, Indépendance'));
-    expect(clipboard.last, contains('$kSiteUrl/#/articles/felix-houphouet-boigny'));
+    expect(clipboard.last, contains('$kSiteUrl/articles/felix-houphouet-boigny'));
 
     // Chaque titre de section offre sa propre copie.
     expect(find.text('copier'), findsNWidgets(2));
@@ -167,7 +167,16 @@ void main() {
     expect(clipboard.last, startsWith('Le RDA et la loi-cadre'));
     expect(clipboard.last, contains('Il dirige le pays de 1960 à 1993.'));
     expect(clipboard.last, isNot(contains('La présidence')));
-    expect(clipboard.last, contains('$kSiteUrl/#/articles/felix-houphouet-boigny'));
+    expect(clipboard.last, contains('$kSiteUrl/articles/felix-houphouet-boigny'));
+  });
+
+  test('les URL partagées sont propres, sans dièse', () {
+    expect(kSiteUrl, 'https://ivoirepedia.alwaysdata.net');
+    expect(
+      articleUrl('felix-houphouet-boigny'),
+      'https://ivoirepedia.alwaysdata.net/articles/felix-houphouet-boigny',
+    );
+    expect(articleUrl('abidjan'), isNot(contains('#')));
   });
 
   test('l’article se télécharge aussi en PDF', () async {

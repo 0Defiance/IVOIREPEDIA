@@ -201,27 +201,39 @@ php /home/ivoirepedia/ivoirepedia/backend/artisan schedule:run
 
 ---
 
-### Publier le site Flutter (`/site/`)
+### Publier le site Flutter (racine du domaine)
 
-Le site public est une application Flutter Web servie **par le même site PHP**,
-sous le chemin `/site/` : une seule adresse suffit, et les appels API restent
-sur la même origine (pas de CORS en production).
+Le site public est une application Flutter Web servie **à la racine du domaine**,
+par le même site PHP : une seule adresse (`https://ivoirepedia.alwaysdata.net/`)
+suffit, et les appels API restent sur la même origine (pas de CORS en
+production).
+
+La racine du document est `backend/public/` : elle contient `index.php` (Laravel)
+**et** les fichiers du build Flutter. `backend/public/.htaccess` répartit les
+requêtes : `/api`, `/admin`, `/livewire`, `/sanctum` vont à Laravel, un fichier
+réel est servi tel quel, tout le reste reçoit `index.html` (l'application
+reconstruit l'écran à partir de l'URL).
 
 ```bash
 cd app
-# Windows / Git Bash : MSYS_NO_PATHCONV=1 empêche la réécriture de /site/ en chemin local.
-MSYS_NO_PATHCONV=1 flutter build web --release   --base-href=/site/   --dart-define=API_BASE_URL=/api/v1
+MSYS_NO_PATHCONV=1 flutter build web --release --base-href=/ --dart-define=API_BASE_URL=/api/v1
 
-tar -czf - -C build/web . |   ssh -i ../.deploy/ivoirepedia_ed25519 ivoirepedia@ssh-ivoirepedia.alwaysdata.net   'mkdir -p ~/ivoirepedia/backend/public/site && rm -rf ~/ivoirepedia/backend/public/site/* && tar -xzf - -C ~/ivoirepedia/backend/public/site'
+tar -czf - -C build/web . | \
+  ssh -i ../.deploy/ivoirepedia_ed25519 ivoirepedia@ssh-ivoirepedia.alwaysdata.net \
+  'rm -rf ~/ivoirepedia/backend/public/site && tar -xzf - -C ~/ivoirepedia/backend/public'
 ```
 
-Vérification : `https://ivoirepedia.alwaysdata.net/site/` renvoie le HTML du
-bootstrap, et la console du navigateur montre `main.dart.js` puis les appels
-`/api/v1/categories` et `/api/v1/articles` en `200`.
+Le build n'embarque plus de `.htaccess` : celui de Laravel, versionné dans le
+dépôt, est la seule source de vérité pour la racine.
 
-> Le routage utilise la stratégie `#/` (SPA) : aucune règle de réécriture
-> serveur n'est nécessaire, au prix d'URLs moins lisibles pour les moteurs de
-> recherche (limitation R-09, CONTEXT §17).
+Vérification : `https://ivoirepedia.alwaysdata.net/` renvoie le HTML du bootstrap,
+les routes s'ouvrent directement (`/statistiques`, `/histoires`,
+`/articles/{slug}`) et se rechargent sans erreur, et la console montre
+`main.dart.js` puis `/api/v1/...` en `200`.
+
+> Les adresses utilisent la stratégie d'URL par chemin (`usePathUrlStrategy`) :
+> pas de `#`, des liens partageables et lisibles. Le contenu reste rendu côté
+> client (limitation R-09, CONTEXT §17).
 
 ---
 
