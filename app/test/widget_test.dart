@@ -7,6 +7,7 @@ import 'package:ivoirepedia/src/models/category.dart';
 import 'package:ivoirepedia/src/models/statistics.dart';
 
 import 'package:ivoirepedia/src/models/history.dart';
+import 'package:ivoirepedia/src/models/timeline.dart';
 
 import 'support/history_fixture.dart';
 import 'support/statistics_fixture.dart';
@@ -82,6 +83,24 @@ class FakeApi extends FakeIvoirepediaApi {
   Future<StatisticsSnapshot> fetchStatistics() async => statisticsFixture();
 
   @override
+  Future<List<TimelineEvent>> fetchTimeline() async => const [
+        TimelineEvent(
+          slug: 'indenie-abengourou',
+          year: 1701,
+          era: 'XVIIIe siècle',
+          title: 'Le royaume d’Indénié',
+          teaser: 'Un royaume akan sur la route de l’or.',
+        ),
+        TimelineEvent(
+          slug: 'abidjan-capitale',
+          year: 1934,
+          era: 'XXe siècle',
+          title: 'Abidjan, capitale',
+          teaser: 'La ville devient le centre administratif de la colonie.',
+        ),
+      ];
+
+  @override
   Future<List<HistoryStory>> fetchHistory() async => historyFixture();
 }
 
@@ -101,6 +120,14 @@ void main() {
     expect(find.text('Explorer par domaine'), findsOneWidget);
     expect(find.text('Histoire'), findsWidgets);
     expect(find.text('Abidjan'), findsWidgets);
+
+    // La une s'ouvre sur les repères du pays, pas sur une page vide.
+    expect(find.text('La Côte d’Ivoire, documentée.'), findsOneWidget);
+    expect(find.text('32 711 547 habitants'), findsOneWidget);
+    expect(find.text('+2,5 % par an (2020-2025)'), findsOneWidget);
+    expect(find.text('Aujourd’hui dans l’histoire'), findsOneWidget);
+    expect(find.text('La frise en un coup d’œil'), findsOneWidget);
+    expect(find.text('Le royaume d’Indénié'), findsWidgets);
   });
 
   testWidgets('la page d’accueil se rend aussi en grand écran', (tester) async {

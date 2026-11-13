@@ -514,6 +514,30 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 20 — 13 novembre 2026 · Une vraie une
+
+**Demande**
+- La page d'accueil paraissait trop simple et vide : en faire une entrée qui donne envie, sans ajouter de dépendance ni de backend.
+
+**Fait — côté application**
+- **Bande d'ouverture** : filet aux trois couleurs du drapeau, titre « La Côte d'Ivoire, documentée. », la promesse éditoriale, puis les compteurs (articles, domaines, période couverte par la frise, régions et districts) et trois portes d'entrée — la frise, les villes et régions, les chiffres du pays.
+- **Quatre chiffres clés** en cartes cliquables : population (avec son évolution annuelle), territoires du RGPH, jalons historiques avec leur période, articles publiés. Chaque carte mène à la page qui la détaille.
+- **À la une** : l'article du jour devient une carte éditoriale (domaine en capitale, titre large, date de publication, chapô, filet tissé).
+- **Aujourd'hui dans l'histoire** : chaque jour de l'année détermine un jalon différent (index du jour dans la frise), affiché avec son année et « il y a N ans ». Aucune requête supplémentaire, aucun hasard serveur.
+- **La frise en un coup d'œil** : les jalons défilent horizontalement, avec leur siècle, et mènent au récit ; lien vers la frise complète.
+- **Reprendre la lecture** : dans la colonne latérale, le dernier article lu (mémoire de l'appareil), avec sa date et un lien pour continuer.
+- La frise et les statistiques sont chargées **à part** : si l'une des deux API échoue, la une reste complète sans elles.
+
+**Vérifié**
+- `flutter analyze` : aucune remarque ; **22 tests Flutter** verts, dont le test d'accueil enrichi : titre d'ouverture, chiffre de population avec son évolution, jalon du jour, frise et récits affichés.
+- Aucun changement backend : `pest`, `pint` et `phpstan` n'ont pas été relancés (aucun fichier PHP touché).
+
+**Limites assumées**
+- Pas de carte géographique ni de photos : aucune géométrie ni image n'est fournie par les données actuelles.
+- Le jalon du jour est le même pour tous les visiteurs du jour, mais il n'est pas « historique » au sens d'une date exacte : la frise ne porte que des années.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
