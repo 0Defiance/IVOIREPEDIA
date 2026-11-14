@@ -561,6 +561,27 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 22 — 13 novembre 2026 · Une voix ivoirienne, des faits précis
+
+**Demande**
+- Les textes doivent sentir la Côte d'Ivoire — sans vulgarité — et dire des choses précises plutôt que des généralités.
+
+**Fait**
+- Les neuf articles de territoires sont réécrits une seconde fois, avec un ancrage local assumé : « chercher la vie » à Abidjan, les gbakas et les woro-woros, le garba et l'allocodrome, les maquis, le zouglou né dans les campus de Yopougon, le « Vieux » pour Houphouët-Boigny, l'harmattan à Korhogo, le « Bassam » des habitués, les caïmans des lacs de Yamoussoukro.
+- Les détails remplacent les formules creuses : les dix communes d'Abidjan avec leurs quartiers (Angré, Deux-Plateaux, Riviera, Siporex, Niangon, Toits Rouges, Anonkoua-Kouté, Boribana, Anoumabo), la Cité administrative et la cathédrale Saint-Paul, les trois ponts et leurs dates, les navettes lagunaires, les CHU de Treichville, Cocody et Yopougon, les universités Félix Houphouët-Boigny et Nangui Abrogoua, les stades Félix Houphouët-Boigny et d'Ebimpé, la CAN remportée en février 2024.
+- Les séries démographiques de la fiche sont reprises : 6 321 017 habitants, 3 210 983 hommes, 3 110 034 femmes, 1 414 136 ménages, 4,5 personnes par ménage, 2 140 km², soit près de 3 000 habitants au kilomètre carré.
+- Même travail sur les autres fiches : le marché Gouro et les gares routières d'Adjamé, les filatures et égrenage de Bouaké, Taï et Monogaga pour San-Pédro, le Poro et les toiles de Korhogo, la région des Dix-Huit Montagnes et les ponts de lianes à Man, le musée national du Costume à Grand-Bassam, Kossou et Taabo pour le Bandama.
+
+**Vérifié**
+- `pest` : 34 tests verts, dont le test de longueur (Abidjan > 650 mots, 7 sections au moins) ; `pint` : 80 fichiers conformes ; `phpstan` : aucune erreur.
+- Aucun changement Flutter.
+
+**Limites**
+- Les précisions ajoutées restent des faits établis et vérifiables ; aucun chiffre nouveau n'a été inventé, et les effectifs viennent tous du RGPH 2021 déjà en base.
+- Les 42 autres articles gardent leur format court.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
