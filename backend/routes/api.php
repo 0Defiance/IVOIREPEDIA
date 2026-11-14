@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\HistoryController;
 use App\Http\Controllers\Api\V1\PlaceController;
 use App\Http\Controllers\Api\V1\SearchController;
+use App\Http\Controllers\Api\V1\SourcesController;
 use App\Http\Controllers\Api\V1\StatisticsController;
 use App\Http\Controllers\Api\V1\SuggestController;
 use App\Http\Controllers\Api\V1\TimelineController;
@@ -40,6 +41,10 @@ Route::prefix('v1')->group(function () {
     // Fiches géographiques (districts, régions, villes du RGPH 2021).
     Route::get('/places', [PlaceController::class, 'index']);
     Route::get('/places/{slug}', [PlaceController::class, 'show']);
+
+    // Bibliothèque des sources : toutes les références des articles publiés,
+    // regroupées par institution.
+    Route::get('/sources', SourcesController::class);
 
     Route::get('/articles', [ArticleController::class, 'index']);
     Route::get('/articles/{slug}', [ArticleController::class, 'show']);

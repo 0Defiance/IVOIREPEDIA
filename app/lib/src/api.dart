@@ -7,6 +7,7 @@ import 'models/article.dart';
 import 'models/category.dart';
 import 'models/history.dart';
 import 'models/place.dart';
+import 'models/sources.dart';
 import 'models/statistics.dart';
 import 'models/suggestion.dart';
 import 'models/timeline.dart';
@@ -57,6 +58,8 @@ abstract interface class IvoirepediaApi {
   Future<PlaceDetail> fetchPlace(String slug);
 
   Future<List<SearchSuggestion>> suggest(String query);
+
+  Future<SourceLibrary> fetchSources();
 }
 
 /// Client HTTP de l'API publique.
@@ -160,6 +163,11 @@ class HttpIvoirepediaApi implements IvoirepediaApi {
     return data
         .map((item) => SearchSuggestion.fromJson(item as Map<String, dynamic>))
         .toList(growable: false);
+  }
+
+  @override
+  Future<SourceLibrary> fetchSources() async {
+    return SourceLibrary.fromJson(await _get('/sources'));
   }
 
   @override

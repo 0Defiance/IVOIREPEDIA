@@ -10,6 +10,7 @@ import 'ui/place_page.dart';
 import 'ui/places_page.dart';
 import 'ui/search_page.dart';
 import 'ui/shell.dart';
+import 'ui/sources_page.dart';
 import 'ui/statistics_page.dart';
 import 'ui/timeline_page.dart';
 
@@ -80,6 +81,10 @@ GoRouter buildRouter() {
       GoRoute(
         path: '/chronologie',
         pageBuilder: (context, state) => _page(const TimelinePage()),
+      ),
+      GoRoute(
+        path: '/sources',
+        pageBuilder: (context, state) => _page(const SourcesPage()),
       ),
       GoRoute(
         path: '/lieux',

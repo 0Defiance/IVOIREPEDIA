@@ -633,6 +633,26 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 25 — 14 novembre 2026 · La bibliothèque des sources
+
+**Demande**
+- Une page qui liste toutes les sources de la plateforme, classées par institution.
+
+**Fait**
+- **API** : `GET /api/v1/sources` (`SourcesController`) agrège les références des articles publiés, les dédoublonne par éditeur + titre + adresse, puis les regroupe par institution. Réponse : `data` (nom, nombre de références, références avec année, URL et articles citants) et `meta` (institutions, références, mentions, articles). En-tête `Cache-Control: public, max-age=1800`.
+- **Page Flutter** : `/sources` (« D'où viennent nos informations »), route ajoutée à `router.dart`, entrée de menu **« Charte et sources »** de la colonne de navigation (elle ouvrait jusqu'ici un message « à venir »). Compteurs en tête (institutions, références distinctes, articles sourcés), une carte par institution, chaque référence affichant son année, un bouton d'ouverture externe et la liste cliquable des articles qui la citent.
+- **Modèles** : `app/lib/src/models/sources.dart` (`SourceLibrary`, `SourceInstitution`, `SourceReference`, `SourceArticleLink`), méthode `fetchSources()` sur `IvoirepediaApi` et `HttpIvoirepediaApi`.
+
+**Vérifié**
+- Backend : `pest` **35 tests** verts (1 126 assertions), dont `tests/Feature/SourcesTest.php` (structure, tri par nombre de références, présence de l'ANStat, chaque référence rattachée à un article publié) ; `pint --test` 82 fichiers conformes ; `phpstan` aucune erreur.
+- App : `flutter analyze` propre, `flutter test` **25 tests** verts, dont `test/sources_page_test.dart` (affichage par institution, compteurs, navigation vers un article depuis une référence).
+- En production : l'API et la page sont servies sur le domaine.
+
+**Reste**
+- La page n'affiche pas encore de filtre par domaine ni de recherche dans les sources ; le volume actuel (une centaine de références) ne le justifie pas.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

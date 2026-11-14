@@ -574,7 +574,7 @@ class _Sidebar extends StatelessWidget {
                 'Charte et sources',
                 icon: Icons.verified_outlined,
                 tone: tone,
-                onTap: () => wikiNotImplemented(context, 'Charte et sources'),
+                onTap: () => wikiGo(context, '/sources'),
               ),
             ],
           ),

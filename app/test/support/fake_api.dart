@@ -3,6 +3,7 @@ import 'package:ivoirepedia/src/models/article.dart';
 import 'package:ivoirepedia/src/models/category.dart';
 import 'package:ivoirepedia/src/models/history.dart';
 import 'package:ivoirepedia/src/models/place.dart';
+import 'package:ivoirepedia/src/models/sources.dart';
 import 'package:ivoirepedia/src/models/statistics.dart';
 import 'package:ivoirepedia/src/models/suggestion.dart';
 import 'package:ivoirepedia/src/models/timeline.dart';
@@ -60,4 +61,7 @@ class FakeIvoirepediaApi implements IvoirepediaApi {
 
   @override
   Future<List<SearchSuggestion>> suggest(String query) async => const [];
+
+  @override
+  Future<SourceLibrary> fetchSources() async => const SourceLibrary();
 }
