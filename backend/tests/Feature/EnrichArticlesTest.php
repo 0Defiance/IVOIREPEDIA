@@ -142,4 +142,27 @@ it('publie des articles de fond, pas des notices', function () {
     })->pluck('slug')->all();
 
     expect($thin)->toBe([]);
+
+    // Chaque article s'appuie sur au moins une source, et chaque appel [n]
+    // pointe vers une référence existante.
+    $problems = Article::query()->with('references')->get()->flatMap(function (Article $article) {
+        $ops = collect($article->content['ops']);
+        $text = $ops->pluck('insert')->implode(' ');
+        preg_match_all('/\[(\d{1,3})\]/', $text, $matches);
+        $numbers = array_map('intval', $matches[1]);
+        $count = $article->references->count();
+        $issues = [];
+
+        if ($count === 0) {
+            $issues[] = 'sans référence';
+        }
+
+        if ($numbers !== [] && max($numbers) > $count) {
+            $issues[] = sprintf('appel [%d] sans référence', max($numbers));
+        }
+
+        return $issues === [] ? [] : [$article->slug.' : '.implode(', ', $issues)];
+    })->values()->all();
+
+    expect($problems)->toBe([]);
 });

@@ -602,6 +602,37 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 24 — 14 novembre 2026 · Références par article et données 2025-2026
+
+**Demande**
+- Ajouter des références précises à chaque article, approfondir les dix sujets phares, et ne plus s'appuyer seulement sur le RGPH 2021 : chercher les données les plus récentes.
+
+**Sources récentes retenues (vérifiées en ligne)**
+- **ANStat, *Chiffres clés de la Côte d'Ivoire 2025*** (juillet 2025) : population 32,8 millions, croissance démographique 2,73 %, densité 100,8 hab/km², 52,5 % d'urbains, PIB 48 294 milliards FCFA en 2023, PIB/habitant 1,56 million FCFA.
+- **Gouvernement / Trésor / BAD** : croissance 6,5 % en 2025 ; PIB par habitant 3 188,6 USD en 2025 ; inflation 0,1 % en 2025 (3,5 % en 2024) ; déficit budgétaire ramené à 3,0 % du PIB ; dette 55,6 % du PIB fin 2025 (FMI).
+- **FMI, revues 2026** : croissance attendue à 6,0 % en 2026, inflation 3,3 %, réserves régionales supérieures à huit mois d'importations.
+- **ANStat, comptes nationaux T1 2026** : PIB +4,7 % en glissement annuel.
+- **Présidentielle du 25 octobre 2025** : Alassane Ouattara 89,77 % (3 759 030 voix), participation 50,10 %, résultats définitifs proclamés le 4 novembre 2025 par le Conseil constitutionnel présidé par Chantal Nanaba Camara, première femme à ce poste ; Laurent Gbagbo et Tidjane Thiam écartés du scrutin.
+- **Cacao** : prix bord champ 2026-2027 fixé à 1 200 FCFA/kg (café 1 300 FCFA), campagne principale du 1er septembre au 28/29 février, campagne intermédiaire du 1er mars au 31 août.
+- **Métro d'Abidjan** : ligne 1 de 37,4 km et 18 stations, 540 000 passagers/jour visés, 66 % d'avancement en novembre 2026, viaduc sur la lagune Ébrié achevé à l'été 2026, mise en service annoncée pour début 2029, plus de 2 000 emplois ivoiriens.
+
+**Fait**
+- **Références** : les 51 articles du corpus ont désormais au moins une source (46 articles en ont reçu, Abidjan en a deux de plus). Les références pointent vers l'ANStat, le Gouvernement, le Conseil constitutionnel, la CEI, la BCEAO, le Conseil du café-cacao, l'UNESCO, le FMI, la CPI, le port d'Abidjan, la BRVM, l'OIPR et Wikipédia pour les entrées encyclopédiques.
+- **Appels de note** : les faits sourcés portent des appels `[n]` cliquables dans le texte, qui renvoient à la référence correspondante (mécanisme déjà présent dans le rendu Delta).
+- **Dix sujets approfondis** (environ 500 à 700 mots, 6 à 8 sections) : Félix Houphouët-Boigny, indépendance de 1960, Constitution de 2016, crise de 2002-2011, Laurent Gbagbo, Alassane Ouattara, Yamoussoukro, cacao, franc CFA, plus une nouvelle section « Le métro, chantier du siècle » dans Abidjan.
+- **Faits mis à jour** : résultats de la présidentielle 2025, quatrième mandat, gouvernement remanié début 2026, prix du cacao 2026-2027, avancement du métro, croissance et inflation 2025-2026.
+
+**Vérifié**
+- `pest` : **34 tests** verts (226 assertions), dont deux garde-fous : aucun article sous 150 mots ou trois sections, et **chaque article a au moins une référence, chaque appel `[n]` pointant vers une référence existante**. `pint --test` : 80 fichiers conformes ; `phpstan` : aucune erreur.
+- Contenu reseedé en production, puis contrôle via l'API.
+
+**Limites**
+- Les données de population par ville restent celles du RGPH 2021 : aucune estimation communale récente et fiable n'a été trouvée pour Abidjan, Bouaké ou Korhogo.
+- Quelques sources (Wikipédia) servent d'entrée encyclopédique et non de source primaire ; les chiffres sensibles renvoient aux institutions.
+- Les articles approfondis restent des synthèses de 500 à 700 mots, pas des dossiers de plusieurs milliers de mots.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
