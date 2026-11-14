@@ -36,6 +36,7 @@ class SourcesController extends Controller
 
             if (! isset($grouped[$key])) {
                 $grouped[$key] = [
+                    'id' => ArticleReference::sourceKey($publisher, $reference->title, $reference->url),
                     'publisher' => $publisher,
                     'title' => $reference->title,
                     'year' => $reference->year,
@@ -56,6 +57,7 @@ class SourcesController extends Controller
             unset($entry['publisher']);
 
             $institutions[$name][] = [
+                'id' => $entry['id'],
                 'title' => $entry['title'],
                 'year' => $entry['year'],
                 'url' => $entry['url'],

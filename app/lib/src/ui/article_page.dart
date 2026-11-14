@@ -236,6 +236,31 @@ class _ArticleBodyState extends State<_ArticleBody> {
     );
   }
 
+  /// Un appel `[n]` ouvre la fiche correspondante dans la bibliothèque des
+  /// sources ; si le routeur n'est pas disponible (page isolée en test), on
+  /// retombe sur le défilement vers la liste locale des références.
+  void _openReference(int number) {
+    ArticleReference? reference;
+
+    for (final item in _article.references) {
+      if (item.position == number) {
+        reference = item;
+
+        break;
+      }
+    }
+
+    final router = GoRouter.maybeOf(context);
+
+    if (reference?.sourceId != null && router != null) {
+      router.go('/sources?ref=${reference!.sourceId}');
+
+      return;
+    }
+
+    _scrollToReference(number);
+  }
+
   void _scrollToReference(int number) {
     final context = _referenceKeys[number]?.currentContext;
 
@@ -510,13 +535,14 @@ class _ArticleBodyState extends State<_ArticleBody> {
                 afterLead: afterLead,
                 onCopySection: _copySection,
                 onCopySectionLink: _copySectionLink,
-                onFootnote: _scrollToReference,
+                onFootnote: _openReference,
               ),
               if (_article.references.isNotEmpty)
                 _References(
                   references: _article.references,
                   keys: _referenceKeys,
                   onBack: _scrollToText,
+                  onOpenSource: _openReference,
                 ),
               _CategoryBar(article: _article),
             ],
@@ -799,11 +825,13 @@ class _References extends StatelessWidget {
     required this.references,
     required this.keys,
     required this.onBack,
+    required this.onOpenSource,
   });
 
   final List<ArticleReference> references;
   final Map<int, GlobalKey> keys;
   final VoidCallback onBack;
+  final void Function(int number) onOpenSource;
 
   @override
   Widget build(BuildContext context) {
@@ -863,7 +891,21 @@ class _References extends StatelessWidget {
                     style: TextStyle(fontSize: 13, height: 1.5, color: tone.ink),
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 4),
+                if (reference.sourceId != null)
+                  Tooltip(
+                    message: 'Voir la fiche dans la bibliothèque des sources',
+                    child: IconButton(
+                      onPressed: () => onOpenSource(reference.position),
+                      visualDensity: VisualDensity.compact,
+                      padding: EdgeInsets.zero,
+                      constraints:
+                          const BoxConstraints(minWidth: 26, minHeight: 26),
+                      icon: Icon(Icons.library_books_outlined,
+                          size: 13, color: IvoireColors.green),
+                    ),
+                  ),
+                const SizedBox(width: 4),
                 Tooltip(
                   message: 'Revenir au texte',
                   child: IconButton(

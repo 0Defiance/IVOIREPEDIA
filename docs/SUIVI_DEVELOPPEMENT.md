@@ -653,6 +653,26 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 26 — 14 novembre 2026 · Un appel de note ouvre sa fiche source
+
+**Demande**
+- Faire pointer chaque appel `[n]` d'un article vers la fiche correspondante de la bibliothèque des sources.
+
+**Fait**
+- **Identifiant partagé** : `ArticleReference::sourceKey()` calcule une empreinte stable (sha1 tronqué de `éditeur|titre|url`), utilisée à la fois par `ArticleResource` (`source_id` sur chaque référence d'article) et par `SourcesController` (`id` sur chaque fiche). C'est ce qui relie un `[n]` à la bonne fiche sans table intermédiaire.
+- **Article** : `_openReference(n)` remplace `_scrollToReference` comme gestionnaire des appels de note. Il cherche la référence de position `n`, puis navigue vers `/sources?ref=<source_id>` ; si le routeur n'est pas disponible (page isolée en test), il retombe sur le défilement local. La liste « Notes et références » reçoit en plus un bouton **« Voir la fiche dans la bibliothèque des sources »** par référence identifiée.
+- **Page des sources** : `SourcesPage(highlight: …)` reçoit le paramètre `ref`, met en évidence la fiche (filet orange, fond ambré, mention « Référence ouverte depuis un article ») et y fait défiler automatiquement la page.
+- **Modèles** : `ArticleReference.sourceId` et `SourceReference.id`.
+
+**Vérifié**
+- Backend : `pest` **36 tests** verts (1 135 assertions), dont un test d'alignement qui vérifie que chaque `source_id` d'un article existe bien dans `/api/v1/sources` ; `pint --test` 82 fichiers conformes ; `phpstan` aucune erreur.
+- App : `flutter analyze` propre, `flutter test` **27 tests** verts, dont la navigation effective d'un appel de note vers `/sources?ref=…` et la mise en évidence de la fiche demandée.
+
+**Limite**
+- Le clic sur le numéro en exposant n'est pas couvert par un test de widget (le `TextSpan` n'expose pas de cible facile à `find.text`) : le test passe par le bouton équivalent de la liste des références, qui appelle le même gestionnaire.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

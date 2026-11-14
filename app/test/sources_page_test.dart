@@ -5,7 +5,11 @@ import 'package:ivoirepedia/src/app.dart';
 import 'package:ivoirepedia/src/models/category.dart';
 import 'package:ivoirepedia/src/models/history.dart';
 import 'package:ivoirepedia/src/models/sources.dart';
+import 'package:ivoirepedia/src/api.dart';
 import 'package:ivoirepedia/src/ui/widgets/ivorian_patterns.dart';
+
+import 'package:ivoirepedia/src/theme.dart';
+import 'package:ivoirepedia/src/ui/sources_page.dart';
 
 import 'support/fake_api.dart';
 
@@ -24,6 +28,7 @@ class _SourcesApi extends FakeIvoirepediaApi {
           'count': 2,
           'references': [
             {
+              'id': 'anstat-2025',
               'title': 'Chiffres clés de la Côte d’Ivoire 2025',
               'year': 2025,
               'url': 'https://www.anstat.ci',
@@ -33,6 +38,7 @@ class _SourcesApi extends FakeIvoirepediaApi {
               ],
             },
             {
+              'id': 'rgph-2021',
               'title': 'Recensement général de la population et de l’habitat 2021',
               'year': 2022,
               'url': null,
@@ -47,6 +53,7 @@ class _SourcesApi extends FakeIvoirepediaApi {
           'count': 1,
           'references': [
             {
+              'id': 'unesco-whc',
               'title': 'Liste du patrimoine mondial — Côte d’Ivoire',
               'year': null,
               'url': 'https://whc.unesco.org/fr/etatsparties/ci',
@@ -118,6 +125,27 @@ void main() {
     await tester.tap(find.text('Bouaké').first);
     await tester.pumpAndSettle();
 
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('la fiche ouverte depuis un article est mise en évidence',
+      (tester) async {
+    await tester.pumpWidget(
+      ApiScope(
+        api: _SourcesApi(),
+        child: MaterialApp(
+          theme: buildIvoireTheme(),
+          home: const SourcesPage(highlight: 'rgph-2021'),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Référence ouverte depuis un article'), findsOneWidget);
+    expect(
+      find.text('Recensement général de la population et de l’habitat 2021 (2022)'),
+      findsOneWidget,
+    );
     expect(tester.takeException(), isNull);
   });
 }

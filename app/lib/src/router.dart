@@ -84,7 +84,9 @@ GoRouter buildRouter() {
       ),
       GoRoute(
         path: '/sources',
-        pageBuilder: (context, state) => _page(const SourcesPage()),
+        pageBuilder: (context, state) => _page(
+          SourcesPage(highlight: state.uri.queryParameters['ref']),
+        ),
       ),
       GoRoute(
         path: '/lieux',

@@ -5,11 +5,14 @@ library;
 class SourceReference {
   const SourceReference({
     required this.title,
+    this.id,
     this.year,
     this.url,
     this.articles = const [],
   });
 
+  /// Identifiant stable, le même que celui porté par les références d'article.
+  final String? id;
   final String title;
   final int? year;
   final String? url;
@@ -19,6 +22,7 @@ class SourceReference {
     final articles = (json['articles'] as List<dynamic>?) ?? const <dynamic>[];
 
     return SourceReference(
+      id: json['id'] as String?,
       title: (json['title'] as String?) ?? '',
       year: json['year'] as int?,
       url: json['url'] as String?,

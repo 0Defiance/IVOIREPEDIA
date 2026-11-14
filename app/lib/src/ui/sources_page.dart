@@ -10,7 +10,11 @@ import 'shell.dart';
 /// Page « Sources » : toutes les références des articles publiés, classées par
 /// institution. Chaque référence rappelle les articles qui la citent.
 class SourcesPage extends StatefulWidget {
-  const SourcesPage({super.key});
+  const SourcesPage({this.highlight, super.key});
+
+  /// Identifiant de la référence à mettre en évidence, quand le lecteur arrive
+  /// depuis un appel de note `[n]` d'un article.
+  final String? highlight;
 
   @override
   State<SourcesPage> createState() => _SourcesPageState();
@@ -18,11 +22,36 @@ class SourcesPage extends StatefulWidget {
 
 class _SourcesPageState extends State<SourcesPage> {
   Future<SourceLibrary>? _future;
+  final GlobalKey _highlightKey = GlobalKey();
+  bool _scrolledToHighlight = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _future ??= ApiScope.of(context).fetchSources();
+  }
+
+  /// La fiche demandée est parfois en bas d'une longue page : on y va.
+  void _revealHighlight() {
+    if (_scrolledToHighlight || widget.highlight == null) {
+      return;
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final target = _highlightKey.currentContext;
+
+      if (target == null) {
+        return;
+      }
+
+      _scrolledToHighlight = true;
+      Scrollable.ensureVisible(
+        target,
+        duration: const Duration(milliseconds: 420),
+        curve: Curves.easeInOutCubic,
+        alignment: 0.15,
+      );
+    });
   }
 
   void _retry() {
@@ -43,7 +72,13 @@ class _SourcesPageState extends State<SourcesPage> {
             return const _Message(text: 'Chargement des sources…');
           }
 
-          return _SourcesBody(library: snapshot.data!);
+          _revealHighlight();
+
+          return _SourcesBody(
+            library: snapshot.data!,
+            highlight: widget.highlight,
+            highlightKey: _highlightKey,
+          );
         },
       ),
     );
@@ -51,9 +86,15 @@ class _SourcesPageState extends State<SourcesPage> {
 }
 
 class _SourcesBody extends StatelessWidget {
-  const _SourcesBody({required this.library});
+  const _SourcesBody({
+    required this.library,
+    required this.highlight,
+    required this.highlightKey,
+  });
 
   final SourceLibrary library;
+  final String? highlight;
+  final GlobalKey highlightKey;
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +143,11 @@ class _SourcesBody extends StatelessWidget {
             _Counters(library: library),
             const SizedBox(height: 26),
             for (final institution in library.institutions) ...[
-              _InstitutionCard(institution: institution),
+              _InstitutionCard(
+                institution: institution,
+                highlight: highlight,
+                highlightKey: highlightKey,
+              ),
               const SizedBox(height: 22),
             ],
           ] else
@@ -181,9 +226,15 @@ class _Counter extends StatelessWidget {
 }
 
 class _InstitutionCard extends StatelessWidget {
-  const _InstitutionCard({required this.institution});
+  const _InstitutionCard({
+    required this.institution,
+    this.highlight,
+    this.highlightKey,
+  });
 
   final SourceInstitution institution;
+  final String? highlight;
+  final GlobalKey? highlightKey;
 
   @override
   Widget build(BuildContext context) {
@@ -229,7 +280,13 @@ class _InstitutionCard extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           for (final reference in institution.references)
-            _ReferenceRow(reference: reference),
+            _ReferenceRow(
+              reference: reference,
+              highlighted: highlight != null && reference.id == highlight,
+              highlightKey: highlight != null && reference.id == highlight
+                  ? highlightKey
+                  : null,
+            ),
         ],
       ),
     );
@@ -237,9 +294,15 @@ class _InstitutionCard extends StatelessWidget {
 }
 
 class _ReferenceRow extends StatelessWidget {
-  const _ReferenceRow({required this.reference});
+  const _ReferenceRow({
+    required this.reference,
+    this.highlighted = false,
+    this.highlightKey,
+  });
 
   final SourceReference reference;
+  final bool highlighted;
+  final GlobalKey? highlightKey;
 
   Future<void> _open() async {
     final url = reference.url;
@@ -253,8 +316,20 @@ class _ReferenceRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+    return Container(
+      key: highlightKey ?? ValueKey('source-ref-${reference.id ?? reference.title}'),
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: highlighted
+          ? const EdgeInsets.fromLTRB(8, 8, 4, 6)
+          : EdgeInsets.zero,
+      decoration: highlighted
+          ? BoxDecoration(
+              color: IvoireColors.orange.withValues(alpha: 0.07),
+              border: const Border(
+                left: BorderSide(color: IvoireColors.orangeDeep, width: 3),
+              ),
+            )
+          : null,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -292,6 +367,19 @@ class _ReferenceRow extends StatelessWidget {
                 ),
             ],
           ),
+          if (highlighted)
+            const Padding(
+              padding: EdgeInsets.only(left: 12, top: 2, bottom: 2),
+              child: Text(
+                'Référence ouverte depuis un article',
+                style: TextStyle(
+                  fontSize: 10.5,
+                  letterSpacing: 0.4,
+                  color: IvoireColors.orangeDeep,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
           if (reference.articles.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(left: 12, top: 4),

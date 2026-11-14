@@ -70,3 +70,31 @@ it('liste les sources par institution', function () {
         }
     }
 });
+
+it('relie chaque référence d’article à sa fiche dans la bibliothèque', function () {
+    $this->seed(CategorySeeder::class);
+    $this->seed(PublicContentSeeder::class);
+
+    $library = $this->getJson('/api/v1/sources')->assertOk()->json('data');
+    $ids = collect($library)
+        ->flatMap(fn (array $institution): array => array_column($institution['references'], 'id'))
+        ->filter()
+        ->values();
+
+    expect($ids)->not->toBeEmpty();
+
+    // Un même éditeur + titre + adresse donne le même identifiant des deux
+    // côtés : c'est ce qui permet à un appel [n] d'ouvrir la bonne fiche.
+    $article = $this->getJson('/api/v1/articles/le-cacao-en-cote-d-ivoire')
+        ->assertOk()
+        ->json('data');
+
+    $sourceIds = array_column($article['references'], 'source_id');
+
+    expect($sourceIds)->not->toBeEmpty()
+        ->and(array_filter($sourceIds))->toHaveCount(count($sourceIds));
+
+    foreach ($sourceIds as $sourceId) {
+        expect($ids->contains($sourceId))->toBeTrue();
+    }
+});

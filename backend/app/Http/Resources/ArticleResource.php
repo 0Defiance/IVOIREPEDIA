@@ -29,6 +29,7 @@ class ArticleResource extends ArticleSummaryResource
             'references' => $this->whenLoaded('references', fn () => $this->references
                 ->map(fn ($reference) => [
                     'position' => $reference->position,
+                    'source_id' => $reference->sourceKeyValue(),
                     'kind' => $reference->kind,
                     'authors' => $reference->authors,
                     'title' => $reference->title,

@@ -12,6 +12,8 @@ import 'package:ivoirepedia/src/models/statistics.dart';
 import 'support/statistics_fixture.dart';
 import 'package:ivoirepedia/src/theme.dart';
 import 'package:ivoirepedia/src/ui/widgets/ivorian_patterns.dart';
+import 'package:go_router/go_router.dart';
+
 import 'package:ivoirepedia/src/ui/article_page.dart';
 import 'support/fake_api.dart';
 
@@ -64,7 +66,12 @@ class _ArticleApi extends FakeIvoirepediaApi {
       },
       tags: const ['Indépendance'],
       references: const [
-        ArticleReference(position: 1, title: 'RGPH 2021', year: 2022),
+        ArticleReference(
+          position: 1,
+          title: 'RGPH 2021',
+          year: 2022,
+          sourceId: 'abc123def456',
+        ),
       ],
     );
   }
@@ -209,5 +216,44 @@ void main() {
 
     expect(find.textContaining('n’existe pas'), findsOneWidget);
     expect(find.text('Retour à la page d’accueil'), findsOneWidget);
+  });
+
+  testWidgets('un appel de note ouvre la fiche de la référence', (tester) async {
+    final router = GoRouter(
+      initialLocation: '/articles/felix-houphouet-boigny',
+      routes: [
+        GoRoute(
+          path: '/articles/:slug',
+          builder: (context, state) =>
+              const ArticlePage(slug: 'felix-houphouet-boigny'),
+        ),
+        GoRoute(
+          path: '/sources',
+          builder: (context, state) => Scaffold(
+            body: Text('SOURCE ${state.uri.queryParameters['ref']}'),
+          ),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      ApiScope(
+        api: _ArticleApi(),
+        child: MaterialApp.router(
+          theme: buildIvoireTheme(),
+          routerConfig: router,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final link = find.byTooltip('Voir la fiche dans la bibliothèque des sources');
+    await tester.ensureVisible(link);
+    await tester.pumpAndSettle();
+    await tester.tap(link);
+    await tester.pumpAndSettle();
+
+    expect(find.text('SOURCE abc123def456'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 }

@@ -50,6 +50,21 @@ class ArticleReference extends Model
         ];
     }
 
+    /**
+     * Identifiant public et stable de la référence, identique dans la fiche
+     * article et dans la bibliothèque des sources : c'est lui qui relie un
+     * appel `[n]` à la bonne fiche.
+     */
+    public static function sourceKey(?string $publisher, string $title, ?string $url): string
+    {
+        return substr(sha1(($publisher ?? '').'|'.$title.'|'.($url ?? '')), 0, 12);
+    }
+
+    public function sourceKeyValue(): string
+    {
+        return self::sourceKey($this->publisher, $this->title, $this->url);
+    }
+
     /** @return BelongsTo<Article, $this> */
     public function article(): BelongsTo
     {

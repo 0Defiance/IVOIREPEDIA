@@ -56,10 +56,15 @@ class ArticleReference {
     this.publisher,
     this.year,
     this.url,
+    this.sourceId,
   });
 
   final int position;
   final String title;
+
+  /// Identifiant de la fiche correspondante dans la bibliothèque des sources
+  /// (`/sources?ref=…`), fourni par l'API.
+  final String? sourceId;
   final String? authors;
   final String? publisher;
   final int? year;
@@ -73,6 +78,7 @@ class ArticleReference {
       publisher: json['publisher'] as String?,
       year: (json['year'] as num?)?.toInt(),
       url: json['url'] as String?,
+      sourceId: json['source_id'] as String?,
     );
   }
 }
