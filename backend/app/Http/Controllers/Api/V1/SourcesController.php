@@ -78,7 +78,13 @@ class SourcesController extends Controller
             ];
         }
 
-        usort($payload, fn (array $a, array $b): int => $b['count'] <=> $a['count'] ?: strcmp($a['name'], $b['name']));
+        // Les institutions officielles passent avant les encyclopédies : une
+        // source primaire vaut mieux qu'une notice, même citée moins souvent.
+        $weight = fn (string $name): int => str_starts_with($name, 'Wikipédia') ? 1 : 0;
+
+        usort($payload, fn (array $a, array $b): int => $weight($a['name']) <=> $weight($b['name'])
+            ?: $b['count'] <=> $a['count']
+            ?: strcmp($a['name'], $b['name']));
 
         $articles = $references->pluck('article.slug')->filter()->unique();
 
