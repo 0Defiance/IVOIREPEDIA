@@ -129,4 +129,17 @@ it('publie des articles de fond, pas des notices', function () {
             Article::query()->where('slug', 'bouake')->firstOrFail()->infobox,
             'population',
         ))->toBe(832371);
+
+    // Aucun article ne reste une notice : trois sections et 150 mots au moins.
+    $thin = Article::query()->get()->filter(function (Article $article) {
+        $ops = collect($article->content['ops']);
+        $text = $ops->pluck('insert')->implode(' ');
+        $sections = $ops->filter(
+            fn (array $op): bool => ($op['attributes']['header'] ?? null) === 2,
+        )->count();
+
+        return count(preg_split('/\s+/u', trim($text)) ?: []) < 150 || $sections < 3;
+    })->pluck('slug')->all();
+
+    expect($thin)->toBe([]);
 });

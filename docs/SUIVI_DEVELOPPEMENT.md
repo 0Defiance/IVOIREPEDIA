@@ -582,6 +582,26 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 23 — 13 novembre 2026 · Les 42 articles restants passent en forme longue
+
+**Demande**
+- Traiter le reste du corpus avec la même exigence : voix ivoirienne, faits précis, pas de notices.
+
+**Fait — trois lots, 42 articles**
+- **Histoire et personnalités (13)** : indépendance du 7 août 1960, marche des femmes du 24 décembre 1949 et Marie Koré, Samory Touré et sa capture à Guélémou en 1898, royaume de Kong, coup d'État du 24 décembre 1999, crise 2002-2011 (Marcoussis, Ouagadougou, 11 avril 2011), Houphouët-Boigny, Bédié, Gbagbo, Ouattara, Guéï, Drogba, Alpha Blondy.
+- **Institutions et langues (12)** : constitution de 2016 (vice-présidence, Sénat, mandat de cinq ans renouvelable une fois), présidence, Assemblée nationale (255 députés), Sénat (99 membres, deux tiers élus), Conseil constitutionnel ; akan, baoulé, dioula, sénoufo, bété, dan, nouchi.
+- **Culture, patrimoine, économie (17)** : zaouli (UNESCO 2017), goli, kedjenou, coupé-décalé, zouglou, Ahmadou Kourouma (Renaudot 2000), attiéké ; basilique de Yamoussoukro, Banco, Taï (UNESCO 1982), Comoé (1983), mont Nimba ; cacao, anacarde, franc CFA, BRVM, hévéa.
+
+**Vérifié**
+- `pest` : **34 tests** verts, dont un nouveau garde-fou collectif : **aucun article ne descend sous 150 mots ni sous trois sections** (le test liste les contrevenants et échoue s'il en trouve). `pint --test` : 80 fichiers conformes ; `phpstan` : aucune erreur.
+- Contenu reseedé en production après déploiement.
+
+**Limites**
+- Les faits restent des faits établis, formulés prudemment quand une date ou un chiffre prête à débat ; aucun chiffre n'a été inventé pour « faire précis ».
+- Les articles de personnalités vivantes restent descriptifs et neutres : pas de jugement politique.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
