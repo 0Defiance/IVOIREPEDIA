@@ -8,6 +8,7 @@ import 'display_settings.dart';
 import 'format.dart';
 import 'shell.dart';
 import 'widgets/interactive.dart';
+import 'widgets/page_parts.dart';
 
 /// Annuaire géographique : districts, régions et villes du RGPH 2021.
 ///
@@ -50,20 +51,14 @@ class _PlacesPageState extends State<PlacesPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('GÉOGRAPHIE DE LA CÔTE D’IVOIRE', style: kickerStyle()),
-            const SizedBox(height: 6),
-            Text(
-              'Villes, régions et districts',
-              style: titleStyle(size: 30, weight: FontWeight.w600, color: tone.ink),
+            const PageHeader(
+              kicker: 'GÉOGRAPHIE DE LA CÔTE D’IVOIRE',
+              title: 'Villes, régions et districts',
+              intro: 'Population résidente au 14 décembre 2021, telle que '
+                  'publiée par l’ANStat. Ouvrez une fiche pour le détail, le '
+                  'climat et les articles qui parlent du lieu.',
             ),
-            const SizedBox(height: 10),
-            Text(
-              'Population résidente au 14 décembre 2021, telle que publiée par '
-              'l’ANStat. Ouvrez une fiche pour le détail, le climat et les '
-              'articles qui parlent du lieu.',
-              style: TextStyle(fontSize: 14.5, height: 1.65, color: tone.muted),
-            ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 4),
             ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 420),
               child: TextField(
@@ -202,8 +197,8 @@ class _Section extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 8),
-        Container(height: 1, color: tone.lineSoft),
+        const SizedBox(height: 7),
+        const DiamondRule(),
         if (places.isEmpty)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 12),
@@ -243,10 +238,16 @@ class _PlaceRowState extends State<_PlaceRow> {
         behavior: HitTestBehavior.opaque,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 130),
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 9),
+          margin: const EdgeInsets.only(top: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
-            color: _hovered ? tone.subtle : Colors.transparent,
-            border: Border(bottom: BorderSide(color: tone.lineSoft)),
+            color: _hovered ? tone.subtle : tone.paper,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: _hovered
+                  ? IvoireColors.green.withValues(alpha: 0.35)
+                  : tone.lineSoft,
+            ),
           ),
           child: Row(
             children: [

@@ -12,6 +12,7 @@ import 'display_settings.dart';
 import 'format.dart';
 import 'shell.dart';
 import 'widgets/interactive.dart';
+import 'widgets/page_parts.dart';
 
 /// Recherche publique (`/recherche?q=`) : les résultats se rafraîchissent
 /// pendant la frappe, sans bouton à presser.
@@ -138,11 +139,12 @@ class _SearchPageState extends State<SearchPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('RECHERCHER DANS L’ENCYCLOPÉDIE', style: kickerStyle()),
-            const SizedBox(height: 6),
-            Text('Recherche', style: titleStyle(size: 30, weight: FontWeight.w600)),
-            const SizedBox(height: 12),
-            Container(height: 1, color: IvoireColors.line),
+            const PageHeader(
+              kicker: 'RECHERCHER DANS L’ENCYCLOPÉDIE',
+              title: 'Recherche',
+              intro: 'Un nom, un lieu, une langue, un plat : tapez quelques '
+                  'lettres, les articles arrivent au fil de la frappe.',
+            ),
             const SizedBox(height: 18),
             ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 620),
@@ -437,11 +439,15 @@ class _ResultState extends State<_Result> {
         onTap: () => context.go('/articles/${widget.article.slug}'),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 140),
-          padding: const EdgeInsets.fromLTRB(12, 12, 12, 14),
+          margin: const EdgeInsets.only(bottom: 10),
+          padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
           decoration: BoxDecoration(
-            color: _hovered ? IvoireColors.ivory : Colors.transparent,
-            border: const Border(
-              bottom: BorderSide(color: IvoireColors.lineSoft),
+            color: _hovered ? IvoireColors.ivory : IvoireColors.paper,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: _hovered
+                  ? IvoireColors.green.withValues(alpha: 0.35)
+                  : IvoireColors.lineSoft,
             ),
           ),
           child: Column(

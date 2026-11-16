@@ -696,6 +696,30 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 28 — 16 novembre 2026 · La direction visuelle gagne les pages intérieures
+
+**Demande**
+- Étendre la direction de l'accueil (motifs, tuiles, filets à losanges, cartes arrondies) aux pages encore sobres : catégories, statistiques, lieux, frise, recherche. Colonne de gauche et sommaire d'article inchangés.
+
+**Fait**
+- **Composants partagés** (`ui/widgets/page_parts.dart`) : `PageHeader` (pastille de domaine, titre, chapeau, filet à losanges), `DiamondRule` (trois losanges + trait), `SectionHeading` (titre + compteur + filet), `MotifCard` (papier, filet, ombre douce, liseré d'accent optionnel). Les cinq pages les utilisent, ce qui garantit un rythme identique sans dupliquer les styles.
+- **Catégories** : en-tête `PageHeader` « DOMAINE », description en tête de page, chaque article devient une carte arrondie, les sous-titres passent au filet à losanges.
+- **Lieux** : en-tête unifié, chaque district/région/ville devient une ligne-carte (bordure au survol), sections coiffées du filet à losanges avec leur compteur.
+- **Frise** : en-tête unifié, en-têtes d'époques avec losanges, chaque jalon devient une carte arrondie qui s'éclaire au survol.
+- **Recherche** : en-tête unifié avec un chapeau expliquant la frappe instantanée, résultats en cartes arrondies au lieu de simples filets.
+- **Statistiques** : en-tête `PageHeader` en orange, en-têtes de thème avec losanges verts.
+- **Inchangé** : colonne de navigation de gauche, sommaire d'article à droite, barre de lecture, colonne de droite de l'accueil.
+
+**Vérifié**
+- `flutter analyze` propre ; `flutter test` **27 tests** verts (catégories, frise, lieux, recherche et statistiques sont déjà couvertes par la suite existante).
+- Build web de production reconstruit et redéployé.
+
+**Limites**
+- Toujours pas de relecture visuelle dans un navigateur : la structure et les tests passent, l'équilibre des espacements reste à valider à l'œil.
+- Les cartes de statistiques gardent leur rayon de 10 px (les indicateurs sont denses) ; seuls les en-têtes et les listes adoptent 12–14 px.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

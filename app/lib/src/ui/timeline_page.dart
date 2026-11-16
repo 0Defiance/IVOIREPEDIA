@@ -7,6 +7,7 @@ import '../theme.dart';
 import 'display_settings.dart';
 import 'shell.dart';
 import 'widgets/interactive.dart';
+import 'widgets/page_parts.dart';
 
 /// Frise chronologique de l'histoire ivoirienne.
 ///
@@ -38,21 +39,13 @@ class _TimelinePageState extends State<TimelinePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('HISTOIRE DE LA CÔTE D’IVOIRE', style: kickerStyle()),
-            const SizedBox(height: 6),
-            Text(
-              'La frise du temps',
-              style: titleStyle(size: 30, weight: FontWeight.w600, color: tone.ink),
+            const PageHeader(
+              kicker: 'HISTOIRE DE LA CÔTE D’IVOIRE',
+              title: 'La frise du temps',
+              intro: 'Des royaumes akan à aujourd’hui : chaque date renvoie au '
+                  'récit qui la raconte, avec son document de référence.',
             ),
-            const SizedBox(height: 10),
-            Text(
-              'Des royaumes akan à aujourd’hui : chaque date renvoie au récit '
-              'qui la raconte, avec son document de référence.',
-              style: TextStyle(fontSize: 14.5, height: 1.65, color: tone.muted),
-            ),
-            const SizedBox(height: 12),
-            Container(height: 1, color: tone.line),
-            const SizedBox(height: 20),
+            const SizedBox(height: 18),
             FutureBuilder<List<TimelineEvent>>(
               future: _future,
               builder: (context, snapshot) {
@@ -133,7 +126,7 @@ class _EraHeader extends StatelessWidget {
             style: kickerStyle(color: IvoireColors.terracotta),
           ),
           const SizedBox(width: 10),
-          Expanded(child: Container(height: 1, color: tone.lineSoft)),
+          const Expanded(child: DiamondRule()),
           const SizedBox(width: 10),
           Text(
             '$count jalon${count > 1 ? 's' : ''}',
@@ -171,10 +164,16 @@ class _TimelineRowState extends State<_TimelineRow> {
         behavior: HitTestBehavior.opaque,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 140),
-          padding: const EdgeInsets.fromLTRB(0, 10, 8, 12),
+          margin: const EdgeInsets.only(bottom: 8),
+          padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
           decoration: BoxDecoration(
-            color: _hovered ? tone.subtle : Colors.transparent,
-            borderRadius: BorderRadius.circular(8),
+            color: _hovered ? tone.subtle : tone.paper,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: _hovered
+                  ? IvoireColors.orange.withValues(alpha: 0.45)
+                  : tone.lineSoft,
+            ),
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,

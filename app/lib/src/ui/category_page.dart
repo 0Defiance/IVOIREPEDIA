@@ -7,6 +7,7 @@ import '../theme.dart';
 import 'shell.dart';
 import 'wiki_actions.dart';
 import 'widgets/interactive.dart';
+import 'widgets/page_parts.dart';
 
 /// Page de catégorie : « Catégorie : Histoire », sous-catégories et pages.
 class CategoryPage extends StatefulWidget {
@@ -133,20 +134,14 @@ class _CategoryPageState extends State<CategoryPage> {
                   ],
                 ),
                 const SizedBox(height: 18),
-                Text(
-                  'Catégorie : ${category.name}',
-                  style: titleStyle(size: 27, weight: FontWeight.w600, height: 1.2),
-                ),
-                const SizedBox(height: 12),
-                Container(height: 1, color: IvoireColors.line),
-                const SizedBox(height: 14),
-                Text(
-                  category.description?.isNotEmpty == true
+                PageHeader(
+                  kicker: 'DOMAINE',
+                  title: 'Catégorie : ${category.name}',
+                  intro: category.description?.isNotEmpty == true
                       ? category.description!
                       : 'Articles publiés dans ce domaine de l’encyclopédie.',
-                  style: const TextStyle(fontSize: 14.5, height: 1.7),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 10),
                 Text(
                   '${category.articleCount} page${category.articleCount > 1 ? 's' : ''} dans cette catégorie.',
                   style: const TextStyle(fontSize: 12, color: IvoireColors.faint),
@@ -182,23 +177,28 @@ class _CategoryPageState extends State<CategoryPage> {
                   for (final article in _loaded)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          HoverLink(
-                            label: article.title,
-                            onTap: () => wikiGo(context, '/articles/${article.slug}'),
-                            style: titleStyle(size: 16, weight: FontWeight.w600),
-                          ),
-                          Text(
-                            article.summary,
-                            style: const TextStyle(
-                              fontSize: 13,
-                              color: IvoireColors.muted,
-                              height: 1.5,
+                      child: MotifCard(
+                        padding: const EdgeInsets.fromLTRB(14, 12, 14, 13),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            HoverLink(
+                              label: article.title,
+                              onTap: () =>
+                                  wikiGo(context, '/articles/${article.slug}'),
+                              style: titleStyle(size: 16, weight: FontWeight.w600),
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 3),
+                            Text(
+                              article.summary,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: IvoireColors.muted,
+                                height: 1.55,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                 if (_lastPage?.hasMore == true)
@@ -230,9 +230,7 @@ class _Heading extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: titleStyle(size: 18.5, weight: FontWeight.w600)),
-          const SizedBox(height: 7),
-          const Divider(height: 1, color: IvoireColors.lineSoft),
+          SectionHeading(title: label),
         ],
       ),
     );

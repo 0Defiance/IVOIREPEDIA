@@ -8,6 +8,7 @@ import '../models/statistics.dart';
 import '../theme.dart';
 import 'shell.dart';
 import 'widgets/charts.dart';
+import 'widgets/page_parts.dart';
 
 /// Page des statistiques nationales : recensement, indicateurs annuels et
 /// divisions administratives, avec la source et l'année de chaque chiffre.
@@ -69,38 +70,14 @@ class _StatisticsBody extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'DONNÉES · CÔTE D’IVOIRE',
-            style: TextStyle(
-              fontSize: 11,
-              letterSpacing: 1.8,
-              fontWeight: FontWeight.w700,
-              color: IvoireColors.orangeDeep,
-            ),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'La Côte d’Ivoire en chiffres',
-            style: TextStyle(
-              fontSize: 30,
-              height: 1.15,
-              fontWeight: FontWeight.w600,
-              color: IvoireColors.ink,
-            ),
-          ),
-          const SizedBox(height: 12),
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 720),
-            child: Text(
-              'Population, économie, santé, éducation, environnement : chaque '
-              'valeur porte son année et sa source. Le recensement fournit les '
-              'effectifs datés, la Banque mondiale les séries annuelles.',
-              style: TextStyle(
-                fontSize: 15,
-                height: 1.7,
-                color: IvoireColors.muted.withValues(alpha: 0.95),
-              ),
-            ),
+          const PageHeader(
+            kicker: 'DONNÉES · CÔTE D’IVOIRE',
+            title: 'La Côte d’Ivoire en chiffres',
+            intro: 'Population, économie, santé, éducation, environnement : '
+                'chaque valeur porte son année et sa source. Le recensement '
+                'fournit les effectifs datés, la Banque mondiale les séries '
+                'annuelles.',
+            color: IvoireColors.orangeDeep,
           ),
           if (data.dataThrough != null) ...[
             const SizedBox(height: 14),
@@ -434,8 +411,8 @@ class _ThemeSection extends StatelessWidget {
             color: IvoireColors.green,
           ),
         ),
-        const SizedBox(height: 4),
-        Container(height: 1, color: IvoireColors.lineSoft),
+        const SizedBox(height: 5),
+        const DiamondRule(color: IvoireColors.green),
         const SizedBox(height: 6),
         for (final indicator in theme.indicators)
           _IndicatorRow(indicator: indicator),
