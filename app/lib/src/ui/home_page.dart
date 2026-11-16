@@ -13,6 +13,7 @@ import 'format.dart';
 import 'shell.dart';
 import 'wiki_actions.dart';
 import 'widgets/interactive.dart';
+import 'widgets/ivorian_patterns.dart';
 
 /// Page d'accueil : une « une » d'encyclopédie. Une bande d'ouverture, les
 /// chiffres du pays, l'article du jour, un jalon du jour, la frise en un coup
@@ -145,6 +146,10 @@ class _HomeBody extends StatelessWidget {
           timeline: timeline,
           articleCount: data.articles.total,
         ),
+        if (data.categories.isNotEmpty) ...[
+          const SizedBox(height: 28),
+          _LearningPaths(categories: data.categories),
+        ],
         const SizedBox(height: 32),
         LayoutBuilder(
           builder: (context, constraints) {
@@ -249,8 +254,10 @@ class _HomeBody extends StatelessWidget {
   }
 }
 
-/// Bande d'ouverture : le fil de tissu du drapeau, la promesse du site, et les
-/// trois portes d'entrée (le temps, les territoires, les chiffres).
+/// Bande d'ouverture : un panneau de tissu peint à droite, la promesse du
+/// site à gauche, et trois portes d'entrée (le temps, les territoires, les
+/// chiffres). Le panneau reprend les losanges baoulés et la rosace de pagne
+/// du fond, pour que l'accueil ait une matière, pas seulement du texte.
 class _Hero extends StatelessWidget {
   const _Hero({
     required this.articleCount,
@@ -273,81 +280,173 @@ class _Hero extends StatelessWidget {
     final regions = stats?.regions.length ?? 0;
     final districts = stats?.districts.length ?? 0;
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [IvoireColors.ivory, IvoireColors.sand],
+    final content = Padding(
+      padding: const EdgeInsets.fromLTRB(26, 24, 26, 26),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                decoration: BoxDecoration(
+                  color: IvoireColors.green.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: IvoireColors.green.withValues(alpha: 0.18),
+                  ),
+                ),
+                child: Text(
+                  'ENCYCLOPÉDIE LIBRE · CÔTE D’IVOIRE',
+                  style: kickerStyle(color: IvoireColors.greenDeep),
+                ),
+              ),
+            ],
           ),
+          const SizedBox(height: 14),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 720),
+            child: Text(
+              'La Côte d’Ivoire, documentée.',
+              style: titleStyle(size: 40, weight: FontWeight.w700, height: 1.1),
+            ),
+          ),
+          const SizedBox(height: 12),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 620),
+            child: const Text(
+              "IVOIREPEDIA est une encyclopédie libre consacrée à la "
+              "Côte d'Ivoire : ses territoires, son histoire, ses langues, "
+              'ses institutions et ses cultures. Chacun peut la lire et '
+              'l’enrichir ; les articles s’appuient sur des sources citées.',
+              style: TextStyle(
+                fontSize: 15.5,
+                height: 1.7,
+                color: IvoireColors.muted,
+              ),
+            ),
+          ),
+          const SizedBox(height: 18),
+          Wrap(
+            spacing: 22,
+            runSpacing: 10,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              AnimatedCount(value: articleCount, label: 'articles publiés'),
+              AnimatedCount(value: domains, label: 'domaines'),
+              if (span != null)
+                _HeroStat(value: span, label: 'd’histoire couverte'),
+              if (census != null && regions > 0)
+                _HeroStat(
+                  value: '$regions régions',
+                  label: '$districts districts',
+                ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          const _HeroDoors(),
+        ],
+      ),
+    );
+
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: IvoireColors.ivory,
+        border: Border.all(color: IvoireColors.lineSoft),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: IvoireColors.ink.withValues(alpha: 0.04),
+            blurRadius: 26,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Filet de tissu : le seul endroit où les trois couleurs du
+          // drapeau se touchent.
+          Row(
+            children: [
+              for (final color in IvoireColors.weave)
+                Expanded(child: Container(height: 4, color: color)),
+            ],
+          ),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              if (constraints.maxWidth < 820) {
+                return content;
+              }
+
+              // Panneau posé en fond de la colonne de droite : `Positioned`
+              // lui donne la hauteur exacte de l'ouverture, sans contrainte
+              // infinie.
+              return Stack(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 244),
+                    child: content,
+                  ),
+                  const Positioned(
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                    width: 244,
+                    child: _HeroCloth(),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Panneau de tissu : losanges, rosace et légende. Peint en code, comme le
+/// reste des motifs du site.
+class _HeroCloth extends StatelessWidget {
+  const _HeroCloth();
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [IvoireColors.sand, IvoireColors.highlight],
         ),
+        border: Border(left: BorderSide(color: IvoireColors.lineSoft)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Filet de tissu : le seul endroit où les trois couleurs du
-            // drapeau se touchent.
-            Row(
-              children: [
-                for (final color in IvoireColors.weave)
-                  Expanded(child: Container(height: 4, color: color)),
-              ],
+            const Expanded(
+              child: CustomPaint(
+                painter: _ClothPainter(),
+                size: Size.infinite,
+              ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 24, 24, 26),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("L'ENCYCLOPÉDIE IVOIRIENNE LIBRE",
-                      style: kickerStyle(color: IvoireColors.greenDeep)),
-                  const SizedBox(height: 10),
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 720),
-                    child: Text(
-                      'La Côte d’Ivoire, documentée.',
-                      style: titleStyle(size: 40, weight: FontWeight.w700),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 660),
-                    child: const Text(
-                      "IVOIREPEDIA est une encyclopédie libre consacrée à la "
-                      "Côte d'Ivoire : ses territoires, son histoire, ses "
-                      'langues, ses institutions et ses cultures. Chacun peut '
-                      'la lire et l’enrichir ; les articles s’appuient sur des '
-                      'sources citées.',
-                      style: TextStyle(
-                        fontSize: 15.5,
-                        height: 1.7,
-                        color: IvoireColors.muted,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 18),
-                  Wrap(
-                    spacing: 22,
-                    runSpacing: 10,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      AnimatedCount(
-                        value: articleCount,
-                        label: 'articles publiés',
-                      ),
-                      AnimatedCount(value: domains, label: 'domaines'),
-                      if (span != null)
-                        _HeroStat(value: span, label: 'd’histoire couverte'),
-                      if (census != null && regions > 0)
-                        _HeroStat(
-                          value: '$regions régions',
-                          label: '$districts districts',
-                        ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  const _HeroDoors(),
-                ],
+            const SizedBox(height: 10),
+            Text(
+              'MOTIFS BAOULÉ ET KORHOGO',
+              style: kickerStyle(color: IvoireColors.terracotta),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Losanges tissés, rosaces de pagne et gravures du Nord : '
+              'le fond du site reprend des motifs ivoiriens, dessinés '
+              'à la main dans le code.',
+              style: TextStyle(
+                fontSize: 11.5,
+                height: 1.55,
+                color: IvoireColors.muted.withValues(alpha: 0.95),
               ),
             ),
           ],
@@ -355,6 +454,55 @@ class _Hero extends StatelessWidget {
       ),
     );
   }
+}
+
+class _ClothPainter extends CustomPainter {
+  const _ClothPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final stroke = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.4
+      ..color = IvoireColors.terracotta.withValues(alpha: 0.35);
+    final green = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.4
+      ..color = IvoireColors.green.withValues(alpha: 0.32);
+    final fill = Paint()..color = IvoireColors.orange.withValues(alpha: 0.10);
+
+    // Treillis de losanges.
+    const step = 34.0;
+    for (double y = 10; y < size.height - 10; y += step) {
+      for (double x = 10; x < size.width - 10; x += step) {
+        final path = Path()
+          ..moveTo(x, y - step * 0.4)
+          ..lineTo(x + step * 0.4, y)
+          ..lineTo(x, y + step * 0.4)
+          ..lineTo(x - step * 0.4, y)
+          ..close();
+        canvas.drawPath(path, (x + y) % (step * 2) < step ? stroke : green);
+      }
+    }
+
+    // Rosace centrale, motif de pagne.
+    final center = Offset(size.width / 2, size.height * 0.42);
+    final radius = math.min(size.width, size.height) * 0.26;
+    canvas.drawCircle(center, radius, stroke);
+    canvas.drawCircle(center, radius * 0.55, green);
+    canvas.drawCircle(center, radius * 0.18, fill);
+    for (var i = 0; i < 8; i++) {
+      final angle = i * math.pi / 4;
+      canvas.drawLine(
+        center + Offset(math.cos(angle), math.sin(angle)) * radius * 0.2,
+        center + Offset(math.cos(angle), math.sin(angle)) * radius * 0.9,
+        stroke,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _ClothPainter oldDelegate) => false;
 }
 
 class _HeroStat extends StatelessWidget {
@@ -1023,6 +1171,156 @@ class _DidYouKnow extends StatelessWidget {
   }
 }
 
+/// Trois parcours numérotés, tirés des domaines les plus fournis : une entrée
+/// guidée pour qui ne sait pas par où commencer.
+class _LearningPaths extends StatelessWidget {
+  const _LearningPaths({required this.categories});
+
+  final List<Category> categories;
+
+  @override
+  Widget build(BuildContext context) {
+    final sorted = [...categories]
+      ..sort((a, b) => b.articleCount.compareTo(a.articleCount));
+    final paths = sorted.take(3).toList(growable: false);
+
+    if (paths.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return _Section(
+      title: 'Trois parcours pour apprendre',
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final columns = constraints.maxWidth >= 780 ? 3 : 1;
+          final width = (constraints.maxWidth - (columns - 1) * 12) / columns;
+
+          return Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: [
+              for (var i = 0; i < paths.length; i++)
+                SizedBox(
+                  width: width,
+                  child: _PathCard(
+                    step: i + 1,
+                    category: paths[i],
+                  ),
+                ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _PathCard extends StatefulWidget {
+  const _PathCard({required this.step, required this.category});
+
+  final int step;
+  final Category category;
+
+  @override
+  State<_PathCard> createState() => _PathCardState();
+}
+
+class _PathCardState extends State<_PathCard> {
+  bool _hover = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final category = widget.category;
+    final accent = _domainColor(category.slug);
+    final count = category.articleCount;
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hover = true),
+      onExit: (_) => setState(() => _hover = false),
+      child: GestureDetector(
+        onTap: () => wikiGo(context, '/categories/${category.slug}'),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 140),
+          padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+          decoration: BoxDecoration(
+            color: IvoireColors.paper,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: _hover ? accent : IvoireColors.lineSoft,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: IvoireColors.ink.withValues(alpha: _hover ? 0.07 : 0.03),
+                blurRadius: 16,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 30,
+                    height: 30,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: accent.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      widget.step.toString().padLeft(2, '0'),
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w700,
+                        color: accent,
+                      ),
+                    ),
+                  ),
+                  const Spacer(),
+                  Icon(_domainIcon(category.slug), size: 17, color: accent),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text(
+                category.name,
+                style: titleStyle(size: 16, weight: FontWeight.w600),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                count == 0
+                    ? 'Parcours à compléter'
+                    : '$count article${count > 1 ? 's' : ''} à lire',
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: IvoireColors.muted,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Text(
+                    'Commencer',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: accent,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Icon(Icons.arrow_forward, size: 12, color: accent),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _Domains extends StatelessWidget {
   const _Domains({required this.categories});
 
@@ -1034,35 +1332,18 @@ class _Domains extends StatelessWidget {
       title: 'Explorer par domaine',
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final links = [
-            for (final category in categories) _DomainLink(category: category),
-          ];
+          final columns = constraints.maxWidth >= 520 ? 2 : 1;
+          final width = (constraints.maxWidth - (columns - 1) * 10) / columns;
 
-          if (constraints.maxWidth < 560) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: links,
-            );
-          }
-
-          final half = (links.length + 1) ~/ 2;
-
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          return Wrap(
+            spacing: 10,
+            runSpacing: 10,
             children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: links.take(half).toList(),
+              for (final category in categories)
+                SizedBox(
+                  width: width,
+                  child: _DomainTile(category: category),
                 ),
-              ),
-              const SizedBox(width: 28),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: links.skip(half).toList(),
-                ),
-              ),
             ],
           );
         },
@@ -1071,35 +1352,111 @@ class _Domains extends StatelessWidget {
   }
 }
 
-class _DomainLink extends StatelessWidget {
-  const _DomainLink({required this.category});
+class _DomainTile extends StatefulWidget {
+  const _DomainTile({required this.category});
 
   final Category category;
 
   @override
+  State<_DomainTile> createState() => _DomainTileState();
+}
+
+class _DomainTileState extends State<_DomainTile> {
+  bool _hover = false;
+
+  @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.baseline,
-        textBaseline: TextBaseline.alphabetic,
-        children: [
-          Flexible(
-            child: HoverLink(
-              label: category.name,
-              onTap: () => wikiGo(context, '/categories/${category.slug}'),
-              style: const TextStyle(fontSize: 14),
+    final category = widget.category;
+    final accent = _domainColor(category.slug);
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hover = true),
+      onExit: (_) => setState(() => _hover = false),
+      child: GestureDetector(
+        onTap: () => wikiGo(context, '/categories/${category.slug}'),
+        behavior: HitTestBehavior.opaque,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 130),
+          padding: const EdgeInsets.fromLTRB(10, 9, 10, 9),
+          decoration: BoxDecoration(
+            color: _hover ? IvoireColors.ivory : Colors.transparent,
+            border: Border.all(
+              color: _hover ? accent.withValues(alpha: 0.5) : IvoireColors.lineSoft,
             ),
+            borderRadius: BorderRadius.circular(10),
           ),
-          const SizedBox(width: 6),
-          Text(
-            '${category.articleCount}',
-            style: const TextStyle(fontSize: 12, color: IvoireColors.faint),
+          child: Row(
+            children: [
+              Container(
+                width: 30,
+                height: 30,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: accent.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(_domainIcon(category.slug), size: 16, color: accent),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  category.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w500,
+                    color: IvoireColors.ink,
+                  ),
+                ),
+              ),
+              Text(
+                '${category.articleCount}',
+                style: const TextStyle(fontSize: 11.5, color: IvoireColors.faint),
+              ),
+              const SizedBox(width: 4),
+              Icon(
+                Icons.chevron_right,
+                size: 15,
+                color: _hover ? accent : IvoireColors.faint,
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
+}
+
+/// Symbole de chaque domaine : un repère visuel vaut mieux qu'une liste
+/// indifférenciée, et il rend la page plus facile à parcourir des yeux.
+IconData _domainIcon(String slug) {
+  return switch (slug) {
+    'histoire' => Icons.menu_book_outlined,
+    'geographie' => Icons.public,
+    'culture' => Icons.music_note_outlined,
+    'langues' => Icons.translate,
+    'institutions' => Icons.account_balance_outlined,
+    'economie' => Icons.trending_up,
+    'personnalites' => Icons.person_outline,
+    'gastronomie' => Icons.restaurant_outlined,
+    _ => Icons.category_outlined,
+  };
+}
+
+Color _domainColor(String slug) {
+  return switch (slug) {
+    'histoire' => IvoireColors.terracotta,
+    'geographie' => IvoireColors.green,
+    'culture' => IvoireColors.orangeDeep,
+    'langues' => IvoireColors.gold,
+    'institutions' => IvoireColors.greenDeep,
+    'economie' => IvoireColors.orange,
+    'personnalites' => IvoireColors.terracotta,
+    'gastronomie' => IvoireColors.green,
+    _ => IvoireColors.green,
+  };
 }
 
 /// Reprendre là où le lecteur s'est arrêté, depuis la mémoire de l'appareil.
@@ -1187,7 +1544,15 @@ class _Section extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 7),
-        const Divider(height: 1, color: IvoireColors.lineSoft),
+        Row(
+          children: [
+            const MotifDivider(),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Container(height: 1, color: IvoireColors.lineSoft),
+            ),
+          ],
+        ),
         const SizedBox(height: 12),
         child,
       ],

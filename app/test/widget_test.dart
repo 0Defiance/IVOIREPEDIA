@@ -118,6 +118,7 @@ void main() {
     expect(find.text('Article du jour'), findsOneWidget);
     expect(find.text('Le saviez-vous ?'), findsOneWidget);
     expect(find.text('Explorer par domaine'), findsOneWidget);
+    expect(find.text('Trois parcours pour apprendre'), findsOneWidget);
     expect(find.text('Histoire'), findsWidgets);
     expect(find.text('Abidjan'), findsWidgets);
 

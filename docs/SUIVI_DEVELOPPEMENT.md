@@ -673,6 +673,29 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 27 — 15 novembre 2026 · Refonte visuelle : un fond de tissu ivoirien
+
+**Demande**
+- Garder la colonne de navigation de gauche telle quelle, et refaire le reste : plus ivoirien, plus ludique pour apprendre, professionnel, avec un vrai fond et des motifs.
+
+**Fait**
+- **Fond du site** (`ui/widgets/backdrop.dart`, exporté par `ivorian_patterns.dart`) : composition statique en cinq couches — lavis orange/vert aux deux angles, treillis de losanges baoulés, quatre rosaces de pagne aux angles, lisière tissée sur les deux bords (blocs orange, or, vert), frise Korhogo en bas (triangles et cercles gravés), grain de papier. Opacités entre 2 % et 7 % : les motifs se lisent sans concurrencer le texte, et rien n'est chargé comme image. Le fond animé précédent est remplacé par ce fond fixe, plus calme et moins coûteux à peindre.
+- **Ouverture de l'accueil** : panneau de tissu peint à droite (losanges et rosace, légende « Motifs baoulé et Korhogo »), badge « Encyclopédie libre · Côte d'Ivoire », titre et promesse à gauche, filet tricolore conservé en haut, ombre douce et coins arrondis à 16 px. Le panneau disparaît sous 820 px de large.
+- **Nouvelle section « Trois parcours pour apprendre »** : les trois domaines les plus fournis, numérotés 01 à 03, avec leur symbole, le nombre d'articles à lire et un appel « Commencer » vers la catégorie. C'est l'entrée guidée pour un lecteur qui ne sait pas par où commencer.
+- **Domaines en tuiles** : chaque domaine a désormais un symbole et une couleur (livre pour l'histoire, globe pour la géographie, note pour la culture, balance pour les institutions, etc.), avec son nombre d'articles et un chevron ; survol qui souligne la tuile.
+- **Titres de section** : le simple filet est remplacé par un motif à trois losanges suivi du filet, pour un rythme visuel constant.
+- **Inchangé** : la colonne de gauche (La maison, Histoire, Mon espace, Écrire ensemble), la colonne de droite de l'accueil (Reprendre la lecture, Article au hasard, Contribuer), le sommaire d'article à droite et la barre de lecture.
+
+**Vérifié**
+- `flutter analyze` propre ; `flutter test` **27 tests** verts, dont un nouveau contrôle de la section « Trois parcours pour apprendre » sur l'accueil, et le test « grand écran » qui couvre le panneau de tissu.
+- Build web de production reconstruit et redéployé ; la page d'accueil répond 200 avec le nouveau bundle.
+
+**Limites**
+- Le rendu n'a pas été relu à l'œil dans un navigateur : les tests et l'analyse garantissent la structure, pas l'équilibre visuel. Ajustements probables après une première visite (taille du panneau, densité du fond).
+- Les polices restent Inter : pas de fonte d'affichage ajoutée, pour ne pas alourdir le chargement.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
