@@ -27,7 +27,8 @@ class _MarkPainter extends CustomPainter {
     final center = Offset(w / 2, w / 2);
     final radius = w * 0.46;
 
-    final clip = Path()..addOval(Rect.fromCircle(center: center, radius: radius));
+    final clip = Path()
+      ..addOval(Rect.fromCircle(center: center, radius: radius));
 
     canvas.save();
     canvas.clipPath(clip);
@@ -39,11 +40,21 @@ class _MarkPainter extends CustomPainter {
       Paint()..color = IvoireColors.orange,
     );
     canvas.drawRect(
-      Rect.fromLTWH(center.dx - radius + band, center.dy - radius, band, radius * 2),
+      Rect.fromLTWH(
+        center.dx - radius + band,
+        center.dy - radius,
+        band,
+        radius * 2,
+      ),
       Paint()..color = Colors.white,
     );
     canvas.drawRect(
-      Rect.fromLTWH(center.dx - radius + band * 2, center.dy - radius, band, radius * 2),
+      Rect.fromLTWH(
+        center.dx - radius + band * 2,
+        center.dy - radius,
+        band,
+        radius * 2,
+      ),
       Paint()..color = IvoireColors.green,
     );
 
@@ -71,10 +82,19 @@ class _MarkPainter extends CustomPainter {
 
 /// Marque + nom + devise, dans une seule famille typographique.
 class IvoireLogo extends StatelessWidget {
-  const IvoireLogo({super.key, this.size = 44, this.compact = false});
+  const IvoireLogo({
+    super.key,
+    this.size = 44,
+    this.compact = false,
+    this.tagline = true,
+  });
 
   final double size;
   final bool compact;
+
+  /// Sur un téléphone, la devise allonge la marque sans apporter d'information
+  /// nouvelle : le nom seul suffit, et l'en-tête garde ses commandes.
+  final bool tagline;
 
   @override
   Widget build(BuildContext context) {
@@ -95,15 +115,18 @@ class IvoireLogo extends StatelessWidget {
                 letterSpacing: 0.2,
               ),
             ),
-            Text(
-              compact ? "L'encyclopédie libre" : "L'encyclopédie ivoirienne libre",
-              style: const TextStyle(
-                fontSize: 10.5,
-                height: 1.2,
-                letterSpacing: 0.1,
-                color: IvoireColors.muted,
+            if (tagline)
+              Text(
+                compact
+                    ? "L'encyclopédie libre"
+                    : "L'encyclopédie ivoirienne libre",
+                style: const TextStyle(
+                  fontSize: 10.5,
+                  height: 1.2,
+                  letterSpacing: 0.1,
+                  color: IvoireColors.muted,
+                ),
               ),
-            ),
           ],
         ),
       ],

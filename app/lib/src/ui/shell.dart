@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../api.dart';
 import '../brand.dart';
 import '../storage.dart';
 import '../theme.dart';
@@ -174,17 +175,15 @@ class _ReadingModeBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       child: Row(
         children: [
-          Text(
-            'MODE LECTURE',
-            style: kickerStyle(color: tone.faint),
-          ),
+          Text('MODE LECTURE', style: kickerStyle(color: tone.faint)),
           const Spacer(),
           const DisplaySettingsButton(compact: true),
           IconButton(
             tooltip: 'Quitter le mode lecture',
             icon: Icon(Icons.close, size: 20, color: tone.muted),
-            onPressed: () => AppStorage.instance
-                .saveDisplay(DisplayScope.read(context).copyWith(readingMode: false)),
+            onPressed: () => AppStorage.instance.saveDisplay(
+              DisplayScope.read(context).copyWith(readingMode: false),
+            ),
           ),
         ],
       ),
@@ -251,6 +250,20 @@ class _Header extends StatelessWidget {
             final width = constraints.maxWidth;
             final showSearch = width >= 720;
             final showAccount = width >= 1120;
+            final narrow = width < 620;
+
+            final logo = InkWell(
+              borderRadius: BorderRadius.circular(10),
+              onTap: () => wikiGo(context, '/'),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                child: IvoireLogo(
+                  size: showSearch ? 40 : 32,
+                  compact: !showSearch,
+                  tagline: !narrow,
+                ),
+              ),
+            );
 
             return Row(
               children: [
@@ -262,26 +275,35 @@ class _Header extends StatelessWidget {
                       onPressed: () => Scaffold.of(context).openDrawer(),
                     ),
                   ),
-                InkWell(
-                  borderRadius: BorderRadius.circular(10),
-                  onTap: () => wikiGo(context, '/'),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                    child: IvoireLogo(size: showSearch ? 40 : 32, compact: !showSearch),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                if (showSearch)
-                  Expanded(child: _HeaderSearch(initialQuery: searchQuery))
-                else
-                  const Spacer(),
+                // Sous 620 px, la marque prend la place restante et se réduit
+                // si le texte est agrandi : les commandes restent visibles.
+                if (narrow)
+                  Expanded(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: logo,
+                    ),
+                  )
+                else ...[
+                  logo,
+                  const SizedBox(width: 12),
+                  if (showSearch)
+                    Expanded(child: _HeaderSearch(initialQuery: searchQuery))
+                  else
+                    const Spacer(),
+                ],
                 if (showAccount) ...[
                   const SizedBox(width: 10),
                   DisplaySettingsButton(),
                   IconButton(
                     tooltip: 'Ma bibliothèque',
                     onPressed: () => wikiGo(context, '/ma-bibliotheque'),
-                    icon: Icon(Icons.bookmarks_outlined, size: 21, color: tone.muted),
+                    icon: Icon(
+                      Icons.bookmarks_outlined,
+                      size: 21,
+                      color: tone.muted,
+                    ),
                   ),
                   const SizedBox(width: 4),
                   HoverLink(
@@ -295,10 +317,17 @@ class _Header extends StatelessWidget {
                   ),
                   const SizedBox(width: 14),
                   FilledButton(
-                    onPressed: () => wikiNotImplemented(context, 'Créer un compte'),
+                    onPressed: () =>
+                        wikiNotImplemented(context, 'Créer un compte'),
                     style: FilledButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
-                      textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 11,
+                      ),
+                      textStyle: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     child: const Text('Créer un compte'),
                   ),
@@ -307,13 +336,21 @@ class _Header extends StatelessWidget {
                   if (!showSearch)
                     IconButton(
                       tooltip: 'Rechercher',
-                      icon: const Icon(Icons.search, size: 22, color: IvoireColors.green),
+                      icon: const Icon(
+                        Icons.search,
+                        size: 22,
+                        color: IvoireColors.green,
+                      ),
                       onPressed: () => wikiGo(context, '/recherche'),
                     ),
                   IconButton(
                     tooltip: 'Ma bibliothèque',
                     onPressed: () => wikiGo(context, '/ma-bibliotheque'),
-                    icon: Icon(Icons.bookmarks_outlined, size: 21, color: tone.muted),
+                    icon: Icon(
+                      Icons.bookmarks_outlined,
+                      size: 21,
+                      color: tone.muted,
+                    ),
                   ),
                 ],
               ],
@@ -335,8 +372,9 @@ class _HeaderSearch extends StatefulWidget {
 }
 
 class _HeaderSearchState extends State<_HeaderSearch> {
-  late final TextEditingController _controller =
-      TextEditingController(text: widget.initialQuery);
+  late final TextEditingController _controller = TextEditingController(
+    text: widget.initialQuery,
+  );
   final FocusNode _focus = FocusNode();
   bool _focused = false;
 
@@ -456,6 +494,34 @@ class _RevealState extends State<_Reveal> with SingleTickerProviderStateMixin {
   }
 }
 
+/// Tirage serveur, comme sur l'accueil : l'entrée « Article au hasard » de la
+/// colonne de navigation mène à un article réel au lieu d'annoncer une
+/// fonction à venir.
+Future<void> _openRandomArticle(BuildContext context) async {
+  try {
+    final pick = await ApiScope.of(context).fetchRandomArticle();
+
+    if (!context.mounted) {
+      return;
+    }
+
+    wikiGo(context, '/articles/${pick.slug}');
+  } catch (_) {
+    if (!context.mounted) {
+      return;
+    }
+
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        const SnackBar(
+          content: Text('Aucun article à tirer pour le moment.'),
+          duration: Duration(seconds: 3),
+        ),
+      );
+  }
+}
+
 /// Colonne de navigation : fond sable, titres capitales, survol réactif.
 class _Sidebar extends StatelessWidget {
   const _Sidebar({this.width, required this.tone});
@@ -536,7 +602,7 @@ class _Sidebar extends StatelessWidget {
                 'Article au hasard',
                 icon: Icons.shuffle,
                 tone: tone,
-                onTap: () => wikiNotImplemented(context, 'Article au hasard'),
+                onTap: () => _openRandomArticle(context),
               ),
             ],
           ),
@@ -598,7 +664,11 @@ class _Sidebar extends StatelessWidget {
 }
 
 class _SidebarGroup extends StatelessWidget {
-  const _SidebarGroup({required this.title, required this.items, required this.tone});
+  const _SidebarGroup({
+    required this.title,
+    required this.items,
+    required this.tone,
+  });
 
   final String title;
   final List<_SidebarItem> items;
@@ -611,7 +681,10 @@ class _SidebarGroup extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 10, bottom: 8),
-          child: Text(title.toUpperCase(), style: kickerStyle(color: tone.faint)),
+          child: Text(
+            title.toUpperCase(),
+            style: kickerStyle(color: tone.faint),
+          ),
         ),
         for (final item in items) item,
       ],
@@ -669,7 +742,9 @@ class _SidebarItemState extends State<_SidebarItem> {
                   style: TextStyle(
                     fontSize: 12.8,
                     fontWeight: _hovered ? FontWeight.w600 : FontWeight.w400,
-                    color: _hovered ? IvoireColors.greenDeep : widget.tone.muted,
+                    color: _hovered
+                        ? IvoireColors.greenDeep
+                        : widget.tone.muted,
                   ),
                 ),
               ),
@@ -753,7 +828,9 @@ class _WikiTabState extends State<_WikiTab> {
           decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(
-                color: widget.selected ? IvoireColors.green : Colors.transparent,
+                color: widget.selected
+                    ? IvoireColors.green
+                    : Colors.transparent,
                 width: 2,
               ),
             ),
@@ -801,7 +878,12 @@ class _Footer extends StatelessWidget {
             spacing: 18,
             runSpacing: 8,
             children: [
-              for (final label in ['À propos', 'Charte', 'Contact', 'Confidentialité'])
+              for (final label in [
+                'À propos',
+                'Charte',
+                'Contact',
+                'Confidentialité',
+              ])
                 HoverLink(
                   label: label,
                   onTap: () => wikiNotImplemented(context, label),

@@ -56,4 +56,12 @@
   <FilesMatch "\.(wasm|ttf|otf|woff2?|png)$">
     Header set Cache-Control "public, max-age=86400"
   </FilesMatch>
+
+  # Les polices d'icônes sont réduites à chaque build : les glyphes changent
+  # avec le code. Les garder un jour en cache faisait apparaître vide toute
+  # icône ajoutée depuis la visite précédente. Elles pèsent ~13 ko : on les
+  # revalide systématiquement.
+  <FilesMatch "^(MaterialIcons-Regular\.otf|CupertinoIcons\.ttf)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
 </IfModule>

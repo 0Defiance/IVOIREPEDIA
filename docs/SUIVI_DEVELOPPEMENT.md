@@ -797,6 +797,35 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 32 — 17 novembre 2026 · Un accueil plus vivant, lisible sur téléphone, publié en production
+
+**Demande**
+- Rendre le site plus professionnel, plus interactif, plus attractif, plus ludique et plus responsif, en travaillant directement sur `ivoirepedia.alwaysdata.net`.
+
+**Fait**
+- **Échelle mobile de l'ouverture** : sous 640 px, le titre passe de 40 à 32 px, le chapeau de 15,5 à 14,5 px et les marges de 26 à 18 px. Le premier écran d'un téléphone tient désormais le titre, le chapeau et les trois portes d'entrée sans allonger la page inutilement.
+- **En-tête robuste** : sous 620 px, la devise disparaît de la marque et celle-ci occupe la place restante dans un `FittedBox` : elle se réduit si le texte est agrandi (réglage « Confort de lecture ») au lieu de pousser les commandes hors de l'écran. `IvoireLogo` reçoit un paramètre `tagline`.
+- **Cartes de chiffres** : deux colonnes dès 470 px (au lieu de 560) et soulèvement bordé de la couleur du thème au survol, comme les autres cartes de la maison.
+- **« Le défi du jour »** (`_DailyChallenge`, accueil) : trois années proposées pour situer un jalon de la frise, correction immédiate (« Bien vu » / « Pas cette fois »), puis lien « Lire le récit ». **Aucun fait n'est inventé** : le jalon et les années leurres viennent de `/api/v1/timeline`, déjà sourcé. Le jalon est choisi ailleurs que celui d'« Aujourd'hui dans l'histoire », dont la réponse est affichée juste au-dessus. Le badge est un `?` typographique, sans dépendance à la police d'icônes.
+- **Liens de section** : sous 440 px, le lien annexe (« Voir la frise complète ») passe sous le titre au lieu de comprimer celui-ci sur deux lignes.
+- **Navigation** : l'entrée « Article au hasard » de la colonne de gauche tire maintenant un article du serveur (elle annonçait auparavant une fonction à venir).
+- **Pages intérieures** : `PageHeader` réduit son titre à 26 px sous 520 px.
+- **Cache des polices d'icônes** (`backend/public/.htaccess`) : Flutter réduit `MaterialIcons-Regular.otf` aux seules icônes utilisées à chaque build. La règle `max-age=86400` servait donc pendant un jour une police sans les glyphes ajoutés depuis la visite précédente — une icône nouvelle s'affichait vide. Les deux polices d'icônes (13 ko) passent en `no-cache` ; les polices de texte et CanvasKit gardent leur cache d'un jour.
+
+**Vérifié**
+- `flutter analyze` : aucune remarque ; **36 tests Flutter** verts (+3) : le défi corrige la réponse choisie, l'entrée « Article au hasard » ouvre bien un article, et l'accueil se rend en 390 × 844 sans débordement.
+- Le test téléphone a trouvé **deux débordements réels** : l'en-tête (marque large) et la pastille de l'ouverture. Corrigés par la marque repliable, la devise masquée et la pastille en `Flexible`. Le troisième passage ne signale plus aucune exception.
+- Build release (bundle `main.dart.js` 3 879 441 o) envoyé dans `~/ivoirepedia/backend/public` ; `index.php`, `.htaccess` et `storage/` préservés.
+- En ligne : `/` `200`, `/main.dart.js` `200` (taille identique au build local), `/api/v1/health` `200`, `/statistiques` `200` ; la police d'icônes est servie en `cache-control: no-cache` (12 168 o, nouveaux glyphes).
+- **Rendu contrôlé en production** en 390 × 844 : titre sur deux lignes, en-tête sans débordement, badge « ? » visible, défi du jour avec ses trois années, liens de section sous le titre, icône « article au hasard » rendue. Captures : `docs/captures/accueil-telephone-2026-11-17.png`, `defi-du-jour.png`, `accueil-hasard-telephone.png`, `accueil-tablette.png`. Aucune erreur console (seul l'avertissement Noto préexistant sur les caractères absents d'Inter).
+
+**Limites**
+- Le clic sur une année du défi est couvert par le test widget, pas par un vrai clic dans le navigateur : les événements de pointeur synthétiques ne sont pas reçus par le moteur Flutter. Le rendu de la correction n'a donc pas été vu en production.
+- La capture du panneau de prévisualisation est plus étroite que la fenêtre demandée en 1280 px : le rendu grand écran n'a été vérifié qu'en partie, et par les tests (800 et 1280 px).
+- `docs/captures/couverture-telephone.png` (séance 31) reste non versionné.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

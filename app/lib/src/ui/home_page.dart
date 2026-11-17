@@ -177,6 +177,10 @@ class _HomeBody extends StatelessWidget {
                   if (timeline.isNotEmpty) ...[
                     const SizedBox(height: 28),
                     _TodayInHistory(events: timeline),
+                    if (timeline.length >= 2) ...[
+                      const SizedBox(height: 20),
+                      _DailyChallenge(events: timeline),
+                    ],
                     const SizedBox(height: 28),
                     _TimelineRail(events: timeline),
                   ],
@@ -271,25 +275,41 @@ class _Hero extends StatelessWidget {
     final regions = stats?.regions.length ?? 0;
     final districts = stats?.districts.length ?? 0;
 
+    // Sur téléphone, un titre à 40 px tient sur trois lignes et repousse tout
+    // le reste hors de l'écran : on resserre l'échelle et les marges.
+    final narrow = MediaQuery.sizeOf(context).width < 640;
+
     final content = Padding(
-      padding: const EdgeInsets.fromLTRB(26, 24, 26, 26),
+      padding: EdgeInsets.fromLTRB(
+        narrow ? 18 : 26,
+        narrow ? 18 : 24,
+        narrow ? 18 : 26,
+        narrow ? 22 : 26,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-                decoration: BoxDecoration(
-                  color: IvoireColors.green.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: IvoireColors.green.withValues(alpha: 0.18),
+              // La pastille peut se replier sur deux lignes quand le texte est
+              // agrandi, au lieu de déborder de l'écran.
+              Flexible(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 9,
+                    vertical: 4,
                   ),
-                ),
-                child: Text(
-                  'ENCYCLOPÉDIE LIBRE · CÔTE D’IVOIRE',
-                  style: kickerStyle(color: IvoireColors.greenDeep),
+                  decoration: BoxDecoration(
+                    color: IvoireColors.green.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: IvoireColors.green.withValues(alpha: 0.18),
+                    ),
+                  ),
+                  child: Text(
+                    'ENCYCLOPÉDIE LIBRE · CÔTE D’IVOIRE',
+                    style: kickerStyle(color: IvoireColors.greenDeep),
+                  ),
                 ),
               ),
             ],
@@ -299,27 +319,31 @@ class _Hero extends StatelessWidget {
             constraints: const BoxConstraints(maxWidth: 720),
             child: Text(
               'La Côte d’Ivoire, documentée.',
-              style: titleStyle(size: 40, weight: FontWeight.w700, height: 1.1),
+              style: titleStyle(
+                size: narrow ? 32 : 40,
+                weight: FontWeight.w700,
+                height: 1.12,
+              ),
             ),
           ),
           const SizedBox(height: 12),
           ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 620),
-            child: const Text(
+            child: Text(
               "IVOIREPEDIA est une encyclopédie libre consacrée à la "
               "Côte d'Ivoire : ses territoires, son histoire, ses langues, "
               'ses institutions et ses cultures. Chacun peut la lire et '
               'l’enrichir ; les articles s’appuient sur des sources citées.',
               style: TextStyle(
-                fontSize: 15.5,
-                height: 1.7,
+                fontSize: narrow ? 14.5 : 15.5,
+                height: narrow ? 1.62 : 1.7,
                 color: IvoireColors.muted,
               ),
             ),
           ),
-          const SizedBox(height: 18),
+          SizedBox(height: narrow ? 16 : 18),
           Wrap(
-            spacing: 22,
+            spacing: narrow ? 16 : 22,
             runSpacing: 10,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
@@ -334,7 +358,7 @@ class _Hero extends StatelessWidget {
                 ),
             ],
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: narrow ? 16 : 20),
           const _HeroDoors(),
         ],
       ),
@@ -791,9 +815,11 @@ class _KeyFigures extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
+        // Deux colonnes dès 470 px : sur un téléphone, quatre chiffres
+        // empilés en pleine largeur allongeaient inutilement la page.
         final columns = constraints.maxWidth >= 900
             ? 4
-            : (constraints.maxWidth >= 560 ? 2 : 1);
+            : (constraints.maxWidth >= 470 ? 2 : 1);
         final width = (constraints.maxWidth - (columns - 1) * 12) / columns;
 
         return Wrap(
@@ -822,7 +848,7 @@ StatisticIndicator? _indicator(StatisticsSnapshot? stats, String code) {
   return null;
 }
 
-class _FigureCard extends StatelessWidget {
+class _FigureCard extends StatefulWidget {
   const _FigureCard({
     required this.kicker,
     required this.value,
@@ -840,76 +866,105 @@ class _FigureCard extends StatelessWidget {
   final String detail;
 
   @override
+  State<_FigureCard> createState() => _FigureCardState();
+}
+
+class _FigureCardState extends State<_FigureCard> {
+  bool _hover = false;
+
+  @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () => wikiGo(context, route),
-        borderRadius: BorderRadius.circular(10),
-        child: Ink(
-          decoration: BoxDecoration(
-            color: IvoireColors.paper,
-            border: Border.all(color: IvoireColors.lineSoft),
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hover = true),
+      onExit: (_) => setState(() => _hover = false),
+      child: AnimatedSlide(
+        offset: Offset(0, _hover ? -0.012 : 0),
+        duration: const Duration(milliseconds: 160),
+        curve: Curves.easeOut,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () => wikiGo(context, widget.route),
             borderRadius: BorderRadius.circular(10),
-            boxShadow: [
-              BoxShadow(
-                color: IvoireColors.ink.withValues(alpha: 0.04),
-                blurRadius: 16,
-                offset: const Offset(0, 6),
+            child: Ink(
+              decoration: BoxDecoration(
+                color: IvoireColors.paper,
+                border: Border.all(
+                  color: _hover
+                      ? widget.accent.withValues(alpha: 0.55)
+                      : IvoireColors.lineSoft,
+                ),
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: IvoireColors.ink.withValues(
+                      alpha: _hover ? 0.09 : 0.04,
+                    ),
+                    blurRadius: _hover ? 22 : 16,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
               ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(height: 3, color: accent),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(14, 12, 14, 13),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(kicker, style: kickerStyle(color: accent)),
-                    const SizedBox(height: 6),
-                    FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        value,
-                        maxLines: 1,
-                        style: titleStyle(size: 24, weight: FontWeight.w700),
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      caption,
-                      style: const TextStyle(
-                        fontSize: 11.5,
-                        color: IvoireColors.muted,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(height: 3, color: widget.accent),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(14, 12, 14, 13),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          detail,
-                          style: const TextStyle(
-                            fontSize: 11.5,
-                            color: IvoireColors.link,
-                            fontWeight: FontWeight.w600,
+                          widget.kicker,
+                          style: kickerStyle(color: widget.accent),
+                        ),
+                        const SizedBox(height: 6),
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            widget.value,
+                            maxLines: 1,
+                            style: titleStyle(
+                              size: 24,
+                              weight: FontWeight.w700,
+                            ),
                           ),
                         ),
-                        const SizedBox(width: 4),
-                        const Icon(
-                          Icons.arrow_forward,
-                          size: 12,
-                          color: IvoireColors.link,
+                        const SizedBox(height: 2),
+                        Text(
+                          widget.caption,
+                          style: const TextStyle(
+                            fontSize: 11.5,
+                            color: IvoireColors.muted,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Text(
+                              widget.detail,
+                              style: const TextStyle(
+                                fontSize: 11.5,
+                                color: IvoireColors.link,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            const Icon(
+                              Icons.arrow_forward,
+                              size: 12,
+                              color: IvoireColors.link,
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
@@ -1090,6 +1145,283 @@ class _TodayInHistory extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Le défi du jour : retrouver l'année d'un jalon documenté, parmi trois
+/// propositions. Il s'appuie sur la frise déjà chargée — aucun fait inventé —
+/// et choisit un autre jalon que « Aujourd'hui dans l'histoire », dont la
+/// réponse est affichée juste au-dessus.
+class _DailyChallenge extends StatefulWidget {
+  const _DailyChallenge({required this.events});
+
+  final List<TimelineEvent> events;
+
+  @override
+  State<_DailyChallenge> createState() => _DailyChallengeState();
+}
+
+class _DailyChallengeState extends State<_DailyChallenge> {
+  int? _picked;
+
+  TimelineEvent get _event {
+    final today = DateTime.now();
+    final dayOfYear = today.difference(DateTime(today.year)).inDays;
+    final count = widget.events.length;
+    final offset = count > 2 ? (count ~/ 2).clamp(1, count - 1) : 1;
+
+    return widget.events[(dayOfYear + offset) % count];
+  }
+
+  /// Trois années : la bonne réponse et deux autres jalons de la frise. Si la
+  /// frise est trop courte, des décennies voisines complètent le tirage.
+  List<int> _options(TimelineEvent event) {
+    final options = <int>{event.year};
+    final others =
+        widget.events
+            .map((item) => item.year)
+            .where((year) => year != event.year)
+            .toSet()
+            .toList()
+          ..sort();
+
+    var index = others.isEmpty ? 0 : event.year % others.length;
+    while (options.length < 3 && index < others.length) {
+      options.add(others[index]);
+      index++;
+    }
+
+    var step = 10;
+    while (options.length < 3) {
+      options.add(event.year + step);
+      step += 10;
+    }
+
+    return options.toList()..sort();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final event = _event;
+    final picked = _picked;
+    final solved = picked != null;
+    final correct = picked == event.year;
+
+    return _Section(
+      title: 'Le défi du jour',
+      child: Container(
+        decoration: BoxDecoration(
+          // Vert très pâle : le jeu se distingue du rappel historique crème
+          // qui le précède, sans sortir de la palette.
+          color: IvoireColors.green.withValues(alpha: 0.055),
+          border: Border.all(color: IvoireColors.green.withValues(alpha: 0.22)),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 34,
+                  height: 34,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: IvoireColors.green.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(9),
+                  ),
+                  // Un point d'interrogation typographique plutôt qu'une
+                  // icône : il suit la police du site et ne dépend d'aucun
+                  // glyphe externe.
+                  child: const Text(
+                    '?',
+                    style: TextStyle(
+                      fontSize: 19,
+                      height: 1,
+                      fontWeight: FontWeight.w700,
+                      color: IvoireColors.greenDeep,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 11),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'SAUREZ-VOUS SITUER…',
+                        style: kickerStyle(color: IvoireColors.greenDeep),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        event.title,
+                        style: titleStyle(
+                          size: 16,
+                          weight: FontWeight.w600,
+                          height: 1.35,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'En quelle année ce jalon de l’histoire ivoirienne a-t-il eu lieu ?',
+              style: TextStyle(
+                fontSize: 13,
+                height: 1.55,
+                color: ToneColors.from(context).muted,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (final year in _options(event))
+                  _QuizOption(
+                    key: ValueKey('quiz-option-$year'),
+                    year: year,
+                    state: !solved
+                        ? _QuizState.idle
+                        : (year == event.year
+                              ? _QuizState.answer
+                              : (year == picked
+                                    ? _QuizState.wrong
+                                    : _QuizState.dimmed)),
+                    onTap: solved ? null : () => setState(() => _picked = year),
+                  ),
+              ],
+            ),
+            if (solved) ...[
+              const SizedBox(height: 12),
+              Row(
+                key: const ValueKey('quiz-feedback'),
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 6,
+                    height: 6,
+                    margin: const EdgeInsets.only(top: 6),
+                    decoration: BoxDecoration(
+                      color: correct
+                          ? IvoireColors.green
+                          : IvoireColors.orangeDeep,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      correct
+                          ? 'Bien vu : ce jalon date de ${event.year}.'
+                          : 'Pas cette fois : c’était ${event.year}.',
+                      style: TextStyle(
+                        fontSize: 13,
+                        height: 1.5,
+                        fontWeight: FontWeight.w600,
+                        color: correct
+                            ? IvoireColors.greenDeep
+                            : IvoireColors.orangeDeep,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              HoverLink(
+                label: 'Lire le récit',
+                onTap: () => wikiGo(context, '/histoires?recit=${event.slug}'),
+                style: const TextStyle(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+enum _QuizState { idle, answer, wrong, dimmed }
+
+class _QuizOption extends StatefulWidget {
+  const _QuizOption({
+    required this.year,
+    required this.state,
+    this.onTap,
+    super.key,
+  });
+
+  final int year;
+  final _QuizState state;
+  final VoidCallback? onTap;
+
+  @override
+  State<_QuizOption> createState() => _QuizOptionState();
+}
+
+class _QuizOptionState extends State<_QuizOption> {
+  bool _hover = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final tone = ToneColors.from(context);
+
+    final (background, border, foreground) = switch (widget.state) {
+      _QuizState.answer => (
+        IvoireColors.green.withValues(alpha: 0.14),
+        IvoireColors.green,
+        IvoireColors.greenDeep,
+      ),
+      _QuizState.wrong => (
+        IvoireColors.terracotta.withValues(alpha: 0.12),
+        IvoireColors.terracotta,
+        IvoireColors.terracotta,
+      ),
+      _QuizState.dimmed => (Colors.transparent, tone.lineSoft, tone.faint),
+      _QuizState.idle => (
+        _hover ? IvoireColors.paper : Colors.white.withValues(alpha: 0.72),
+        _hover ? IvoireColors.green : tone.line,
+        tone.ink,
+      ),
+    };
+
+    return MouseRegion(
+      cursor: widget.onTap == null
+          ? SystemMouseCursors.basic
+          : SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hover = true),
+      onExit: (_) => setState(() => _hover = false),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          curve: Curves.easeOut,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+          decoration: BoxDecoration(
+            color: background,
+            border: Border.all(color: border),
+            borderRadius: BorderRadius.circular(22),
+          ),
+          child: Text(
+            '${widget.year}',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.2,
+              color: foreground,
+            ),
+          ),
         ),
       ),
     );
@@ -1606,22 +1938,30 @@ class _Section extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final narrow = MediaQuery.sizeOf(context).width < 440;
+    final heading = Text(
+      title,
+      style: titleStyle(size: 18.5, weight: FontWeight.w600),
+    );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.baseline,
-          textBaseline: TextBaseline.alphabetic,
-          children: [
-            Expanded(
-              child: Text(
-                title,
-                style: titleStyle(size: 18.5, weight: FontWeight.w600),
-              ),
-            ),
-            ?trailing,
-          ],
-        ),
+        if (trailing == null)
+          heading
+        else if (narrow) ...[
+          heading,
+          const SizedBox(height: 5),
+          trailing!,
+        ] else
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Expanded(child: heading),
+              trailing!,
+            ],
+          ),
         const SizedBox(height: 7),
         Row(
           children: [
@@ -1695,7 +2035,7 @@ class _RandomPickCardState extends State<_RandomPickCard> {
                       borderRadius: BorderRadius.circular(9),
                     ),
                     child: const Icon(
-                      Icons.casino_outlined,
+                      Icons.shuffle,
                       size: 17,
                       color: Colors.white,
                     ),

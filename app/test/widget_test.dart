@@ -11,16 +11,18 @@ import 'package:ivoirepedia/src/models/timeline.dart';
 
 import 'support/history_fixture.dart';
 import 'support/statistics_fixture.dart';
+
 import 'package:ivoirepedia/src/ui/widgets/ivorian_patterns.dart';
+
 import 'support/fake_api.dart';
 
 /// API en mémoire : les parcours d'interface sont testés sans réseau.
 class FakeApi extends FakeIvoirepediaApi {
   @override
   Future<List<Category>> fetchCategories() async => const [
-        Category(name: 'Histoire', slug: 'histoire', articleCount: 2),
-        Category(name: 'Géographie', slug: 'geographie', articleCount: 1),
-      ];
+    Category(name: 'Histoire', slug: 'histoire', articleCount: 2),
+    Category(name: 'Géographie', slug: 'geographie', articleCount: 1),
+  ];
 
   @override
   Future<PagedArticles> fetchArticles({
@@ -75,7 +77,11 @@ class FakeApi extends FakeIvoirepediaApi {
   }
 
   @override
-  Future<PagedArticles> search(String query, {int page = 1, int limit = 12}) async {
+  Future<PagedArticles> search(
+    String query, {
+    int page = 1,
+    int limit = 12,
+  }) async {
     return PagedArticles(items: const [], page: page, limit: limit, total: 0);
   }
 
@@ -84,31 +90,31 @@ class FakeApi extends FakeIvoirepediaApi {
 
   @override
   Future<List<TimelineEvent>> fetchTimeline() async => const [
-        TimelineEvent(
-          slug: 'indenie-abengourou',
-          year: 1701,
-          era: 'XVIIIe siècle',
-          title: 'Le royaume d’Indénié',
-          teaser: 'Un royaume akan sur la route de l’or.',
-        ),
-        TimelineEvent(
-          slug: 'abidjan-capitale',
-          year: 1934,
-          era: 'XXe siècle',
-          title: 'Abidjan, capitale',
-          teaser: 'La ville devient le centre administratif de la colonie.',
-        ),
-      ];
+    TimelineEvent(
+      slug: 'indenie-abengourou',
+      year: 1701,
+      era: 'XVIIIe siècle',
+      title: 'Le royaume d’Indénié',
+      teaser: 'Un royaume akan sur la route de l’or.',
+    ),
+    TimelineEvent(
+      slug: 'abidjan-capitale',
+      year: 1934,
+      era: 'XXe siècle',
+      title: 'Abidjan, capitale',
+      teaser: 'La ville devient le centre administratif de la colonie.',
+    ),
+  ];
 
   @override
   Future<ArticleSummary> fetchRandomArticle() async => const ArticleSummary(
-        slug: 'attieke',
-        title: 'L’attiéké',
-        summary: 'Semoule de manioc fermentée.',
-        typeLabel: 'Sujet',
-        categoryName: 'Culture',
-        categorySlug: 'culture',
-      );
+    slug: 'attieke',
+    title: 'L’attiéké',
+    summary: 'Semoule de manioc fermentée.',
+    typeLabel: 'Sujet',
+    categoryName: 'Culture',
+    categorySlug: 'culture',
+  );
 
   @override
   Future<List<HistoryStory>> fetchHistory() async => historyFixture();
@@ -118,8 +124,9 @@ void main() {
   // Pas d'animation de fond : `pumpAndSettle` doit pouvoir se stabiliser.
   setUp(() => ivoireMotionEnabled = false);
 
-  testWidgets('la page d’accueil affiche l’article du jour et les domaines',
-      (tester) async {
+  testWidgets('la page d’accueil affiche l’article du jour et les domaines', (
+    tester,
+  ) async {
     await tester.pumpWidget(IvoirepediaApp(api: FakeApi()));
     await tester.pumpAndSettle();
 
@@ -141,8 +148,9 @@ void main() {
     expect(find.text('Le royaume d’Indénié'), findsWidgets);
   });
 
-  testWidgets('« Tirer un article » ouvre l’article tiré par le serveur',
-      (tester) async {
+  testWidgets('« Tirer un article » ouvre l’article tiré par le serveur', (
+    tester,
+  ) async {
     await tester.pumpWidget(IvoirepediaApp(api: FakeApi()));
     await tester.pumpAndSettle();
 
@@ -156,6 +164,54 @@ void main() {
     expect(find.text('Voir l’historique'), findsOneWidget);
   });
 
+  testWidgets('le défi du jour corrige la réponse choisie', (tester) async {
+    await tester.pumpWidget(IvoirepediaApp(api: FakeApi()));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Le défi du jour'), findsOneWidget);
+    expect(find.byKey(const ValueKey('quiz-feedback')), findsNothing);
+
+    final option = find.byKey(const ValueKey('quiz-option-1701'));
+    await tester.ensureVisible(option);
+    await tester.pumpAndSettle();
+    await tester.tap(option);
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const ValueKey('quiz-feedback')), findsOneWidget);
+    expect(find.text('Lire le récit'), findsOneWidget);
+  });
+
+  testWidgets('l’article au hasard de la navigation ouvre un article', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1280, 1000);
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(IvoirepediaApp(api: FakeApi()));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Article au hasard'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Voir l’historique'), findsOneWidget);
+  });
+
+  testWidgets('l’accueil se rend sur téléphone sans débordement', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(390, 844);
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(IvoirepediaApp(api: FakeApi()));
+    await tester.pumpAndSettle();
+
+    expect(find.text('La Côte d’Ivoire, documentée.'), findsOneWidget);
+    expect(find.text('32 711 547 habitants'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('la page d’accueil se rend aussi en grand écran', (tester) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(1280, 1000);
@@ -166,6 +222,7 @@ void main() {
 
     expect(find.text('Article du jour'), findsOneWidget);
     expect(find.text('Explorer par domaine'), findsOneWidget);
+    expect(find.text('Le défi du jour'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 }

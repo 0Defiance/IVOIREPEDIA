@@ -51,6 +51,8 @@ class PageHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tone = ToneColors.from(context);
+    // Sur téléphone, un titre à 31 px casse les noms longs en trois lignes.
+    final narrow = MediaQuery.sizeOf(context).width < 520;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,7 +61,11 @@ class PageHeader extends StatelessWidget {
         const SizedBox(height: 10),
         Text(
           title,
-          style: titleStyle(size: 31, weight: FontWeight.w600, color: tone.ink),
+          style: titleStyle(
+            size: narrow ? 26 : 31,
+            weight: FontWeight.w600,
+            color: tone.ink,
+          ),
         ),
         if (intro != null) ...[
           const SizedBox(height: 10),
