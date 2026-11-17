@@ -47,6 +47,8 @@ Route::prefix('v1')->group(function () {
     Route::get('/sources', SourcesController::class);
 
     Route::get('/articles', [ArticleController::class, 'index']);
+    // Avant `{slug}` : sinon « random » serait lu comme un titre d'article.
+    Route::get('/articles/random', [ArticleController::class, 'random']);
     Route::get('/articles/{slug}', [ArticleController::class, 'show']);
 
     // Recherche publique : plafonnée pour éviter le balayage de table (429).

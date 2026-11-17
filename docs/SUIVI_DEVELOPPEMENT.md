@@ -720,6 +720,33 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 29 — 16 novembre 2026 · Des images sourcées plutôt que des motifs inventés
+
+**Demande**
+- Retirer les motifs « baoulé » et « Korhogo » dessinés en code.
+- Proposer un article au hasard pris dans toute la base, depuis l'accueil.
+- Remplacer les motifs fictifs par des images et des motifs réels, sourcés, et donner une illustration à chaque article.
+
+**Fait**
+- **Motifs retirés** : `ui/widgets/backdrop.dart` ne garde que le lavis orange/vert et un grain de papier ; le treillis de losanges, les rosaces, la lisière tissée et la frise Korhogo ont disparu. Sur l'accueil, le panneau « motifs baoulé et Korhogo » est remplacé par la photographie de l'article de la une, avec son titre et son crédit.
+- **Article au hasard** : route `GET /api/v1/articles/random` (tirage `inRandomOrder()` sur les seuls articles publiés, 404 si la base est vide), `fetchRandomArticle()` côté Flutter, et le bouton « Tirer un article » de la colonne de droite l'utilise désormais. Le tirage porte sur les 51 articles, plus seulement sur la page déjà chargée.
+- **Illustrations** : `database/data/article-images.php` réunit **51 images**, une par article, toutes issues de Wikimedia Commons — image de tête de l'article Wikipédia francophone quand elle existe, sinon une photographie du sujet. Chaque entrée porte l'URL, le texte alternatif, l'auteur, la licence et la page de description.
+- **Base et API** : migration `add_cover_image_credit_to_articles` (`cover_image_credit`, `cover_image_license`, `cover_image_source_url`), modèle et `ArticleSummaryResource` complétés ; commande `articles:attach-images` (idempotente, `--dry-run`) qui applique le jeu de données.
+- **Application** : `ui/widgets/article_image.dart` avec `ArticleFigure` (grande image + mention « Photo : auteur — licence » cliquable vers Commons) et `ArticleThumb` (vignette de liste). La une, la page article, la catégorie et la recherche affichent les images.
+- **Outils** : `database/data/fetch-article-images.py` retrouve les images de tête et leurs licences ; `build-article-images.py` régénère le fichier de données à partir de la sélection relue à la main.
+
+**Vérifié**
+- `flutter analyze` propre ; `flutter test` **28 tests** verts (dont « Tirer un article » ouvre bien l'article tiré par le serveur).
+- `pint --test` : 86 fichiers conformes ; `phpstan` : aucune erreur ; `pest` : **41 tests**, 1 157 assertions (dont 5 pour les illustrations et le hasard).
+- `php artisan articles:attach-images` : 51 articles illustrés en local ; les URL pointent vers `thumb.wikimedia.org` et répondent en 200.
+
+**Limites**
+- Les illustrations sont des photographies de Commons, pas des images produites pour IVOIREPEDIA : la mention de licence est obligatoire et affichée, mais certaines montrent un lieu voisin ou un objet de musée plutôt qu'une scène ivoirienne précise (l'anacardier vient d'Inde, le cacaoyer d'une ferme ghanéenne).
+- Quatre fiches Commons ont un champ auteur illisible ou dupliqué ; la mention affichée est corrigée à la main dans `build-article-images.py` (`CREDIT_FIX`).
+- Pas de vérification visuelle en navigateur après le passage aux photographies.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

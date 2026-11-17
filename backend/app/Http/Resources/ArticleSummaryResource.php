@@ -28,6 +28,9 @@ class ArticleSummaryResource extends JsonResource
             'type_label' => $this->type->label(),
             'cover_image_url' => $this->cover_image_url,
             'cover_image_alt' => $this->cover_image_alt,
+            'cover_image_credit' => $this->cover_image_credit,
+            'cover_image_license' => $this->cover_image_license,
+            'cover_image_source_url' => $this->cover_image_source_url,
             'published_at' => $this->published_at?->toIso8601String(),
             'reading_minutes' => $this->readingMinutes(),
             'category' => $this->whenLoaded('category', fn () => [

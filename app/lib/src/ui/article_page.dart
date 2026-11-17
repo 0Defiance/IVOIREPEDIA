@@ -11,6 +11,7 @@ import 'display_settings.dart';
 import 'format.dart';
 import 'shell.dart';
 import 'wiki_actions.dart';
+import 'widgets/article_image.dart';
 import 'widgets/delta_content.dart';
 import 'widgets/infobox_table.dart';
 import 'widgets/interactive.dart';
@@ -464,6 +465,10 @@ class _ArticleBodyState extends State<_ArticleBody> {
             title: _article.title,
             onCopied: (message) => _notify(messenger, message),
           ),
+          if (_article.coverImageUrl != null) ...[
+            const SizedBox(height: 18),
+            ArticleFigure(article: _article, height: 340),
+          ],
           const SizedBox(height: 20),
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 220),

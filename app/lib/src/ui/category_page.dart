@@ -7,6 +7,7 @@ import '../theme.dart';
 import 'shell.dart';
 import 'wiki_actions.dart';
 import 'widgets/interactive.dart';
+import 'widgets/article_image.dart';
 import 'widgets/page_parts.dart';
 
 /// Page de catégorie : « Catégorie : Histoire », sous-catégories et pages.
@@ -179,22 +180,42 @@ class _CategoryPageState extends State<CategoryPage> {
                       padding: const EdgeInsets.only(bottom: 10),
                       child: MotifCard(
                         padding: const EdgeInsets.fromLTRB(14, 12, 14, 13),
-                        child: Column(
+                        child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            HoverLink(
-                              label: article.title,
-                              onTap: () =>
-                                  wikiGo(context, '/articles/${article.slug}'),
-                              style: titleStyle(size: 16, weight: FontWeight.w600),
-                            ),
-                            const SizedBox(height: 3),
-                            Text(
-                              article.summary,
-                              style: const TextStyle(
-                                fontSize: 13,
-                                color: IvoireColors.muted,
-                                height: 1.55,
+                            if (article.coverImageUrl != null) ...[
+                              ArticleThumb(
+                                article: article,
+                                width: 92,
+                                height: 70,
+                              ),
+                              const SizedBox(width: 12),
+                            ],
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  HoverLink(
+                                    label: article.title,
+                                    onTap: () => wikiGo(
+                                      context,
+                                      '/articles/${article.slug}',
+                                    ),
+                                    style: titleStyle(
+                                      size: 16,
+                                      weight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 3),
+                                  Text(
+                                    article.summary,
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      color: IvoireColors.muted,
+                                      height: 1.55,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],

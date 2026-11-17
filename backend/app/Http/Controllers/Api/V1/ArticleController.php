@@ -42,6 +42,35 @@ class ArticleController extends Controller
         ]);
     }
 
+    /**
+     * `GET /api/v1/articles/random` — un article publié tiré au hasard.
+     *
+     * Le tirage se fait en base, sur l'ensemble des articles publiés : le
+     * bouton « article au hasard » de l'accueil n'est donc pas limité à la
+     * première page de la liste.
+     */
+    public function random(): JsonResponse
+    {
+        $article = Article::query()
+            ->published()
+            ->with(['category', 'author'])
+            ->inRandomOrder()
+            ->first();
+
+        if ($article === null) {
+            return response()->json([
+                'error' => [
+                    'code' => 'NOT_FOUND',
+                    'message' => 'Aucun article publié pour le moment.',
+                ],
+            ], 404);
+        }
+
+        return response()->json([
+            'data' => ArticleSummaryResource::make($article)->resolve(),
+        ]);
+    }
+
     /** `GET /api/v1/articles/{slug}` — 404 si l'article n'est pas publié. */
     public function show(string $slug): ArticleResource|JsonResponse
     {

@@ -31,6 +31,9 @@ use Illuminate\Support\Carbon;
  * @property ArticleStatus $status
  * @property string|null $cover_image_url
  * @property string|null $cover_image_alt
+ * @property string|null $cover_image_credit
+ * @property string|null $cover_image_license
+ * @property string|null $cover_image_source_url
  * @property Carbon|null $published_at
  * @property Carbon|null $updated_at
  * @property-read Category $category
@@ -40,7 +43,9 @@ use Illuminate\Support\Carbon;
  */
 #[Fillable([
     'title', 'slug', 'summary', 'content', 'infobox', 'type', 'status',
-    'cover_image_url', 'cover_image_alt', 'lock_version', 'current_version',
+    'cover_image_url', 'cover_image_alt', 'cover_image_credit',
+    'cover_image_license', 'cover_image_source_url',
+    'lock_version', 'current_version',
     'author_id', 'category_id', 'published_at',
 ])]
 class Article extends Model

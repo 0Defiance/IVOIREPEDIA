@@ -101,6 +101,16 @@ class FakeApi extends FakeIvoirepediaApi {
       ];
 
   @override
+  Future<ArticleSummary> fetchRandomArticle() async => const ArticleSummary(
+        slug: 'attieke',
+        title: 'L’attiéké',
+        summary: 'Semoule de manioc fermentée.',
+        typeLabel: 'Sujet',
+        categoryName: 'Culture',
+        categorySlug: 'culture',
+      );
+
+  @override
   Future<List<HistoryStory>> fetchHistory() async => historyFixture();
 }
 
@@ -129,6 +139,21 @@ void main() {
     expect(find.text('Aujourd’hui dans l’histoire'), findsOneWidget);
     expect(find.text('La frise en un coup d’œil'), findsOneWidget);
     expect(find.text('Le royaume d’Indénié'), findsWidgets);
+  });
+
+  testWidgets('« Tirer un article » ouvre l’article tiré par le serveur',
+      (tester) async {
+    await tester.pumpWidget(IvoirepediaApp(api: FakeApi()));
+    await tester.pumpAndSettle();
+
+    final button = find.text('Tirer un article');
+    await tester.ensureVisible(button);
+    await tester.pumpAndSettle();
+    await tester.tap(button);
+    await tester.pumpAndSettle();
+
+    // Les onglets de la page de lecture n'existent que sur un article.
+    expect(find.text('Voir l’historique'), findsOneWidget);
   });
 
   testWidgets('la page d’accueil se rend aussi en grand écran', (tester) async {

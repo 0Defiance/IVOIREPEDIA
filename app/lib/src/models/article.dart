@@ -12,6 +12,9 @@ class ArticleSummary {
     this.readingMinutes = 1,
     this.coverImageUrl,
     this.coverImageAlt,
+    this.coverImageCredit,
+    this.coverImageLicense,
+    this.coverImageSourceUrl,
   });
 
   final String slug;
@@ -25,6 +28,18 @@ class ArticleSummary {
   final int readingMinutes;
   final String? coverImageUrl;
   final String? coverImageAlt;
+
+  /// Auteur de la photographie, sa licence et la page Commons qui la décrit.
+  final String? coverImageCredit;
+  final String? coverImageLicense;
+  final String? coverImageSourceUrl;
+
+  /// Auteur nettoyé pour la mention affichée sous l'image.
+  String? get imageCredit {
+    final credit = coverImageCredit?.trim();
+
+    return credit == null || credit.isEmpty ? null : credit;
+  }
 
   factory ArticleSummary.fromJson(Map<String, dynamic> json) {
     final category = json['category'] as Map<String, dynamic>?;
@@ -43,6 +58,9 @@ class ArticleSummary {
       readingMinutes: (json['reading_minutes'] as num?)?.toInt() ?? 1,
       coverImageUrl: json['cover_image_url'] as String?,
       coverImageAlt: json['cover_image_alt'] as String?,
+      coverImageCredit: json['cover_image_credit'] as String?,
+      coverImageLicense: json['cover_image_license'] as String?,
+      coverImageSourceUrl: json['cover_image_source_url'] as String?,
     );
   }
 }
@@ -101,6 +119,9 @@ class ArticleDetail extends ArticleSummary {
     super.readingMinutes,
     super.coverImageUrl,
     super.coverImageAlt,
+    super.coverImageCredit,
+    super.coverImageLicense,
+    super.coverImageSourceUrl,
   });
 
   /// Opérations Delta Quill (`content.ops`) : source de vérité du texte.
@@ -128,6 +149,9 @@ class ArticleDetail extends ArticleSummary {
       readingMinutes: base.readingMinutes,
       coverImageUrl: base.coverImageUrl,
       coverImageAlt: base.coverImageAlt,
+      coverImageCredit: base.coverImageCredit,
+      coverImageLicense: base.coverImageLicense,
+      coverImageSourceUrl: base.coverImageSourceUrl,
       contentOps: ops
           .whereType<Map<String, dynamic>>()
           .toList(growable: false),

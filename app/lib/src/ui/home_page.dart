@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 
 import '../api.dart';
@@ -9,9 +7,11 @@ import '../models/statistics.dart';
 import '../models/timeline.dart';
 import '../storage.dart';
 import '../theme.dart';
+import 'display_settings.dart';
 import 'format.dart';
 import 'shell.dart';
 import 'wiki_actions.dart';
+import 'widgets/article_image.dart';
 import 'widgets/interactive.dart';
 import 'widgets/ivorian_patterns.dart';
 
@@ -80,14 +80,29 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _openRandom(PagedArticles page) {
-    if (page.items.isEmpty) {
-      wikiNotImplemented(context, 'Article au hasard');
-      return;
-    }
+  /// Tirage serveur : le hasard porte sur tous les articles publiés, pas
+  /// seulement sur ceux de la page d'accueil.
+  Future<void> _openRandom() async {
+    try {
+      final pick = await ApiScope.of(context).fetchRandomArticle();
 
-    final pick = page.items[math.Random().nextInt(page.items.length)];
-    wikiGo(context, '/articles/${pick.slug}');
+      if (!mounted) {
+        return;
+      }
+
+      wikiGo(context, '/articles/${pick.slug}');
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Aucun article à tirer pour le moment.'),
+          duration: Duration(seconds: 3),
+        ),
+      );
+    }
   }
 
   @override
@@ -111,7 +126,7 @@ class _HomePageState extends State<HomePage> {
 
             return _HomeBody(
               data: snapshot.data!,
-              onRandom: () => _openRandom(snapshot.data!.articles),
+              onRandom: _openRandom,
             );
           },
         ),
@@ -139,6 +154,7 @@ class _HomeBody extends StatelessWidget {
           domains: data.categories.length,
           timeline: timeline,
           stats: stats,
+          lead: data.articles.items.isEmpty ? null : data.articles.items.first,
         ),
         const SizedBox(height: 22),
         _KeyFigures(
@@ -254,22 +270,23 @@ class _HomeBody extends StatelessWidget {
   }
 }
 
-/// Bande d'ouverture : un panneau de tissu peint à droite, la promesse du
+/// Bande d'ouverture : une photographie sourcée à droite, la promesse du
 /// site à gauche, et trois portes d'entrée (le temps, les territoires, les
-/// chiffres). Le panneau reprend les losanges baoulés et la rosace de pagne
-/// du fond, pour que l'accueil ait une matière, pas seulement du texte.
+/// chiffres). L'image est celle de l'article de la une, avec son crédit.
 class _Hero extends StatelessWidget {
   const _Hero({
     required this.articleCount,
     required this.domains,
     required this.timeline,
     required this.stats,
+    this.lead,
   });
 
   final int articleCount;
   final int domains;
   final List<TimelineEvent> timeline;
   final StatisticsSnapshot? stats;
+  final ArticleSummary? lead;
 
   @override
   Widget build(BuildContext context) {
@@ -389,12 +406,12 @@ class _Hero extends StatelessWidget {
                     padding: const EdgeInsets.only(right: 244),
                     child: content,
                   ),
-                  const Positioned(
+                  Positioned(
                     top: 0,
                     right: 0,
                     bottom: 0,
                     width: 244,
-                    child: _HeroCloth(),
+                    child: _HeroIllustration(article: lead),
                   ),
                 ],
               );
@@ -406,103 +423,93 @@ class _Hero extends StatelessWidget {
   }
 }
 
-/// Panneau de tissu : losanges, rosace et légende. Peint en code, comme le
-/// reste des motifs du site.
-class _HeroCloth extends StatelessWidget {
-  const _HeroCloth();
+/// Panneau illustré de l'ouverture : la photographie de l'article de la une,
+/// sa légende et son crédit. Sans image, le panneau reste un aplat sobre.
+class _HeroIllustration extends StatelessWidget {
+  const _HeroIllustration({this.article});
+
+  final ArticleSummary? article;
 
   @override
   Widget build(BuildContext context) {
+    final article = this.article;
+    final url = article?.coverImageUrl;
+    final tone = ToneColors.from(context);
+
+    if (article == null || url == null || url.isEmpty) {
+      return DecoratedBox(
+        decoration: BoxDecoration(
+          color: tone.subtle,
+          border: Border(left: BorderSide(color: tone.lineSoft)),
+        ),
+        child: Center(
+          child: Icon(Icons.photo_outlined, size: 30, color: tone.faint),
+        ),
+      );
+    }
+
     return DecoratedBox(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [IvoireColors.sand, IvoireColors.highlight],
-        ),
-        border: Border(left: BorderSide(color: IvoireColors.lineSoft)),
+      decoration: BoxDecoration(
+        border: Border(left: BorderSide(color: tone.lineSoft)),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Expanded(
-              child: CustomPaint(
-                painter: _ClothPainter(),
-                size: Size.infinite,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.network(
+            url,
+            fit: BoxFit.cover,
+            semanticLabel: article.coverImageAlt,
+            errorBuilder: (_, _, _) => ColoredBox(color: tone.subtle),
+          ),
+          const DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.center,
+                end: Alignment.bottomCenter,
+                colors: [Color(0x00000000), Color(0xCC1A1512)],
               ),
             ),
-            const SizedBox(height: 10),
-            Text(
-              'MOTIFS BAOULÉ ET KORHOGO',
-              style: kickerStyle(color: IvoireColors.terracotta),
+          ),
+          Positioned(
+            left: 14,
+            right: 14,
+            bottom: 16,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  article.title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    height: 1.3,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  [
+                    if (article.imageCredit != null) 'Photo : ${article.imageCredit}',
+                    if (article.coverImageLicense != null)
+                      article.coverImageLicense!,
+                  ].join(' · '),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 10.5,
+                    height: 1.4,
+                    color: Color(0xCCFFFFFF),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 4),
-            Text(
-              'Losanges tissés, rosaces de pagne et gravures du Nord : '
-              'le fond du site reprend des motifs ivoiriens, dessinés '
-              'à la main dans le code.',
-              style: TextStyle(
-                fontSize: 11.5,
-                height: 1.55,
-                color: IvoireColors.muted.withValues(alpha: 0.95),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
-}
-
-class _ClothPainter extends CustomPainter {
-  const _ClothPainter();
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final stroke = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.4
-      ..color = IvoireColors.terracotta.withValues(alpha: 0.35);
-    final green = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.4
-      ..color = IvoireColors.green.withValues(alpha: 0.32);
-    final fill = Paint()..color = IvoireColors.orange.withValues(alpha: 0.10);
-
-    // Treillis de losanges.
-    const step = 34.0;
-    for (double y = 10; y < size.height - 10; y += step) {
-      for (double x = 10; x < size.width - 10; x += step) {
-        final path = Path()
-          ..moveTo(x, y - step * 0.4)
-          ..lineTo(x + step * 0.4, y)
-          ..lineTo(x, y + step * 0.4)
-          ..lineTo(x - step * 0.4, y)
-          ..close();
-        canvas.drawPath(path, (x + y) % (step * 2) < step ? stroke : green);
-      }
-    }
-
-    // Rosace centrale, motif de pagne.
-    final center = Offset(size.width / 2, size.height * 0.42);
-    final radius = math.min(size.width, size.height) * 0.26;
-    canvas.drawCircle(center, radius, stroke);
-    canvas.drawCircle(center, radius * 0.55, green);
-    canvas.drawCircle(center, radius * 0.18, fill);
-    for (var i = 0; i < 8; i++) {
-      final angle = i * math.pi / 4;
-      canvas.drawLine(
-        center + Offset(math.cos(angle), math.sin(angle)) * radius * 0.2,
-        center + Offset(math.cos(angle), math.sin(angle)) * radius * 0.9,
-        stroke,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _ClothPainter oldDelegate) => false;
 }
 
 class _HeroStat extends StatelessWidget {
@@ -885,6 +892,11 @@ class _LeadStory extends StatelessWidget {
                 borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
               ),
             ),
+            if (article.coverImageUrl != null)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+                child: ArticleFigure(article: article, height: 250),
+              ),
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 18),
               child: Column(

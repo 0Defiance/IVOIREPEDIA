@@ -12,6 +12,7 @@ import 'display_settings.dart';
 import 'format.dart';
 import 'shell.dart';
 import 'widgets/interactive.dart';
+import 'widgets/article_image.dart';
 import 'widgets/page_parts.dart';
 
 /// Recherche publique (`/recherche?q=`) : les résultats se rafraîchissent
@@ -450,32 +451,49 @@ class _ResultState extends State<_Result> {
                   : IvoireColors.lineSoft,
             ),
           ),
-          child: Column(
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                widget.article.title,
-                style: titleStyle(
-                  size: 17,
-                  weight: FontWeight.w600,
-                  color: _hovered ? IvoireColors.greenDeep : IvoireColors.link,
+              if (widget.article.coverImageUrl != null) ...[
+                ArticleThumb(article: widget.article, width: 96, height: 72),
+                const SizedBox(width: 12),
+              ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.article.title,
+                      style: titleStyle(
+                        size: 17,
+                        weight: FontWeight.w600,
+                        color: _hovered
+                            ? IvoireColors.greenDeep
+                            : IvoireColors.link,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      [
+                        if (widget.article.categoryName != null)
+                          widget.article.categoryName!,
+                        widget.article.typeLabel,
+                        if (widget.article.publishedAt != null)
+                          formatDate(widget.article.publishedAt),
+                        '${widget.article.readingMinutes} min',
+                      ].join(' · '),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: IvoireColors.faint,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      widget.article.summary,
+                      style: const TextStyle(fontSize: 13.5, height: 1.65),
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 3),
-              Text(
-                [
-                  if (widget.article.categoryName != null) widget.article.categoryName!,
-                  widget.article.typeLabel,
-                  if (widget.article.publishedAt != null)
-                    formatDate(widget.article.publishedAt),
-                  '${widget.article.readingMinutes} min',
-                ].join(' · '),
-                style: const TextStyle(fontSize: 12, color: IvoireColors.faint),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                widget.article.summary,
-                style: const TextStyle(fontSize: 13.5, height: 1.65),
               ),
             ],
           ),

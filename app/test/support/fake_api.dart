@@ -34,6 +34,11 @@ class FakeIvoirepediaApi implements IvoirepediaApi {
   }
 
   @override
+  Future<ArticleSummary> fetchRandomArticle() async {
+    throw const ApiException('Aucun article à tirer pour le moment.');
+  }
+
+  @override
   Future<PagedArticles> search(String query, {int page = 1, int limit = 12}) async {
     return const PagedArticles(items: [], page: 1, limit: 12, total: 0);
   }

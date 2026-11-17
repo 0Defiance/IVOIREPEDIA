@@ -45,6 +45,10 @@ abstract interface class IvoirepediaApi {
 
   Future<ArticleDetail> fetchArticle(String slug);
 
+  /// Un article publié tiré au hasard par le serveur : le tirage porte sur
+  /// toute la base, pas seulement sur la page déjà chargée.
+  Future<ArticleSummary> fetchRandomArticle();
+
   Future<PagedArticles> search(String query, {int page = 1, int limit = 12});
 
   Future<StatisticsSnapshot> fetchStatistics();
@@ -98,6 +102,18 @@ class HttpIvoirepediaApi implements IvoirepediaApi {
     });
 
     return PagedArticles.fromJson(payload);
+  }
+
+  @override
+  Future<ArticleSummary> fetchRandomArticle() async {
+    final payload = await _get('/articles/random');
+    final data = payload['data'] as Map<String, dynamic>?;
+
+    if (data == null) {
+      throw const ApiException('Aucun article à tirer pour le moment.');
+    }
+
+    return ArticleSummary.fromJson(data);
   }
 
   @override
