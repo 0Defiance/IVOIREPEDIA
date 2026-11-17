@@ -4,8 +4,33 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ivoirepedia/src/ui/cover.dart';
 
 void main() {
-  testWidgets('la couverture s’affiche au lancement puis se retire',
-      (tester) async {
+  testWidgets('la couverture entière tient dans l’écran portrait', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(390, 844);
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(const MaterialApp(home: CoverSheet()));
+
+    final image = tester.widget<Image>(find.byType(Image));
+    expect(image.fit, BoxFit.contain);
+  });
+
+  testWidgets('la couverture recadre en format paysage', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1280, 800);
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(const MaterialApp(home: CoverSheet()));
+
+    final image = tester.widget<Image>(find.byType(Image));
+    expect(image.fit, BoxFit.cover);
+  });
+
+  testWidgets('la couverture s’affiche au lancement puis se retire', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       const LaunchCover(
         hold: Duration(milliseconds: 80),

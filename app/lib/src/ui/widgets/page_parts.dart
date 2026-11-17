@@ -8,7 +8,11 @@ import 'ivorian_patterns.dart';
 /// arrondie. Elle remplace le simple sur-titre et donne un repère constant
 /// d'une page à l'autre.
 class PageKicker extends StatelessWidget {
-  const PageKicker(this.label, {this.color = IvoireColors.greenDeep, super.key});
+  const PageKicker(
+    this.label, {
+    this.color = IvoireColors.greenDeep,
+    super.key,
+  });
 
   final String label;
   final Color color;
@@ -123,14 +127,15 @@ class SectionHeading extends StatelessWidget {
             Expanded(
               child: Text(
                 title,
-                style: titleStyle(size: 18, weight: FontWeight.w600, color: tone.ink),
+                style: titleStyle(
+                  size: 18,
+                  weight: FontWeight.w600,
+                  color: tone.ink,
+                ),
               ),
             ),
             if (count != null)
-              Text(
-                '$count',
-                style: TextStyle(fontSize: 12, color: tone.faint),
-              ),
+              Text('$count', style: TextStyle(fontSize: 12, color: tone.faint)),
             ?trailing,
           ],
         ),
@@ -142,8 +147,9 @@ class SectionHeading extends StatelessWidget {
 }
 
 /// Carte arrondie de la maison : papier clair, filet fin, ombre douce, liseré
-/// d'accent optionnel. Toutes les pages l'utilisent pour rester cohérentes.
-class MotifCard extends StatelessWidget {
+/// d'accent optionnel. Elle se soulève légèrement au survol : toutes les pages
+/// partagent ainsi le même relief, sans dupliquer le style.
+class MotifCard extends StatefulWidget {
   const MotifCard({
     required this.child,
     this.padding = const EdgeInsets.fromLTRB(16, 14, 16, 16),
@@ -160,29 +166,44 @@ class MotifCard extends StatelessWidget {
   final double radius;
 
   @override
+  State<MotifCard> createState() => _MotifCardState();
+}
+
+class _MotifCardState extends State<MotifCard> {
+  bool _hover = false;
+
+  @override
   Widget build(BuildContext context) {
     final tone = ToneColors.from(context);
 
-    return Container(
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
-        color: color ?? tone.paper,
-        borderRadius: BorderRadius.circular(radius),
-        border: Border.all(color: tone.lineSoft),
-        boxShadow: [
-          BoxShadow(
-            color: tone.ink.withValues(alpha: 0.035),
-            blurRadius: 18,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (accent != null) Container(height: 3, color: accent),
-          Padding(padding: padding, child: child),
-        ],
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hover = true),
+      onExit: (_) => setState(() => _hover = false),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 170),
+        curve: Curves.easeOut,
+        transform: Matrix4.translationValues(0, _hover ? -2 : 0, 0),
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(
+          color: widget.color ?? tone.paper,
+          borderRadius: BorderRadius.circular(widget.radius),
+          border: Border.all(color: tone.lineSoft),
+          boxShadow: [
+            BoxShadow(
+              color: tone.ink.withValues(alpha: _hover ? 0.09 : 0.035),
+              blurRadius: _hover ? 24 : 18,
+              offset: Offset(0, _hover ? 10 : 6),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (widget.accent != null)
+              SizedBox(height: 3, child: ColoredBox(color: widget.accent!)),
+            Padding(padding: widget.padding, child: widget.child),
+          ],
+        ),
       ),
     );
   }

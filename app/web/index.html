@@ -1,155 +1,167 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-  -->
-  <base href="$FLUTTER_BASE_HREF">
-
-  <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="IVOIREPEDIA — l’encyclopédie de la Côte d’Ivoire.">
-
-  <!-- iOS meta tags & icons -->
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="ivoirepedia">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
-
-  <title>IVOIREPEDIA</title>
-  <link rel="manifest" href="manifest.json">
-
-  <!--
-    Couverture de lancement. Flutter charge son moteur (plusieurs centaines de
-    ko, puis CanvasKit) avant de peindre quoi que ce soit : cette image tient
-    l’écran, plein cadre, pendant ce temps. L’application reprend la même
-    couverture (assets/images/couverture.webp) puis la retire en fondu.
-  -->
-  <style>
-    html, body {
-      margin: 0;
-      height: 100%;
-      background: #FBF9F4;
-    }
-
-    #loading {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      background: #FBF9F4;
-      overflow: hidden;
-      transition: opacity 420ms ease;
-    }
-
-    #loading img {
-      display: block;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
-    }
-
-    /* Filet de chargement : orange → or → vert, qui balaie le bas. */
-    #loading .progress {
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      height: 3px;
-      width: 38%;
-      background: linear-gradient(90deg, #F07C00, #E7B34A, #0E7B45);
-      animation: sweep 1.5s ease-in-out infinite;
-    }
-
-    /* Message honnête, révélé seulement si le moteur tarde. */
-    #loading .hint {
-      position: absolute;
-      left: 12px;
-      right: 12px;
-      bottom: 16px;
-      margin: 0 auto;
-      max-width: 380px;
-      font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
-      font-size: 12.5px;
-      line-height: 1.6;
-      text-align: center;
-      color: #4A463F;
-      background: rgba(251, 249, 244, 0.92);
-      border-radius: 8px;
-      padding: 6px 10px;
-      opacity: 0;
-      transition: opacity 300ms ease;
-    }
-
-    #loading .hint.slow {
-      opacity: 1;
-    }
-
-    #loading .hint a {
-      color: #0A5C34;
-    }
-
-    @keyframes sweep {
-      0%   { transform: translateX(-100%); }
-      100% { transform: translateX(320%); }
-    }
-  </style>
-</head>
-<body>
-  <div id="loading" role="status" aria-live="polite">
-    <img src="cover.webp" alt="IVOIREPEDIA — L’Encyclopédie de la Côte d’Ivoire">
-    <div class="progress"></div>
-    <div class="hint" id="hint"></div>
-  </div>
-
-  <script>
-    (function () {
-      var start = Date.now();
-      var hint = document.getElementById('hint');
-
-      function showHint(text) {
-        if (!hint) return;
-        hint.innerHTML = text;
-        hint.classList.add('slow');
-      }
-
-      // Message honnête quand la connexion est lente : le moteur fait plus de
-      // 800 ko et ne peint rien tant qu’il n’est pas arrivé.
-      var slow = setTimeout(function () {
-        showHint('Chargement de l’encyclopédie… Sur une connexion lente, comptez jusqu’à une minute.');
-      }, 12000);
-
-      function ready() {
-        return document.querySelector('flt-glass-pane, flutter-view');
-      }
-
-      function clear() {
-        var node = document.getElementById('loading');
-        if (node) {
-          node.style.opacity = '0';
-          setTimeout(function () { node.remove(); }, 440);
-        }
-        clearTimeout(slow);
-      }
-
-      var timer = setInterval(function () {
-        if (ready()) {
-          clearInterval(timer);
-          clear();
-        } else if (Date.now() - start > 90000) {
-          clearInterval(timer);
-          showHint('La page ne répond pas. Vérifiez la connexion, puis <a href="">rechargez</a>.');
-        }
-      }, 200);
-    })();
-  </script>
-
-  <script src="flutter_bootstrap.js" async></script>
-</body>
-</html>
+<!DOCTYPE html>
+<html>
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+  -->
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="IVOIREPEDIA — l’encyclopédie de la Côte d’Ivoire.">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="ivoirepedia">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>IVOIREPEDIA</title>
+  <link rel="manifest" href="manifest.json">
+
+  <!--
+    Couverture de lancement. Flutter charge son moteur (plusieurs centaines de
+    ko, puis CanvasKit) avant de peindre quoi que ce soit : cette image tient
+    l’écran, plein cadre, pendant ce temps. L’application reprend la même
+    couverture (assets/images/couverture.webp) puis la retire en fondu.
+  -->
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #FBF9F4;
+    }
+
+    #loading {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #FBF9F4;
+      overflow: hidden;
+      transition: opacity 420ms ease;
+    }
+
+    #loading img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    /* En format téléphone, afficher l'image entière pour ne pas couper
+       le titre à gauche. Les espaces libres restent dans le ton du papier. */
+    @media (max-aspect-ratio: 4/5) {
+      #loading {
+        background: linear-gradient(180deg, #F3E6D1, #FBF9F4);
+      }
+
+      #loading img {
+        object-fit: contain;
+      }
+    }
+
+    /* Filet de chargement : orange → or → vert, qui balaie le bas. */
+    #loading .progress {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      height: 3px;
+      width: 38%;
+      background: linear-gradient(90deg, #F07C00, #E7B34A, #0E7B45);
+      animation: sweep 1.5s ease-in-out infinite;
+    }
+
+    /* Message honnête, révélé seulement si le moteur tarde. */
+    #loading .hint {
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 16px;
+      margin: 0 auto;
+      max-width: 380px;
+      font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+      font-size: 12.5px;
+      line-height: 1.6;
+      text-align: center;
+      color: #4A463F;
+      background: rgba(251, 249, 244, 0.92);
+      border-radius: 8px;
+      padding: 6px 10px;
+      opacity: 0;
+      transition: opacity 300ms ease;
+    }
+
+    #loading .hint.slow {
+      opacity: 1;
+    }
+
+    #loading .hint a {
+      color: #0A5C34;
+    }
+
+    @keyframes sweep {
+      0%   { transform: translateX(-100%); }
+      100% { transform: translateX(320%); }
+    }
+  </style>
+</head>
+<body>
+  <div id="loading" role="status" aria-live="polite">
+    <img src="cover.webp" alt="IVOIREPEDIA — L’Encyclopédie de la Côte d’Ivoire">
+    <div class="progress"></div>
+    <div class="hint" id="hint"></div>
+  </div>
+
+  <script>
+    (function () {
+      var start = Date.now();
+      var hint = document.getElementById('hint');
+
+      function showHint(text) {
+        if (!hint) return;
+        hint.innerHTML = text;
+        hint.classList.add('slow');
+      }
+
+      // Message honnête quand la connexion est lente : le moteur fait plus de
+      // 800 ko et ne peint rien tant qu’il n’est pas arrivé.
+      var slow = setTimeout(function () {
+        showHint('Chargement de l’encyclopédie… Sur une connexion lente, comptez jusqu’à une minute.');
+      }, 12000);
+
+      function ready() {
+        return document.querySelector('flt-glass-pane, flutter-view');
+      }
+
+      function clear() {
+        var node = document.getElementById('loading');
+        if (node) {
+          node.style.opacity = '0';
+          setTimeout(function () { node.remove(); }, 440);
+        }
+        clearTimeout(slow);
+      }
+
+      var timer = setInterval(function () {
+        if (ready()) {
+          clearInterval(timer);
+          clear();
+        } else if (Date.now() - start > 90000) {
+          clearInterval(timer);
+          showHint('La page ne répond pas. Vérifiez la connexion, puis <a href="">rechargez</a>.');
+        }
+      }, 200);
+    })();
+  </script>
+
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>

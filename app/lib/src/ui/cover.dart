@@ -16,11 +16,7 @@ const Duration _fadeOut = Duration(milliseconds: 520);
 
 /// Affiche [child] sous une couverture, retirée en fondu après [hold].
 class LaunchCover extends StatefulWidget {
-  const LaunchCover({
-    required this.child,
-    this.hold = kCoverHold,
-    super.key,
-  });
+  const LaunchCover({required this.child, this.hold = kCoverHold, super.key});
 
   final Widget child;
   final Duration hold;
@@ -89,32 +85,43 @@ class CoverSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return ColoredBox(
       color: IvoireColors.ivory,
-      child: Stack(
-        alignment: Alignment.topLeft,
-        fit: StackFit.expand,
-        children: [
-          Image.asset(
-            kCoverAsset,
-            fit: BoxFit.cover,
-            alignment: Alignment.center,
-            filterQuality: FilterQuality.medium,
-            excludeFromSemantics: true,
-            errorBuilder: (context, error, stackTrace) =>
-                const ColoredBox(color: IvoireColors.ivory),
-          ),
-          const Align(
-            alignment: Alignment.bottomCenter,
-            child: SizedBox(
-              height: 3,
-              width: double.infinity,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: IvoireColors.weave),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          // En portrait, l’image entière doit rester visible : `cover`
+          // rognerait le grand titre à gauche. Le fond ivoire remplit les
+          // bandes libres au-dessus et au-dessous de l’image.
+          final fit = constraints.maxWidth / constraints.maxHeight < 0.8
+              ? BoxFit.contain
+              : BoxFit.cover;
+
+          return Stack(
+            alignment: Alignment.topLeft,
+            fit: StackFit.expand,
+            children: [
+              Image.asset(
+                kCoverAsset,
+                fit: fit,
+                alignment: Alignment.center,
+                filterQuality: FilterQuality.medium,
+                excludeFromSemantics: true,
+                errorBuilder: (context, error, stackTrace) =>
+                    const ColoredBox(color: IvoireColors.ivory),
+              ),
+              const Align(
+                alignment: Alignment.bottomCenter,
+                child: SizedBox(
+                  height: 3,
+                  width: double.infinity,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(colors: IvoireColors.weave),
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-        ],
+            ],
+          );
+        },
       ),
     );
   }

@@ -771,6 +771,31 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 31 — 17 novembre 2026 · Couverture adaptable et accueil plus vivant, publiés à la racine
+
+**Demande**
+- Mettre les changements en production sur `ivoirepedia.alwaysdata.net`.
+- Vérifier la couverture sur téléphone : elle ne doit pas rogner le titre ; adapter l'affichage aux écrans étroits.
+- Travailler directement en production plutôt que sur un serveur local, et rendre le site plus professionnel, interactif, complet, innovant et ludique.
+
+**Fait**
+- **Couverture adaptable** : en portrait (`largeur / hauteur < 0,8`), l'image passe en `BoxFit.contain` et le fond ivoire remplit les bandes libres ; en paysage, elle garde `BoxFit.cover` pour occuper l'écran. La même règle est appliquée à l'écran de chargement HTML via `@media (max-aspect-ratio: 4/5)` : plus de titre coupé sur un téléphone.
+- **Accueil plus vivant** (modifications déjà présentes dans l'arbre de travail, vérifiées et conservées) : l'illustration de la une devient cliquable, s'agrandit doucement au survol et porte un badge « À LA UNE » ; le tirage au hasard devient une carte verte pleine ; les cartes de l'accueil (portes d'entrée, parcours, cartes partagées) se soulèvent et prennent une ombre au survol ; le panneau photo s'élargit à 336 px et le bouton « Lire l'article » remplace le simple lien.
+- **Publication directe en production** : build `flutter build web --release --base-href=/ --dart-define=API_BASE_URL=/api/v1`, puis envoi des seuls fichiers du build dans `~/ivoirepedia/backend/public` — `index.php`, `.htaccess`, `storage/` et les autres fichiers Laravel sont préservés. Aucun serveur `127.0.0.1` n'a été démarré pour cette livraison.
+
+**Vérifié**
+- `flutter analyze` : aucune remarque ; **33 tests Flutter** verts, dont deux nouveaux sur la couverture (« la couverture entière tient dans l'écran portrait » en 390 × 844, « la couverture recadre en format paysage » en 1280 × 800).
+- Correctif trouvé par l'analyse : `offset: const Offset(0, _hover ? 10 : 6)` dans `_PathCard` — une constante ne peut pas dépendre de `_hover` ; `const` retiré.
+- Build release terminé sans erreur (bundle `main.dart.js` de 3,7 Mo, CanvasKit 37 Mo).
+- En ligne (à confirmer après envoi) : `/` sert le nouveau `index.html`, `/cover.webp` et l'asset Flutter `assets/assets/images/couverture.webp` répondent `200`, `/api/v1/health` reste `200`.
+
+**Limites**
+- La vérification téléphone est faite par tests de widgets (`BoxFit`) et par la règle CSS, pas par une capture sur un appareil réel : le rendu exact du titre sur un iPhone/Android reste à confirmer visuellement.
+- L'image de couverture est en 1376 × 768 : en portrait elle occupe une bande horizontale centrée, avec de larges marges ivoire. Pour un plein écran vertical, il faudrait une variante portrait de l'illustration.
+- Le back-end n'est pas modifié : `pest`, `pint` et `phpstan` ne sont pas relancés.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
