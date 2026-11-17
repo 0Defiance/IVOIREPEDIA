@@ -72,6 +72,11 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  # Couverture de lancement. La même image est copiée dans `web/cover.webp`
+  # pour l'écran de chargement HTML, affiché avant le moteur Flutter.
+  assets:
+    - assets/images/couverture.webp
+
   # Police unique du site, embarquée : rendu identique sur tous les postes,
   # aucun appel réseau au chargement.
   fonts:

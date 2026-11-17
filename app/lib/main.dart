@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 
 import 'src/app.dart';
+import 'src/ui/cover.dart';
 import 'src/storage.dart';
 
 Future<void> main() async {
@@ -16,5 +17,7 @@ Future<void> main() async {
   // indisponible ne doit pas empêcher l'affichage du site.
   await AppStorage.instance.load();
 
-  runApp(const IvoirepediaApp());
+  // La couverture tient l’écran le temps du chargement, puis s’efface
+  // en fondu (elle reprend l'image de web/index.html).
+  runApp(const LaunchCover(child: IvoirepediaApp()));
 }

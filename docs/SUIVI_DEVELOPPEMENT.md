@@ -747,6 +747,30 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 30 — 17 novembre 2026 · Le pagne documenté revient, et une couverture au lancement
+
+**Demande**
+- Remettre en arrière-plan les motifs culturels ivoiriens, mais réels et documentés, de façon dynamique et interactive (les motifs « baoulé » et « Korhogo » dessinés en code avaient été retirés à la séance 29 parce qu'ils étaient inventés).
+- Remplacer l'écran de chargement du site par une couverture présentant IVOIREPEDIA en image, affichée quelques secondes pendant le chargement.
+
+**Fait**
+- **Le décor est un pagne, pas un ornement** (`ui/widgets/backdrop.dart`) : la structure vient du **pagne tissé**, en bandes de 10 à 15 cm cousues bord à bord avec leur couture (UNESCO, savoir-faire du tissage du pagne, ICH 01949). Les motifs posés dessus sont ceux du répertoire documenté : **losanges** du pagne baoulé à centre en réserve d'indigo (dossier IG « pagne baoulé », OAPI 2023), **frises à degrés** et **zigzag du léopard** hérités du Fila, **arêtes de poisson** du textile de Korhogo. Chaque maille reçoit l'un des quatre motifs de façon stable, sur une trame de fils horizontaux.
+- **Dynamique et interactif** : la bande dérive en 80 s, la nappe glisse en parallaxe de quelques pixels à l'opposé du pointeur, et les mailles proches du pointeur s'éclaircissent de 5,5 % à 13 % d'opacité. La position du pointeur passe par une `ValueNotifier` : seul le peintre se reconstruit, jamais le site. Le mouvement s'arrête si la plateforme demande de réduire les animations.
+- **Couverture de lancement** : l'image fournie (1376 × 768) est enregistrée en `app/assets/images/couverture.webp`, déclarée dans `pubspec.yaml`, et copiée en `app/web/cover.webp` pour être disponible **avant** le moteur Flutter. `web/index.html` remplace le spinner par cette image plein cadre (`object-fit: cover`), avec le filet orange → or → vert qui balaie le bas et le message d'attente qui n'apparaît qu'au-delà de 12 s. Côté application, `ui/cover.dart` (`LaunchCover`, `CoverSheet`) reprend la même image pendant 2,2 s puis l'efface en fondu de 520 ms ; la couche est ignorée des gestes dès qu'elle s'efface.
+- **Point d'entrée** : la couverture s'installe dans `main.dart`, autour de `IvoirepediaApp` : elle s'affiche à chaque lancement du site, sans route ni réglage à activer, et ne s'intercale pas dans la navigation.
+
+**Vérifié**
+- `flutter analyze` propre ; `flutter test` **31 tests** verts, dont trois nouveaux : « le pagne est peint derrière le contenu », « les motifs réagissent au pointeur » (position, éclaircissement de la maille, retour au repos) et « la couverture s'affiche au lancement puis se retire ».
+- Le test de la couverture a révélé un défaut réel : un `Stack` posé au-dessus du `Directionality` de `MaterialApp` lève une assertion. Les deux piles de `cover.dart` portent désormais un alignement explicite.
+- Back-end non modifié : `composer test`, `pint` et `phpstan` ne sont pas relancés pour cette séance.
+
+**Limites**
+- Aucune relecture visuelle : le fond animé, l'éclaircissement sous le pointeur et le fondu de la couverture n'ont pas été vus dans un navigateur.
+- Le coût de repeint du fond n'a pas été mesuré sur un grand écran ; si le rendu saccade, la piste est de réduire le nombre de mailles ou de figer la dérive.
+- L'image de couverture est une illustration fournie par le propriétaire du site ; elle contient déjà son propre bandeau de motifs, qui se superpose visuellement au fond de la page d'accueil.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

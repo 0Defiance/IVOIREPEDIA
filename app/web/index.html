@@ -7,12 +7,6 @@
 
     The path provided below has to start and end with a slash "/" in order for
     it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
   -->
   <base href="$FLUTTER_BASE_HREF">
 
@@ -33,74 +27,102 @@
   <link rel="manifest" href="manifest.json">
 
   <!--
-    Flutter charge son moteur (plusieurs centaines de ko, puis CanvasKit) avant
-    de peindre quoi que ce soit. Sur une connexion lente, l'écran restait blanc
-    plusieurs minutes sans explication : cet écran de chargement le remplace et
-    disparaît dès que la première vue Flutter existe.
+    Couverture de lancement. Flutter charge son moteur (plusieurs centaines de
+    ko, puis CanvasKit) avant de peindre quoi que ce soit : cette image tient
+    l’écran, plein cadre, pendant ce temps. L’application reprend la même
+    couverture (assets/images/couverture.webp) puis la retire en fondu.
   -->
   <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #FBF9F4;
+    }
+
     #loading {
       position: fixed;
       inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 18px;
-      background: #FBF9F4;
-      color: #33302B;
-      font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
       z-index: 9999;
+      background: #FBF9F4;
+      overflow: hidden;
+      transition: opacity 420ms ease;
     }
 
-    #loading .mark {
-      font-size: 13px;
-      letter-spacing: 3px;
-      font-weight: 600;
-      color: #1F5F3F;
+    #loading img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
     }
 
-    #loading .spinner {
-      width: 26px;
-      height: 26px;
-      border: 2px solid rgba(31, 95, 63, 0.2);
-      border-top-color: #1F5F3F;
-      border-radius: 50%;
-      animation: spin 0.9s linear infinite;
+    /* Filet de chargement : orange → or → vert, qui balaie le bas. */
+    #loading .progress {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      height: 3px;
+      width: 38%;
+      background: linear-gradient(90deg, #F07C00, #E7B34A, #0E7B45);
+      animation: sweep 1.5s ease-in-out infinite;
     }
 
+    /* Message honnête, révélé seulement si le moteur tarde. */
     #loading .hint {
-      max-width: 320px;
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 16px;
+      margin: 0 auto;
+      max-width: 380px;
+      font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
       font-size: 12.5px;
       line-height: 1.6;
       text-align: center;
-      color: #6B665D;
+      color: #4A463F;
+      background: rgba(251, 249, 244, 0.92);
+      border-radius: 8px;
+      padding: 6px 10px;
+      opacity: 0;
+      transition: opacity 300ms ease;
     }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+    #loading .hint.slow {
+      opacity: 1;
+    }
+
+    #loading .hint a {
+      color: #0A5C34;
+    }
+
+    @keyframes sweep {
+      0%   { transform: translateX(-100%); }
+      100% { transform: translateX(320%); }
     }
   </style>
 </head>
 <body>
   <div id="loading" role="status" aria-live="polite">
-    <div class="mark">IVOIREPEDIA</div>
-    <div class="spinner"></div>
-    <div class="hint" id="hint">Chargement de l’encyclopédie…</div>
+    <img src="cover.webp" alt="IVOIREPEDIA — L’Encyclopédie de la Côte d’Ivoire">
+    <div class="progress"></div>
+    <div class="hint" id="hint"></div>
   </div>
 
   <script>
     (function () {
       var start = Date.now();
+      var hint = document.getElementById('hint');
+
+      function showHint(text) {
+        if (!hint) return;
+        hint.innerHTML = text;
+        hint.classList.add('slow');
+      }
 
       // Message honnête quand la connexion est lente : le moteur fait plus de
-      // 800 ko et ne peint rien tant qu'il n'est pas arrivé.
+      // 800 ko et ne peint rien tant qu’il n’est pas arrivé.
       var slow = setTimeout(function () {
-        var hint = document.getElementById('hint');
-        if (hint) {
-          hint.textContent = 'Le chargement prend plus de temps que prévu. '
-            + 'Sur une connexion lente, comptez jusqu’à une minute.';
-        }
+        showHint('Chargement de l’encyclopédie… Sur une connexion lente, comptez jusqu’à une minute.');
       }, 12000);
 
       function ready() {
@@ -111,8 +133,7 @@
         var node = document.getElementById('loading');
         if (node) {
           node.style.opacity = '0';
-          node.style.transition = 'opacity 200ms';
-          setTimeout(function () { node.remove(); }, 220);
+          setTimeout(function () { node.remove(); }, 440);
         }
         clearTimeout(slow);
       }
@@ -122,13 +143,8 @@
           clearInterval(timer);
           clear();
         } else if (Date.now() - start > 90000) {
-          // Au-delà d'une minute trente, mieux vaut proposer de réessayer.
           clearInterval(timer);
-          var hint = document.getElementById('hint');
-          if (hint) {
-            hint.textContent = 'La page ne répond pas. Vérifiez la connexion, puis ';
-            hint.innerHTML += '<a href="" style="color:#1F5F3F">rechargez</a>.';
-          }
+          showHint('La page ne répond pas. Vérifiez la connexion, puis <a href="">rechargez</a>.');
         }
       }, 200);
     })();

@@ -1,23 +1,10 @@
 
 import 'package:flutter/material.dart';
 
-export 'backdrop.dart';
-
 import '../../theme.dart';
+import 'backdrop.dart';
 
-/// Interrupteur global du mouvement décoratif. Les tests le désactivent pour
-/// que `pumpAndSettle` ne tourne pas sur une animation infinie.
-bool ivoireMotionEnabled = true;
-
-/// Met en pause les animations décoratives si la plateforme le demande
-/// (préférence système « réduire les animations »).
-bool ivoireMotionAllowed(BuildContext context) {
-  if (!ivoireMotionEnabled) {
-    return false;
-  }
-
-  return !MediaQuery.disableAnimationsOf(context);
-}
+export 'backdrop.dart';
 
 /// Bandeau tissé (kente) qui défile lentement : le rappel ivoirien le plus
 /// visible, peint en code, sans image à charger.
