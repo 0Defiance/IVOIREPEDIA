@@ -88,19 +88,34 @@ class CoverSheet extends StatelessWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           // En portrait, l’image entière doit rester visible : `cover`
-          // rognerait le grand titre à gauche. Le fond ivoire remplit les
-          // bandes libres au-dessus et au-dessous de l’image.
-          final fit = constraints.maxWidth / constraints.maxHeight < 0.8
-              ? BoxFit.contain
-              : BoxFit.cover;
+          // rognerait le grand titre à gauche. Elle est donc contenue, et la
+          // même illustration, très atténuée, remplit les bandes libres.
+          final portrait = constraints.maxWidth / constraints.maxHeight < 0.8;
 
           return Stack(
             alignment: Alignment.topLeft,
             fit: StackFit.expand,
             children: [
+              if (portrait)
+                const DecoratedBox(
+                  key: Key('cover-backdrop'),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [IvoireColors.sand, IvoireColors.ivory],
+                    ),
+                    image: DecorationImage(
+                      image: AssetImage(kCoverAsset),
+                      fit: BoxFit.cover,
+                      opacity: 0.22,
+                    ),
+                  ),
+                ),
               Image.asset(
                 kCoverAsset,
-                fit: fit,
+                key: const Key('cover-image'),
+                fit: portrait ? BoxFit.contain : BoxFit.cover,
                 alignment: Alignment.center,
                 filterQuality: FilterQuality.medium,
                 excludeFromSemantics: true,

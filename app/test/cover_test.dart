@@ -13,8 +13,11 @@ void main() {
 
     await tester.pumpWidget(const MaterialApp(home: CoverSheet()));
 
-    final image = tester.widget<Image>(find.byType(Image));
+    final image = tester.widget<Image>(find.byKey(const Key('cover-image')));
     expect(image.fit, BoxFit.contain);
+
+    // Un fond atténué remplit l’écran : pas de grandes bandes vides.
+    expect(find.byKey(const Key('cover-backdrop')), findsOneWidget);
   });
 
   testWidgets('la couverture recadre en format paysage', (tester) async {
@@ -24,8 +27,9 @@ void main() {
 
     await tester.pumpWidget(const MaterialApp(home: CoverSheet()));
 
-    final image = tester.widget<Image>(find.byType(Image));
+    final image = tester.widget<Image>(find.byKey(const Key('cover-image')));
     expect(image.fit, BoxFit.cover);
+    expect(find.byKey(const Key('cover-backdrop')), findsNothing);
   });
 
   testWidgets('la couverture s’affiche au lancement puis se retire', (

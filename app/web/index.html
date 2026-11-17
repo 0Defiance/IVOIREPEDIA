@@ -58,14 +58,19 @@
 
     /* En format téléphone, afficher l'image entière pour ne pas couper
        le titre à gauche. Les espaces libres restent dans le ton du papier. */
-    @media (max-aspect-ratio: 4/5) {
-      #loading {
-        background: linear-gradient(180deg, #F3E6D1, #FBF9F4);
-      }
-
-      #loading img {
-        object-fit: contain;
-      }
+        @media (max-aspect-ratio: 4/5) {
+      #loading {
+        /* La même image, très atténuée, remplit l’écran derrière la
+           couverture contenue : aucune bande vide, aucun titre coupé. */
+        background-image: linear-gradient(rgba(251, 249, 244, 0.78), rgba(251, 249, 244, 0.88)),
+          url("cover.webp");
+        background-size: cover;
+        background-position: center;
+      }
+
+      #loading img {
+        object-fit: contain;
+      }
     }
 
     /* Filet de chargement : orange → or → vert, qui balaie le bas. */
