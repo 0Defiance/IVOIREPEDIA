@@ -936,6 +936,10 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 - `flutter analyze` : aucune remarque. `flutter test` : **41 tests** verts (+4).
 - Backend : `php artisan test` **47 tests, 1 203 assertions** ; `pint --test` propre ; `phpstan` sans erreur (deux corrections : import inutilisé et `@property-read User|null` sur `ApiToken`, qui rendait le test de nullité inutile aux yeux de l'analyseur).
 - Les tests ont aussi attrapé trois défauts réels de la séance : le débordement d'en-tête, deux libellés ambigus (« Se connecter », « Se déconnecter » existent aussi dans le tiroir) et l'absence d'`AuthScope` dans les tests qui montent une page seule.
+- Build release (`main.dart.js` 3 001 722 o, `main.dart.js_1.part.js` 969 149 o ; compilation 248 s). L'envoi s'est fait par `tar` sur SSH — `rsync` n'existe pas sur le poste — en laissant CanvasKit en place (37 Mo inchangés) et sans toucher à `index.php`, `.htaccess` ni `storage/`.
+- Serveur passé à `19e10f5` (`git pull --ff-only` après `git checkout -- backend/public/.htaccess`) ; migration `2026_11_18_000001_create_api_tokens_table` jouée en 40 ms ; caches de routes et de configuration vidés.
+- En production : `/` 200, `/favicon.ico?v=2` 200 en `image/vnd.microsoft.icon` (18 523 o, quatre tailles), `/favicon.png?v=2` 2 888 o, `/icons/Icon-32.png` 2 888 o, `/icons/apple-touch-icon.png?v=2` 47 244 o, `/manifest.json` 200, `/main.dart.js` 3 001 722 o, `/logo.webp` 200, `/assets/assets/images/marque.webp` 200 (130 166 o). Depuis l'adresse profonde `/articles/abidjan`, les six liens d'icônes et de manifeste sont les mêmes, en absolu.
+- API en production : `/auth/me` sans jeton → 401 `UNAUTHENTICATED` ; `/auth/login` avec un mauvais mot de passe → 422 `INVALID_CREDENTIALS` ; `/auth/register` vide → 422 avec les messages français champ par champ ; `/health` 200.
 
 **Limites**
 - La devise gravée dans l'image de signature reste peu contrastée en thème nuit ; l'en-tête affiche la devise en texte du thème.
