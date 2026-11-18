@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ivoirepedia/src/ui/cover.dart';
 
 void main() {
-  testWidgets('la couverture entière tient dans l’écran portrait', (
+  testWidgets('la couverture garde la signature entière sur téléphone', (
     tester,
   ) async {
     tester.view.devicePixelRatio = 1;
@@ -15,12 +15,18 @@ void main() {
 
     final image = tester.widget<Image>(find.byKey(const Key('cover-image')));
     expect(image.fit, BoxFit.contain);
+    expect(image.height, lessThanOrEqualTo(260));
 
-    // Un fond atténué remplit l’écran : pas de grandes bandes vides.
+    // Le pagne documenté remplit l’écran derrière la signature.
     expect(find.byKey(const Key('cover-backdrop')), findsOneWidget);
+    expect(
+      find.text('Articles sourcés · Lecture libre · CC BY-SA 4.0'),
+      findsOneWidget,
+    );
+    expect(tester.takeException(), isNull);
   });
 
-  testWidgets('la couverture recadre en format paysage', (tester) async {
+  testWidgets('la couverture reste contenue sur grand écran', (tester) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(1280, 800);
     addTearDown(tester.view.reset);
@@ -28,8 +34,9 @@ void main() {
     await tester.pumpWidget(const MaterialApp(home: CoverSheet()));
 
     final image = tester.widget<Image>(find.byKey(const Key('cover-image')));
-    expect(image.fit, BoxFit.cover);
-    expect(find.byKey(const Key('cover-backdrop')), findsNothing);
+    expect(image.fit, BoxFit.contain);
+    expect(image.height, 260);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('la couverture s’affiche au lancement puis se retire', (

@@ -233,7 +233,8 @@ String _referenceLine(ArticleReference reference) => [
     ].join(', ');
 
 String _sourceLine(ArticleDetail article) =>
-    'Source : IVOIREPEDIA, l’encyclopédie libre — ${articleUrl(article.slug)}';
+    'Source : Ivoirepedia, l’encyclopédie libre de la Côte d’Ivoire — '
+    '${articleUrl(article.slug)}';
 
 // ---------------------------------------------------------------------------
 // PDF
@@ -397,7 +398,7 @@ Future<Uint8List> buildArticlePdf(
         ),
         pw.SizedBox(height: 5),
         pw.Text(
-          'Texte extrait d’IVOIREPEDIA, l’encyclopédie libre, le '
+          'Texte extrait d’Ivoirepedia, l’encyclopédie libre de la Côte d’Ivoire, le '
           '${_formatDate(generated)}. '
           'Reproduction autorisée sous licence $kContentLicense, source citée.',
           style: style(size: 8.5, color: _faint, lineSpacing: 1.5),

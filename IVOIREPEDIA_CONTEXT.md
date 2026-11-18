@@ -32,6 +32,8 @@
 
 **IVOIREPEDIA** est une encyclopédie numérique libre et open source consacrée exclusivement à la documentation, la structuration et la valorisation du savoir ivoirien : histoire, géographie, personnalités, institutions, langues, culture, économie, patrimoine.
 
+**Devise officielle** (17 novembre 2026) : « Ivoirepedia, l’encyclopédie libre de la Côte d’Ivoire ». Elle sert de titre à l’onglet du navigateur, de signature de la marque et de mention de source dans les exports.
+
 ### 1.1 Problème résolu
 - Savoir ivoirien dispersé, peu sourcé, souvent rédigé depuis un regard extérieur.
 - Pas de modèle de données unifié pour les biographies, régions, institutions.

@@ -2,9 +2,23 @@ import 'package:flutter/material.dart';
 
 import 'theme.dart';
 
-/// Marque IVOIREPEDIA : un médaillon aux trois bandes du drapeau ivoirien
-/// (orange, blanc, vert), cerclé de vert profond. Dessiné en code : net à
-/// toute taille, aucun fichier binaire à maintenir.
+/// Emblème fourni par le propriétaire du site : un « I » de bois vert, dont
+/// l'éléphant porte une oreille orange et une oreille verte — les deux
+/// couleurs du drapeau, réunies sur l'ivoire.
+const String kEmblemAsset = 'assets/images/marque.webp';
+
+/// Le mot-symbole seul, dans la typographie de la marque.
+const String kWordmarkAsset = 'assets/images/logo-mot.webp';
+
+/// La signature complète : emblème, nom et devise. Réservée aux grands
+/// formats (couverture, pied de page), car la devise y devient illisible en
+/// dessous de 120 px de haut.
+const String kLockupAsset = 'assets/images/logo.webp';
+
+/// Devise officielle du site, reprise dans l'onglet du navigateur.
+const String kTagline = 'Ivoirepedia, l’encyclopédie libre de la Côte d’Ivoire';
+
+/// L'emblème seul, à sa taille d'usage (en-tête, encarts, fond de page).
 class IvoireMark extends StatelessWidget {
   const IvoireMark({super.key, this.size = 40});
 
@@ -12,75 +26,22 @@ class IvoireMark extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: size,
+    return Image.asset(
+      kEmblemAsset,
+      key: const ValueKey('brand-emblem'),
       height: size,
-      child: CustomPaint(painter: _MarkPainter()),
+      width: size,
+      fit: BoxFit.contain,
+      filterQuality: FilterQuality.high,
+      excludeFromSemantics: true,
     );
   }
 }
 
-class _MarkPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final w = size.width;
-    final center = Offset(w / 2, w / 2);
-    final radius = w * 0.46;
-
-    final clip = Path()
-      ..addOval(Rect.fromCircle(center: center, radius: radius));
-
-    canvas.save();
-    canvas.clipPath(clip);
-
-    // Trois bandes verticales, comme le drapeau.
-    final band = radius * 2 / 3;
-    canvas.drawRect(
-      Rect.fromLTWH(center.dx - radius, center.dy - radius, band, radius * 2),
-      Paint()..color = IvoireColors.orange,
-    );
-    canvas.drawRect(
-      Rect.fromLTWH(
-        center.dx - radius + band,
-        center.dy - radius,
-        band,
-        radius * 2,
-      ),
-      Paint()..color = Colors.white,
-    );
-    canvas.drawRect(
-      Rect.fromLTWH(
-        center.dx - radius + band * 2,
-        center.dy - radius,
-        band,
-        radius * 2,
-      ),
-      Paint()..color = IvoireColors.green,
-    );
-
-    // Voile haut/bas : donne du relief au médaillon.
-    canvas.drawRect(
-      Rect.fromLTWH(0, 0, w, w * 0.34),
-      Paint()..color = Colors.white.withValues(alpha: 0.18),
-    );
-
-    canvas.restore();
-
-    canvas.drawCircle(
-      center,
-      radius,
-      Paint()
-        ..color = IvoireColors.greenDeep
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = w * 0.06,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
-/// Marque + nom + devise, dans une seule famille typographique.
+/// Marque d'en-tête : l'emblème, puis le mot-symbole et la devise.
+///
+/// Les deux images sont détourées : elles se posent sur le papier du thème
+/// (ivoire, sépia ou nuit) sans rectangle blanc autour.
 class IvoireLogo extends StatelessWidget {
   const IvoireLogo({
     super.key,
@@ -89,7 +50,10 @@ class IvoireLogo extends StatelessWidget {
     this.tagline = true,
   });
 
+  /// Hauteur de l'emblème ; le mot-symbole et la devise suivent son échelle.
   final double size;
+
+  /// Variante resserrée : la devise reste sur une seule ligne courte.
   final bool compact;
 
   /// Sur un téléphone, la devise allonge la marque sans apporter d'information
@@ -100,33 +64,37 @@ class IvoireLogo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         IvoireMark(size: size),
-        const SizedBox(width: 10),
+        SizedBox(width: size * 0.22),
         Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'IVOIREPEDIA',
-              style: titleStyle(
-                size: size * 0.42,
-                weight: FontWeight.w700,
-                letterSpacing: 0.2,
-              ),
+            Image.asset(
+              kWordmarkAsset,
+              key: const ValueKey('brand-wordmark'),
+              height: size * 0.46,
+              fit: BoxFit.contain,
+              filterQuality: FilterQuality.high,
+              excludeFromSemantics: true,
             ),
-            if (tagline)
+            if (tagline) ...[
+              SizedBox(height: size * 0.06),
               Text(
-                compact
-                    ? "L'encyclopédie libre"
-                    : "L'encyclopédie ivoirienne libre",
-                style: const TextStyle(
-                  fontSize: 10.5,
+                compact ? 'L’encyclopédie libre de la Côte d’Ivoire' : kTagline,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontFamily: kFont,
+                  fontSize: size * 0.235,
                   height: 1.2,
-                  letterSpacing: 0.1,
+                  letterSpacing: 0.05,
                   color: IvoireColors.muted,
                 ),
               ),
+            ],
           ],
         ),
       ],

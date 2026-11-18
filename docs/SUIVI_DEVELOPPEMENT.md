@@ -826,6 +826,45 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 33 — 17 novembre 2026 · Nouvelle marque et accueil de type portail
+
+**Demande**
+- Remplacer l'icône de l'onglet par l'emblème fourni (le « I » à tête d'éléphant) et le titre de l'onglet par « Ivoirepedia, l'encyclopédie libre de la Côte d'Ivoire », désormais devise du site.
+- Remplacer le logo principal (médaillon drapeau + « IVOIREPEDIA ») par les visuels fournis, et intégrer chaque image selon sa nature et sa fonction.
+- Faire vivre les motifs culturels et les images de la maison de façon professionnelle et interactive, fond compris.
+- Retirer les tics visuels de « site généré » (pastille « ENCYCLOPÉDIE LIBRE · CÔTE D'IVOIRE », cartes à liseré, chiffres 01-02-03) et rapprocher l'accueil d'un portail encyclopédique, sans copier Wikipédia.
+
+**Fait — marque**
+- Trois fichiers dérivés des visuels du propriétaire, détourés sur fond transparent : `marque.webp` (emblème), `logo-mot.webp` (mot-symbole) et `logo.webp` (signature complète emblème + nom + devise). Les anciens `assets/images/couverture.webp` et `web/cover.webp` — une illustration qui portait l'ancienne marque et un sous-titre anglais — sont retirés.
+- `brand.dart` : `kTagline` fixe la devise ; `IvoireMark` et `IvoireLogo` affichent les images. L'en-tête combine emblème, mot-symbole et devise ; sous 620 px la devise se replie et seule la marque reste.
+- `web/index.html` : titre d'onglet exact, description française, `theme-color` ivoire, favicon 64 px, apple-touch-icon 180 px et écran de chargement avec la signature sur une trame de pagne en CSS.
+- `web/manifest.json` : nom, description, couleurs et icônes PWA mis à jour ; `favicon.ico` (16/32/48) et `favicon.png` régénérés depuis l'emblème, y compris dans `backend/public/` où l'ancien favicon Flutter restait servi.
+- Devise reprise dans le titre `MaterialApp`, le pied de page, la couverture, l'export PDF et la mention de bas d'article.
+- `PageKicker` : les pastilles arrondies deviennent un court filet et un libellé, sur toutes les pages intérieures.
+
+**Fait — accueil**
+- `_Masthead` : signature complète, phrase de présentation, compteurs, puis barre « Portails » listant les huit domaines avec leur nombre d'articles.
+- Titres de section : libellé et filet fin, sans losanges ni cartes à liseré. L'article du jour passe en pleine largeur (photo sourcée avec son crédit, titre, chapô), « Aujourd'hui dans l'histoire » devient une liste, le défi garde sa correction immédiate mais sur papier blanc, la frise reste une bande à faire défiler.
+- Colonne de droite : les chiffres forment une liste de définitions, l'article au hasard un encart discret, puis la reprise de lecture et « Contribuer ».
+- « Portails thématiques » remplace les trois cartes de parcours et les tuiles colorées ; la page reste un portail, pas une page de vente.
+- Fond : l'emblème veille en bas à droite (5 %, dérive très lente) derrière le pagne documenté et réactif au pointeur ; il reste décoratif et ne passe jamais devant le texte.
+- Couverture : la signature se pose sur le pagne peint, à la place de l'ancienne illustration.
+
+**Vérifié**
+- `flutter analyze` : aucune remarque ; `flutter test` : **37 tests** verts (+1 : titre de l'application = devise, présence de l'emblème, du mot-symbole et de l'emblème de fond) ; les tests de couverture sont adaptés à la nouvelle composition.
+- Build release (`main.dart.js` 3 863 580 o) envoyé dans `~/ivoirepedia/backend/public` ; `index.php`, `.htaccess` et `storage/` préservés.
+- En ligne : `/` 200, `/favicon.png` 200 (7 881 o), `/logo.png` 200, `/manifest.json` 200, les trois images `assets/assets/images/*.webp` 200, `/main.dart.js` 200, `/api/v1/health` 200.
+- Titre de l'onglet vérifié dans le navigateur : « Ivoirepedia, l'encyclopédie libre de la Côte d'Ivoire ».
+- Rendu contrôlé en 1280×900 : en-tête avec emblème, mot-symbole et devise ; manchette centrée ; barre des portails ; article du jour avec photo et crédit ; sections à filet ; chiffres et article au hasard dans la colonne de droite. En 390×844 : marque réduite sans débordement, portails sur trois lignes, article du jour lisible. Captures `docs/captures/accueil-marque-2026-11-17.png` et `accueil-marque-telephone-2026-11-17.png`.
+
+**Limites**
+- La couverture n'a pas été photographiée en production : elle dure 2,2 s et la fenêtre de prévisualisation n'était pas dessinée au bon moment. Son rendu est couvert par les tests de widgets, pas par une capture.
+- Les survols et le clic du défi sont couverts par les tests de widgets, pas par une interaction réelle dans le navigateur.
+- Les logos sont des images bitmap issues des visuels fournis (1600 px de large) : ils restent nets aux tailles du site, mais une version vectorielle serait préférable pour l'impression et les très grands écrans.
+- Aucun appareil physique n'a été testé.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

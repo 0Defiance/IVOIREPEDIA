@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../../brand.dart';
 import '../../theme.dart';
 
 /// Interrupteur global du mouvement décoratif (fond, bande tissée). Les tests
@@ -132,6 +133,34 @@ class _IvorianBackdropState extends State<IvorianBackdrop>
                   ),
                   isComplex: true,
                   willChange: true,
+                ),
+              ),
+            ),
+            // L'emblème veille au fond, très pâle et en léger mouvement : la
+            // marque habite le site sans jamais passer devant le texte.
+            Positioned(
+              right: -46,
+              bottom: -38,
+              child: IgnorePointer(
+                child: AnimatedBuilder(
+                  animation: _drift,
+                  builder: (context, child) => Transform.translate(
+                    offset: Offset(
+                      0,
+                      math.sin(_drift.value * 2 * math.pi) * 8,
+                    ),
+                    child: child,
+                  ),
+                  child: const Opacity(
+                    opacity: 0.05,
+                    child: Image(
+                      image: AssetImage(kEmblemAsset),
+                      key: ValueKey('backdrop-emblem'),
+                      width: 400,
+                      fit: BoxFit.contain,
+                      excludeFromSemantics: true,
+                    ),
+                  ),
                 ),
               ),
             ),

@@ -419,7 +419,7 @@ class _ArticleBodyState extends State<_ArticleBody> {
                 children: [
                   if (!compact)
                     Text(
-                      "Un article de IVOIREPEDIA, l'encyclopédie libre.",
+                      'Un article d’Ivoirepedia, l’encyclopédie libre de la Côte d’Ivoire.',
                       style: TextStyle(
                         fontSize: 12.5,
                         color: tone.muted,

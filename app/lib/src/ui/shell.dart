@@ -258,7 +258,7 @@ class _Header extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
                 child: IvoireLogo(
-                  size: showSearch ? 40 : 32,
+                  size: showSearch ? 44 : 34,
                   compact: !showSearch,
                   tagline: !narrow,
                 ),
@@ -868,12 +868,35 @@ class _Footer extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const MotifDivider(),
-          const SizedBox(height: 12),
-          Text(
-            'Le contenu est disponible sous licence CC BY-SA 4.0, sauf mention contraire.',
-            style: TextStyle(fontSize: 12.5, color: tone.muted),
+          const SizedBox(height: 14),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const IvoireMark(size: 34),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      kTagline,
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w600,
+                        color: tone.ink,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Le contenu est disponible sous licence CC BY-SA 4.0, sauf mention contraire.',
+                      style: TextStyle(fontSize: 12, color: tone.muted),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Wrap(
             spacing: 18,
             runSpacing: 8,

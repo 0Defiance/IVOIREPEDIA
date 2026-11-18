@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../api.dart';
+import '../brand.dart';
 import '../models/article.dart';
 import '../models/category.dart';
 import '../models/statistics.dart';
@@ -13,11 +14,11 @@ import 'shell.dart';
 import 'wiki_actions.dart';
 import 'widgets/article_image.dart';
 import 'widgets/interactive.dart';
-import 'widgets/ivorian_patterns.dart';
 
-/// Page d'accueil : une « une » d'encyclopédie. Une bande d'ouverture, les
-/// chiffres du pays, l'article du jour, un jalon du jour, la frise en un coup
-/// d'œil, puis les domaines et les outils du lecteur.
+/// Page d'accueil : un portail d'encyclopédie. La marque et la devise ouvrent
+/// la page, les portails donnent le plan, puis viennent l'article du jour,
+/// le rappel historique, le défi, la frise, les chiffres et les outils du
+/// lecteur.
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -69,7 +70,7 @@ class _HomePageState extends State<HomePage> {
     try {
       statistics = await api.fetchStatistics();
     } catch (_) {
-      // Statistiques indisponibles : les cartes de chiffres disparaissent.
+      // Statistiques indisponibles : les chiffres disparaissent.
     }
 
     return _HomeData(
@@ -140,30 +141,17 @@ class _HomeBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final stats = data.statistics;
     final timeline = data.timeline;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _Hero(
+        _Masthead(
           articleCount: data.articles.total,
           domains: data.categories.length,
-          timeline: timeline,
-          stats: stats,
-          lead: data.articles.items.isEmpty ? null : data.articles.items.first,
+          categories: data.categories,
         ),
-        const SizedBox(height: 22),
-        _KeyFigures(
-          stats: stats,
-          timeline: timeline,
-          articleCount: data.articles.total,
-        ),
-        if (data.categories.isNotEmpty) ...[
-          const SizedBox(height: 28),
-          _LearningPaths(categories: data.categories),
-        ],
-        const SizedBox(height: 32),
+        const SizedBox(height: 26),
         LayoutBuilder(
           builder: (context, constraints) {
             final wide = constraints.maxWidth >= 900;
@@ -175,61 +163,40 @@ class _HomeBody extends StatelessWidget {
                 children: [
                   _LeadStory(page: data.articles),
                   if (timeline.isNotEmpty) ...[
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 30),
                     _TodayInHistory(events: timeline),
                     if (timeline.length >= 2) ...[
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 26),
                       _DailyChallenge(events: timeline),
                     ],
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 30),
                     _TimelineRail(events: timeline),
                   ],
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 30),
                   _DidYouKnow(page: data.articles),
-                  const SizedBox(height: 28),
-                  _Domains(categories: data.categories),
                 ],
               ),
             );
 
             final aside = Column(
               children: [
-                _ReadingResume(),
-                const SizedBox(height: 16),
-                _RandomPickCard(onRandom: onRandom),
-                const SizedBox(height: 16),
-                _AsideBox(
-                  title: 'Contribuer',
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'IVOIREPEDIA se construit à plusieurs : chercheurs, '
-                        'enseignants, étudiants, gardiens de la mémoire.',
-                        style: TextStyle(fontSize: 13, height: 1.55),
-                      ),
-                      const SizedBox(height: 10),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: HoverLink(
-                          label: 'Créer un compte',
-                          onTap: () =>
-                              wikiNotImplemented(context, 'Créer un compte'),
-                          style: const TextStyle(
-                            fontSize: 13.5,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                _KeyFigures(
+                  stats: data.statistics,
+                  timeline: timeline,
+                  articleCount: data.articles.total,
                 ),
+                const SizedBox(height: 18),
+                _RandomPickCard(onRandom: onRandom),
+                const SizedBox(height: 18),
+                const _ReadingResume(),
+                const SizedBox(height: 18),
+                const _ContributeBox(),
               ],
             );
 
             if (!wide) {
               return Column(
-                children: [main, const SizedBox(height: 22), aside],
+                children: [main, const SizedBox(height: 26), aside],
               );
             }
 
@@ -237,499 +204,171 @@ class _HomeBody extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(child: main),
-                const SizedBox(width: 34),
-                SizedBox(width: 292, child: aside),
+                const SizedBox(width: 36),
+                SizedBox(width: 300, child: aside),
               ],
             );
           },
         ),
+        if (data.categories.isNotEmpty) ...[
+          const SizedBox(height: 34),
+          _Portals(categories: data.categories),
+        ],
       ],
     );
   }
 }
 
-/// Bande d'ouverture : une photographie sourcée à droite, la promesse du
-/// site à gauche, et trois portes d'entrée (le temps, les territoires, les
-/// chiffres). L'image est celle de l'article de la une, avec son crédit.
-class _Hero extends StatelessWidget {
-  const _Hero({
+/// En-tête de la page d'accueil : la signature complète, la phrase de
+/// présentation, les compteurs, puis la barre des portails — comme la
+/// manchette d'un portail encyclopédique, sans slogan publicitaire.
+class _Masthead extends StatelessWidget {
+  const _Masthead({
     required this.articleCount,
     required this.domains,
-    required this.timeline,
-    required this.stats,
-    this.lead,
+    required this.categories,
   });
 
   final int articleCount;
   final int domains;
-  final List<TimelineEvent> timeline;
-  final StatisticsSnapshot? stats;
-  final ArticleSummary? lead;
+  final List<Category> categories;
 
   @override
   Widget build(BuildContext context) {
-    final census = stats?.census;
-    final span = timeline.isEmpty
-        ? null
-        : '${timeline.first.year} → ${timeline.last.year}';
-    final regions = stats?.regions.length ?? 0;
-    final districts = stats?.districts.length ?? 0;
+    final tone = ToneColors.from(context);
+    final narrow = MediaQuery.sizeOf(context).width < 560;
 
-    // Sur téléphone, un titre à 40 px tient sur trois lignes et repousse tout
-    // le reste hors de l'écran : on resserre l'échelle et les marges.
-    final narrow = MediaQuery.sizeOf(context).width < 640;
-
-    final content = Padding(
-      padding: EdgeInsets.fromLTRB(
-        narrow ? 18 : 26,
-        narrow ? 18 : 24,
-        narrow ? 18 : 26,
-        narrow ? 22 : 26,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              // La pastille peut se replier sur deux lignes quand le texte est
-              // agrandi, au lieu de déborder de l'écran.
-              Flexible(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 9,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: IvoireColors.green.withValues(alpha: 0.08),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: IvoireColors.green.withValues(alpha: 0.18),
-                    ),
-                  ),
-                  child: Text(
-                    'ENCYCLOPÉDIE LIBRE · CÔTE D’IVOIRE',
-                    style: kickerStyle(color: IvoireColors.greenDeep),
-                  ),
-                ),
-              ),
-            ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Center(
+          child: Image.asset(
+            kLockupAsset,
+            height: narrow ? 126 : 166,
+            fit: BoxFit.contain,
+            filterQuality: FilterQuality.medium,
+            semanticLabel: kTagline,
           ),
-          const SizedBox(height: 14),
-          ConstrainedBox(
+        ),
+        const SizedBox(height: 14),
+        Center(
+          child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 720),
             child: Text(
-              'La Côte d’Ivoire, documentée.',
-              style: titleStyle(
-                size: narrow ? 32 : 40,
-                weight: FontWeight.w700,
-                height: 1.12,
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 620),
-            child: Text(
-              "IVOIREPEDIA est une encyclopédie libre consacrée à la "
-              "Côte d'Ivoire : ses territoires, son histoire, ses langues, "
-              'ses institutions et ses cultures. Chacun peut la lire et '
-              'l’enrichir ; les articles s’appuient sur des sources citées.',
+              'Une encyclopédie libre consacrée à la Côte d’Ivoire : ses '
+              'territoires, son histoire, ses langues, ses institutions, ses '
+              'cultures et son patrimoine.',
+              textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: narrow ? 14.5 : 15.5,
-                height: narrow ? 1.62 : 1.7,
-                color: IvoireColors.muted,
+                fontSize: narrow ? 13.5 : 14.5,
+                height: 1.65,
+                color: tone.muted,
               ),
             ),
           ),
-          SizedBox(height: narrow ? 16 : 18),
-          Wrap(
-            spacing: narrow ? 16 : 22,
-            runSpacing: 10,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              AnimatedCount(value: articleCount, label: 'articles publiés'),
-              AnimatedCount(value: domains, label: 'domaines'),
-              if (span != null)
-                _HeroStat(value: span, label: 'd’histoire couverte'),
-              if (census != null && regions > 0)
-                _HeroStat(
-                  value: '$regions régions',
-                  label: '$districts districts',
-                ),
-            ],
-          ),
-          SizedBox(height: narrow ? 16 : 20),
-          const _HeroDoors(),
-        ],
-      ),
-    );
-
-    return Container(
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
-        color: IvoireColors.ivory,
-        border: Border.all(color: IvoireColors.lineSoft),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: IvoireColors.ink.withValues(alpha: 0.04),
-            blurRadius: 26,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Filet de tissu : le seul endroit où les trois couleurs du
-          // drapeau se touchent.
-          Row(
-            children: [
-              for (final color in IvoireColors.weave)
-                Expanded(child: Container(height: 4, color: color)),
-            ],
-          ),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              if (constraints.maxWidth < 900) {
-                return content;
-              }
-
-              // Panneau posé en fond de la colonne de droite : `Positioned`
-              // lui donne la hauteur exacte de l'ouverture, sans contrainte
-              // infinie.
-              return Stack(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 336),
-                    child: content,
-                  ),
-                  Positioned(
-                    top: 0,
-                    right: 0,
-                    bottom: 0,
-                    width: 336,
-                    child: _HeroIllustration(article: lead),
-                  ),
-                ],
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Panneau illustré de l'ouverture : la photographie de l'article de la une,
-/// sa légende et son crédit. L'image s'agrandit doucement au survol, comme une
-/// couverture de magazine, et mène à l'article. Sans image, le panneau reste
-/// un aplat sobre.
-class _HeroIllustration extends StatefulWidget {
-  const _HeroIllustration({this.article});
-
-  final ArticleSummary? article;
-
-  @override
-  State<_HeroIllustration> createState() => _HeroIllustrationState();
-}
-
-class _HeroIllustrationState extends State<_HeroIllustration> {
-  bool _hover = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final article = widget.article;
-    final url = article?.coverImageUrl;
-    final tone = ToneColors.from(context);
-
-    if (article == null || url == null || url.isEmpty) {
-      return DecoratedBox(
-        decoration: BoxDecoration(
-          color: tone.subtle,
-          border: Border(left: BorderSide(color: tone.lineSoft)),
         ),
-        child: Center(
-          child: Icon(Icons.photo_outlined, size: 30, color: tone.faint),
-        ),
-      );
-    }
-
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) => setState(() => _hover = true),
-      onExit: (_) => setState(() => _hover = false),
-      child: GestureDetector(
-        onTap: () => wikiGo(context, '/articles/${article.slug}'),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            border: Border(left: BorderSide(color: tone.lineSoft)),
-          ),
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              ClipRect(
-                child: AnimatedScale(
-                  scale: _hover ? 1.07 : 1,
-                  duration: const Duration(milliseconds: 700),
-                  curve: Curves.easeOut,
-                  child: Image.network(
-                    url,
-                    fit: BoxFit.cover,
-                    semanticLabel: article.coverImageAlt,
-                    errorBuilder: (_, _, _) => ColoredBox(color: tone.subtle),
-                  ),
-                ),
-              ),
-              const DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    stops: [0.0, 0.34, 1.0],
-                    colors: [
-                      Color(0x8C0F1714),
-                      Color(0x000F1714),
-                      Color(0xE61A1512),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                top: 14,
-                left: 14,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 9,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: IvoireColors.orange.withValues(alpha: 0.94),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    'À LA UNE',
-                    style: kickerStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-              Positioned(
-                left: 16,
-                right: 16,
-                bottom: 16,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      article.title,
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 17,
-                        height: 1.28,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      [
-                        if (article.imageCredit != null)
-                          'Photo : ${article.imageCredit}',
-                        if (article.coverImageLicense != null)
-                          article.coverImageLicense!,
-                      ].join(' · '),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 10.5,
-                        height: 1.4,
-                        color: Color(0xCCFFFFFF),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Text(
-                          'Découvrir',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white.withValues(alpha: 0.92),
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        Icon(
-                          Icons.arrow_forward,
-                          size: 13,
-                          color: Colors.white.withValues(alpha: 0.92),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _HeroStat extends StatelessWidget {
-  const _HeroStat({required this.value, required this.label});
-
-  final String value;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+        const SizedBox(height: 6),
         Text(
-          value,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-            color: IvoireColors.ink,
-          ),
+          '$articleCount articles · $domains domaines · Chaque article cite ses sources',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 12, color: tone.faint),
         ),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 11.5, color: IvoireColors.faint),
-        ),
+        const SizedBox(height: 20),
+        _PortalBar(categories: categories),
       ],
     );
   }
 }
 
-/// Trois portes : le temps, les territoires, les chiffres.
-class _HeroDoors extends StatelessWidget {
-  const _HeroDoors();
+/// Barre des portails : une seule ligne de liens, avec le nombre d'articles.
+/// Sur téléphone, les liens passent à la ligne plutôt que de défiler.
+class _PortalBar extends StatelessWidget {
+  const _PortalBar({required this.categories});
+
+  final List<Category> categories;
 
   @override
   Widget build(BuildContext context) {
-    final doors = [
-      (
-        icon: Icons.schedule,
-        label: 'La frise du temps',
-        detail: 'De 1701 à aujourd’hui',
-        route: '/chronologie',
-      ),
-      (
-        icon: Icons.place_outlined,
-        label: 'Villes et régions',
-        detail: 'Districts, régions, chef-lieu',
-        route: '/lieux',
-      ),
-      (
-        icon: Icons.insights_outlined,
-        label: 'Les chiffres du pays',
-        detail: 'Population, économie, climat',
-        route: '/statistiques',
-      ),
-    ];
+    final tone = ToneColors.from(context);
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final columns = constraints.maxWidth >= 720 ? 3 : 1;
-        final width = (constraints.maxWidth - (columns - 1) * 10) / columns;
-
-        return Wrap(
-          spacing: 10,
-          runSpacing: 10,
-          children: [
-            for (final door in doors)
-              SizedBox(
-                width: width,
-                child: _DoorTile(
-                  icon: door.icon,
-                  label: door.label,
-                  detail: door.detail,
-                  onTap: () => wikiGo(context, door.route),
-                ),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 9),
+      decoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(color: tone.lineSoft),
+          bottom: BorderSide(color: tone.lineSoft),
+        ),
+      ),
+      child: Wrap(
+        alignment: WrapAlignment.center,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: 2,
+        runSpacing: 2,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Text(
+              'Portails',
+              style: TextStyle(
+                fontSize: 11.5,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.4,
+                color: tone.faint,
               ),
-          ],
-        );
-      },
+            ),
+          ),
+          for (final category in categories.take(8))
+            _PortalLink(category: category),
+        ],
+      ),
     );
   }
 }
 
-class _DoorTile extends StatefulWidget {
-  const _DoorTile({
-    required this.icon,
-    required this.label,
-    required this.detail,
-    required this.onTap,
-  });
+class _PortalLink extends StatefulWidget {
+  const _PortalLink({required this.category});
 
-  final IconData icon;
-  final String label;
-  final String detail;
-  final VoidCallback onTap;
+  final Category category;
 
   @override
-  State<_DoorTile> createState() => _DoorTileState();
+  State<_PortalLink> createState() => _PortalLinkState();
 }
 
-class _DoorTileState extends State<_DoorTile> {
+class _PortalLinkState extends State<_PortalLink> {
   bool _hover = false;
 
   @override
   Widget build(BuildContext context) {
+    final tone = ToneColors.from(context);
+    final color = _hover ? IvoireColors.greenDeep : IvoireColors.link;
+
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       onEnter: (_) => setState(() => _hover = true),
       onExit: (_) => setState(() => _hover = false),
       child: GestureDetector(
-        onTap: widget.onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
-          curve: Curves.easeOut,
-          transform: Matrix4.translationValues(0, _hover ? -2 : 0, 0),
-          padding: const EdgeInsets.fromLTRB(14, 12, 14, 13),
-          decoration: BoxDecoration(
-            color: _hover
-                ? IvoireColors.paper
-                : IvoireColors.paper.withValues(alpha: 0.7),
-            border: Border.all(
-              color: _hover ? IvoireColors.green : IvoireColors.lineSoft,
-            ),
-            borderRadius: BorderRadius.circular(9),
-          ),
+        onTap: () => wikiGo(context, '/categories/${widget.category.slug}'),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           child: Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(widget.icon, size: 18, color: IvoireColors.green),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.label,
-                      style: const TextStyle(
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w600,
-                        color: IvoireColors.ink,
-                      ),
-                    ),
-                    Text(
-                      widget.detail,
-                      style: const TextStyle(
-                        fontSize: 11.5,
-                        color: IvoireColors.faint,
-                      ),
-                    ),
-                  ],
+              Text(
+                widget.category.name,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: color,
+                  decoration: _hover
+                      ? TextDecoration.underline
+                      : TextDecoration.none,
+                  decorationColor: color,
                 ),
               ),
-              Icon(
-                Icons.arrow_forward,
-                size: 14,
-                color: _hover ? IvoireColors.green : IvoireColors.faint,
+              const SizedBox(width: 4),
+              Text(
+                '${widget.category.articleCount}',
+                style: TextStyle(fontSize: 10.5, color: tone.faint),
               ),
             ],
           ),
@@ -739,240 +378,56 @@ class _DoorTileState extends State<_DoorTile> {
   }
 }
 
-/// Quatre chiffres, chacun menant à la page qui les détaille.
-class _KeyFigures extends StatelessWidget {
-  const _KeyFigures({
-    required this.stats,
-    required this.timeline,
-    required this.articleCount,
-  });
+/// Titre de section : un libellé, un filet fin, puis le contenu. Aucun losange
+/// décoratif ici : le rythme de la page vient de la typographie et du filet.
+class _Section extends StatelessWidget {
+  const _Section({required this.title, required this.child, this.trailing});
 
-  final StatisticsSnapshot? stats;
-  final List<TimelineEvent> timeline;
-  final int articleCount;
+  final String title;
+  final Widget child;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
-    final cards = <Widget>[];
-    final population = _indicator(stats, 'SP.POP.TOTL');
+    final tone = ToneColors.from(context);
+    final narrow = MediaQuery.sizeOf(context).width < 460;
 
-    if (population != null) {
-      cards.add(
-        _FigureCard(
-          kicker: 'POPULATION',
-          value: population.display ?? '—',
-          caption: population.trend?.display ?? 'Donnée ${population.year}',
-          accent: IvoireColors.orange,
-          route: '/statistiques',
-          detail: 'Chiffres du pays',
-        ),
-      );
-    }
-
-    final census = stats?.census;
-    final regions = stats?.regions.length ?? 0;
-    final districts = stats?.districts.length ?? 0;
-    if (census != null && regions > 0) {
-      cards.add(
-        _FigureCard(
-          kicker: 'TERRITOIRES',
-          value: '$regions régions',
-          caption: '$districts districts · RGPH ${census.year}',
-          accent: IvoireColors.green,
-          route: '/lieux',
-          detail: 'Villes et régions',
-        ),
-      );
-    }
-
-    if (timeline.isNotEmpty) {
-      cards.add(
-        _FigureCard(
-          kicker: 'HISTOIRE',
-          value: '${timeline.length} jalons',
-          caption: '${timeline.first.year} → ${timeline.last.year}',
-          accent: IvoireColors.terracotta,
-          route: '/chronologie',
-          detail: 'La frise du temps',
-        ),
-      );
-    }
-
-    cards.add(
-      _FigureCard(
-        kicker: 'LE SAVOIR',
-        value: '$articleCount articles',
-        caption: 'Sources citées, lecture libre',
-        accent: IvoireColors.gold,
-        route: '/ma-bibliotheque',
-        detail: 'Ma bibliothèque',
-      ),
+    final heading = Text(
+      title,
+      style: titleStyle(size: 17.5, weight: FontWeight.w700, color: tone.ink),
     );
 
-    if (cards.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        // Deux colonnes dès 470 px : sur un téléphone, quatre chiffres
-        // empilés en pleine largeur allongeaient inutilement la page.
-        final columns = constraints.maxWidth >= 900
-            ? 4
-            : (constraints.maxWidth >= 470 ? 2 : 1);
-        final width = (constraints.maxWidth - (columns - 1) * 12) / columns;
-
-        return Wrap(
-          spacing: 12,
-          runSpacing: 12,
-          children: [
-            for (final card in cards) SizedBox(width: width, child: card),
-          ],
-        );
-      },
-    );
-  }
-}
-
-StatisticIndicator? _indicator(StatisticsSnapshot? stats, String code) {
-  if (stats == null) {
-    return null;
-  }
-
-  for (final indicator in stats.headline) {
-    if (indicator.code == code) {
-      return indicator;
-    }
-  }
-
-  return null;
-}
-
-class _FigureCard extends StatefulWidget {
-  const _FigureCard({
-    required this.kicker,
-    required this.value,
-    required this.caption,
-    required this.accent,
-    required this.route,
-    required this.detail,
-  });
-
-  final String kicker;
-  final String value;
-  final String caption;
-  final Color accent;
-  final String route;
-  final String detail;
-
-  @override
-  State<_FigureCard> createState() => _FigureCardState();
-}
-
-class _FigureCardState extends State<_FigureCard> {
-  bool _hover = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) => setState(() => _hover = true),
-      onExit: (_) => setState(() => _hover = false),
-      child: AnimatedSlide(
-        offset: Offset(0, _hover ? -0.012 : 0),
-        duration: const Duration(milliseconds: 160),
-        curve: Curves.easeOut,
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: () => wikiGo(context, widget.route),
-            borderRadius: BorderRadius.circular(10),
-            child: Ink(
-              decoration: BoxDecoration(
-                color: IvoireColors.paper,
-                border: Border.all(
-                  color: _hover
-                      ? widget.accent.withValues(alpha: 0.55)
-                      : IvoireColors.lineSoft,
-                ),
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: [
-                  BoxShadow(
-                    color: IvoireColors.ink.withValues(
-                      alpha: _hover ? 0.09 : 0.04,
-                    ),
-                    blurRadius: _hover ? 22 : 16,
-                    offset: const Offset(0, 6),
-                  ),
-                ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (trailing == null)
+          heading
+        else if (narrow) ...[
+          heading,
+          const SizedBox(height: 5),
+          trailing!,
+        ] else
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Expanded(child: heading),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 1),
+                child: trailing,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(height: 3, color: widget.accent),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(14, 12, 14, 13),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.kicker,
-                          style: kickerStyle(color: widget.accent),
-                        ),
-                        const SizedBox(height: 6),
-                        FittedBox(
-                          fit: BoxFit.scaleDown,
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            widget.value,
-                            maxLines: 1,
-                            style: titleStyle(
-                              size: 24,
-                              weight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          widget.caption,
-                          style: const TextStyle(
-                            fontSize: 11.5,
-                            color: IvoireColors.muted,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            Text(
-                              widget.detail,
-                              style: const TextStyle(
-                                fontSize: 11.5,
-                                color: IvoireColors.link,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const SizedBox(width: 4),
-                            const Icon(
-                              Icons.arrow_forward,
-                              size: 12,
-                              color: IvoireColors.link,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            ],
           ),
-        ),
-      ),
+        const SizedBox(height: 7),
+        Container(height: 1, color: tone.lineSoft),
+        const SizedBox(height: 14),
+        child,
+      ],
     );
   }
 }
 
-/// L'article du jour, mis en scène comme une ouverture de journal.
+/// L'article du jour : l'illustration sourcée, puis le titre, le chapô et le
+/// lien de lecture. Pas de carte ni de bordure : la page porte le contenu.
 class _LeadStory extends StatelessWidget {
   const _LeadStory({required this.page});
 
@@ -988,78 +443,69 @@ class _LeadStory extends StatelessWidget {
     }
 
     final article = page.items.first;
+    final tone = ToneColors.from(context);
 
     return _Section(
       title: 'Article du jour',
-      child: Container(
-        decoration: BoxDecoration(
-          color: IvoireColors.paper,
-          border: Border.all(color: IvoireColors.lineSoft),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              height: 3,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(colors: IvoireColors.weave),
-                borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
-              ),
-            ),
-            if (article.coverImageUrl != null)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
-                child: ArticleFigure(article: article, height: 300, radius: 10),
-              ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 18),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (article.categoryName != null)
-                    Text(
-                      article.categoryName!.toUpperCase(),
-                      style: kickerStyle(color: IvoireColors.terracotta),
-                    ),
-                  const SizedBox(height: 8),
-                  HoverLink(
-                    label: article.title,
-                    onTap: () => wikiGo(context, '/articles/${article.slug}'),
-                    style: titleStyle(size: 25, weight: FontWeight.w700),
-                    color: IvoireColors.ink,
-                    hoverColor: IvoireColors.greenDeep,
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    [
-                      article.typeLabel,
-                      '${article.readingMinutes} min de lecture',
-                      if (article.publishedAt != null)
-                        formatDate(article.publishedAt),
-                    ].join(' · '),
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: IvoireColors.faint,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    article.summary,
-                    style: const TextStyle(fontSize: 15, height: 1.72),
-                  ),
-                  const SizedBox(height: 16),
-                  FilledButton.icon(
-                    onPressed: () =>
-                        wikiGo(context, '/articles/${article.slug}'),
-                    icon: const Icon(Icons.menu_book_outlined, size: 17),
-                    label: const Text('Lire l’article'),
-                  ),
-                ],
-              ),
-            ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (article.coverImageUrl != null &&
+              article.coverImageUrl!.isNotEmpty) ...[
+            ArticleFigure(article: article, height: 320, radius: 2),
+            const SizedBox(height: 14),
           ],
-        ),
+          Text(
+            [
+              if (article.categoryName != null) article.categoryName!,
+              article.typeLabel,
+              '${article.readingMinutes} min de lecture',
+              if (article.publishedAt != null) formatDate(article.publishedAt),
+            ].join(' · '),
+            style: TextStyle(fontSize: 12, color: tone.faint),
+          ),
+          const SizedBox(height: 6),
+          HoverLink(
+            label: article.title,
+            onTap: () => wikiGo(context, '/articles/${article.slug}'),
+            color: tone.ink,
+            hoverColor: IvoireColors.greenDeep,
+            style: titleStyle(
+              size: 26,
+              weight: FontWeight.w700,
+              color: tone.ink,
+              height: 1.2,
+            ),
+          ),
+          const SizedBox(height: 10),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 700),
+            child: Text(
+              article.summary,
+              style: TextStyle(fontSize: 15.5, height: 1.72, color: tone.body),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              HoverLink(
+                label: 'Lire l’article',
+                onTap: () => wikiGo(context, '/articles/${article.slug}'),
+                style: const TextStyle(
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(width: 4),
+              const Icon(
+                Icons.arrow_forward,
+                size: 13,
+                color: IvoireColors.link,
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -1074,6 +520,7 @@ class _TodayInHistory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tone = ToneColors.from(context);
     final today = DateTime.now();
     final dayOfYear = today.difference(DateTime(today.year)).inDays;
     final event = events[dayOfYear % events.length];
@@ -1081,71 +528,75 @@ class _TodayInHistory extends StatelessWidget {
 
     return _Section(
       title: 'Aujourd’hui dans l’histoire',
-      child: Container(
-        decoration: BoxDecoration(
-          color: IvoireColors.highlight,
-          border: Border.all(color: IvoireColors.lineSoft),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Column(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 86,
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   '${event.year}',
-                  style: titleStyle(size: 30, weight: FontWeight.w700),
+                  style: titleStyle(
+                    size: 27,
+                    weight: FontWeight.w700,
+                    color: tone.ink,
+                  ),
                 ),
                 Text(
                   age > 0 ? 'il y a $age ans' : 'cette année',
                   style: const TextStyle(
-                    fontSize: 11,
+                    fontSize: 11.5,
                     color: IvoireColors.orangeDeep,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ],
             ),
-            Container(
-              width: 1,
-              height: 62,
-              margin: const EdgeInsets.symmetric(horizontal: 18),
-              color: IvoireColors.line,
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                HoverLink(
+                  label: event.title,
+                  onTap: () =>
+                      wikiGo(context, '/histoires?recit=${event.slug}'),
+                  color: tone.ink,
+                  hoverColor: IvoireColors.greenDeep,
+                  style: titleStyle(
+                    size: 16.5,
+                    weight: FontWeight.w600,
+                    color: tone.ink,
+                    height: 1.35,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  event.teaser,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 13.5,
+                    height: 1.6,
+                    color: tone.body,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                HoverLink(
+                  label: 'Lire ce récit',
+                  onTap: () =>
+                      wikiGo(context, '/histoires?recit=${event.slug}'),
+                  style: const TextStyle(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
             ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  HoverLink(
-                    label: event.title,
-                    onTap: () =>
-                        wikiGo(context, '/histoires?recit=${event.slug}'),
-                    style: titleStyle(size: 17, weight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    event.teaser,
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 13.5, height: 1.6),
-                  ),
-                  const SizedBox(height: 6),
-                  HoverLink(
-                    label: 'Lire ce récit',
-                    onTap: () =>
-                        wikiGo(context, '/histoires?recit=${event.slug}'),
-                    style: const TextStyle(
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -1205,6 +656,7 @@ class _DailyChallengeState extends State<_DailyChallenge> {
 
   @override
   Widget build(BuildContext context) {
+    final tone = ToneColors.from(context);
     final event = _event;
     final picked = _picked;
     final solved = picked != null;
@@ -1214,73 +666,29 @@ class _DailyChallengeState extends State<_DailyChallenge> {
       title: 'Le défi du jour',
       child: Container(
         decoration: BoxDecoration(
-          // Vert très pâle : le jeu se distingue du rappel historique crème
-          // qui le précède, sans sortir de la palette.
-          color: IvoireColors.green.withValues(alpha: 0.055),
-          border: Border.all(color: IvoireColors.green.withValues(alpha: 0.22)),
-          borderRadius: BorderRadius.circular(12),
+          color: tone.paper,
+          border: Border.all(color: tone.lineSoft),
+          borderRadius: BorderRadius.circular(8),
         ),
         padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 34,
-                  height: 34,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: IvoireColors.green.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(9),
-                  ),
-                  // Un point d'interrogation typographique plutôt qu'une
-                  // icône : il suit la police du site et ne dépend d'aucun
-                  // glyphe externe.
-                  child: const Text(
-                    '?',
-                    style: TextStyle(
-                      fontSize: 19,
-                      height: 1,
-                      fontWeight: FontWeight.w700,
-                      color: IvoireColors.greenDeep,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 11),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'SAUREZ-VOUS SITUER…',
-                        style: kickerStyle(color: IvoireColors.greenDeep),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        event.title,
-                        style: titleStyle(
-                          size: 16,
-                          weight: FontWeight.w600,
-                          height: 1.35,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
             Text(
               'En quelle année ce jalon de l’histoire ivoirienne a-t-il eu lieu ?',
-              style: TextStyle(
-                fontSize: 13,
-                height: 1.55,
-                color: ToneColors.from(context).muted,
+              style: TextStyle(fontSize: 13, height: 1.55, color: tone.muted),
+            ),
+            const SizedBox(height: 5),
+            Text(
+              event.title,
+              style: titleStyle(
+                size: 16.5,
+                weight: FontWeight.w700,
+                color: tone.ink,
+                height: 1.35,
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
             Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -1379,18 +787,18 @@ class _QuizOptionState extends State<_QuizOption> {
 
     final (background, border, foreground) = switch (widget.state) {
       _QuizState.answer => (
-        IvoireColors.green.withValues(alpha: 0.14),
+        IvoireColors.green.withValues(alpha: 0.12),
         IvoireColors.green,
         IvoireColors.greenDeep,
       ),
       _QuizState.wrong => (
-        IvoireColors.terracotta.withValues(alpha: 0.12),
+        IvoireColors.terracotta.withValues(alpha: 0.10),
         IvoireColors.terracotta,
         IvoireColors.terracotta,
       ),
       _QuizState.dimmed => (Colors.transparent, tone.lineSoft, tone.faint),
       _QuizState.idle => (
-        _hover ? IvoireColors.paper : Colors.white.withValues(alpha: 0.72),
+        _hover ? tone.subtle : tone.paper,
         _hover ? IvoireColors.green : tone.line,
         tone.ink,
       ),
@@ -1411,7 +819,7 @@ class _QuizOptionState extends State<_QuizOption> {
           decoration: BoxDecoration(
             color: background,
             border: Border.all(color: border),
-            borderRadius: BorderRadius.circular(22),
+            borderRadius: BorderRadius.circular(6),
           ),
           child: Text(
             '${widget.year}',
@@ -1448,7 +856,7 @@ class _TimelineRail extends StatelessWidget {
         child: ListView.separated(
           scrollDirection: Axis.horizontal,
           itemCount: events.length,
-          separatorBuilder: (_, _) => const SizedBox(width: 10),
+          separatorBuilder: (_, _) => const SizedBox(width: 8),
           itemBuilder: (context, index) => _RailCard(event: events[index]),
         ),
       ),
@@ -1470,6 +878,8 @@ class _RailCardState extends State<_RailCard> {
 
   @override
   Widget build(BuildContext context) {
+    final tone = ToneColors.from(context);
+
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       onEnter: (_) => setState(() => _hover = true),
@@ -1481,11 +891,11 @@ class _RailCardState extends State<_RailCard> {
           width: 186,
           padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
           decoration: BoxDecoration(
-            color: _hover ? IvoireColors.ivory : IvoireColors.paper,
+            color: _hover ? tone.subtle : tone.paper,
             border: Border.all(
-              color: _hover ? IvoireColors.terracotta : IvoireColors.lineSoft,
+              color: _hover ? IvoireColors.terracotta : tone.lineSoft,
             ),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(6),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1503,7 +913,7 @@ class _RailCardState extends State<_RailCard> {
                 widget.event.era,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 10, color: IvoireColors.faint),
+                style: TextStyle(fontSize: 10, color: tone.faint),
               ),
               const SizedBox(height: 6),
               Expanded(
@@ -1511,7 +921,11 @@ class _RailCardState extends State<_RailCard> {
                   widget.event.title,
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 12.5, height: 1.4),
+                  style: TextStyle(
+                    fontSize: 12.5,
+                    height: 1.4,
+                    color: tone.body,
+                  ),
                 ),
               ),
             ],
@@ -1535,6 +949,8 @@ class _DidYouKnow extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
+    final tone = ToneColors.from(context);
+
     return _Section(
       title: 'Le saviez-vous ?',
       child: Column(
@@ -1542,30 +958,49 @@ class _DidYouKnow extends StatelessWidget {
         children: [
           for (final article in others)
             Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: Text.rich(
-                TextSpan(
-                  children: [
-                    WidgetSpan(
-                      alignment: PlaceholderAlignment.baseline,
-                      baseline: TextBaseline.alphabetic,
-                      child: HoverLink(
-                        label: article.title,
-                        onTap: () =>
-                            wikiGo(context, '/articles/${article.slug}'),
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
+              padding: const EdgeInsets.only(bottom: 9),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 1),
+                    child: Text(
+                      '•',
+                      style: TextStyle(
+                        fontSize: 15,
+                        height: 1.5,
+                        color: IvoireColors.terracotta,
                       ),
                     ),
-                    TextSpan(
-                      text: ' — ${article.summary}',
-                      style: const TextStyle(fontSize: 13.5),
+                  ),
+                  const SizedBox(width: 9),
+                  Expanded(
+                    child: Text.rich(
+                      TextSpan(
+                        children: [
+                          WidgetSpan(
+                            alignment: PlaceholderAlignment.baseline,
+                            baseline: TextBaseline.alphabetic,
+                            child: HoverLink(
+                              label: article.title,
+                              onTap: () =>
+                                  wikiGo(context, '/articles/${article.slug}'),
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          TextSpan(
+                            text: ' — ${article.summary}',
+                            style: TextStyle(color: tone.body),
+                          ),
+                        ],
+                      ),
+                      style: const TextStyle(fontSize: 13.5, height: 1.65),
                     ),
-                  ],
-                ),
-                style: const TextStyle(fontSize: 14, height: 1.65),
+                  ),
+                ],
               ),
             ),
         ],
@@ -1574,141 +1009,262 @@ class _DidYouKnow extends StatelessWidget {
   }
 }
 
-/// Trois parcours numérotés, tirés des domaines les plus fournis : une entrée
-/// guidée pour qui ne sait pas par où commencer.
-class _LearningPaths extends StatelessWidget {
-  const _LearningPaths({required this.categories});
+/// Les portails thématiques, en fin de page : le plan complet de
+/// l'encyclopédie, avec le nombre d'articles de chaque domaine.
+class _Portals extends StatelessWidget {
+  const _Portals({required this.categories});
 
   final List<Category> categories;
 
   @override
   Widget build(BuildContext context) {
-    final sorted = [...categories]
-      ..sort((a, b) => b.articleCount.compareTo(a.articleCount));
-    final paths = sorted.take(3).toList(growable: false);
-
-    if (paths.isEmpty) {
-      return const SizedBox.shrink();
-    }
+    final tone = ToneColors.from(context);
 
     return _Section(
-      title: 'Trois parcours pour apprendre',
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final columns = constraints.maxWidth >= 780 ? 3 : 1;
-          final width = (constraints.maxWidth - (columns - 1) * 12) / columns;
+      title: 'Portails thématiques',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Tous les domaines de l’encyclopédie, avec le nombre d’articles '
+            'publiés.',
+            style: TextStyle(fontSize: 13, height: 1.6, color: tone.muted),
+          ),
+          const SizedBox(height: 12),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final columns = constraints.maxWidth >= 720
+                  ? 3
+                  : (constraints.maxWidth >= 440 ? 2 : 1);
+              final width =
+                  (constraints.maxWidth - (columns - 1) * 20) / columns;
 
-          return Wrap(
-            spacing: 12,
-            runSpacing: 12,
-            children: [
-              for (var i = 0; i < paths.length; i++)
-                SizedBox(
-                  width: width,
-                  child: _PathCard(step: i + 1, category: paths[i]),
-                ),
-            ],
-          );
-        },
+              return Wrap(
+                spacing: 20,
+                runSpacing: 0,
+                children: [
+                  for (final category in categories)
+                    SizedBox(
+                      width: width,
+                      child: _PortalRow(category: category),
+                    ),
+                ],
+              );
+            },
+          ),
+        ],
       ),
     );
   }
 }
 
-class _PathCard extends StatefulWidget {
-  const _PathCard({required this.step, required this.category});
+class _PortalRow extends StatefulWidget {
+  const _PortalRow({required this.category});
 
-  final int step;
   final Category category;
 
   @override
-  State<_PathCard> createState() => _PathCardState();
+  State<_PortalRow> createState() => _PortalRowState();
 }
 
-class _PathCardState extends State<_PathCard> {
+class _PortalRowState extends State<_PortalRow> {
   bool _hover = false;
 
   @override
   Widget build(BuildContext context) {
-    final category = widget.category;
-    final accent = _domainColor(category.slug);
-    final count = category.articleCount;
+    final tone = ToneColors.from(context);
+    final color = _hover ? IvoireColors.greenDeep : IvoireColors.link;
 
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       onEnter: (_) => setState(() => _hover = true),
       onExit: (_) => setState(() => _hover = false),
       child: GestureDetector(
-        onTap: () => wikiGo(context, '/categories/${category.slug}'),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 160),
-          curve: Curves.easeOut,
-          transform: Matrix4.translationValues(0, _hover ? -3 : 0, 0),
-          padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+        onTap: () => wikiGo(context, '/categories/${widget.category.slug}'),
+        behavior: HitTestBehavior.opaque,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 9),
           decoration: BoxDecoration(
-            color: IvoireColors.paper,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: _hover ? accent : IvoireColors.lineSoft),
-            boxShadow: [
-              BoxShadow(
-                color: IvoireColors.ink.withValues(alpha: _hover ? 0.11 : 0.03),
-                blurRadius: _hover ? 22 : 16,
-                offset: Offset(0, _hover ? 10 : 6),
+            border: Border(bottom: BorderSide(color: tone.lineSoft)),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  widget.category.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w500,
+                    color: color,
+                    decoration: _hover
+                        ? TextDecoration.underline
+                        : TextDecoration.none,
+                    decorationColor: color,
+                  ),
+                ),
+              ),
+              Text(
+                '${widget.category.articleCount}',
+                style: TextStyle(fontSize: 11.5, color: tone.faint),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Les chiffres du pays, en liste de définitions : libellé, valeur, précision.
+class _KeyFigures extends StatelessWidget {
+  const _KeyFigures({
+    required this.stats,
+    required this.timeline,
+    required this.articleCount,
+  });
+
+  final StatisticsSnapshot? stats;
+  final List<TimelineEvent> timeline;
+  final int articleCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final rows = <_FigureData>[];
+    final population = _indicator(stats, 'SP.POP.TOTL');
+
+    if (population != null) {
+      rows.add(
+        _FigureData(
+          label: 'Population',
+          value: population.display ?? '—',
+          caption: population.trend?.display ?? 'Donnée ${population.year}',
+          route: '/statistiques',
+        ),
+      );
+    }
+
+    final census = stats?.census;
+    final regions = stats?.regions.length ?? 0;
+    final districts = stats?.districts.length ?? 0;
+    if (census != null && regions > 0) {
+      rows.add(
+        _FigureData(
+          label: 'Territoires',
+          value: '$regions régions',
+          caption: '$districts districts · RGPH ${census.year}',
+          route: '/lieux',
+        ),
+      );
+    }
+
+    if (timeline.isNotEmpty) {
+      rows.add(
+        _FigureData(
+          label: 'Histoire',
+          value: '${timeline.length} jalons',
+          caption: '${timeline.first.year} → ${timeline.last.year}',
+          route: '/chronologie',
+        ),
+      );
+    }
+
+    rows.add(
+      _FigureData(
+        label: 'Le savoir',
+        value: '$articleCount articles',
+        caption: 'Sources citées, lecture libre',
+        route: '/ma-bibliotheque',
+      ),
+    );
+
+    if (rows.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return _AsideBox(
+      title: 'La Côte d’Ivoire en chiffres',
+      child: Column(
+        children: [
+          for (var i = 0; i < rows.length; i++) ...[
+            if (i > 0) const SizedBox(height: 2),
+            _FigureRow(data: rows[i]),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _FigureData {
+  const _FigureData({
+    required this.label,
+    required this.value,
+    required this.caption,
+    required this.route,
+  });
+
+  final String label;
+  final String value;
+  final String caption;
+  final String route;
+}
+
+class _FigureRow extends StatefulWidget {
+  const _FigureRow({required this.data});
+
+  final _FigureData data;
+
+  @override
+  State<_FigureRow> createState() => _FigureRowState();
+}
+
+class _FigureRowState extends State<_FigureRow> {
+  bool _hover = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final tone = ToneColors.from(context);
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hover = true),
+      onExit: (_) => setState(() => _hover = false),
+      child: GestureDetector(
+        onTap: () => wikiGo(context, widget.data.route),
+        behavior: HitTestBehavior.opaque,
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(
+            border: Border(bottom: BorderSide(color: tone.lineSoft)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Container(
-                    width: 30,
-                    height: 30,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: accent.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      widget.step.toString().padLeft(2, '0'),
-                      style: TextStyle(
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w700,
-                        color: accent,
-                      ),
-                    ),
-                  ),
-                  const Spacer(),
-                  Icon(_domainIcon(category.slug), size: 17, color: accent),
-                ],
-              ),
-              const SizedBox(height: 12),
               Text(
-                category.name,
-                style: titleStyle(size: 16, weight: FontWeight.w600),
+                widget.data.label,
+                style: TextStyle(
+                  fontSize: 11,
+                  letterSpacing: 0.3,
+                  fontWeight: FontWeight.w600,
+                  color: tone.faint,
+                ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 2),
               Text(
-                count == 0
-                    ? 'Parcours à compléter'
-                    : '$count article${count > 1 ? 's' : ''} à lire',
-                style: const TextStyle(fontSize: 12, color: IvoireColors.muted),
+                widget.data.value,
+                style: titleStyle(
+                  size: 17,
+                  weight: FontWeight.w700,
+                  color: _hover ? IvoireColors.greenDeep : tone.ink,
+                ),
               ),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  Text(
-                    'Commencer',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: accent,
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  Icon(Icons.arrow_forward, size: 12, color: accent),
-                ],
+              const SizedBox(height: 1),
+              Text(
+                widget.data.caption,
+                style: TextStyle(fontSize: 11.5, color: tone.muted),
               ),
             ],
           ),
@@ -1718,157 +1274,24 @@ class _PathCardState extends State<_PathCard> {
   }
 }
 
-class _Domains extends StatelessWidget {
-  const _Domains({required this.categories});
-
-  final List<Category> categories;
-
-  @override
-  Widget build(BuildContext context) {
-    return _Section(
-      title: 'Explorer par domaine',
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final columns = constraints.maxWidth >= 520 ? 2 : 1;
-          final width = (constraints.maxWidth - (columns - 1) * 10) / columns;
-
-          return Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: [
-              for (final category in categories)
-                SizedBox(
-                  width: width,
-                  child: _DomainTile(category: category),
-                ),
-            ],
-          );
-        },
-      ),
-    );
+StatisticIndicator? _indicator(StatisticsSnapshot? stats, String code) {
+  if (stats == null) {
+    return null;
   }
-}
 
-class _DomainTile extends StatefulWidget {
-  const _DomainTile({required this.category});
-
-  final Category category;
-
-  @override
-  State<_DomainTile> createState() => _DomainTileState();
-}
-
-class _DomainTileState extends State<_DomainTile> {
-  bool _hover = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final category = widget.category;
-    final accent = _domainColor(category.slug);
-
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) => setState(() => _hover = true),
-      onExit: (_) => setState(() => _hover = false),
-      child: GestureDetector(
-        onTap: () => wikiGo(context, '/categories/${category.slug}'),
-        behavior: HitTestBehavior.opaque,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
-          curve: Curves.easeOut,
-          transform: Matrix4.translationValues(0, _hover ? -2 : 0, 0),
-          padding: const EdgeInsets.fromLTRB(10, 9, 10, 9),
-          decoration: BoxDecoration(
-            color: _hover ? accent.withValues(alpha: 0.07) : Colors.transparent,
-            border: Border.all(
-              color: _hover
-                  ? accent.withValues(alpha: 0.5)
-                  : IvoireColors.lineSoft,
-            ),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 30,
-                height: 30,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: accent.withValues(alpha: 0.10),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(
-                  _domainIcon(category.slug),
-                  size: 16,
-                  color: accent,
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  category.name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w500,
-                    color: IvoireColors.ink,
-                  ),
-                ),
-              ),
-              Text(
-                '${category.articleCount}',
-                style: const TextStyle(
-                  fontSize: 11.5,
-                  color: IvoireColors.faint,
-                ),
-              ),
-              const SizedBox(width: 4),
-              Icon(
-                Icons.chevron_right,
-                size: 15,
-                color: _hover ? accent : IvoireColors.faint,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+  for (final indicator in stats.headline) {
+    if (indicator.code == code) {
+      return indicator;
+    }
   }
-}
 
-/// Symbole de chaque domaine : un repère visuel vaut mieux qu'une liste
-/// indifférenciée, et il rend la page plus facile à parcourir des yeux.
-IconData _domainIcon(String slug) {
-  return switch (slug) {
-    'histoire' => Icons.menu_book_outlined,
-    'geographie' => Icons.public,
-    'culture' => Icons.music_note_outlined,
-    'langues' => Icons.translate,
-    'institutions' => Icons.account_balance_outlined,
-    'economie' => Icons.trending_up,
-    'personnalites' => Icons.person_outline,
-    'gastronomie' => Icons.restaurant_outlined,
-    _ => Icons.category_outlined,
-  };
-}
-
-Color _domainColor(String slug) {
-  return switch (slug) {
-    'histoire' => IvoireColors.terracotta,
-    'geographie' => IvoireColors.green,
-    'culture' => IvoireColors.orangeDeep,
-    'langues' => IvoireColors.gold,
-    'institutions' => IvoireColors.greenDeep,
-    'economie' => IvoireColors.orange,
-    'personnalites' => IvoireColors.terracotta,
-    'gastronomie' => IvoireColors.green,
-    _ => IvoireColors.green,
-  };
+  return null;
 }
 
 /// Reprendre là où le lecteur s'est arrêté, depuis la mémoire de l'appareil.
 class _ReadingResume extends StatelessWidget {
+  const _ReadingResume();
+
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<List<LibraryEntry>>(
@@ -1880,9 +1303,10 @@ class _ReadingResume extends StatelessWidget {
 
         final last = entries.first;
         final when = last.at == null ? '' : formatDate(last.at);
+        final tone = ToneColors.from(context);
 
         return Padding(
-          padding: const EdgeInsets.only(bottom: 16),
+          padding: const EdgeInsets.only(bottom: 0),
           child: _AsideBox(
             title: 'Reprendre la lecture',
             child: Column(
@@ -1892,7 +1316,11 @@ class _ReadingResume extends StatelessWidget {
                   last.title,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: titleStyle(size: 14, weight: FontWeight.w600),
+                  style: titleStyle(
+                    size: 14,
+                    weight: FontWeight.w600,
+                    color: tone.ink,
+                  ),
                 ),
                 if (last.category != null || when.isNotEmpty) ...[
                   const SizedBox(height: 3),
@@ -1901,10 +1329,7 @@ class _ReadingResume extends StatelessWidget {
                       if (last.category != null) last.category!,
                       when,
                     ].join(' · '),
-                    style: const TextStyle(
-                      fontSize: 11,
-                      color: IvoireColors.faint,
-                    ),
+                    style: TextStyle(fontSize: 11, color: tone.faint),
                   ),
                 ],
                 const SizedBox(height: 8),
@@ -1928,174 +1353,74 @@ class _ReadingResume extends StatelessWidget {
   }
 }
 
-/// Titre de section à la manière d'un article : titre sobre, filet fin.
-class _Section extends StatelessWidget {
-  const _Section({required this.title, required this.child, this.trailing});
-
-  final String title;
-  final Widget child;
-  final Widget? trailing;
-
-  @override
-  Widget build(BuildContext context) {
-    final narrow = MediaQuery.sizeOf(context).width < 440;
-    final heading = Text(
-      title,
-      style: titleStyle(size: 18.5, weight: FontWeight.w600),
-    );
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (trailing == null)
-          heading
-        else if (narrow) ...[
-          heading,
-          const SizedBox(height: 5),
-          trailing!,
-        ] else
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              Expanded(child: heading),
-              trailing!,
-            ],
-          ),
-        const SizedBox(height: 7),
-        Row(
-          children: [
-            const MotifDivider(),
-            const SizedBox(width: 10),
-            Expanded(child: Container(height: 1, color: IvoireColors.lineSoft)),
-          ],
-        ),
-        const SizedBox(height: 12),
-        child,
-      ],
-    );
-  }
-}
-
-/// Tirage au sort : une carte vive, la seule tache de couleur de la colonne,
-/// pour inviter à flâner dans l'encyclopédie plutôt qu'à y chercher.
-class _RandomPickCard extends StatefulWidget {
+/// Tirage au sort : une entrée discrète, pour flâner dans l'encyclopédie.
+class _RandomPickCard extends StatelessWidget {
   const _RandomPickCard({required this.onRandom});
 
   final VoidCallback onRandom;
 
   @override
-  State<_RandomPickCard> createState() => _RandomPickCardState();
+  Widget build(BuildContext context) {
+    final tone = ToneColors.from(context);
+
+    return _AsideBox(
+      title: 'Article au hasard',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Parcourir l’encyclopédie sans choisir de sujet.',
+            style: TextStyle(fontSize: 12.5, height: 1.55, color: tone.muted),
+          ),
+          const SizedBox(height: 10),
+          OutlinedButton.icon(
+            onPressed: onRandom,
+            icon: const Icon(Icons.shuffle, size: 15),
+            label: const Text('Tirer un article'),
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+              textStyle: const TextStyle(
+                fontSize: 12.5,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
-class _RandomPickCardState extends State<_RandomPickCard> {
-  bool _hover = false;
+class _ContributeBox extends StatelessWidget {
+  const _ContributeBox();
 
   @override
   Widget build(BuildContext context) {
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) => setState(() => _hover = true),
-      onExit: (_) => setState(() => _hover = false),
-      child: GestureDetector(
-        onTap: widget.onRandom,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
-          curve: Curves.easeOut,
-          transform: Matrix4.translationValues(0, _hover ? -3 : 0, 0),
-          padding: const EdgeInsets.fromLTRB(16, 15, 16, 16),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [IvoireColors.greenDeep, IvoireColors.green],
-            ),
-            borderRadius: BorderRadius.circular(14),
-            boxShadow: [
-              BoxShadow(
-                color: IvoireColors.greenDeep.withValues(
-                  alpha: _hover ? 0.30 : 0.16,
-                ),
-                blurRadius: _hover ? 22 : 14,
-                offset: const Offset(0, 8),
-              ),
-            ],
+    final tone = ToneColors.from(context);
+
+    return _AsideBox(
+      title: 'Contribuer',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'IVOIREPEDIA se construit à plusieurs : chercheurs, enseignants, '
+            'étudiants, gardiens de la mémoire.',
+            style: TextStyle(fontSize: 12.5, height: 1.6, color: tone.body),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 30,
-                    height: 30,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.16),
-                      borderRadius: BorderRadius.circular(9),
-                    ),
-                    child: const Icon(
-                      Icons.shuffle,
-                      size: 17,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  const Expanded(
-                    child: Text(
-                      'ARTICLE AU HASARD',
-                      style: TextStyle(
-                        fontSize: 10.5,
-                        letterSpacing: 1.1,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xE6FFFFFF),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              const Text(
-                'Parcourir l’encyclopédie sans choisir de sujet.',
-                style: TextStyle(
-                  fontSize: 13,
-                  height: 1.55,
-                  color: Color(0xF2FFFFFF),
-                ),
-              ),
-              const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 9,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Tirer un article',
-                      style: TextStyle(
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w700,
-                        color: IvoireColors.greenDeep,
-                      ),
-                    ),
-                    SizedBox(width: 5),
-                    Icon(
-                      Icons.arrow_forward,
-                      size: 13,
-                      color: IvoireColors.greenDeep,
-                    ),
-                  ],
-                ),
-              ),
-            ],
+          const SizedBox(height: 10),
+          HoverLink(
+            label: 'Charte et sources',
+            onTap: () => wikiGo(context, '/sources'),
+            style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
           ),
-        ),
+          const SizedBox(height: 6),
+          HoverLink(
+            label: 'Créer un compte',
+            onTap: () => wikiNotImplemented(context, 'Créer un compte'),
+            style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
+          ),
+        ],
       ),
     );
   }
@@ -2109,19 +1434,28 @@ class _AsideBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tone = ToneColors.from(context);
+
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
       decoration: BoxDecoration(
-        color: IvoireColors.ivory,
-        border: Border.all(color: IvoireColors.lineSoft),
-        borderRadius: BorderRadius.circular(6),
+        color: tone.paper,
+        border: Border.all(color: tone.lineSoft),
+        borderRadius: BorderRadius.circular(4),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: titleStyle(size: 13.5, weight: FontWeight.w600)),
-          const SizedBox(height: 7),
+          Text(
+            title,
+            style: titleStyle(
+              size: 13.5,
+              weight: FontWeight.w700,
+              color: tone.ink,
+            ),
+          ),
+          const SizedBox(height: 8),
           child,
         ],
       ),
@@ -2137,15 +1471,15 @@ class _HomeSkeleton extends StatelessWidget {
     return const Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Skeleton(width: 220, height: 12),
-        SizedBox(height: 12),
-        Skeleton(width: 300, height: 30),
-        SizedBox(height: 26),
-        SkeletonParagraph(lines: 3),
-        SizedBox(height: 26),
+        Center(child: Skeleton(width: 260, height: 120)),
+        SizedBox(height: 20),
+        Center(child: Skeleton(width: 320, height: 14)),
+        SizedBox(height: 10),
+        Center(child: Skeleton(width: 240, height: 12)),
+        SizedBox(height: 30),
         Skeleton(width: 180, height: 18),
         SizedBox(height: 14),
-        SkeletonParagraph(lines: 2),
+        SkeletonParagraph(lines: 3),
         SizedBox(height: 26),
         Skeleton(width: 180, height: 18),
         SizedBox(height: 14),

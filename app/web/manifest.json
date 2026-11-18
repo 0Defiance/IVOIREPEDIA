@@ -1,11 +1,12 @@
 {
-    "name": "ivoirepedia",
-    "short_name": "ivoirepedia",
+    "name": "Ivoirepedia, l’encyclopédie libre de la Côte d’Ivoire",
+    "short_name": "Ivoirepedia",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "lang": "fr",
+    "background_color": "#FBF9F4",
+    "theme_color": "#0E7B45",
+    "description": "L’encyclopédie libre de la Côte d’Ivoire : territoires, histoire, langues, institutions, cultures et patrimoine.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

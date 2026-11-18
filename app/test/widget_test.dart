@@ -1,7 +1,8 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:ivoirepedia/src/app.dart';
+import 'package:ivoirepedia/src/brand.dart';
 import 'package:ivoirepedia/src/models/article.dart';
 import 'package:ivoirepedia/src/models/category.dart';
 import 'package:ivoirepedia/src/models/statistics.dart';
@@ -130,17 +131,16 @@ void main() {
     await tester.pumpWidget(IvoirepediaApp(api: FakeApi()));
     await tester.pumpAndSettle();
 
-    expect(find.text('IVOIREPEDIA'), findsWidgets);
+    expect(find.byKey(const ValueKey('brand-wordmark')), findsWidgets);
     expect(find.textContaining('encyclopédie libre consacrée'), findsOneWidget);
     expect(find.text('Article du jour'), findsOneWidget);
     expect(find.text('Le saviez-vous ?'), findsOneWidget);
-    expect(find.text('Explorer par domaine'), findsOneWidget);
-    expect(find.text('Trois parcours pour apprendre'), findsOneWidget);
+    expect(find.text('Portails thématiques'), findsOneWidget);
     expect(find.text('Histoire'), findsWidgets);
     expect(find.text('Abidjan'), findsWidgets);
 
-    // La une s'ouvre sur les repères du pays, pas sur une page vide.
-    expect(find.text('La Côte d’Ivoire, documentée.'), findsOneWidget);
+    // La manchette porte la devise et les repères du pays.
+    expect(find.text(kTagline), findsWidgets);
     expect(find.text('32 711 547 habitants'), findsOneWidget);
     expect(find.text('+2,5 % par an (2020-2025)'), findsOneWidget);
     expect(find.text('Aujourd’hui dans l’histoire'), findsOneWidget);
@@ -191,7 +191,9 @@ void main() {
     await tester.pumpWidget(IvoirepediaApp(api: FakeApi()));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Article au hasard'));
+    // Le titre est aussi celui de l'encart de la colonne de droite : on
+    // déclenche l'entrée de navigation, la première dans l'arbre.
+    await tester.tap(find.text('Article au hasard').first);
     await tester.pumpAndSettle();
 
     expect(find.text('Voir l’historique'), findsOneWidget);
@@ -207,8 +209,27 @@ void main() {
     await tester.pumpWidget(IvoirepediaApp(api: FakeApi()));
     await tester.pumpAndSettle();
 
-    expect(find.text('La Côte d’Ivoire, documentée.'), findsOneWidget);
+    expect(find.text('Portails'), findsOneWidget);
     expect(find.text('32 711 547 habitants'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('la marque, la devise et l’emblème remplacent l’ancien logo', (
+    tester,
+  ) async {
+    await tester.pumpWidget(IvoirepediaApp(api: FakeApi()));
+    await tester.pumpAndSettle();
+
+    // Le titre de l'onglet est la devise officielle du site.
+    final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
+    expect(app.title, kTagline);
+    expect(find.text(kTagline), findsWidgets);
+
+    // L'emblème, le mot-symbole et la signature complète sont des images
+    // fournies, et l'emblème veille aussi dans le fond du site.
+    expect(find.byKey(const ValueKey('brand-emblem')), findsWidgets);
+    expect(find.byKey(const ValueKey('brand-wordmark')), findsWidgets);
+    expect(find.byKey(const ValueKey('backdrop-emblem')), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -221,7 +242,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Article du jour'), findsOneWidget);
-    expect(find.text('Explorer par domaine'), findsOneWidget);
+    expect(find.text('Portails thématiques'), findsOneWidget);
     expect(find.text('Le défi du jour'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });

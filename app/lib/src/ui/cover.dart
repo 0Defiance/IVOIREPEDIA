@@ -1,15 +1,19 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../brand.dart';
 import '../theme.dart';
+import 'widgets/backdrop.dart';
 
-/// Couverture de lancement. La même image sert d'écran de chargement HTML
-/// (voir `web/index.html`) : le visiteur voit la couverture immédiatement,
-/// puis Flutter la reprend le temps que la première page se pose.
-const String kCoverAsset = 'assets/images/couverture.webp';
-
-/// Durée minimale d'affichage : le temps du chargement de l'application.
+/// Couverture de lancement. La même signature est servie par l'écran de
+/// chargement HTML (`web/logo.png`, voir `web/index.html`) : le visiteur voit
+/// la marque immédiatement, puis Flutter la reprend le temps que la première
+/// page se pose.
+///
+/// Aucune image fournie par l'ancienne version n'est réutilisée : la marque,
+/// les couleurs et la devise viennent désormais du logo du propriétaire.
 const Duration kCoverHold = Duration(milliseconds: 2200);
 
 const Duration _fadeOut = Duration(milliseconds: 520);
@@ -77,66 +81,108 @@ class _LaunchCoverState extends State<LaunchCover> {
   }
 }
 
-/// La couverture elle-même : l'image, plein cadre, et le filet de la marque.
+/// La couverture elle-même : le pagne documenté, très pâle, la signature au
+/// centre, et le filet orange → or → vert en bas.
 class CoverSheet extends StatelessWidget {
   const CoverSheet({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ColoredBox(
-      color: IvoireColors.ivory,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          // En portrait, l’image entière doit rester visible : `cover`
-          // rognerait le grand titre à gauche. Elle est donc contenue, et la
-          // même illustration, très atténuée, remplit les bandes libres.
-          final portrait = constraints.maxWidth / constraints.maxHeight < 0.8;
+    // La couverture enveloppe l'application depuis la racine, au-dessus du
+    // `Directionality` de MaterialApp : elle doit fournir le sien.
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: ColoredBox(
+        color: IvoireColors.ivory,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            // La signature garde ses proportions : elle est contenue, jamais
+            // rognée, et reste lisible sur un téléphone comme sur un grand écran.
+            final height = math.min(
+              260.0,
+              math.min(
+                constraints.maxHeight * 0.42,
+                constraints.maxWidth * 0.46,
+              ),
+            );
 
-          return Stack(
-            alignment: Alignment.topLeft,
-            fit: StackFit.expand,
-            children: [
-              if (portrait)
+            return Stack(
+              alignment: Alignment.topLeft,
+              fit: StackFit.expand,
+              children: [
                 const DecoratedBox(
                   key: Key('cover-backdrop'),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [IvoireColors.sand, IvoireColors.ivory],
-                    ),
-                    image: DecorationImage(
-                      image: AssetImage(kCoverAsset),
-                      fit: BoxFit.cover,
-                      opacity: 0.22,
-                    ),
-                  ),
-                ),
-              Image.asset(
-                kCoverAsset,
-                key: const Key('cover-image'),
-                fit: portrait ? BoxFit.contain : BoxFit.cover,
-                alignment: Alignment.center,
-                filterQuality: FilterQuality.medium,
-                excludeFromSemantics: true,
-                errorBuilder: (context, error, stackTrace) =>
-                    const ColoredBox(color: IvoireColors.ivory),
-              ),
-              const Align(
-                alignment: Alignment.bottomCenter,
-                child: SizedBox(
-                  height: 3,
-                  width: double.infinity,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(colors: IvoireColors.weave),
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        IvoireColors.sand,
+                        IvoireColors.ivory,
+                        IvoireColors.canvas,
+                      ],
                     ),
                   ),
                 ),
-              ),
-            ],
-          );
-        },
+                RepaintBoundary(
+                  child: CustomPaint(
+                    painter: IvorianMotifPainter(progress: 0.18),
+                    isComplex: true,
+                    willChange: false,
+                  ),
+                ),
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 28),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset(
+                          kLockupAsset,
+                          key: const Key('cover-image'),
+                          height: height,
+                          fit: BoxFit.contain,
+                          filterQuality: FilterQuality.medium,
+                          semanticLabel: kTagline,
+                        ),
+                        const SizedBox(height: 20),
+                        Container(
+                          width: 64,
+                          height: 1,
+                          color: IvoireColors.line,
+                        ),
+                        const SizedBox(height: 10),
+                        const Text(
+                          'Articles sourcés · Lecture libre · CC BY-SA 4.0',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: kFont,
+                            fontSize: 11.5,
+                            height: 1.5,
+                            letterSpacing: 0.2,
+                            color: IvoireColors.faint,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const Align(
+                  alignment: Alignment.bottomCenter,
+                  child: SizedBox(
+                    height: 3,
+                    width: double.infinity,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(colors: IvoireColors.weave),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }

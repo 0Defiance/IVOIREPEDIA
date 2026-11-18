@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'api.dart';
+import 'brand.dart';
 import 'router.dart';
 import 'storage.dart';
 import 'theme.dart';
@@ -36,7 +37,7 @@ class _IvoirepediaAppState extends State<IvoirepediaApp> {
           valueListenable: AppStorage.instance.display,
           builder: (context, prefs, _) {
             return MaterialApp.router(
-              title: 'IVOIREPEDIA',
+              title: kTagline,
               debugShowCheckedModeBanner: false,
               theme: buildIvoireTheme(),
               routerConfig: _router,

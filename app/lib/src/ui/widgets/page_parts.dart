@@ -4,9 +4,9 @@ import '../../theme.dart';
 import '../display_settings.dart';
 import 'ivorian_patterns.dart';
 
-/// Pastille d'ouverture : le domaine de la page, en capitales, dans une puce
-/// arrondie. Elle remplace le simple sur-titre et donne un repère constant
-/// d'une page à l'autre.
+/// Sur-titre de page : le domaine, en capitales, précédé d'un court filet.
+/// Aucune puce arrondie : la hiérarchie tient au texte et au filet, comme
+/// dans une page d'encyclopédie.
 class PageKicker extends StatelessWidget {
   const PageKicker(
     this.label, {
@@ -19,14 +19,15 @@ class PageKicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withValues(alpha: 0.18)),
-      ),
-      child: Text(label, style: kickerStyle(color: color)),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(width: 18, height: 2, color: color.withValues(alpha: 0.7)),
+        const SizedBox(width: 8),
+        Flexible(
+          child: Text(label, style: kickerStyle(color: color)),
+        ),
+      ],
     );
   }
 }
