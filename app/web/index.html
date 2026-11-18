@@ -57,12 +57,12 @@
         repeating-linear-gradient(90deg, rgba(14, 123, 69, 0.045) 0 1px, transparent 1px 104px),
         repeating-linear-gradient(0deg, rgba(180, 85, 44, 0.035) 0 1px, transparent 1px 132px);
       overflow: hidden;
-      transition: opacity 420ms ease;
+      transition: opacity 260ms ease;
     }
 
     #loading img {
       display: block;
-      width: min(74vw, 420px);
+      width: min(72vw, 380px);
       height: auto;
     }
 
@@ -101,6 +101,12 @@
       opacity: 1;
     }
 
+    /* Le moteur a peint sa première image : le voile se retire. */
+    #loading.gone {
+      opacity: 0;
+      pointer-events: none;
+    }
+
     #loading .hint a {
       color: #0A5C34;
     }
@@ -113,7 +119,12 @@
 </head>
 <body>
   <div id="loading" role="status" aria-live="polite">
-    <img src="logo.png" alt="Ivoirepedia, l’encyclopédie libre de la Côte d’Ivoire">
+    <!-- WebP d'abord (26 ko), PNG en repli : la marque s'affiche tout de suite. -->
+    <picture>
+      <source srcset="logo.webp" type="image/webp">
+      <img src="logo.png" width="727" height="516"
+           alt="Ivoirepedia, l’encyclopédie libre de la Côte d’Ivoire">
+    </picture>
     <div class="progress"></div>
     <div class="hint" id="hint"></div>
   </div>
@@ -129,11 +140,11 @@
         hint.classList.add('slow');
       }
 
-      // Message honnête quand la connexion est lente : le moteur fait plus de
-      // 800 ko et ne peint rien tant qu’il n’est pas arrivé.
+      // Message honnête quand la connexion est lente : le moteur ne peint rien
+      // tant qu’il n’est pas arrivé.
       var slow = setTimeout(function () {
         showHint('Chargement de l’encyclopédie… Sur une connexion lente, comptez jusqu’à une minute.');
-      }, 12000);
+      }, 10000);
 
       function ready() {
         return document.querySelector('flt-glass-pane, flutter-view');
@@ -142,8 +153,8 @@
       function clear() {
         var node = document.getElementById('loading');
         if (node) {
-          node.style.opacity = '0';
-          setTimeout(function () { node.remove(); }, 440);
+          node.classList.add('gone');
+          setTimeout(function () { node.remove(); }, 300);
         }
         clearTimeout(slow);
       }
@@ -156,7 +167,7 @@
           clearInterval(timer);
           showHint('La page ne répond pas. Vérifiez la connexion, puis <a href="">rechargez</a>.');
         }
-      }, 200);
+      }, 100);
     })();
   </script>
 

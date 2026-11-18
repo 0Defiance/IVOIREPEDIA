@@ -35,7 +35,7 @@ void main() {
 
     final image = tester.widget<Image>(find.byKey(const Key('cover-image')));
     expect(image.fit, BoxFit.contain);
-    expect(image.height, 260);
+    expect(image.height, 240);
     expect(tester.takeException(), isNull);
   });
 

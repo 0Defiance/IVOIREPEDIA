@@ -53,25 +53,20 @@ class _HomePageState extends State<HomePage> {
   Future<_HomeData> _load() async {
     final api = ApiScope.of(context);
 
-    final categories = await api.fetchCategories();
-    final articles = await api.fetchArticles(limit: 9);
+    // Les quatre appels partent ensemble : la page attend la réponse la plus
+    // lente, pas la somme des quatre.
+    final categoriesFuture = api.fetchCategories();
+    final articlesFuture = api.fetchArticles(limit: 9);
 
     // La « une » ne doit pas tomber parce qu'une illustration secondaire
     // manque : la frise et les chiffres sont facultatifs, les articles non.
-    var timeline = const <TimelineEvent>[];
-    StatisticsSnapshot? statistics;
+    final timelineFuture = _loadTimeline(api);
+    final statisticsFuture = _loadStatistics(api);
 
-    try {
-      timeline = await api.fetchTimeline();
-    } catch (_) {
-      // Frise indisponible : la page reste complète sans elle.
-    }
-
-    try {
-      statistics = await api.fetchStatistics();
-    } catch (_) {
-      // Statistiques indisponibles : les chiffres disparaissent.
-    }
+    final categories = await categoriesFuture;
+    final articles = await articlesFuture;
+    final timeline = await timelineFuture;
+    final statistics = await statisticsFuture;
 
     return _HomeData(
       categories: categories,
@@ -79,6 +74,24 @@ class _HomePageState extends State<HomePage> {
       timeline: timeline,
       statistics: statistics,
     );
+  }
+
+  /// La frise est facultative : une panne de cette route ne vide pas la page.
+  Future<List<TimelineEvent>> _loadTimeline(IvoirepediaApi api) async {
+    try {
+      return await api.fetchTimeline();
+    } catch (_) {
+      return const <TimelineEvent>[];
+    }
+  }
+
+  /// Les chiffres sont facultatifs eux aussi.
+  Future<StatisticsSnapshot?> _loadStatistics(IvoirepediaApi api) async {
+    try {
+      return await api.fetchStatistics();
+    } catch (_) {
+      return null;
+    }
   }
 
   /// Tirage serveur : le hasard porte sur tous les articles publiés, pas
@@ -165,10 +178,6 @@ class _HomeBody extends StatelessWidget {
                   if (timeline.isNotEmpty) ...[
                     const SizedBox(height: 30),
                     _TodayInHistory(events: timeline),
-                    if (timeline.length >= 2) ...[
-                      const SizedBox(height: 26),
-                      _DailyChallenge(events: timeline),
-                    ],
                     const SizedBox(height: 30),
                     _TimelineRail(events: timeline),
                   ],
@@ -246,7 +255,7 @@ class _Masthead extends StatelessWidget {
             kLockupAsset,
             height: narrow ? 126 : 166,
             fit: BoxFit.contain,
-            filterQuality: FilterQuality.medium,
+            filterQuality: FilterQuality.high,
             semanticLabel: kTagline,
           ),
         ),
@@ -602,241 +611,9 @@ class _TodayInHistory extends StatelessWidget {
   }
 }
 
-/// Le défi du jour : retrouver l'année d'un jalon documenté, parmi trois
-/// propositions. Il s'appuie sur la frise déjà chargée — aucun fait inventé —
-/// et choisit un autre jalon que « Aujourd'hui dans l'histoire », dont la
-/// réponse est affichée juste au-dessus.
-class _DailyChallenge extends StatefulWidget {
-  const _DailyChallenge({required this.events});
-
-  final List<TimelineEvent> events;
-
-  @override
-  State<_DailyChallenge> createState() => _DailyChallengeState();
-}
-
-class _DailyChallengeState extends State<_DailyChallenge> {
-  int? _picked;
-
-  TimelineEvent get _event {
-    final today = DateTime.now();
-    final dayOfYear = today.difference(DateTime(today.year)).inDays;
-    final count = widget.events.length;
-    final offset = count > 2 ? (count ~/ 2).clamp(1, count - 1) : 1;
-
-    return widget.events[(dayOfYear + offset) % count];
-  }
-
-  /// Trois années : la bonne réponse et deux autres jalons de la frise. Si la
-  /// frise est trop courte, des décennies voisines complètent le tirage.
-  List<int> _options(TimelineEvent event) {
-    final options = <int>{event.year};
-    final others =
-        widget.events
-            .map((item) => item.year)
-            .where((year) => year != event.year)
-            .toSet()
-            .toList()
-          ..sort();
-
-    var index = others.isEmpty ? 0 : event.year % others.length;
-    while (options.length < 3 && index < others.length) {
-      options.add(others[index]);
-      index++;
-    }
-
-    var step = 10;
-    while (options.length < 3) {
-      options.add(event.year + step);
-      step += 10;
-    }
-
-    return options.toList()..sort();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final tone = ToneColors.from(context);
-    final event = _event;
-    final picked = _picked;
-    final solved = picked != null;
-    final correct = picked == event.year;
-
-    return _Section(
-      title: 'Le défi du jour',
-      child: Container(
-        decoration: BoxDecoration(
-          color: tone.paper,
-          border: Border.all(color: tone.lineSoft),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'En quelle année ce jalon de l’histoire ivoirienne a-t-il eu lieu ?',
-              style: TextStyle(fontSize: 13, height: 1.55, color: tone.muted),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              event.title,
-              style: titleStyle(
-                size: 16.5,
-                weight: FontWeight.w700,
-                color: tone.ink,
-                height: 1.35,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                for (final year in _options(event))
-                  _QuizOption(
-                    key: ValueKey('quiz-option-$year'),
-                    year: year,
-                    state: !solved
-                        ? _QuizState.idle
-                        : (year == event.year
-                              ? _QuizState.answer
-                              : (year == picked
-                                    ? _QuizState.wrong
-                                    : _QuizState.dimmed)),
-                    onTap: solved ? null : () => setState(() => _picked = year),
-                  ),
-              ],
-            ),
-            if (solved) ...[
-              const SizedBox(height: 12),
-              Row(
-                key: const ValueKey('quiz-feedback'),
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: 6,
-                    height: 6,
-                    margin: const EdgeInsets.only(top: 6),
-                    decoration: BoxDecoration(
-                      color: correct
-                          ? IvoireColors.green
-                          : IvoireColors.orangeDeep,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      correct
-                          ? 'Bien vu : ce jalon date de ${event.year}.'
-                          : 'Pas cette fois : c’était ${event.year}.',
-                      style: TextStyle(
-                        fontSize: 13,
-                        height: 1.5,
-                        fontWeight: FontWeight.w600,
-                        color: correct
-                            ? IvoireColors.greenDeep
-                            : IvoireColors.orangeDeep,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              HoverLink(
-                label: 'Lire le récit',
-                onTap: () => wikiGo(context, '/histoires?recit=${event.slug}'),
-                style: const TextStyle(
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-enum _QuizState { idle, answer, wrong, dimmed }
-
-class _QuizOption extends StatefulWidget {
-  const _QuizOption({
-    required this.year,
-    required this.state,
-    this.onTap,
-    super.key,
-  });
-
-  final int year;
-  final _QuizState state;
-  final VoidCallback? onTap;
-
-  @override
-  State<_QuizOption> createState() => _QuizOptionState();
-}
-
-class _QuizOptionState extends State<_QuizOption> {
-  bool _hover = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final tone = ToneColors.from(context);
-
-    final (background, border, foreground) = switch (widget.state) {
-      _QuizState.answer => (
-        IvoireColors.green.withValues(alpha: 0.12),
-        IvoireColors.green,
-        IvoireColors.greenDeep,
-      ),
-      _QuizState.wrong => (
-        IvoireColors.terracotta.withValues(alpha: 0.10),
-        IvoireColors.terracotta,
-        IvoireColors.terracotta,
-      ),
-      _QuizState.dimmed => (Colors.transparent, tone.lineSoft, tone.faint),
-      _QuizState.idle => (
-        _hover ? tone.subtle : tone.paper,
-        _hover ? IvoireColors.green : tone.line,
-        tone.ink,
-      ),
-    };
-
-    return MouseRegion(
-      cursor: widget.onTap == null
-          ? SystemMouseCursors.basic
-          : SystemMouseCursors.click,
-      onEnter: (_) => setState(() => _hover = true),
-      onExit: (_) => setState(() => _hover = false),
-      child: GestureDetector(
-        onTap: widget.onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
-          curve: Curves.easeOut,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-          decoration: BoxDecoration(
-            color: background,
-            border: Border.all(color: border),
-            borderRadius: BorderRadius.circular(6),
-          ),
-          child: Text(
-            '${widget.year}',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.2,
-              color: foreground,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// La frise entière, en une bande qu'on fait défiler.
+/// La frise en un coup d’œil : une vraie ligne du temps, avec ses jalons
+/// posés sur un axe continu. La bande se fait défiler au doigt ou à la
+/// molette, et chaque jalon ouvre le récit dont il est tiré.
 class _TimelineRail extends StatelessWidget {
   const _TimelineRail({required this.events});
 
@@ -844,6 +621,10 @@ class _TimelineRail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // La hauteur suit l'agrandissement du texte choisi dans « Confort de
+    // lecture », pour que les titres ne soient jamais rognés.
+    final scale = MediaQuery.textScalerOf(context).scale(14) / 14;
+
     return _Section(
       title: 'La frise en un coup d’œil',
       trailing: HoverLink(
@@ -852,79 +633,120 @@ class _TimelineRail extends StatelessWidget {
         style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
       ),
       child: SizedBox(
-        height: 118,
-        child: ListView.separated(
+        height: 148 * scale.clamp(1.0, 1.45),
+        child: ListView.builder(
           scrollDirection: Axis.horizontal,
           itemCount: events.length,
-          separatorBuilder: (_, _) => const SizedBox(width: 8),
-          itemBuilder: (context, index) => _RailCard(event: events[index]),
+          itemBuilder: (context, index) => _RailEvent(event: events[index]),
         ),
       ),
     );
   }
 }
 
-class _RailCard extends StatefulWidget {
-  const _RailCard({required this.event});
+/// Un jalon posé sur l'axe : l'année, l'époque, la ligne et le titre.
+class _RailEvent extends StatefulWidget {
+  const _RailEvent({required this.event});
 
   final TimelineEvent event;
 
   @override
-  State<_RailCard> createState() => _RailCardState();
+  State<_RailEvent> createState() => _RailEventState();
 }
 
-class _RailCardState extends State<_RailCard> {
+class _RailEventState extends State<_RailEvent> {
   bool _hover = false;
 
   @override
   Widget build(BuildContext context) {
     final tone = ToneColors.from(context);
+    final year = widget.event.year;
+    final label = year < 0 ? '${-year} av. J.-C.' : '$year';
+    final accent = _hover ? IvoireColors.green : IvoireColors.terracotta;
 
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       onEnter: (_) => setState(() => _hover = true),
       onExit: (_) => setState(() => _hover = false),
       child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
         onTap: () => wikiGo(context, '/histoires?recit=${widget.event.slug}'),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 140),
-          width: 186,
-          padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
-          decoration: BoxDecoration(
-            color: _hover ? tone.subtle : tone.paper,
-            border: Border.all(
-              color: _hover ? IvoireColors.terracotta : tone.lineSoft,
-            ),
-            borderRadius: BorderRadius.circular(6),
-          ),
+        child: SizedBox(
+          width: 212,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                '${widget.event.year}',
-                style: titleStyle(
-                  size: 19,
-                  weight: FontWeight.w700,
-                  color: IvoireColors.terracotta,
+              Padding(
+                padding: const EdgeInsets.only(right: 24),
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: titleStyle(
+                    size: 21,
+                    weight: FontWeight.w700,
+                    color: _hover ? IvoireColors.greenDeep : accent,
+                    height: 1.1,
+                  ),
                 ),
               ),
-              const SizedBox(height: 2),
-              Text(
-                widget.event.era,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 10, color: tone.faint),
+              const SizedBox(height: 3),
+              Padding(
+                padding: const EdgeInsets.only(right: 24),
+                child: Text(
+                  widget.event.era.toUpperCase(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 9.5,
+                    height: 1.2,
+                    letterSpacing: 0.9,
+                    fontWeight: FontWeight.w600,
+                    color: tone.faint,
+                  ),
+                ),
               ),
-              const SizedBox(height: 6),
-              Expanded(
+              const SizedBox(height: 10),
+              // L'axe court d'un jalon au suivant : les segments se touchent,
+              // la ligne reste continue d'un bout à l'autre de la bande.
+              SizedBox(
+                height: 11,
+                child: Row(
+                  children: [
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 140),
+                      width: 11,
+                      height: 11,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: _hover ? IvoireColors.green : IvoireColors.terracotta,
+                        border: Border.all(color: tone.paper, width: 2),
+                      ),
+                    ),
+                    Expanded(
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 140),
+                        height: 1,
+                        color: _hover
+                            ? IvoireColors.green.withValues(alpha: 0.45)
+                            : tone.line,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              Padding(
+                padding: const EdgeInsets.only(right: 24),
                 child: Text(
                   widget.event.title,
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: 12.5,
-                    height: 1.4,
-                    color: tone.body,
+                    fontSize: 13,
+                    height: 1.45,
+                    fontWeight: _hover ? FontWeight.w600 : FontWeight.w400,
+                    color: _hover ? IvoireColors.greenDeep : tone.body,
                   ),
                 ),
               ),

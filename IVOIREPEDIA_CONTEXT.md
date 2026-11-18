@@ -1028,6 +1028,14 @@ jobs:
 - [ ] Textes d'interface en français, accessibles (alt, labels, contraste)
 - [ ] Ce fichier et/ou un ADR mis à jour si une décision a changé
 
+### 15.6 Performance de chargement (web)
+- Le premier écran ne charge que le nécessaire : tout paquet lourd qui ne sert pas au démarrage (génération PDF, exports) passe en `import ... deferred`.
+- Le serveur compresse explicitement `application/wasm` (CanvasKit pèse 7,3 Mo) ainsi que javascript, json, css, html et svg : `AddOutputFilterByType DEFLATE` dans `backend/public/.htaccess`.
+- Les appels de la page d'accueil partent en parallèle (`Future` lancés avant le premier `await`).
+- Aucun défilement décoratif plein écran à 60 images/s : les animations de fond sont avancées à basse fréquence.
+- Une couverture de lancement ne retient jamais l'écran plus d'une seconde et son décompte part de la première image peinte.
+- Toute optimisation se mesure (`curl` : taille transférée et durée) et se note dans `docs/SUIVI_DEVELOPPEMENT.md`.
+
 ---
 
 ## 16. Instructions spécifiques aux assistants IA

@@ -14,9 +14,9 @@ import 'widgets/backdrop.dart';
 ///
 /// Aucune image fournie par l'ancienne version n'est réutilisée : la marque,
 /// les couleurs et la devise viennent désormais du logo du propriétaire.
-const Duration kCoverHold = Duration(milliseconds: 2200);
+const Duration kCoverHold = Duration(milliseconds: 800);
 
-const Duration _fadeOut = Duration(milliseconds: 520);
+const Duration _fadeOut = Duration(milliseconds: 320);
 
 /// Affiche [child] sous une couverture, retirée en fondu après [hold].
 class LaunchCover extends StatefulWidget {
@@ -37,7 +37,15 @@ class _LaunchCoverState extends State<LaunchCover> {
   @override
   void initState() {
     super.initState();
-    _timer = Timer(widget.hold, _hide);
+
+    // Le décompte part de la première image peinte, pas de `initState` : sur
+    // une connexion lente, le moteur met plus longtemps que `hold` à afficher
+    // quoi que ce soit, et la couverture passait sans avoir été vue.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _timer = Timer(widget.hold, _hide);
+      }
+    });
   }
 
   void _hide() {
@@ -97,11 +105,13 @@ class CoverSheet extends StatelessWidget {
         child: LayoutBuilder(
           builder: (context, constraints) {
             // La signature garde ses proportions : elle est contenue, jamais
-            // rognée, et reste lisible sur un téléphone comme sur un grand écran.
+            // rognée, et reste nette : 240 px de haut au plus, alors que
+            // l'image en fait 516 — même sur un écran ×2, elle n'est pas
+            // agrandie au-delà de sa résolution.
             final height = math.min(
-              260.0,
+              240.0,
               math.min(
-                constraints.maxHeight * 0.42,
+                constraints.maxHeight * 0.40,
                 constraints.maxWidth * 0.46,
               ),
             );
@@ -142,7 +152,7 @@ class CoverSheet extends StatelessWidget {
                           key: const Key('cover-image'),
                           height: height,
                           fit: BoxFit.contain,
-                          filterQuality: FilterQuality.medium,
+                          filterQuality: FilterQuality.high,
                           semanticLabel: kTagline,
                         ),
                         const SizedBox(height: 20),

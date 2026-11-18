@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -54,36 +55,55 @@ class IvorianBackdrop extends StatefulWidget {
   State<IvorianBackdrop> createState() => _IvorianBackdropState();
 }
 
-class _IvorianBackdropState extends State<IvorianBackdrop>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _drift = AnimationController(
-    vsync: this,
-    duration: const Duration(seconds: 80),
-  );
+class _IvorianBackdropState extends State<IvorianBackdrop> {
+  /// Un cycle complet de dérive dure 80 s. La repeindre soixante fois par
+  /// seconde ne se voit pas (le pagne avance de 1,3 px par seconde) et coûte
+  /// cher, surtout sur téléphone : on l'avance douze fois par seconde.
+  static const Duration _step = Duration(milliseconds: 80);
+  static const Duration _cycle = Duration(seconds: 80);
+
+  final ValueNotifier<double> _drift = ValueNotifier<double>(0);
+  final Stopwatch _watch = Stopwatch();
 
   /// Position du pointeur dans le repère du fond. Une `ValueNotifier` évite de
   /// reconstruire tout le site à chaque déplacement : seul le peintre écoute.
   final ValueNotifier<Offset?> _pointer = ValueNotifier<Offset?>(null);
 
-  bool _running = false;
+  Timer? _timer;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    final motion = ivoireMotionAllowed(context);
-
-    if (motion && !_running) {
-      _drift.repeat();
-      _running = true;
-    } else if (!motion && _running) {
-      _drift.stop();
-      _running = false;
+    if (ivoireMotionAllowed(context)) {
+      _start();
+    } else {
+      _stop();
     }
+  }
+
+  void _start() {
+    if (_timer != null) {
+      return;
+    }
+
+    _watch.start();
+    _timer = Timer.periodic(_step, (_) {
+      _drift.value =
+          (_watch.elapsedMilliseconds % _cycle.inMilliseconds) /
+          _cycle.inMilliseconds;
+    });
+  }
+
+  void _stop() {
+    _timer?.cancel();
+    _timer = null;
+    _watch.stop();
   }
 
   @override
   void dispose() {
+    _stop();
     _drift.dispose();
     _pointer.dispose();
     super.dispose();

@@ -3,7 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
 import '../api.dart';
-import '../article_export.dart';
+import '../article_text.dart';
+
+// Le générateur de PDF (paquet `pdf`) ne sert qu'au bouton de téléchargement :
+// chargé à la demande, il n'alourdit pas le démarrage du site.
+import '../article_export.dart' deferred as article_export;
 import '../models/article.dart';
 import '../storage.dart';
 import '../theme.dart';
@@ -356,7 +360,8 @@ class _ArticleBodyState extends State<_ArticleBody> {
     _notify(messenger, 'Préparation du PDF…');
 
     try {
-      final name = await downloadArticlePdf(_article);
+      await article_export.loadLibrary();
+      final name = await article_export.downloadArticlePdf(_article);
       _notify(messenger, '« $name » téléchargé.');
     } catch (_) {
       _notify(

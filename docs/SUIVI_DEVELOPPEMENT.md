@@ -863,6 +863,44 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 - Les logos sont des images bitmap issues des visuels fournis (1600 px de large) : ils restent nets aux tailles du site, mais une version vectorielle serait préférable pour l'impression et les très grands écrans.
 - Aucun appareil physique n'a été testé.
 
+## Séance 34 — 18 novembre 2026 · Chargement allégé, frise sur un axe et marque nette la nuit
+
+**Demande**
+- Le site mettait trop de temps à s'afficher : revoir le chargement.
+- Supprimer la section « défi du jour ».
+- Revoir l'affichage de la frise sur la page principale.
+- Corriger le halo clair de la marque en thème nuit et sépia.
+- Vérifier en production la couverture de lancement sur téléphone et grand écran : entière et nette.
+
+**Fait — chargement**
+- Cause principale trouvée en production : `canvaskit.wasm` (7,28 Mo) était servi **sans compression**, Apache ne compressant pas `application/wasm` par défaut. `.htaccess` compresse désormais explicitement wasm, javascript, json, css, html et svg. Mesures : wasm 2 923 814 o en 1,9 s (contre 7 284 602 o en 66 s), `main.dart.js` 860 029 o en 1,3 s.
+- Le paquet `pdf` passe en **import différé** : ses 969 ko ne sont plus chargés au démarrage. `main.dart.js` descend de 3 863 580 à 2 900 442 o ; le bouton « Télécharger en PDF » charge le module à la demande. Les fonctions de texte (presse-papiers, sections) vivent maintenant dans `article_text.dart`, hors du module différé.
+- Accueil : les quatre appels API (domaines, articles, frise, chiffres) partent ensemble au lieu de s'enchaîner.
+- Écran de chargement HTML : signature en WebP (26 350 o au lieu de 263 624 o) avec repli PNG, disparition en 260 ms, surveillance toutes les 100 ms.
+- Couverture Flutter : 800 ms au lieu de 2,2 s, et le décompte part de la **première image peinte** (avant, sur connexion lente, il expirait pendant le chargement du moteur et la couverture n'était jamais vue). Images en `FilterQuality.high`.
+- Fond animé : la dérive du pagne n'est repeinte que 12 fois par seconde (1,3 px/s, mouvement inchangé à l'œil) au lieu de 60.
+
+**Fait — accueil**
+- « Le défi du jour » et ses composants sont supprimés, avec son test.
+- Frise : plus de cartes à liseré. Chaque jalon est posé sur un axe continu — année, époque, point, filet — et le titre se lit dessous ; la bande se fait défiler, la hauteur suit l'agrandissement du texte. Un test vérifie qu'un jalon ouvre son récit.
+
+**Fait — marque**
+- Les trois visuels sont retaillés depuis les originaux : le halo crème (la planche du sticker) est retiré par remplissage depuis les bords, les trous de lettres nettoyés, les bords désempourprés. L'emblème garde ses ivoires intérieurs ; le mot-symbole est livré sans la devise gravée, désormais écrite en texte et donc lisible dans les trois thèmes.
+- En nuit et sépia, la marque se pose sur le papier sans auréole claire. Captures `docs/captures/accueil-nuit-prod-2026-11-18.png` et `accueil-sepia-prod-2026-11-18.png`.
+
+**Vérifié**
+- `flutter analyze` : aucune remarque ; `flutter test` : **37 tests** verts (défi retiré, frise testée, couverture adaptée).
+- Build release (`main.dart.js` 2 900 442 o + `main.dart.js_1.part.js` 969 149 o) déployé dans `~/ivoirepedia/backend/public`.
+- En production : `/` 200 compressé (2 186 o), `/main.dart.js` 860 029 o compressés en 1,3 s, `/canvaskit/canvaskit.wasm` 2 923 814 o compressés en 1,9 s, `/logo.webp` 26 350 o.
+- Écran de lancement contrôlé en production en 390×844 et en grand écran : signature entière, centrée, nette (captures `couverture-telephone-2026-11-18.png` et `couverture-large-2026-11-18.png`).
+- Thèmes nuit et sépia contrôlés en production : en-tête et feuille suivent le thème, la marque n'a plus de halo crème.
+- Frise contrôlée en production : années 1701, 1730, 1843, 1893 sur l'axe, titres lisibles ; « Le défi du jour » absent (capture `accueil-frise-prod-2026-11-18.png`).
+
+**Limites**
+- La couche Flutter de la couverture (800 ms) n'a pas pu être photographiée : entre l'écran HTML et la capture, la fenêtre d'automatisation est trop lente. Les captures montrent l'écran de lancement HTML, qui porte la même signature ; la couverture Flutter est couverte par les tests de widgets (390×844 et 1280×800, `BoxFit.contain`, hauteur ≤ 240 px).
+- En thème nuit, la devise gravée dans l'image de signature reste peu contrastée ; dans la manchette elle demeure lisible et l'en-tête affiche la devise en texte du thème. Une variante « nuit » de la signature serait la prochaine amélioration.
+- Les logos restent bitmap ; aucun appareil physique n'a été testé.
+
 ---
 
 ## Blocages

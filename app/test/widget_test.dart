@@ -164,21 +164,28 @@ void main() {
     expect(find.text('Voir l’historique'), findsOneWidget);
   });
 
-  testWidgets('le défi du jour corrige la réponse choisie', (tester) async {
+  testWidgets('un jalon de la frise ouvre le récit dont il est tiré', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1280, 1000);
+    addTearDown(tester.view.reset);
+
     await tester.pumpWidget(IvoirepediaApp(api: FakeApi()));
     await tester.pumpAndSettle();
 
-    expect(find.text('Le défi du jour'), findsOneWidget);
-    expect(find.byKey(const ValueKey('quiz-feedback')), findsNothing);
+    // La frise de l'accueil pose ses jalons sur un axe, avec leur année.
+    expect(find.text('1934'), findsWidgets);
 
-    final option = find.byKey(const ValueKey('quiz-option-1701'));
-    await tester.ensureVisible(option);
+    // Le même jalon peut aussi être la « une » historique : on prend la
+    // dernière occurrence, celle de la frise.
+    final event = find.text('Abidjan, capitale').last;
+    await tester.ensureVisible(event);
     await tester.pumpAndSettle();
-    await tester.tap(option);
+    await tester.tap(event);
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const ValueKey('quiz-feedback')), findsOneWidget);
-    expect(find.text('Lire le récit'), findsOneWidget);
+    expect(find.text('Histoires incroyables'), findsOneWidget);
   });
 
   testWidgets('l’article au hasard de la navigation ouvre un article', (
@@ -243,7 +250,7 @@ void main() {
 
     expect(find.text('Article du jour'), findsOneWidget);
     expect(find.text('Portails thématiques'), findsOneWidget);
-    expect(find.text('Le défi du jour'), findsOneWidget);
+    expect(find.text('La frise en un coup d’œil'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 }
