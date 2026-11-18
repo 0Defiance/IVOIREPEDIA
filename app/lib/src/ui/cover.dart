@@ -104,17 +104,14 @@ class CoverSheet extends StatelessWidget {
         color: IvoireColors.ivory,
         child: LayoutBuilder(
           builder: (context, constraints) {
-            // La signature garde ses proportions : elle est contenue, jamais
-            // rognée, et reste nette : 240 px de haut au plus, alors que
-            // l'image en fait 516 — même sur un écran ×2, elle n'est pas
-            // agrandie au-delà de sa résolution.
-            final height = math.min(
-              240.0,
-              math.min(
-                constraints.maxHeight * 0.40,
-                constraints.maxWidth * 0.46,
-              ),
+            // La signature est très large (1 200 × 282) : c'est la largeur
+            // qui contraint, sinon elle déborderait d'un téléphone. Elle est
+            // contenue dans cette boîte, jamais rognée.
+            final boxWidth = math.max(
+              0.0,
+              math.min(constraints.maxWidth - 56, 760.0),
             );
+            final boxHeight = math.min(constraints.maxHeight * 0.34, 240.0);
 
             return Stack(
               alignment: Alignment.topLeft,
@@ -147,13 +144,16 @@ class CoverSheet extends StatelessWidget {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Image.asset(
-                          kLockupAsset,
-                          key: const Key('cover-image'),
-                          height: height,
-                          fit: BoxFit.contain,
-                          filterQuality: FilterQuality.high,
-                          semanticLabel: kTagline,
+                        SizedBox(
+                          width: boxWidth,
+                          height: boxHeight,
+                          child: Image.asset(
+                            kLockupAsset,
+                            key: const Key('cover-image'),
+                            fit: BoxFit.contain,
+                            filterQuality: FilterQuality.high,
+                            semanticLabel: kTagline,
+                          ),
                         ),
                         const SizedBox(height: 20),
                         Container(

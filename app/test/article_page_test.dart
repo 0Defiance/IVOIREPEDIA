@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:ivoirepedia/src/api.dart';
 import 'package:ivoirepedia/src/article_export.dart';
+import 'package:ivoirepedia/src/auth.dart';
 import 'package:ivoirepedia/src/models/article.dart';
 import 'package:ivoirepedia/src/models/category.dart';
 import 'package:ivoirepedia/src/models/history.dart';
@@ -86,9 +87,12 @@ class _MissingApi extends _ArticleApi {
 }
 
 Widget _wrap(Widget child, {IvoirepediaApi? api}) {
-  return ApiScope(
-    api: api ?? _ArticleApi(),
-    child: MaterialApp(theme: buildIvoireTheme(), home: child),
+  return AuthScope(
+    store: AuthStore(),
+    child: ApiScope(
+      api: api ?? _ArticleApi(),
+      child: MaterialApp(theme: buildIvoireTheme(), home: child),
+    ),
   );
 }
 
@@ -237,11 +241,14 @@ void main() {
     );
 
     await tester.pumpWidget(
-      ApiScope(
-        api: _ArticleApi(),
-        child: MaterialApp.router(
-          theme: buildIvoireTheme(),
-          routerConfig: router,
+      AuthScope(
+        store: AuthStore(),
+        child: ApiScope(
+          api: _ArticleApi(),
+          child: MaterialApp.router(
+            theme: buildIvoireTheme(),
+            routerConfig: router,
+          ),
         ),
       ),
     );

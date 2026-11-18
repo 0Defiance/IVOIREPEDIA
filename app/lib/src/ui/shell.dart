@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../api.dart';
+import '../auth.dart';
 import '../brand.dart';
 import '../storage.dart';
 import '../theme.dart';
@@ -230,6 +231,8 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = AuthScope.of(context).user;
+
     return AnimatedContainer(
       duration: const Duration(milliseconds: 180),
       decoration: BoxDecoration(
@@ -306,33 +309,52 @@ class _Header extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 4),
-                  HoverLink(
-                    label: 'Se connecter',
-                    onTap: () => wikiNotImplemented(context, 'Se connecter'),
-                    style: TextStyle(
-                      fontSize: 13.5,
-                      fontWeight: FontWeight.w500,
-                      color: IvoireColors.link,
-                    ),
-                  ),
-                  const SizedBox(width: 14),
-                  FilledButton(
-                    onPressed: () =>
-                        wikiNotImplemented(context, 'Créer un compte'),
-                    style: FilledButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 11,
-                      ),
-                      textStyle: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
+                  if (user != null)
+                    _AccountMenu(user: user)
+                  else ...[
+                    HoverLink(
+                      key: const Key('account-signin'),
+                      label: 'Se connecter',
+                      onTap: () => wikiGo(context, '/connexion'),
+                      style: TextStyle(
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w500,
+                        color: IvoireColors.link,
                       ),
                     ),
-                    child: const Text('Créer un compte'),
-                  ),
+                    const SizedBox(width: 14),
+                    FilledButton(
+                      key: const Key('account-signup'),
+                      onPressed: () => wikiGo(context, '/inscription'),
+                      style: FilledButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 11,
+                        ),
+                        textStyle: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      child: const Text('Créer un compte'),
+                    ),
+                  ],
                 ] else ...[
-                  DisplaySettingsButton(compact: true),
+                  // Sous 1000 px, le tiroir porte déjà « Confort de lecture »
+                  // et « Ma bibliothèque » : l'en-tête les laisse au tiroir,
+                  // sinon la rangée déborde vers 800 px de large.
+                  if (width >= 1000) ...[
+                    DisplaySettingsButton(compact: true),
+                    IconButton(
+                      tooltip: 'Ma bibliothèque',
+                      onPressed: () => wikiGo(context, '/ma-bibliotheque'),
+                      icon: Icon(
+                        Icons.bookmarks_outlined,
+                        size: 21,
+                        color: tone.muted,
+                      ),
+                    ),
+                  ],
                   if (!showSearch)
                     IconButton(
                       tooltip: 'Rechercher',
@@ -344,10 +366,12 @@ class _Header extends StatelessWidget {
                       onPressed: () => wikiGo(context, '/recherche'),
                     ),
                   IconButton(
-                    tooltip: 'Ma bibliothèque',
-                    onPressed: () => wikiGo(context, '/ma-bibliotheque'),
+                    tooltip: user == null ? 'Se connecter' : 'Mon compte',
+                    onPressed: () => _openAccount(context),
                     icon: Icon(
-                      Icons.bookmarks_outlined,
+                      user == null
+                          ? Icons.login
+                          : Icons.account_circle_outlined,
                       size: 21,
                       color: tone.muted,
                     ),
@@ -360,6 +384,148 @@ class _Header extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Compte connecté : le prénom ouvre le menu, la déconnexion y figure.
+class _AccountMenu extends StatelessWidget {
+  const _AccountMenu({required this.user});
+
+  final AuthUser user;
+
+  @override
+  Widget build(BuildContext context) {
+    final tone = ToneColors.from(context);
+
+    return PopupMenuButton<String>(
+      tooltip: 'Mon compte',
+      onSelected: (value) {
+        if (value == 'logout') {
+          AuthScope.of(context).signOut();
+        } else if (value == 'library') {
+          wikiGo(context, '/ma-bibliotheque');
+        }
+      },
+      itemBuilder: (context) => [
+        PopupMenuItem<String>(
+          enabled: false,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                user.name,
+                style: TextStyle(
+                  fontFamily: kFont,
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w600,
+                  color: tone.ink,
+                ),
+              ),
+              Text(
+                user.email,
+                style: TextStyle(fontFamily: kFont, fontSize: 11.5, color: tone.faint),
+              ),
+            ],
+          ),
+        ),
+        const PopupMenuDivider(),
+        const PopupMenuItem<String>(
+          value: 'library',
+          child: Text('Ma bibliothèque'),
+        ),
+        const PopupMenuItem<String>(
+          value: 'logout',
+          child: Text('Se déconnecter'),
+        ),
+      ],
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircleAvatar(
+              radius: 15,
+              backgroundColor: IvoireColors.green.withValues(alpha: 0.12),
+              child: Text(
+                user.firstName.isEmpty
+                    ? '?'
+                    : user.firstName.substring(0, 1).toUpperCase(),
+                style: const TextStyle(
+                  fontFamily: kFont,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: IvoireColors.greenDeep,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              user.firstName,
+              style: TextStyle(
+                fontSize: 13.5,
+                fontWeight: FontWeight.w600,
+                color: tone.ink,
+              ),
+            ),
+            Icon(Icons.arrow_drop_down, size: 18, color: tone.muted),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Entrée « compte » des écrans étroits : connexion, ou feuille du compte.
+void _openAccount(BuildContext context) {
+  final store = AuthScope.of(context);
+  final user = store.user;
+
+  if (user == null) {
+    wikiGo(context, '/connexion');
+    return;
+  }
+
+  final tone = ToneColors.from(context);
+
+  showModalBottomSheet<void>(
+    context: context,
+    backgroundColor: tone.paper,
+    builder: (sheetContext) => SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              user.name,
+              style: titleStyle(size: 17, weight: FontWeight.w600, color: tone.ink),
+            ),
+            const SizedBox(height: 2),
+            Text(user.email, style: TextStyle(fontSize: 12.5, color: tone.muted)),
+            const SizedBox(height: 16),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.bookmarks_outlined, size: 20),
+              title: const Text('Ma bibliothèque'),
+              onTap: () {
+                Navigator.of(sheetContext).pop();
+                wikiGo(context, '/ma-bibliotheque');
+              },
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.logout, size: 20),
+              title: const Text('Se déconnecter'),
+              onTap: () {
+                Navigator.of(sheetContext).pop();
+                store.signOut();
+              },
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 }
 
 class _HeaderSearch extends StatefulWidget {
@@ -623,6 +789,27 @@ class _Sidebar extends StatelessWidget {
                 tone: tone,
                 onTap: () => openDisplaySettings(context),
               ),
+              if (AuthScope.of(context).user != null)
+                _SidebarItem(
+                  'Se déconnecter',
+                  icon: Icons.logout,
+                  tone: tone,
+                  onTap: () => AuthScope.of(context).signOut(),
+                )
+              else ...[
+                _SidebarItem(
+                  'Se connecter',
+                  icon: Icons.login,
+                  tone: tone,
+                  onTap: () => wikiGo(context, '/connexion'),
+                ),
+                _SidebarItem(
+                  'Créer un compte',
+                  icon: Icons.person_add_alt,
+                  tone: tone,
+                  onTap: () => wikiGo(context, '/inscription'),
+                ),
+              ],
             ],
           ),
           const SizedBox(height: 20),

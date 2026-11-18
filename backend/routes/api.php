@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\ArticleController;
+use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\HistoryController;
 use App\Http\Controllers\Api\V1\PlaceController;
@@ -25,6 +26,18 @@ Route::prefix('v1')->group(function () {
             'service' => 'ivoirepedia-api',
             'version' => 'v1',
         ]);
+    });
+
+    // Comptes de lecteurs (Sprint 1) : inscription, connexion, profil et
+    // déconnexion. Les routes privées exigent un jeton porteur.
+    Route::prefix('auth')->group(function () {
+        Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:5,1');
+        Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1');
+
+        Route::middleware('auth.token')->group(function () {
+            Route::get('/me', [AuthController::class, 'me']);
+            Route::post('/logout', [AuthController::class, 'logout']);
+        });
     });
 
     Route::get('/categories', CategoryController::class);

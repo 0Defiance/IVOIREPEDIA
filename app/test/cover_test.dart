@@ -15,7 +15,12 @@ void main() {
 
     final image = tester.widget<Image>(find.byKey(const Key('cover-image')));
     expect(image.fit, BoxFit.contain);
-    expect(image.height, lessThanOrEqualTo(260));
+
+    // La signature reste dans l’écran : elle est large, c’est la largeur qui
+    // contraint, jamais la hauteur seule.
+    final box = tester.getSize(find.byKey(const Key('cover-image')));
+    expect(box.width, lessThanOrEqualTo(390 - 56));
+    expect(box.height, lessThanOrEqualTo(240));
 
     // Le pagne documenté remplit l’écran derrière la signature.
     expect(find.byKey(const Key('cover-backdrop')), findsOneWidget);
@@ -35,7 +40,10 @@ void main() {
 
     final image = tester.widget<Image>(find.byKey(const Key('cover-image')));
     expect(image.fit, BoxFit.contain);
-    expect(image.height, 240);
+
+    final box = tester.getSize(find.byKey(const Key('cover-image')));
+    expect(box.width, 760);
+    expect(box.height, 240);
     expect(tester.takeException(), isNull);
   });
 

@@ -903,6 +903,47 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 35 — 18 novembre 2026 · Nouvelle marque servie, onglet fiable, comptes de lecteurs
+
+**Demande**
+- Remplacer les visuels de la marque par les trois nouvelles images fournies.
+- L'icône de l'onglet ne s'affiche pas toujours selon le navigateur : corriger.
+- Remettre en place « Créer un compte » et « Se connecter ».
+- Réfléchir à la mise en place du tableau de bord d'administration.
+
+**Fait — marque**
+- `tools/build_brand_assets.py` régénère les trois dérivés depuis les originaux : détourage par diffusion depuis les bords (seuil 22 pour le fond, 6 + test de couronne pour les creux enfermés), ce qui conserve l'ivoire de l'éléphant et les pages du livre. L'ombre portée est ôtée en coupant sous la dernière ligne colorée, puis en effaçant les gris neutres : plus aucun halo clair en thème nuit ou sépia.
+- Assets : `marque.webp` (893 × 880, 130 ko), `logo-mot.webp` (1 230 × 150), `logo.webp` (1 200 × 282) pour l'application, et les mêmes en `web/` pour l'écran de lancement.
+- Couverture : la signature est contenue par la largeur (`min(maxWidth − 56, 760)` × `min(maxHeight × 0,34, 240)`) et posée en `BoxFit.contain` : elle ne déborde plus des écrans étroits.
+
+**Fait — onglet**
+- `favicon.ico` porte quatre tailles (16/32/48/64) ; `favicon.png` (32 px), `icons/Icon-32|64|180|192|512.png` et deux variantes *maskable* complètent le jeu. Fond papier opaque et coins arrondis : l'emblème se détache aussi sur la barre d'onglets sombre.
+- **Deux causes réelles du défaut signalé** : la balise `apple-touch-icon` et le lien `manifest.json` étaient **relatifs** — depuis une adresse profonde (`/articles/…`), ils pointaient vers `/articles/icons/…` et vers `/manifest.json` absent ; ils sont désormais absolus. Et l'ancien favicon restait en cache : les liens portent `?v=2`, y compris l'ICO.
+- `backend/public/.htaccess` applique le cache d'un jour aux `.ico`, comme aux PNG et WebP.
+
+**Fait — comptes de lecteurs**
+- API : table `api_tokens` (empreinte SHA-256, 60 jours), middleware `AuthenticateApiToken` (en-tête `Bearer`, 401 `UNAUTHENTICATED`, 403 `ACCOUNT_SUSPENDED`), routes `POST /auth/register`, `POST /auth/login`, `GET /auth/me`, `POST /auth/logout`. Inscription limitée à 5 essais par minute, connexion à 10 ; le rôle créé est toujours `READER`.
+- Application : `AuthStore` + `AuthScope`, jeton conservé dans le stockage du navigateur et vérifié au démarrage (une session expirée retombe sur la lecture en visiteur) ; écran `AuthPage` commun à `/connexion` et `/inscription` ; bandeau avec « Se connecter » / « Créer un compte » au large, icône de compte et feuille de déconnexion en dessous de 1 120 px ; entrées correspondantes dans le tiroir.
+- Quatre tests de parcours avec un serveur d'authentification en mémoire : connexion, création de compte, mot de passe refusé, déconnexion.
+
+**Fait — en-tête (régression trouvée par les tests)**
+- L'ajout des liens de compte faisait déborder la rangée d'en-tête de 40 px vers 800 px de large. Sous 1 000 px, le tiroir porte déjà « Confort de lecture » et « Ma bibliothèque » : l'en-tête les lui laisse et garde la recherche et le compte.
+
+**Réflexion — tableau de bord**
+- `docs/DASHBOARD_ADMIN.md` : périmètre (écrire et publier, administrer, voir l'état du contenu), choix d'un panneau serveur sur `/admin` plutôt que des écrans Flutter, matrice des rôles READER → ADMIN, formulaires (essentiel, corps Delta, infobox, sources, couverture, médias), versions, journal éditorial, tableau de bord qualité, authentification par session séparée des jetons d'API, découpage en cinq phases (20 à 26 jours) et questions ouvertes. **Aucune ligne de code : c'est une note de cadrage.**
+
+**Vérifié**
+- `flutter analyze` : aucune remarque. `flutter test` : **41 tests** verts (+4).
+- Backend : `php artisan test` **47 tests, 1 203 assertions** ; `pint --test` propre ; `phpstan` sans erreur (deux corrections : import inutilisé et `@property-read User|null` sur `ApiToken`, qui rendait le test de nullité inutile aux yeux de l'analyseur).
+- Les tests ont aussi attrapé trois défauts réels de la séance : le débordement d'en-tête, deux libellés ambigus (« Se connecter », « Se déconnecter » existent aussi dans le tiroir) et l'absence d'`AuthScope` dans les tests qui montent une page seule.
+
+**Limites**
+- La devise gravée dans l'image de signature reste peu contrastée en thème nuit ; l'en-tête affiche la devise en texte du thème.
+- Les logos restent bitmap ; aucun appareil physique n'a été testé, ni les navigateurs de bureau un par un (le jeu d'icônes est vérifié par les fichiers servis, pas par chaque moteur).
+- Le tableau de bord n'est pas commencé : la note de cadrage propose un ordre, elle n'engage rien.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

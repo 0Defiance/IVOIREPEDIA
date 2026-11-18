@@ -6,6 +6,7 @@ import 'package:ivoirepedia/src/models/category.dart';
 import 'package:ivoirepedia/src/models/history.dart';
 import 'package:ivoirepedia/src/models/sources.dart';
 import 'package:ivoirepedia/src/api.dart';
+import 'package:ivoirepedia/src/auth.dart';
 import 'package:ivoirepedia/src/ui/widgets/ivorian_patterns.dart';
 
 import 'package:ivoirepedia/src/theme.dart';
@@ -131,11 +132,14 @@ void main() {
   testWidgets('la fiche ouverte depuis un article est mise en évidence',
       (tester) async {
     await tester.pumpWidget(
-      ApiScope(
-        api: _SourcesApi(),
-        child: MaterialApp(
-          theme: buildIvoireTheme(),
-          home: const SourcesPage(highlight: 'rgph-2021'),
+      AuthScope(
+        store: AuthStore(),
+        child: ApiScope(
+          api: _SourcesApi(),
+          child: MaterialApp(
+            theme: buildIvoireTheme(),
+            home: const SourcesPage(highlight: 'rgph-2021'),
+          ),
         ),
       ),
     );

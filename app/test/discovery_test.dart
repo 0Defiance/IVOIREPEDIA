@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ivoirepedia/src/api.dart';
 import 'package:ivoirepedia/src/app.dart';
 import 'package:ivoirepedia/src/article_export.dart';
+import 'package:ivoirepedia/src/auth.dart';
 import 'package:ivoirepedia/src/models/article.dart';
 import 'package:ivoirepedia/src/models/place.dart';
 import 'package:ivoirepedia/src/models/suggestion.dart';
@@ -171,9 +172,13 @@ void main() {
 
   testWidgets('la recherche propose des suggestions et garde l’historique', (tester) async {
     await tester.pumpWidget(
-      ApiScope(
-        api: _DiscoveryApi(),
-        child: MaterialApp(theme: buildIvoireTheme(), home: const SearchPage()),
+      AuthScope(
+        store: AuthStore(),
+        child: ApiScope(
+          api: _DiscoveryApi(),
+          child:
+              MaterialApp(theme: buildIvoireTheme(), home: const SearchPage()),
+        ),
       ),
     );
     await tester.pump();
@@ -193,11 +198,14 @@ void main() {
     addTearDown(tester.view.reset);
 
     await tester.pumpWidget(
-      ApiScope(
-        api: _DiscoveryApi(),
-        child: MaterialApp(
-          theme: buildIvoireTheme(),
-          home: const ArticlePage(slug: 'abidjan'),
+      AuthScope(
+        store: AuthStore(),
+        child: ApiScope(
+          api: _DiscoveryApi(),
+          child: MaterialApp(
+            theme: buildIvoireTheme(),
+            home: const ArticlePage(slug: 'abidjan'),
+          ),
         ),
       ),
     );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:ivoirepedia/src/api.dart';
+import 'package:ivoirepedia/src/auth.dart';
 import 'package:ivoirepedia/src/models/article.dart';
 import 'package:ivoirepedia/src/models/category.dart';
 import 'package:ivoirepedia/src/models/history.dart';
@@ -66,9 +67,12 @@ class _SearchApi extends FakeIvoirepediaApi {
 }
 
 Widget _wrap(SearchPage page, IvoirepediaApi api) {
-  return ApiScope(
-    api: api,
-    child: MaterialApp(theme: buildIvoireTheme(), home: page),
+  return AuthScope(
+    store: AuthStore(),
+    child: ApiScope(
+      api: api,
+      child: MaterialApp(theme: buildIvoireTheme(), home: page),
+    ),
   );
 }
 

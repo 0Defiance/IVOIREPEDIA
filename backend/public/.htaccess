@@ -67,7 +67,7 @@
   # CanvasKit et les polices pèsent plusieurs mégaoctets et ne changent qu'avec
   # une montée de version de Flutter : un jour de cache évite de les reprendre
   # à chaque visite, sans figer durablement une version périmée.
-  <FilesMatch "\.(wasm|ttf|otf|woff2?|png|webp)$">
+  <FilesMatch "\.(wasm|ttf|otf|woff2?|png|webp|ico)$">
     Header set Cache-Control "public, max-age=86400"
   </FilesMatch>
 

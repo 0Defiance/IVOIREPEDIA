@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'ui/article_page.dart';
+import 'ui/auth_page.dart';
 import 'ui/category_page.dart';
 import 'ui/history_page.dart';
 import 'ui/home_page.dart';
@@ -101,6 +102,14 @@ GoRouter buildRouter() {
       GoRoute(
         path: '/ma-bibliotheque',
         pageBuilder: (context, state) => _page(const LibraryPage()),
+      ),
+      GoRoute(
+        path: '/connexion',
+        pageBuilder: (context, state) => _page(const AuthPage()),
+      ),
+      GoRoute(
+        path: '/inscription',
+        pageBuilder: (context, state) => _page(const AuthPage(register: true)),
       ),
     ],
     errorBuilder: (context, state) => SiteShell(

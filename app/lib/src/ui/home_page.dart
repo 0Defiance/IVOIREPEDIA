@@ -1239,7 +1239,7 @@ class _ContributeBox extends StatelessWidget {
           const SizedBox(height: 6),
           HoverLink(
             label: 'Créer un compte',
-            onTap: () => wikiNotImplemented(context, 'Créer un compte'),
+            onTap: () => wikiGo(context, '/inscription'),
             style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
           ),
         ],
