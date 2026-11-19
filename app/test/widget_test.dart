@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:ivoirepedia/src/app.dart';
 import 'package:ivoirepedia/src/brand.dart';
@@ -92,6 +93,64 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Voir l’historique'), findsOneWidget);
+  });
+
+  testWidgets('une entrée du sommaire fait défiler jusqu’à sa rubrique', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1280, 1000);
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(IvoirepediaApp(api: FakeApi()));
+    await tester.pumpAndSettle();
+
+    // Le libellé vaut deux fois : l'entrée du sommaire, puis le titre de la
+    // rubrique, qui commence sous la ligne de flottaison.
+    final heading = find.text('Explorer les régions').last;
+    final before = tester.getTopLeft(heading).dy;
+    expect(before, greaterThan(800));
+
+    await tester.tap(find.text('Explorer les régions').first);
+    await tester.pumpAndSettle();
+
+    // Le sommaire ne quitte pas la page : la rubrique remonte en haut de
+    // l'écran, à la marge près.
+    final after = tester.getTopLeft(heading).dy;
+    expect(after, lessThan(before));
+    expect(after, lessThan(300));
+  });
+
+  testWidgets('une carte de région ouvre sa fiche, ou l’annuaire à défaut', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1280, 1000);
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(IvoirepediaApp(api: FakeApi()));
+    await tester.pumpAndSettle();
+
+    final router = GoRouter.of(tester.element(find.text('Folon')));
+    String location() =>
+        router.routerDelegate.currentConfiguration.uri.toString();
+
+    // Une région que le recensement relie à une fiche : la carte y conduit.
+    await tester.ensureVisible(find.text('Haut-Sassandra'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Haut-Sassandra'));
+    await tester.pumpAndSettle();
+    expect(location(), '/lieux/haut-sassandra');
+
+    // Une région sans fiche : la carte ouvre l'annuaire des lieux.
+    router.go('/');
+    await tester.pumpAndSettle();
+
+    await tester.ensureVisible(find.text('Folon'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Folon'));
+    await tester.pumpAndSettle();
+    expect(location(), '/lieux');
   });
 
   testWidgets('l’accueil se rend sur téléphone sans débordement', (

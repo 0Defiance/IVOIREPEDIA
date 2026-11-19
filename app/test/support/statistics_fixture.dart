@@ -112,8 +112,16 @@ StatisticsSnapshot statisticsFixture() {
     regions: const [
       StatisticDivision(
         name: 'Haut-Sassandra',
+        slug: 'haut-sassandra',
         population: 1739697,
         households: 329000,
+      ),
+      // Une région que l'annuaire ne dessert pas : sa carte doit tout de même
+      // conduire quelque part, la liste des lieux, plutôt qu'à un lien mort.
+      StatisticDivision(
+        name: 'Folon',
+        population: 146209,
+        households: 18512,
       ),
     ],
     cities: const [

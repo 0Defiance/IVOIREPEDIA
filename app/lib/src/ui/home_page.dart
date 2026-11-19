@@ -298,10 +298,7 @@ class _HomeBodyState extends State<_HomeBody> {
                 const SizedBox(height: 18),
                 Container(
                   key: _anchor('sources'),
-                  child: _SourceLibraryBox(
-                    sources: data.sources,
-                    institutions: data.categories.length,
-                  ),
+                  child: _SourceLibraryBox(sources: data.sources),
                 ),
                 const SizedBox(height: 18),
                 const _ReadingResume(),
@@ -1116,6 +1113,7 @@ class _RegionCardState extends State<_RegionCard> {
   Widget build(BuildContext context) {
     final tone = ToneColors.from(context);
     final region = widget.region;
+    final slug = region.slug;
 
     return MouseRegion(
       cursor: SystemMouseCursors.click,
@@ -1123,7 +1121,12 @@ class _RegionCardState extends State<_RegionCard> {
       onExit: (_) => setState(() => _hover = false),
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTap: () => wikiGo(context, '/lieux'),
+        // Une région qui a sa fiche y conduit ; les autres mènent à l'annuaire
+        // des lieux, plutôt que nulle part.
+        onTap: () => wikiGo(
+          context,
+          slug == null || slug.isEmpty ? '/lieux' : '/lieux/$slug',
+        ),
         child: Container(
           padding: const EdgeInsets.fromLTRB(13, 11, 13, 12),
           decoration: BoxDecoration(
@@ -1762,10 +1765,9 @@ StatisticIndicator? _indicator(StatisticsSnapshot? stats, String code) {
 /// La bibliothèque des sources : le nombre d'institutions et de références
 /// derrière les articles, avec la porte d'entrée de la section.
 class _SourceLibraryBox extends StatelessWidget {
-  const _SourceLibraryBox({required this.sources, required this.institutions});
+  const _SourceLibraryBox({required this.sources});
 
   final SourceLibrary? sources;
-  final int institutions;
 
   @override
   Widget build(BuildContext context) {

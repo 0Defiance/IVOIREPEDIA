@@ -1054,6 +1054,26 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 39 — 19 novembre 2026 · Liens de l'accueil vérifiés
+
+**Demande**
+- Corriger le lien des cartes de région, retirer un paramètre inutilisé, et vérifier par un test que le sommaire fait bien défiler la page.
+
+**Fait**
+- Une carte de région ouvre désormais sa fiche `/lieux/:slug` quand le recensement lui connaît un slug ; sinon elle mène à l'annuaire `/lieux`, au lieu de toujours renvoyer à l'annuaire. C'est la règle déjà suivie par le tableau des régions des statistiques.
+- `_SourceLibraryBox` ne reçoit plus `institutions` : le paramètre n'était pas lu, le nombre d'institutions venant déjà de `SourceLibrary.institutionCount`.
+- La fixture du recensement porte maintenant deux régions : Haut-Sassandra avec son slug `haut-sassandra` (celui de la vraie réponse de l'API) et Folon sans slug, pour représenter une région que l'annuaire ne dessert pas.
+- Deux tests de widgets : le sommaire fait défiler jusqu'à sa rubrique (voir ci-dessus), et une carte de région ouvre `/lieux/:slug` quand le recensement connaît le slug, `/lieux` sinon.
+
+**Vérifié**
+- `flutter analyze` : aucune remarque. `flutter test` : **46 tests** verts (+2).
+- Aucun fichier backend touché : la suite Laravel de la séance 37 reste la référence (103 tests).
+
+**Limites**
+- Toujours aucune vérification au navigateur.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
