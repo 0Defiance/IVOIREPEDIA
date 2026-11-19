@@ -1270,6 +1270,31 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 46 — 19 novembre 2026 · Coquille issue du build déployé, partage en bas d’article
+
+**Demande**
+- La séance 45 avait recopié le document Flutter dans un second fichier (`site/shell.blade.php`) : la moindre évolution de `app/web/index.html` (écran de lancement, icônes, manifeste) pouvait diverger de l’application. La coquille doit partir du `public/index.html` déployé, avec un repli local pour les tests.
+- Le bloc de partage (WhatsApp, X, Facebook, LinkedIn, copier le lien) se trouvait sous le titre de l’article : il doit être en bas, une fois la lecture finie.
+
+**Fait — coquille**
+- `App\Support\FlutterShell` remplace `site/shell.blade.php`, supprimé : le document vient de `public/index.html` (build déployé), sinon de `app/web/index.html` (source versionnée), sinon d’une page de repli sans Flutter (`site/shell-fallback`). La variable de build `$FLUTTER_BASE_HREF` est remplacée par `/`.
+- Seules les métadonnées sont modifiées : `<title>` et `meta description` remplacés, canonique et Open Graph (`site/partials/shell-head`) insérés dans le `<head>`, `<noscript>` (`site/partials/shell-noscript`) avant `</body>`. Le reste du document déployé est laissé intact — écran de lancement, icônes, manifeste et script de démarrage ne sont plus écrits à la main côté Laravel.
+- `ArticlePageController` instancie `FlutterShell` pour les deux rendus (article trouvé et 404).
+
+**Fait — partage**
+- `article_page.dart` : `ShareBar` retiré du haut de page et posé en bas du contenu de lecture, après les catégories et sous un filet ; le message « Lien copié. » passe par le `ScaffoldMessenger` de la page. Le commentaire de `share_bar.dart` décrit le nouvel emplacement.
+
+**Vérifié**
+- `composer test` : **141 tests, 1 783 assertions**. Deux nouveaux cas dans `tests/Feature/Site/FlutterShellTest.php` : le document déployé est repris tel quel (marqueur du build conservé, base `/`, titre, description, canonique et Open Graph injectés, `noscript` juste avant `</body>`) ; sans document disponible, une page de repli est rendue sans `flutter_bootstrap.js`.
+- `composer format:check` et `composer analyse` propres.
+- `flutter analyze` propre ; `flutter test` : **52 tests**, dont un nouveau qui vérifie que « Partager : » se trouve plus bas que les catégories dans la page de lecture.
+
+**Reste**
+- Le partage en bas de page n’a pas été regardé dans un navigateur à cette étape : la position est vérifiée par le test de widgets, pas par une capture.
+- Les autres pages (accueil, catégories, lieux) n’ont toujours pas de version pré-rendue ; les suites SEO proposées (JSON-LD `Article`, sitemap d’images, image Open Graph par défaut) ne sont pas commencées.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

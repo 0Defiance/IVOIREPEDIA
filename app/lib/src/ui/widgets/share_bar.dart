@@ -68,7 +68,7 @@ Future<bool> openExternal(String url) async {
   }
 }
 
-/// Boutons de partage posés sous le titre d'un article.
+/// Boutons de partage posés en bas de l'article, une fois la lecture finie.
 class ShareBar extends StatelessWidget {
   const ShareBar({
     required this.url,

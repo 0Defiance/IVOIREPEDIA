@@ -263,4 +263,17 @@ void main() {
     expect(find.text('SOURCE abc123def456'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('le partage se trouve en bas de l’article, après le texte',
+      (tester) async {
+    await tester.pumpWidget(_wrap(const ArticlePage(slug: 'felix-houphouet-boigny')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Partager :'), findsOneWidget);
+
+    final shareTop = tester.getTopLeft(find.text('Partager :')).dy;
+    final categoriesTop = tester.getTopLeft(find.text('Catégories :')).dy;
+
+    expect(shareTop, greaterThan(categoriesTop));
+  });
 }

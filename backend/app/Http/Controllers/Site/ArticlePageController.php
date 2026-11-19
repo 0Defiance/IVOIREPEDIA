@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Site;
 use App\Http\Controllers\Controller;
 use App\Models\Article;
 use App\Support\DeltaHtml;
+use App\Support\FlutterShell;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -18,7 +19,8 @@ use Illuminate\Support\Str;
  *
  * - un visiteur reçoit la coquille Flutter, avec le titre, la description,
  *   l'Open Graph et la canonique de l'article dans le `<head>` ; Flutter
- *   reprend ensuite la main et affiche la page de lecture habituelle ;
+ *   reprend ensuite la main et affiche la page de lecture habituelle. Cette
+ *   coquille part du `public/index.html` déployé (voir `FlutterShell`) ;
  * - un robot (moteur de recherche, aperçu de partage) ou un client qui
  *   demande `?html=1` reçoit le HTML complet rendu par Laravel, sans
  *   JavaScript.
@@ -66,7 +68,7 @@ class ArticlePageController extends Controller
             return view('site.article', $data);
         }
 
-        return response()->view('site.shell', $data);
+        return response((new FlutterShell)->render($data));
     }
 
     /** Article inconnu : page 404 dans le rendu attendu par le client. */
@@ -76,7 +78,7 @@ class ArticlePageController extends Controller
             return response()->view('site.missing', ['siteUrl' => $siteUrl], 404);
         }
 
-        return response()->view('site.shell', [
+        return response((new FlutterShell)->render([
             'article' => null,
             'content' => '',
             'sections' => [],
@@ -89,7 +91,7 @@ class ArticlePageController extends Controller
             'modifiedAt' => null,
             'section' => null,
             'tags' => [],
-        ], 404);
+        ]), 404);
     }
 
     /**

@@ -380,7 +380,6 @@ class _ArticleBodyState extends State<_ArticleBody> {
     final sections = deltaSections(_article.contentOps);
     final infobox = _article.infobox;
     final tone = ToneColors.from(context);
-    final messenger = ScaffoldMessenger.of(context);
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
@@ -463,12 +462,6 @@ class _ArticleBodyState extends State<_ArticleBody> {
                 ],
               );
             },
-          ),
-          const SizedBox(height: 14),
-          ShareBar(
-            url: articleUrl(_article.slug),
-            title: _article.title,
-            onCopied: (message) => _notify(messenger, message),
           ),
           if (_article.coverImageUrl != null) ...[
             const SizedBox(height: 18),
@@ -555,6 +548,17 @@ class _ArticleBodyState extends State<_ArticleBody> {
                   onOpenSource: _openReference,
                 ),
               _CategoryBar(article: _article),
+              const SizedBox(height: 22),
+              Container(height: 1, color: tone.line),
+              const SizedBox(height: 16),
+              ShareBar(
+                url: articleUrl(_article.slug),
+                title: _article.title,
+                onCopied: (message) => _notify(
+                  ScaffoldMessenger.of(context),
+                  message,
+                ),
+              ),
             ],
           ),
         );
