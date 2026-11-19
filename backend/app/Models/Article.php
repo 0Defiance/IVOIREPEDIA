@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -40,6 +41,8 @@ use Illuminate\Support\Carbon;
  * @property-read User $author
  * @property-read Collection<int, Tag> $tags
  * @property-read Collection<int, ArticleReference> $references
+ * @property-read Collection<int, ArticleVersion> $versions
+ * @property-read Collection<int, EditorialAction> $actions
  */
 #[Fillable([
     'title', 'slug', 'summary', 'content', 'infobox', 'type', 'status',
@@ -50,7 +53,7 @@ use Illuminate\Support\Carbon;
 ])]
 class Article extends Model
 {
-    use HasUuids, SoftDeletes;
+    use HasFactory, HasUuids, SoftDeletes;
 
     /**
      * @return array<string, string>
@@ -126,6 +129,43 @@ class Article extends Model
     public function references(): HasMany
     {
         return $this->hasMany(ArticleReference::class)->orderBy('position');
+    }
+
+    /**
+     * Jalons enregistrés (ADR-005), du plus ancien au plus récent.
+     *
+     * @return HasMany<ArticleVersion, $this>
+     */
+    public function versions(): HasMany
+    {
+        return $this->hasMany(ArticleVersion::class)->orderBy('number');
+    }
+
+    /**
+     * Journal éditorial de cet article, du plus récent au plus ancien.
+     *
+     * @return HasMany<EditorialAction, $this>
+     */
+    public function actions(): HasMany
+    {
+        return $this->hasMany(EditorialAction::class)->latest('created_at');
+    }
+
+    /** Texte brut du contenu : aperçu dans le panneau, jamais publié tel quel. */
+    public function plainText(): string
+    {
+        $text = '';
+        $ops = $this->content['ops'] ?? [];
+
+        if (is_array($ops)) {
+            foreach ($ops as $op) {
+                if (is_array($op) && isset($op['insert']) && is_string($op['insert'])) {
+                    $text .= $op['insert'];
+                }
+            }
+        }
+
+        return trim($text);
     }
 
     /** Temps de lecture estimé (≈ 200 mots/minute), pour l'interface. */

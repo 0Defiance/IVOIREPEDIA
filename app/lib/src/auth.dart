@@ -77,6 +77,17 @@ abstract interface class AuthApi {
   Future<AuthUser> me(String token);
 
   Future<void> logout(String token);
+
+  /// Demande un lien de réinitialisation. La réponse est la même que le compte
+  /// existe ou non : elle ne permet donc pas de découvrir les adresses.
+  Future<String> requestPasswordReset({required String email});
+
+  /// Choisit un nouveau mot de passe à partir du lien reçu par courriel.
+  Future<String> resetPassword({
+    required String email,
+    required String token,
+    required String password,
+  });
 }
 
 /// Client HTTP des routes `/api/v1/auth`.
@@ -134,6 +145,37 @@ class HttpAuthApi implements AuthApi {
     await _post('/auth/logout', const {}, token: token);
   }
 
+  @override
+  Future<String> requestPasswordReset({required String email}) async {
+    final payload = await _post('/auth/forgot-password', {
+      'email': email.trim(),
+    });
+
+    return _notice(
+      payload,
+      'Si un compte existe avec cette adresse, un lien vient de lui être envoyé.',
+    );
+  }
+
+  @override
+  Future<String> resetPassword({
+    required String email,
+    required String token,
+    required String password,
+  }) async {
+    final payload = await _post('/auth/reset-password', {
+      'email': email.trim(),
+      'token': token,
+      'password': password,
+      'password_confirmation': password,
+    });
+
+    return _notice(
+      payload,
+      'Votre mot de passe est changé. Vous pouvez vous connecter.',
+    );
+  }
+
   AuthSession _session(Map<String, dynamic> payload) {
     final data = payload['data'] as Map<String, dynamic>?;
     final user = data?['user'] as Map<String, dynamic>?;
@@ -144,6 +186,14 @@ class HttpAuthApi implements AuthApi {
     }
 
     return AuthSession(user: AuthUser.fromJson(user), token: token);
+  }
+
+  /// Message de confirmation renvoyé par le serveur (`data.message`).
+  String _notice(Map<String, dynamic> payload, String fallback) {
+    final data = payload['data'];
+    final message = data is Map ? data['message'] : null;
+
+    return message is String && message.isNotEmpty ? message : fallback;
   }
 
   Future<Map<String, dynamic>> _get(String path, String token) async {
@@ -285,6 +335,24 @@ class AuthStore extends ChangeNotifier {
         email: email.trim(),
         password: password,
       ),
+    );
+  }
+
+  Future<String> requestPasswordReset(String email) {
+    return _api.requestPasswordReset(email: email.trim());
+  }
+
+  /// Change le mot de passe : la session courante n'est pas ouverte pour
+  /// autant, le lecteur se connecte avec son nouveau mot de passe.
+  Future<String> resetPassword({
+    required String email,
+    required String token,
+    required String password,
+  }) {
+    return _api.resetPassword(
+      email: email.trim(),
+      token: token,
+      password: password,
     );
   }
 

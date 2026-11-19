@@ -787,8 +787,8 @@ Base : `/api/v1`. Format JSON. Authentification : session Sanctum (cookie) côt�
 |---|---|---|---|---|
 | POST | `/api/v1/register` | public | Inscription (crée `READER`, envoie email de vérification) | AUTH-01/02 |
 | POST | `/api/v1/verify-email` | public | Valide le token email | AUTH-02 |
-| POST | `/api/v1/forgot-password` | public | Envoie un lien de réinitialisation (réponse identique que l'email existe ou non) | AUTH-05 |
-| POST | `/api/v1/reset-password` | public | Définit un nouveau mot de passe | AUTH-05 |
+| POST | `/api/v1/auth/forgot-password` | public | Envoie un lien de réinitialisation (réponse identique que l'email existe ou non) | AUTH-05 |
+| POST | `/api/v1/auth/reset-password` | public | Définit un nouveau mot de passe | AUTH-05 |
 | POST | `/api/v1/login` | public | Connexion (session web / jeton Android) | AUTH-03 |
 | POST | `/api/v1/logout` | authentifié | Déconnexion | AUTH-04 |
 | GET | `/api/v1/me` | authentifié | Profil courant (sanctionne les sessions invalides) | AUTH-04 |

@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Enums\UserRole;
+use App\Exceptions\ResetLinkException;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ForgotPasswordRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\ResetPasswordRequest;
 use App\Models\ApiToken;
 use App\Models\User;
+use App\Services\PasswordResetService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -29,7 +34,7 @@ class AuthController extends Controller
             'name' => (string) $data['name'],
             'email' => (string) $data['email'],
             'password_hash' => Hash::make((string) $data['password']),
-            'role' => 'READER',
+            'role' => UserRole::READER,
         ]);
 
         return response()->json([
@@ -105,6 +110,54 @@ class AuthController extends Controller
     }
 
     /**
+     * `POST /api/v1/auth/forgot-password` — envoie un lien si le compte existe.
+     *
+     * La réponse est identique dans tous les cas : c'est ce qui empêche
+     * d'utiliser ce formulaire pour découvrir quelles adresses sont inscrites.
+     */
+    public function forgotPassword(
+        ForgotPasswordRequest $request,
+        PasswordResetService $reset,
+    ): JsonResponse {
+        $reset->request((string) $request->validated()['email']);
+
+        return response()->json([
+            'data' => [
+                'message' => 'Si un compte existe avec cette adresse, un lien vient de lui être envoyé.',
+            ],
+        ]);
+    }
+
+    /** `POST /api/v1/auth/reset-password` — choisit un nouveau mot de passe. */
+    public function resetPassword(
+        ResetPasswordRequest $request,
+        PasswordResetService $reset,
+    ): JsonResponse {
+        $data = $request->validated();
+
+        try {
+            $reset->reset(
+                (string) $data['email'],
+                (string) $data['token'],
+                (string) $data['password'],
+            );
+        } catch (ResetLinkException $exception) {
+            return response()->json([
+                'error' => [
+                    'code' => 'INVALID_RESET_TOKEN',
+                    'message' => $exception->getMessage(),
+                ],
+            ], 422);
+        }
+
+        return response()->json([
+            'data' => [
+                'message' => 'Votre mot de passe est changé. Vous pouvez vous connecter.',
+            ],
+        ]);
+    }
+
+    /**
      * Forme publique d'un compte : jamais le hash ni les jetons.
      *
      * @return array<string, mixed>
@@ -115,7 +168,7 @@ class AuthController extends Controller
             'id' => $user->getKey(),
             'name' => $user->name,
             'email' => $user->email,
-            'role' => $user->role,
+            'role' => $user->role->value,
             'email_verified' => $user->email_verified_at !== null,
             'created_at' => $user->created_at?->toIso8601String(),
         ];

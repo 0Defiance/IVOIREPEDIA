@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:ivoirepedia/src/app.dart';
@@ -19,7 +20,13 @@ class FakeAuthApi implements AuthApi {
   final Map<String, String> _accounts = {};
   final Map<String, String> _names = {};
   final Map<String, String> _tokens = {};
+  final Map<String, String> _resetTokens = {};
   int _sequence = 0;
+
+  /// Dernière adresse pour laquelle un lien a été demandé, connue ou non.
+  String? lastResetRequest;
+
+  static const resetToken = 'jeton-reset-1234567890';
 
   @override
   Future<AuthSession> login({
@@ -63,6 +70,37 @@ class FakeAuthApi implements AuthApi {
   @override
   Future<void> logout(String token) async {
     _tokens.remove(token);
+  }
+
+  @override
+  Future<String> requestPasswordReset({required String email}) async {
+    lastResetRequest = email;
+
+    // Le serveur ne dit jamais si le compte existe : il n'émet un jeton que
+    // dans ce cas, mais répond la même phrase dans les deux cas.
+    if (_accounts.containsKey(email)) {
+      _resetTokens[resetToken] = email;
+    }
+
+    return 'Si un compte existe avec cette adresse, un lien vient de lui être envoyé.';
+  }
+
+  @override
+  Future<String> resetPassword({
+    required String email,
+    required String token,
+    required String password,
+  }) async {
+    if (_resetTokens[token] != email) {
+      throw const AuthException(
+        'Ce lien n’est plus valable. Demandez-en un nouveau.',
+      );
+    }
+
+    _resetTokens.remove(token);
+    _accounts[email] = password;
+
+    return 'Votre mot de passe est changé. Vous pouvez vous connecter.';
   }
 
   AuthSession _issue(String email) {
@@ -190,6 +228,125 @@ void main() {
     expect(store.signedIn, isFalse);
     expect(find.byKey(const Key('auth-error')), findsOneWidget);
     expect(find.text('Adresse ou mot de passe incorrect.'), findsOneWidget);
+  });
+
+  testWidgets('le lien « mot de passe oublié » demande un lien sans révéler le compte', (
+    tester,
+  ) async {
+    final api = FakeAuthApi();
+    final store = AuthStore(api: api);
+    await openSignIn(tester, store);
+
+    await tester.tap(find.byKey(const Key('auth-forgot')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('reset-page')), findsOneWidget);
+    expect(find.byKey(const Key('reset-password')), findsNothing);
+
+    // Une adresse inconnue reçoit exactement la même confirmation.
+    await tester.enterText(
+      find.byKey(const Key('reset-email')),
+      'inconnu@example.test',
+    );
+    await tester.tap(find.byKey(const Key('reset-submit')));
+    await tester.pumpAndSettle();
+
+    expect(api.lastResetRequest, 'inconnu@example.test');
+    expect(find.byKey(const Key('reset-done')), findsOneWidget);
+    expect(
+      find.text(
+        'Si un compte existe avec cette adresse, un lien vient de lui être envoyé.',
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('un lien reçu permet de choisir un nouveau mot de passe', (
+    tester,
+  ) async {
+    final api = FakeAuthApi();
+    final store = AuthStore(api: api);
+    await openSignIn(tester, store);
+
+    // Un lien n'existe qu'après une demande : le faux serveur l'émet alors.
+    await api.requestPasswordReset(email: 'awa@example.test');
+
+    // Le courriel arrive avec le jeton et l'adresse en paramètres.
+    GoRouter.of(tester.element(find.byKey(const Key('auth-page')))).go(
+      '/mot-de-passe-oublie?token=${FakeAuthApi.resetToken}'
+      '&email=awa%40example.test',
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('reset-password')), findsOneWidget);
+
+    await tester.enterText(
+      find.byKey(const Key('reset-password')),
+      'nouveaumotdepasse',
+    );
+    await tester.enterText(
+      find.byKey(const Key('reset-confirm')),
+      'nouveaumotdepasse',
+    );
+    await tester.tap(find.byKey(const Key('reset-submit')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('reset-done')), findsOneWidget);
+    expect(store.signedIn, isFalse);
+
+    await tester.tap(find.byKey(const Key('reset-signin')));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(
+      find.byKey(const Key('auth-email')),
+      'awa@example.test',
+    );
+    await tester.enterText(
+      find.byKey(const Key('auth-password')),
+      'nouveaumotdepasse',
+    );
+    await tester.tap(find.byKey(const Key('auth-submit')));
+    await tester.pumpAndSettle();
+
+    expect(store.signedIn, isTrue);
+    expect(store.user?.email, 'awa@example.test');
+  });
+
+  testWidgets('un lien déjà utilisé affiche le refus et permet d’en redemander', (
+    tester,
+  ) async {
+    final store = AuthStore(api: FakeAuthApi());
+    await openSignIn(tester, store);
+
+    GoRouter.of(tester.element(find.byKey(const Key('auth-page')))).go(
+      '/mot-de-passe-oublie?token=jeton-perime-1234567890'
+      '&email=awa%40example.test',
+    );
+    await tester.pumpAndSettle();
+
+    await tester.enterText(
+      find.byKey(const Key('reset-password')),
+      'nouveaumotdepasse',
+    );
+    await tester.enterText(
+      find.byKey(const Key('reset-confirm')),
+      'nouveaumotdepasse',
+    );
+    await tester.tap(find.byKey(const Key('reset-submit')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('reset-error')), findsOneWidget);
+    expect(
+      find.text('Ce lien n’est plus valable. Demandez-en un nouveau.'),
+      findsOneWidget,
+    );
+
+    // Le même écran, sans jeton, redevient la demande de lien.
+    await tester.tap(find.byKey(const Key('reset-restart')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('reset-password')), findsNothing);
+    expect(find.byKey(const Key('reset-email')), findsOneWidget);
   });
 
   testWidgets('la déconnexion ramène les liens de connexion', (tester) async {

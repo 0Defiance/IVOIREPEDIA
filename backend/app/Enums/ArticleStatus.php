@@ -22,4 +22,34 @@ enum ArticleStatus: string
     {
         return $this === self::PUBLISHED;
     }
+
+    /** Libellé français, pour le panneau éditorial. */
+    public function label(): string
+    {
+        return match ($this) {
+            self::DRAFT => 'Brouillon',
+            self::SUBMITTED => 'Soumis',
+            self::IN_REVIEW => 'En relecture',
+            self::REVISION_REQUESTED => 'Révision demandée',
+            self::APPROVED => 'Approuvé',
+            self::PUBLISHED => 'Publié',
+            self::ARCHIVED => 'Archivé',
+            self::DELETED => 'Supprimé',
+        };
+    }
+
+    /** Classes de la pastille de statut dans le panneau. */
+    public function tone(): string
+    {
+        return match ($this) {
+            self::DRAFT => 'draft',
+            self::SUBMITTED => 'submitted',
+            self::IN_REVIEW => 'in_review',
+            self::REVISION_REQUESTED => 'revision_requested',
+            self::APPROVED => 'approved',
+            self::PUBLISHED => 'published',
+            self::ARCHIVED => 'archived',
+            self::DELETED => 'deleted',
+        };
+    }
 }

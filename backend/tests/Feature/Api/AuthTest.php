@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\UserRole;
 use App\Models\ApiToken;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -41,7 +42,7 @@ it('crée un compte lecteur et ouvre une session', function () {
 
     $user = User::query()->where('email', 'awa@example.test')->first();
     expect($user)->not->toBeNull()
-        ->and($user->role)->toBe('READER')
+        ->and($user->role)->toBe(UserRole::READER)
         ->and(Hash::check('un-mot-de-passe-solide', $user->password_hash))->toBeTrue();
 
     // Le jeton renvoyé ouvre bien l'espace personnel.

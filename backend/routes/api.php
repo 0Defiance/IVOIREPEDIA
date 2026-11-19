@@ -34,6 +34,13 @@ Route::prefix('v1')->group(function () {
         Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:5,1');
         Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1');
 
+        // Réinitialisation : la demande est plafonnée pour éviter l'envoi en
+        // masse de courriels, la consommation l'est pour freiner les essais.
+        Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])
+            ->middleware('throttle:5,1');
+        Route::post('/reset-password', [AuthController::class, 'resetPassword'])
+            ->middleware('throttle:10,1');
+
         Route::middleware('auth.token')->group(function () {
             Route::get('/me', [AuthController::class, 'me']);
             Route::post('/logout', [AuthController::class, 'logout']);

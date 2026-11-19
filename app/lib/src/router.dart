@@ -9,6 +9,7 @@ import 'ui/home_page.dart';
 import 'ui/library_page.dart';
 import 'ui/place_page.dart';
 import 'ui/places_page.dart';
+import 'ui/password_reset_page.dart';
 import 'ui/search_page.dart';
 import 'ui/shell.dart';
 import 'ui/sources_page.dart';
@@ -110,6 +111,18 @@ GoRouter buildRouter() {
       GoRoute(
         path: '/inscription',
         pageBuilder: (context, state) => _page(const AuthPage(register: true)),
+      ),
+      // Le courriel de réinitialisation pointe ici, jeton et adresse en
+      // paramètres ; sans jeton, la même adresse demande le lien. Le panneau
+      // d'administration renvoie aussi vers cette page.
+      GoRoute(
+        path: '/mot-de-passe-oublie',
+        pageBuilder: (context, state) => _page(
+          PasswordResetPage(
+            token: state.uri.queryParameters['token'],
+            email: state.uri.queryParameters['email'],
+          ),
+        ),
       ),
     ],
     errorBuilder: (context, state) => SiteShell(

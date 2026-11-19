@@ -247,6 +247,15 @@ class _AuthPageState extends State<AuthPage> {
                 ),
               ),
             ),
+            if (!widget.register)
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  key: const Key('auth-forgot'),
+                  onPressed: () => context.go('/mot-de-passe-oublie'),
+                  child: const Text('Mot de passe oublié ?'),
+                ),
+              ),
             if (widget.register) ...[
               const SizedBox(height: 14),
               TextFormField(

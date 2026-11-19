@@ -948,6 +948,47 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 36 — 19 novembre 2026 · Socle du panneau éditorial et mot de passe oublié
+
+**Demande**
+- Ouvrir la phase 0 du panneau d'administration décrite dans `docs/DASHBOARD_ADMIN.md` : rôles, policies, machine à états testée.
+- Rendre le panneau utilisable au quotidien : connexion, tableau de bord, articles, transitions, comptes.
+- Qu'un compte perdu se retrouve sans intervention serveur, depuis l'application comme depuis le panneau.
+
+**Fait — phase 0, le socle invisible**
+- `App\Enums\UserRole` (READER, CONTRIBUTOR, EDITOR, ADMIN) et cast `role` sur `User` ; `UserFactory` gagne `contributor()`, `editor()`, `admin()`, `suspended()`.
+- `App\Enums\ArticleStatus` complété par `label()` et `tone()` : les huit statuts du workflow ont leur libellé et leur pastille.
+- `App\Enums\EditorialActionType` : une valeur par action, avec `forAction()` pour que le journal ne contienne jamais de chaîne libre.
+- `App\Services\Workflow` : table des transitions (`submit`, `start_review`, `request_revision`, `approve`, `publish`, `archive`, `restore`, `delete`) avec `authorOnly`, `notAuthor` et `commentRequired`. Les refus lèvent `WorkflowException` (`FORBIDDEN`, `INVALID_TRANSITION`, `COMMENT_REQUIRED`, `INCOMPLETE`, `SOURCES_REQUIRED`, `ALT_REQUIRED`), et `actionsFor()` construit les boutons sans devenir la règle.
+- `App\Services\ArticleService` : seule porte d'écriture du statut — transaction, `lockForUpdate`, garde de publication (titre, résumé, au moins une source, texte alternatif de couverture), version de jalon (`submit`, `publish`, jamais une sauvegarde) et ligne `editorial_actions`.
+- `ArticlePolicy` / `UserPolicy` : lecture, écriture, transition, suppression, changement de rôle, suspension ; un ADMIN ne peut pas se retirer ses droits.
+- Relecture par l'auteur ouverte en phase solo (`ALLOW_SELF_REVIEW`, `backend/config/ivoirepedia.php`), à fermer à l'arrivée du premier éditeur : la règle reste appliquée par le workflow, pas par l'écran.
+
+**Fait — panneau `/admin`**
+- Routes serveur (`routes/web.php`) et session par cookie, distincte des jetons de l'API : `guest` pour la connexion, `auth` + `editorial` pour le reste, `redirectGuestsTo(route('admin.login'))`, et `/` renvoie vers `/admin`.
+- `EnsureEditorialAccess` ouvre le panneau à CONTRIBUTOR et au-dessus ; un READER est refusé.
+- Vues Blade maison, sans Filament : `layout`, `auth.login`, `dashboard`, `articles.index|show|form`, `users.index`. Un CONTRIBUTOR ne voit que ses articles, un EDITOR la file de relecture, la gestion des comptes est réservée à l'ADMIN.
+- `ArticleController` (index, create, store, show, edit, update, transition), `UserController` (rôle, suspension avec révocation des jetons, réactivation), `DashboardController` (file de relecture et compteurs).
+- `ArticleRequest`, `TransitionRequest`, `LoginRequest` : validation en français, corps Delta saisi en JSON.
+- `Article` gagne `versions()`, `actions()` et `plainText()` (aperçu sans publier le JSON).
+
+**Fait — mot de passe oublié**
+- API : `POST /api/v1/auth/forgot-password` (5 essais/minute) et `POST /api/v1/auth/reset-password` (10/minute) ; `PasswordResetService` (jeton à usage unique, valable une heure), `ResetPasswordNotification` dont le lien pointe sur `{SITE_URL}/mot-de-passe-oublie?token=…&email=…`. La réponse ne dit jamais si l'adresse existe ; un lien mort lève `ResetLinkException`.
+- Application : `AuthApi.requestPasswordReset` / `resetPassword` et `AuthStore` qui relaie le message du serveur ; écran `PasswordResetPage` sur `/mot-de-passe-oublie` — la même adresse porte les deux étapes, puisque c'est exactement ce que le courriel envoie — et lien « Mot de passe oublié ? » sous le champ du mot de passe à la connexion. Le panneau renvoie sur le même écran.
+- Le reset n'ouvre pas de session : on revient à `/connexion` avec le nouveau mot de passe.
+
+**Vérifié**
+- `flutter analyze` : aucune remarque. `flutter test` : **44 tests** verts (+3 : demande sans révéler le compte, lien reçu → nouveau mot de passe → connexion, lien brûlé → refus → nouvelle demande).
+- Backend : `composer test` **93 tests, 1 376 assertions** (+46 tests) ; `pint --test` propre après `composer format` (4 fichiers) ; `phpstan` sans erreur sur 60 fichiers.
+- Les tests ont attrapé un vrai défaut dans le parcours écrit cette séance : le faux serveur n'émet un jeton qu'après une demande, donc le test suit maintenant le lien après l'avoir demandé, comme un lecteur.
+
+**Limites**
+- Aucune vérification en navigateur : ni `/admin` ni l'écran de réinitialisation n'ont été ouverts à la main, seuls les tests et l'analyse couvrent le code.
+- Le courriel part par `MAIL_MAILER=log` tant que la clé SMTP n'est pas fournie : le lien est écrit dans les journaux, pas envoyé.
+- Le panneau livre les phases 0 et 1 ; formulaire complet (sources, médias), éditeur visuel et file de relecture riche restent aux phases 2 et 3.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
