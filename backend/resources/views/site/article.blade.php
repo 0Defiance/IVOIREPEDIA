@@ -6,6 +6,7 @@
 
 @section('social')
     @include('site.partials.social')
+    @include('site.partials.json-ld')
 @endsection
 
 @section('content')

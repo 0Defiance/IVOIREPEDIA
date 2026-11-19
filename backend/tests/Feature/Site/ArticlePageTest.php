@@ -16,6 +16,14 @@ function siteArticle(array $overrides = []): Article
     ]);
 }
 
+/** Données structurées JSON-LD présentes dans une page. @return array<string, mixed> */
+function structuredData(string $html): array
+{
+    expect(preg_match('#<script type="application/ld\\+json">(.*?)</script>#s', $html, $matches))->toBe(1);
+
+    return json_decode($matches[1], true, 512, JSON_THROW_ON_ERROR);
+}
+
 it('sert le contenu de l’article en HTML, avec titre de section ancré', function () {
     $article = siteArticle([
         'title' => 'Abidjan',
@@ -165,6 +173,74 @@ it('garde la version HTML accessible aux visiteurs avec ?html=1', function () {
         ->assertOk()
         ->assertSee('<article class="article">', false)
         ->assertSee('Une ville du centre-ouest ivoirien.');
+});
+
+it('décrit l’article en données structurées JSON-LD, pour les robots et les visiteurs', function () {
+    $site = rtrim((string) config('ivoirepedia.site_url'), '/');
+
+    $article = siteArticle([
+        'title' => 'Daloa',
+        'slug' => 'daloa',
+        'summary' => 'Une ville du centre-ouest ivoirien.',
+        'cover_image_url' => 'https://upload.wikimedia.org/wikipedia/commons/daloa.jpg',
+    ]);
+
+    $article->tags()->create(['name' => 'Ville', 'slug' => 'ville']);
+
+    $robot = $this->withHeader('User-Agent', 'Googlebot/2.1 (+http://www.google.com/bot.html)')
+        ->get('/articles/daloa')
+        ->assertOk()
+        ->getContent();
+
+    $visitor = $this->withHeader(
+        'User-Agent',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36',
+    )->get('/articles/daloa')->assertOk()->getContent();
+
+    foreach ([$robot, $visitor] as $html) {
+        expect($html)->toContain('<script type="application/ld+json">');
+
+        $data = structuredData($html);
+
+        expect($data['@context'])->toBe('https://schema.org')
+            ->and($data['@type'])->toBe('Article')
+            ->and($data['headline'])->toBe('Daloa')
+            ->and($data['description'])->toBe('Une ville du centre-ouest ivoirien.')
+            ->and($data['url'])->toBe($site.'/articles/daloa')
+            ->and($data['mainEntityOfPage']['@id'])->toBe($site.'/articles/daloa')
+            ->and($data['inLanguage'])->toBe('fr-CI')
+            ->and($data['image'])->toBe('https://upload.wikimedia.org/wikipedia/commons/daloa.jpg')
+            ->and($data['keywords'])->toBe('Ville')
+            ->and($data['author']['@type'])->toBe('Person')
+            ->and($data['publisher']['name'])->toBe('IVOIREPEDIA')
+            ->and($data['publisher']['logo']['url'])->toBe($site.'/logo.png')
+            ->and($data['datePublished'])->toBe($article->published_at->toIso8601String())
+            ->and($data['dateModified'])->not->toBeNull();
+    }
+});
+
+it('ne décrit aucun article en JSON-LD quand la page n’existe pas', function () {
+    $this->withHeader(
+        'User-Agent',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36',
+    )->get('/articles/inconnu')
+        ->assertNotFound()
+        ->assertDontSee('application/ld+json', false);
+});
+
+it('n’autorise pas un titre à fermer le bloc JSON-LD', function () {
+    siteArticle([
+        'slug' => 'fermeture',
+        'title' => 'Fin </script><script>alert(1)</script>',
+    ]);
+
+    $html = $this->withHeader('User-Agent', 'Googlebot/2.1 (+http://www.google.com/bot.html)')
+        ->get('/articles/fermeture')
+        ->assertOk()
+        ->assertDontSee('</script><script>alert(1)', false)
+        ->getContent();
+
+    expect(structuredData($html)['headline'])->toBe('Fin </script><script>alert(1)</script>');
 });
 
 it('renvoie la coquille Flutter sur un article inconnu pour un visiteur', function () {
