@@ -23,6 +23,12 @@ use Illuminate\Support\Str;
  *  - une fiche marquée `series = 'villes'` est rafraîchie à chaque passage,
  *    pour que les ajouts de sections et les corrections de chiffres suivent.
  *
+ * La variable d'environnement `CITY_SEEDER_ADOPT=1` marque une fois les fiches
+ * d'une série antérieure à la colonne `series` : elle ne sert qu'à la reprise,
+ * puis le marquage suffit. Une variable d'environnement, pas une option :
+ * `db:seed` n'accepte pas d'option propre à un seeder, et `getenv()` reste
+ * lisible quand la configuration est mise en cache.
+ *
  * Les illustrations de couverture ne sont pas gérées ici : elles viennent de
  * `articles:attach-images`, qui porte la licence et l'auteur de chaque photo.
  */
@@ -57,8 +63,10 @@ class CityArticleSeeder extends Seeder
         );
         $tag = Tag::query()->updateOrCreate(['slug' => 'ville'], ['name' => 'Ville']);
 
+        $adopt = getenv('CITY_SEEDER_ADOPT') === '1';
         $created = 0;
         $updated = 0;
+        $adopted = 0;
         $untouched = 0;
 
         foreach (array_values($cities) as $index => $city) {
@@ -68,13 +76,18 @@ class CityArticleSeeder extends Seeder
 
             // Un article écrit par quelqu'un d'autre garde son texte.
             if ($article !== null && $article->series !== self::SERIES) {
-                $untouched++;
+                if (! $adopt) {
+                    $untouched++;
 
-                continue;
+                    continue;
+                }
+
+                $adopted++;
             }
 
             $attributes = [
                 'title' => $city['name'],
+                'series' => self::SERIES,
                 'summary' => $city['summary'],
                 'content' => $this->delta($blocks),
                 'infobox' => [
@@ -88,7 +101,6 @@ class CityArticleSeeder extends Seeder
                 $article = Article::query()->create([
                     ...$attributes,
                     'slug' => $slug,
-                    'series' => self::SERIES,
                     'type' => ArticleType::REGION,
                     'status' => ArticleStatus::PUBLISHED,
                     'lock_version' => 1,
@@ -119,9 +131,10 @@ class CityArticleSeeder extends Seeder
         }
 
         $this->command?->info(sprintf(
-            '%d fiche(s) créée(s), %d mise(s) à jour, %d article(s) hors série laissé(s) intact(s).',
+            '%d fiche(s) créée(s), %d mise(s) à jour, %d adoptée(s), %d article(s) hors série laissé(s) intact(s).',
             $created,
             $updated,
+            $adopted,
             $untouched,
         ));
     }

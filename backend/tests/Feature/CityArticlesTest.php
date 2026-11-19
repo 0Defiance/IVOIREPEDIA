@@ -109,6 +109,25 @@ it('reste idempotent quand on le relance', function () {
         ->and(Article::query()->where('slug', 'katiola')->firstOrFail()->references)->toHaveCount(1);
 });
 
+it('adopte une fiche antérieure à la colonne series quand on le demande', function () {
+    $this->seed(CategorySeeder::class);
+
+    $legacy = Article::factory()->create([
+        'slug' => 'katiola',
+        'title' => 'Katiola',
+        'summary' => 'Une fiche écrite avant la colonne series.',
+    ]);
+
+    putenv('CITY_SEEDER_ADOPT=1');
+    $this->seed(CityArticleSeeder::class);
+    putenv('CITY_SEEDER_ADOPT');
+
+    $legacy->refresh();
+
+    expect($legacy->series)->toBe('villes')
+        ->and($legacy->plainText())->toContain('Quartiers et équipements');
+});
+
 it('ne réécrit jamais un article déjà publié sur la même ville', function () {
     $this->seed(CategorySeeder::class);
 

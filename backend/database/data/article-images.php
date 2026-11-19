@@ -504,8 +504,8 @@ return [
 
     'danane' => [
         'url' => 'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ef/Pont_entre_Danan%C3%A9_et_Man_%28C%C3%B4te_d%27Ivoire%29_-_btv1b10120161v_%281_of_2%29.jpg/1280px-Pont_entre_Danan%C3%A9_et_Man_%28C%C3%B4te_d%27Ivoire%29_-_btv1b10120161v_%281_of_2%29.jpg',
-        'alt' => 'Un pont sur la route entre Danané et Man, photographié au début du XXe siècle.',
-        'credit' => '',
+        'alt' => 'Un pont sur la route entre Danané et Man, photographié au XXe siècle.',
+        'credit' => 'Bibliothèque nationale de France',
         'license' => 'Public domain',
         'page' => 'https://commons.wikimedia.org/wiki/File:Pont_entre_Danan%C3%A9_et_Man_(C%C3%B4te_d%27Ivoire)_-_btv1b10120161v_(1_of_2).jpg',
     ],

@@ -1128,18 +1128,18 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 **Fait — images**
 - `build-article-images.py` étendu à 24 villes : fichier, auteur, licence et page source relus un par un sur Wikimedia Commons, puis écrits dans `article-images.php` (75 entrées, 24 couvertures de villes). Les 24 URL répondent 200.
-- `articles:attach-images` pose l'adresse, le texte alternatif, le crédit, la licence et la page source. Le panneau éditorial gagne les champs **Licence** et **Page source de l'image** (le crédit existait déjà) : l'attribution survit désormais à une modification depuis `/admin`.
+- `articles:attach-images` pose l'adresse, le texte alternatif, le crédit, la licence et la page source. Pour la photo de Danané, l'auteur n'est pas nommé : le crédit reprend la mention de la notice Commons, « Bibliothèque nationale de France » (domaine public). Le panneau éditorial gagne les champs **Licence** et **Page source de l'image** (le crédit existait déjà) : l'attribution survit désormais à une modification depuis `/admin`.
 
 **Fait — série éditoriale**
 - Migration `add_series_to_articles` : colonne `series` (nullable, indexée). `CityArticleSeeder` marque ses fiches `series = 'villes'` ; il crée les fiches absentes et rafraîchit **seulement** celles de la série. Un article écrit à la main (Grand-Bassam) n'est jamais réécrit, et la date de publication d'origine est conservée lors d'un rafraîchissement.
 
 **Vérifié**
-- `composer test` : **111 tests, 1 636 assertions** (+3 : sections détaillées présentes sur les 34 fiches, rafraîchissement limité à la série sans changer la date de publication, crédit/licence/page source enregistrés depuis le panneau).
+- `composer test` : **112 tests, 1 638 assertions** (+4 : sections détaillées présentes sur les 34 fiches, rafraîchissement limité à la série sans changer la date de publication, reprise d'une fiche antérieure à la colonne, crédit/licence/page source enregistrés depuis le panneau).
 - `pint --test` propre après `composer format` ; `phpstan` sans erreur.
 - Aucun fichier Flutter touché : les 46 tests de l'application restent la référence.
 
 **Mise en ligne**
-- Serveur : `git pull --ff-only`, `php artisan migrate --force`, `php artisan db:seed --class=CityArticleSeeder --force` (rafraîchit les 34 fiches de la série), `php artisan articles:attach-images`, puis `config:cache` et `route:cache`.
+- Serveur : `git pull --ff-only`, `php artisan migrate --force`, puis la reprise en deux temps : `CITY_SEEDER_ADOPT=1 php artisan db:seed --class=CityArticleSeeder --force` marque et rafraîchit les 34 fiches créées avant la colonne `series`, et les passages suivants n'ont plus besoin de la variable. Enfin `php artisan articles:attach-images`, `config:cache` et `route:cache`.
 
 **Limites**
 - Dix villes n'ont aucune photo libre réutilisable sur Commons (Agnibilékrou, Bloléquin, Bonon, Buyo, Lakota, Méagui, Oumé, Séguéla, Sinfra, Tengréla) : pas de carte ni de portrait à la place, la fiche reste sans image jusqu'à une photo sous licence libre.
