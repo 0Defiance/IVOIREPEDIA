@@ -4,10 +4,12 @@ use App\Enums\ArticleStatus;
 use App\Enums\ArticleType;
 use App\Models\Article;
 use App\Models\Category;
+use App\Models\Tag;
 use App\Models\User;
 use Database\Seeders\CategorySeeder;
 use Database\Seeders\CityArticleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Artisan;
 
 /**
  * Série « Villes de Côte d'Ivoire » : ce que le seeder doit garantir, et ce que
@@ -83,19 +85,21 @@ it('ajoute le relief, le climat, les quartiers et les équipements', function ()
     }
 });
 
-it('rafraîchit une fiche de la série sans toucher à sa date de publication', function () {
+it('enregistre les empreintes d’une fiche intacte sans toucher à sa date de publication', function () {
     $this->seed(CategorySeeder::class);
     $this->seed(CityArticleSeeder::class);
 
     $article = Article::query()->where('slug', 'katiola')->firstOrFail();
     $publishedAt = $article->published_at;
-    $article->update(['summary' => 'Résumé périmé.', 'series' => 'villes']);
+
+    // Une fiche sortie d'une version antérieure du seeder : pas d'empreintes.
+    $article->forceFill(['series_state' => null])->save();
 
     $this->seed(CityArticleSeeder::class);
 
     $article->refresh();
 
-    expect($article->summary)->toBe("Chef-lieu du Hambol, Katiola est la ville des potières tagbanas, au cœur d'une région de savane et de coton.")
+    expect($article->series_state)->toHaveCount(4)
         ->and($article->published_at->equalTo($publishedAt))->toBeTrue()
         ->and($article->plainText())->toContain('Quartiers et équipements');
 });
@@ -159,6 +163,107 @@ it('ne réécrit jamais un article déjà publié sur la même ville', function 
         ->and($daloa->summary)->toBe('Fiche écrite à la main, plus détaillée que la série.')
         ->and($daloa->plainText())->toBe('Texte éditorial existant.')
         ->and(Article::query()->count())->toBe(count(cityData()));
+});
+
+it('ne supprime pas les références ajoutées depuis le panneau', function () {
+    $this->seed(CategorySeeder::class);
+    $this->seed(CityArticleSeeder::class);
+
+    $daloa = Article::query()->where('slug', 'daloa')->firstOrFail();
+    $daloa->references()->create([
+        'position' => 2,
+        'kind' => 'WEBSITE',
+        'title' => 'Monographie locale',
+        'url' => 'https://example.test/monographie-daloa',
+    ]);
+
+    $this->seed(CityArticleSeeder::class);
+    $this->seed(CityArticleSeeder::class);
+
+    $references = $daloa->references()->get();
+
+    expect($references)->toHaveCount(2)
+        ->and($references->pluck('url')->all())->toContain('https://example.test/monographie-daloa')
+        ->and($references->where('url', CityArticleSeeder::CENSUS_URL))->toHaveCount(1);
+});
+
+it('ne réécrit pas une fiche de la série modifiée depuis le panneau', function () {
+    $this->seed(CategorySeeder::class);
+    $this->seed(CityArticleSeeder::class);
+
+    $article = Article::query()->where('slug', 'katiola')->firstOrFail();
+    $editor = User::factory()->editor()->create();
+
+    $this->actingAs($editor)
+        ->put(route('admin.articles.update', $article), [
+            'title' => $article->title,
+            'summary' => 'Un chapô réécrit par la rédaction, plus précis que celui du seeder.',
+            'body' => "Premier paragraphe écrit à la main.\n\nDeuxième paragraphe, toujours à la main.",
+            'type' => $article->type->value,
+            'category_id' => $article->category_id,
+        ])
+        ->assertRedirect();
+
+    $this->seed(CityArticleSeeder::class);
+    $this->seed(CityArticleSeeder::class);
+
+    $article->refresh();
+
+    expect($article->summary)->toStartWith('Un chapô réécrit')
+        ->and($article->plainText())->toContain('Premier paragraphe écrit à la main')
+        ->and($article->plainText())->not->toContain('Quartiers et équipements');
+});
+
+it('ajoute l’étiquette de la série sans retirer celles de la rédaction', function () {
+    $this->seed(CategorySeeder::class);
+    $this->seed(CityArticleSeeder::class);
+
+    $article = Article::query()->where('slug', 'soubre')->firstOrFail();
+    $histoire = Tag::query()->create(['name' => 'Histoire', 'slug' => 'histoire']);
+    $article->tags()->attach($histoire);
+
+    $this->seed(CityArticleSeeder::class);
+
+    expect($article->tags()->pluck('slug')->sort()->values()->all())->toBe(['histoire', 'ville']);
+});
+
+it('ne remplace pas une fiche antérieure au suivi dont le contenu diffère', function () {
+    $this->seed(CategorySeeder::class);
+    $this->seed(CityArticleSeeder::class);
+
+    // Une fiche sortie d'une version antérieure du seeder : pas d'empreintes.
+    $article = Article::query()->where('slug', 'divo')->firstOrFail();
+    $article->forceFill([
+        'series_state' => null,
+        'content' => ['ops' => [['insert' => "Ancienne fiche d'une version précédente.\n"]]],
+    ])->save();
+
+    // Le premier passage ne remplace rien et signale la fiche à relire.
+    $exitCode = Artisan::call('db:seed', ['--class' => CityArticleSeeder::class]);
+    $output = Artisan::output();
+
+    expect($exitCode)->toBe(0)
+        ->and($article->refresh()->plainText())->toBe("Ancienne fiche d'une version précédente.")
+        ->and($article->series_state)->toHaveCount(4)
+        ->and($output)->toContain('divo');
+
+    // Et la protection tient au passage suivant.
+    $this->seed(CityArticleSeeder::class);
+
+    expect($article->refresh()->plainText())->toBe("Ancienne fiche d'une version précédente.");
+});
+
+it('ne touche pas à updated_at d’une fiche déjà à jour', function () {
+    $this->seed(CategorySeeder::class);
+    $this->seed(CityArticleSeeder::class);
+
+    $article = Article::query()->where('slug', 'bouafle')->firstOrFail();
+    $updatedAt = $article->updated_at;
+
+    $this->travel(2)->minutes();
+    $this->seed(CityArticleSeeder::class);
+
+    expect($article->refresh()->updated_at->equalTo($updatedAt))->toBeTrue();
 });
 
 it('sert chaque fiche sur l’API publique', function () {

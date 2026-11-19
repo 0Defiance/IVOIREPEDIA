@@ -1147,6 +1147,38 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 42 — 19 novembre 2026 · Rafraîchissement non destructif de la série
+
+**Demande**
+- Le seeder des villes écrasait le travail éditorial : il supprimait les références ajoutées depuis `/admin` et annulait les modifications d'une fiche de la série. Rendre le rafraîchissement non destructif, l'outiller de tests, puis le relire d'un œil neuf.
+
+**Le défaut**
+- `attachCensusReference` (ancien bloc du seeder) appelait `$article->references()->delete()` avant d'ajouter la source du recensement : toute source ajoutée depuis le panneau disparaissait au passage suivant.
+- `fill([...])` réécrivait titre, chapô, contenu et infobox à chaque exécution : une fiche retravaillée dans `/admin` redevenait la fiche machine.
+- `tags()->sync([...])` retirait les étiquettes éditoriales au profit de la seule étiquette « ville ».
+
+**Fait**
+- Colonne `articles.series_state` (JSON) : le seeder y range l'empreinte SHA-256 de chaque champ qu'il écrit (titre, chapô, contenu, infobox). Au passage suivant, un champ n'est réécrit que si la base contient encore la valeur machine ; sinon la valeur présente est conservée.
+- Fiche sans empreinte (créée avant le suivi) : rien n'est remplacé — si son contenu diffère de la série, il est conservé, l'empreinte est posée et la fiche est signalée en fin d'exécution (« Contenu différent de la série, conservé et désormais protégé : … »). Pour reprendre la version de la série, on vide `series_state` de cette fiche.
+- Seule l'adoption explicite (`CITY_SEEDER_ADOPT=1`) écrit le contenu de la série sur une fiche qui n'en vient pas : c'est une décision humaine, pas un effet de bord.
+- Les empreintes sont calculées sur une forme canonique (clés triées) : MySQL réordonne les objets JSON, l'empreinte relue reste donc celle de la valeur écrite.
+- Références : la source du recensement est ajoutée si elle manque, à la position suivante, sans plus rien supprimer.
+- Étiquettes : `syncWithoutDetaching` — l'étiquette « ville » s'ajoute, les étiquettes de la rédaction restent.
+- Aucune écriture inutile : une fiche déjà à jour ne voit plus son `updated_at` bouger.
+
+**Vérifié**
+- `composer test` : **117 tests, 1 652 assertions** ; les cinq nouveaux cas couvrent la source ajoutée depuis le panneau (deux passages), la fiche modifiée via `PUT /admin/articles/{id}` puis reseedée deux fois, l'étiquette éditoriale conservée, la fiche antérieure au suivi dont le contenu diffère (conservée, signalée en sortie, puis toujours protégée), et l'absence d'écriture inutile (`updated_at` inchangé sur une fiche à jour).
+- `pint --test` propre, `phpstan` sans erreur ; aucun fichier Flutter touché.
+
+**Mise en ligne**
+- `git pull --ff-only`, `php artisan migrate --force`, un passage du seeder (les fiches déjà en base reçoivent leur `series_state` sans que rien d'éditorial ne soit perdu), puis `config:cache` et `route:cache`.
+
+**Reste**
+- Les 34 fiches n'ont pas encore d'empreintes en production : le premier passage après déploiement ne remplace aucun contenu, il enregistre les empreintes et signale les fiches qui diffèrent de la série.
+- Un champ ne peut pas être « repris » par la série après une modification humaine sans effacer l'empreinte à la main (`series_state` à `null`) : c'est le prix de la protection, et le message d'avertissement le rappelle.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

@@ -30,6 +30,8 @@ use Illuminate\Support\Carbon;
  * @property array<string, mixed>|null $infobox
  * @property ArticleType $type
  * @property ArticleStatus $status
+ * @property string|null $series
+ * @property array<string, string>|null $series_state
  * @property string|null $cover_image_url
  * @property string|null $cover_image_alt
  * @property string|null $cover_image_credit
@@ -45,7 +47,7 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, EditorialAction> $actions
  */
 #[Fillable([
-    'title', 'slug', 'summary', 'content', 'infobox', 'type', 'series', 'status',
+    'title', 'slug', 'summary', 'content', 'infobox', 'type', 'series', 'series_state', 'status',
     'cover_image_url', 'cover_image_alt', 'cover_image_credit',
     'cover_image_license', 'cover_image_source_url',
     'lock_version', 'current_version',
@@ -63,6 +65,7 @@ class Article extends Model
         return [
             'content' => 'array',
             'infobox' => 'array',
+            'series_state' => 'array',
             'type' => ArticleType::class,
             'status' => ArticleStatus::class,
             'published_at' => 'datetime',
