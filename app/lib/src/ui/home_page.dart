@@ -4,6 +4,8 @@ import '../api.dart';
 import '../brand.dart';
 import '../models/article.dart';
 import '../models/category.dart';
+import '../models/history.dart';
+import '../models/sources.dart';
 import '../models/statistics.dart';
 import '../models/timeline.dart';
 import '../storage.dart';
@@ -15,10 +17,13 @@ import 'wiki_actions.dart';
 import 'widgets/article_image.dart';
 import 'widgets/interactive.dart';
 
-/// Page d'accueil : un portail d'encyclopédie. La marque et la devise ouvrent
-/// la page, les portails donnent le plan, puis viennent l'article du jour,
-/// le rappel historique, le défi, la frise, les chiffres et les outils du
-/// lecteur.
+/// Page d'accueil : une page de portail, organisée comme une encyclopédie.
+///
+/// La manchette donne la promesse et les repères, le sommaire donne le plan de
+/// la page, les portails donnent le plan de l'encyclopédie, puis viennent les
+/// entrées — article du jour, histoire, frise, régions, publications, récits —
+/// et la colonne des outils du lecteur. Aucune rubrique n'est remplie de faux
+/// contenu : quand la donnée manque, elle dit ce qu'elle attend.
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -32,13 +37,17 @@ class _HomeData {
     required this.categories,
     required this.articles,
     required this.timeline,
+    required this.stories,
     this.statistics,
+    this.sources,
   });
 
   final List<Category> categories;
   final PagedArticles articles;
   final List<TimelineEvent> timeline;
+  final List<HistoryStory> stories;
   final StatisticsSnapshot? statistics;
+  final SourceLibrary? sources;
 }
 
 class _HomePageState extends State<HomePage> {
@@ -53,44 +62,40 @@ class _HomePageState extends State<HomePage> {
   Future<_HomeData> _load() async {
     final api = ApiScope.of(context);
 
-    // Les quatre appels partent ensemble : la page attend la réponse la plus
-    // lente, pas la somme des quatre.
+    // Les appels partent ensemble : la page attend le plus lent, pas la somme.
     final categoriesFuture = api.fetchCategories();
     final articlesFuture = api.fetchArticles(limit: 9);
 
-    // La « une » ne doit pas tomber parce qu'une illustration secondaire
-    // manque : la frise et les chiffres sont facultatifs, les articles non.
-    final timelineFuture = _loadTimeline(api);
-    final statisticsFuture = _loadStatistics(api);
+    // Les rubriques secondaires ne doivent pas emporter la « une » : la frise,
+    // les chiffres, les récits et la bibliothèque sont facultatifs.
+    final timelineFuture = _optional(api.fetchTimeline, const <TimelineEvent>[]);
+    final statisticsFuture = _optional(api.fetchStatistics, null);
+    final storiesFuture = _optional(api.fetchHistory, const <HistoryStory>[]);
+    final sourcesFuture = _optional(api.fetchSources, null);
 
     final categories = await categoriesFuture;
     final articles = await articlesFuture;
     final timeline = await timelineFuture;
     final statistics = await statisticsFuture;
+    final stories = await storiesFuture;
+    final sources = await sourcesFuture;
 
     return _HomeData(
       categories: categories,
       articles: articles,
       timeline: timeline,
+      stories: stories,
       statistics: statistics,
+      sources: sources,
     );
   }
 
-  /// La frise est facultative : une panne de cette route ne vide pas la page.
-  Future<List<TimelineEvent>> _loadTimeline(IvoirepediaApi api) async {
+  /// Un appel facultatif : en cas de panne, la valeur de repli suffit.
+  Future<T> _optional<T>(Future<T> Function() call, T fallback) async {
     try {
-      return await api.fetchTimeline();
+      return await call();
     } catch (_) {
-      return const <TimelineEvent>[];
-    }
-  }
-
-  /// Les chiffres sont facultatifs eux aussi.
-  Future<StatisticsSnapshot?> _loadStatistics(IvoirepediaApi api) async {
-    try {
-      return await api.fetchStatistics();
-    } catch (_) {
-      return null;
+      return fallback;
     }
   }
 
@@ -146,15 +151,64 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class _HomeBody extends StatelessWidget {
+class _HomeBody extends StatefulWidget {
   const _HomeBody({required this.data, required this.onRandom});
 
   final _HomeData data;
   final VoidCallback onRandom;
 
   @override
+  State<_HomeBody> createState() => _HomeBodyState();
+}
+
+/// Une entrée du sommaire : son identifiant de section et son libellé.
+class _ContentsEntry {
+  const _ContentsEntry(this.id, this.label);
+
+  final String id;
+  final String label;
+}
+
+class _HomeBodyState extends State<_HomeBody> {
+  final Map<String, GlobalKey> _sections = <String, GlobalKey>{};
+
+  GlobalKey _anchor(String id) =>
+      _sections.putIfAbsent(id, () => GlobalKey(debugLabel: id));
+
+  /// Le sommaire conduit à la rubrique sans quitter la page.
+  void _jumpTo(String id) {
+    final anchor = _sections[id]?.currentContext;
+
+    if (anchor == null) {
+      return;
+    }
+
+    Scrollable.ensureVisible(
+      anchor,
+      duration: const Duration(milliseconds: 320),
+      curve: Curves.easeOutCubic,
+      alignment: 0.05,
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final data = widget.data;
     final timeline = data.timeline;
+    final others = data.articles.items.skip(1).take(8).toList();
+    final regions = _topRegions(data.statistics);
+
+    final contents = <_ContentsEntry>[
+      const _ContentsEntry('article', 'Article du jour'),
+      if (timeline.isNotEmpty) ...[
+        const _ContentsEntry('histoire', 'Aujourd’hui dans l’histoire'),
+        const _ContentsEntry('frise', 'La frise en un coup d’œil'),
+      ],
+      if (regions.isNotEmpty) const _ContentsEntry('regions', 'Explorer les régions'),
+      if (others.isNotEmpty) const _ContentsEntry('articles', 'Dernières publications'),
+      if (data.stories.isNotEmpty) const _ContentsEntry('recits', 'Récits et mémoire'),
+      const _ContentsEntry('sources', 'Bibliothèque des sources'),
+    ];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -165,6 +219,16 @@ class _HomeBody extends StatelessWidget {
           categories: data.categories,
         ),
         const SizedBox(height: 26),
+        _Contents(
+          entries: contents,
+          onJump: _jumpTo,
+          sourceCount: data.sources?.referenceCount ?? 0,
+        ),
+        if (data.categories.isNotEmpty) ...[
+          const SizedBox(height: 30),
+          _Portals(categories: data.categories),
+        ],
+        const SizedBox(height: 30),
         LayoutBuilder(
           builder: (context, constraints) {
             final wide = constraints.maxWidth >= 900;
@@ -174,15 +238,50 @@ class _HomeBody extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _LeadStory(page: data.articles),
+                  Container(
+                    key: _anchor('article'),
+                    child: _LeadStory(page: data.articles),
+                  ),
                   if (timeline.isNotEmpty) ...[
                     const SizedBox(height: 30),
-                    _TodayInHistory(events: timeline),
+                    Container(
+                      key: _anchor('histoire'),
+                      child: _TodayInHistory(events: timeline),
+                    ),
                     const SizedBox(height: 30),
-                    _TimelineRail(events: timeline),
+                    Container(
+                      key: _anchor('frise'),
+                      child: _TimelineRail(events: timeline),
+                    ),
                   ],
-                  const SizedBox(height: 30),
-                  _DidYouKnow(page: data.articles),
+                  if (regions.isNotEmpty) ...[
+                    const SizedBox(height: 30),
+                    Container(
+                      key: _anchor('regions'),
+                      child: _Regions(
+                        regions: regions,
+                        censusYear: data.statistics?.census.year,
+                      ),
+                    ),
+                  ],
+                  if (others.isNotEmpty) ...[
+                    const SizedBox(height: 30),
+                    Container(
+                      key: _anchor('articles'),
+                      child: _LatestArticles(articles: others),
+                    ),
+                  ],
+                  if (data.stories.isNotEmpty) ...[
+                    const SizedBox(height: 30),
+                    Container(
+                      key: _anchor('recits'),
+                      child: _MemoryStories(stories: data.stories.take(3).toList()),
+                    ),
+                  ],
+                  if (others.isNotEmpty) ...[
+                    const SizedBox(height: 30),
+                    _DidYouKnow(page: data.articles),
+                  ],
                 ],
               ),
             );
@@ -195,7 +294,15 @@ class _HomeBody extends StatelessWidget {
                   articleCount: data.articles.total,
                 ),
                 const SizedBox(height: 18),
-                _RandomPickCard(onRandom: onRandom),
+                _RandomPickCard(onRandom: widget.onRandom),
+                const SizedBox(height: 18),
+                Container(
+                  key: _anchor('sources'),
+                  child: _SourceLibraryBox(
+                    sources: data.sources,
+                    institutions: data.categories.length,
+                  ),
+                ),
                 const SizedBox(height: 18),
                 const _ReadingResume(),
                 const SizedBox(height: 18),
@@ -219,13 +326,40 @@ class _HomeBody extends StatelessWidget {
             );
           },
         ),
-        if (data.categories.isNotEmpty) ...[
-          const SizedBox(height: 34),
-          _Portals(categories: data.categories),
-        ],
+        const SizedBox(height: 34),
+        const _ExploreIndex(),
+        const SizedBox(height: 34),
+        const _Charter(),
       ],
     );
   }
+}
+
+/// Les régions les plus peuplées du recensement, pour entrer dans le pays.
+List<StatisticDivision> _topRegions(StatisticsSnapshot? stats) {
+  if (stats == null) {
+    return const <StatisticDivision>[];
+  }
+
+  final regions = [...stats.regions]..sort((a, b) => b.population.compareTo(a.population));
+
+  return regions.take(8).toList(growable: false);
+}
+
+/// Séparateur de milliers à la française : espace fine insécable.
+String _grouped(int value) {
+  final digits = value.toString();
+  final buffer = StringBuffer();
+
+  for (var i = 0; i < digits.length; i++) {
+    if (i > 0 && (digits.length - i) % 3 == 0) {
+      buffer.write('\u202F');
+    }
+
+    buffer.write(digits[i]);
+  }
+
+  return buffer.toString();
 }
 
 /// En-tête de la page d'accueil : la signature complète, la phrase de
@@ -387,6 +521,141 @@ class _PortalLinkState extends State<_PortalLink> {
   }
 }
 
+/// Sommaire de la page : le plan, numéroté, qui conduit à chaque rubrique.
+/// C'est la pièce qui distingue une page d'encyclopédie d'un fil d'actualité.
+class _Contents extends StatelessWidget {
+  const _Contents({
+    required this.entries,
+    required this.onJump,
+    required this.sourceCount,
+  });
+
+  final List<_ContentsEntry> entries;
+  final void Function(String id) onJump;
+  final int sourceCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final tone = ToneColors.from(context);
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+      decoration: BoxDecoration(
+        color: tone.paper,
+        border: Border.all(color: tone.lineSoft),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Text(
+                'Sommaire',
+                style: titleStyle(
+                  size: 13.5,
+                  weight: FontWeight.w700,
+                  color: tone.ink,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Cette page en ${entries.length} rubriques',
+                  style: TextStyle(fontSize: 11.5, color: tone.faint),
+                ),
+              ),
+              if (sourceCount > 0)
+                Text(
+                  '$sourceCount sources citées',
+                  style: TextStyle(fontSize: 11.5, color: tone.faint),
+                ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 18,
+            runSpacing: 8,
+            children: [
+              for (var i = 0; i < entries.length; i++)
+                _ContentsLink(
+                  index: i + 1,
+                  entry: entries[i],
+                  onTap: () => onJump(entries[i].id),
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ContentsLink extends StatefulWidget {
+  const _ContentsLink({
+    required this.index,
+    required this.entry,
+    required this.onTap,
+  });
+
+  final int index;
+  final _ContentsEntry entry;
+  final VoidCallback onTap;
+
+  @override
+  State<_ContentsLink> createState() => _ContentsLinkState();
+}
+
+class _ContentsLinkState extends State<_ContentsLink> {
+  bool _hover = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final tone = ToneColors.from(context);
+    final number = widget.index.toString().padLeft(2, '0');
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hover = true),
+      onExit: (_) => setState(() => _hover = false),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
+          children: [
+            Text(
+              number,
+              style: TextStyle(
+                fontSize: 10.5,
+                fontWeight: FontWeight.w700,
+                color: _hover ? IvoireColors.greenDeep : tone.faint,
+              ),
+            ),
+            const SizedBox(width: 5),
+            Flexible(
+              child: Text(
+                widget.entry.label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 12.5,
+                  color: _hover ? IvoireColors.greenDeep : tone.body,
+                  decoration: _hover ? TextDecoration.underline : TextDecoration.none,
+                  decorationColor: IvoireColors.greenDeep,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 /// Titre de section : un libellé, un filet fin, puis le contenu. Aucun losange
 /// décoratif ici : le rythme de la page vient de la typographie et du filet.
 class _Section extends StatelessWidget {
@@ -431,6 +700,26 @@ class _Section extends StatelessWidget {
         const SizedBox(height: 14),
         child,
       ],
+    );
+  }
+}
+
+/// Un titre suivi d'un chapeau : le format d'entrée d'encyclopédie.
+class _SectionIntro extends StatelessWidget {
+  const _SectionIntro(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final tone = ToneColors.from(context);
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Text(
+        text,
+        style: TextStyle(fontSize: 13, height: 1.6, color: tone.muted),
+      ),
     );
   }
 }
@@ -758,6 +1047,339 @@ class _RailEventState extends State<_RailEvent> {
   }
 }
 
+/// Explorer les régions : les effectifs du recensement servent de porte
+/// d'entrée géographique, avec leur année et leur source.
+class _Regions extends StatelessWidget {
+  const _Regions({required this.regions, this.censusYear});
+
+  final List<StatisticDivision> regions;
+  final int? censusYear;
+
+  @override
+  Widget build(BuildContext context) {
+    final census = censusYear == null ? 'Recensement' : 'RGPH $censusYear';
+
+    return _Section(
+      title: 'Explorer les régions',
+      trailing: HoverLink(
+        label: 'Tout le découpage',
+        onTap: () => wikiGo(context, '/lieux'),
+        style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const _SectionIntro(
+            'Les régions les plus peuplées du dernier recensement. Chacune '
+            'ouvre sa fiche : climat, villes et récits.',
+          ),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final columns = constraints.maxWidth >= 620
+                  ? 3
+                  : (constraints.maxWidth >= 400 ? 2 : 1);
+              final width = (constraints.maxWidth - (columns - 1) * 12) / columns;
+
+              return Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: [
+                  for (final region in regions)
+                    SizedBox(
+                      width: width,
+                      child: _RegionCard(region: region, census: census),
+                    ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RegionCard extends StatefulWidget {
+  const _RegionCard({required this.region, required this.census});
+
+  final StatisticDivision region;
+  final String census;
+
+  @override
+  State<_RegionCard> createState() => _RegionCardState();
+}
+
+class _RegionCardState extends State<_RegionCard> {
+  bool _hover = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final tone = ToneColors.from(context);
+    final region = widget.region;
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hover = true),
+      onExit: (_) => setState(() => _hover = false),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => wikiGo(context, '/lieux'),
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(13, 11, 13, 12),
+          decoration: BoxDecoration(
+            color: _hover ? tone.paper : Colors.transparent,
+            border: Border.all(color: _hover ? tone.line : tone.lineSoft),
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                region.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: _hover ? IvoireColors.greenDeep : tone.ink,
+                ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                '${_grouped(region.population)} habitants',
+                style: titleStyle(
+                  size: 15,
+                  weight: FontWeight.w600,
+                  color: tone.ink,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                widget.census,
+                style: TextStyle(fontSize: 11, color: tone.faint),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Les autres publications : une grille de fiches courtes, avec vignette,
+/// catégorie et temps de lecture.
+class _LatestArticles extends StatelessWidget {
+  const _LatestArticles({required this.articles});
+
+  final List<ArticleSummary> articles;
+
+  @override
+  Widget build(BuildContext context) {
+    return _Section(
+      title: 'Dernières publications',
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final columns = constraints.maxWidth >= 620 ? 2 : 1;
+          final width = (constraints.maxWidth - (columns - 1) * 18) / columns;
+
+          return Wrap(
+            spacing: 18,
+            runSpacing: 14,
+            children: [
+              for (final article in articles)
+                SizedBox(width: width, child: _ArticleCard(article: article)),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _ArticleCard extends StatefulWidget {
+  const _ArticleCard({required this.article});
+
+  final ArticleSummary article;
+
+  @override
+  State<_ArticleCard> createState() => _ArticleCardState();
+}
+
+class _ArticleCardState extends State<_ArticleCard> {
+  bool _hover = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final tone = ToneColors.from(context);
+    final article = widget.article;
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hover = true),
+      onExit: (_) => setState(() => _hover = false),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => wikiGo(context, '/articles/${article.slug}'),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ArticleThumb(article: article, width: 84, height: 62, radius: 3),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    [
+                      if (article.categoryName != null) article.categoryName!,
+                      article.typeLabel,
+                    ].join(' · '),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 10.5, color: tone.faint),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    article.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 14.5,
+                      height: 1.3,
+                      fontWeight: FontWeight.w600,
+                      color: _hover ? IvoireColors.greenDeep : tone.ink,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    article.summary,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 12.5, height: 1.5, color: tone.muted),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Les récits documentés : chaque carte annonce sa période et sa source, ce
+/// qui est précisément la promesse de la section « Histoire ».
+class _MemoryStories extends StatelessWidget {
+  const _MemoryStories({required this.stories});
+
+  final List<HistoryStory> stories;
+
+  @override
+  Widget build(BuildContext context) {
+    return _Section(
+      title: 'Récits et mémoire',
+      trailing: HoverLink(
+        label: 'Tous les récits',
+        onTap: () => wikiGo(context, '/histoires'),
+        style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const _SectionIntro(
+            'Des épisodes documentés, chacun appuyé sur une source vérifiable.',
+          ),
+          for (var i = 0; i < stories.length; i++) ...[
+            if (i > 0)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Divider(height: 1, color: ToneColors.from(context).lineSoft),
+              ),
+            _StoryRow(story: stories[i]),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _StoryRow extends StatefulWidget {
+  const _StoryRow({required this.story});
+
+  final HistoryStory story;
+
+  @override
+  State<_StoryRow> createState() => _StoryRowState();
+}
+
+class _StoryRowState extends State<_StoryRow> {
+  bool _hover = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final tone = ToneColors.from(context);
+    final story = widget.story;
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hover = true),
+      onExit: (_) => setState(() => _hover = false),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => wikiGo(context, '/histoires?recit=${story.slug}'),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              width: 116,
+              child: Text(
+                story.period ?? 'Récit',
+                style: TextStyle(
+                  fontSize: 11.5,
+                  height: 1.4,
+                  fontWeight: FontWeight.w600,
+                  color: tone.faint,
+                ),
+              ),
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    story.title,
+                    style: titleStyle(
+                      size: 15,
+                      weight: FontWeight.w600,
+                      color: _hover ? IvoireColors.greenDeep : tone.ink,
+                      height: 1.35,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    story.teaser,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 12.5, height: 1.55, color: tone.body),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Source : ${story.source.publisher ?? story.source.title}'
+                    '${story.source.year != null ? ' (${story.source.year})' : ''}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 10.5, color: tone.faint),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _DidYouKnow extends StatelessWidget {
   const _DidYouKnow({required this.page});
 
@@ -831,7 +1453,7 @@ class _DidYouKnow extends StatelessWidget {
   }
 }
 
-/// Les portails thématiques, en fin de page : le plan complet de
+/// Les portails thématiques, en tête de page : le plan complet de
 /// l'encyclopédie, avec le nombre d'articles de chaque domaine.
 class _Portals extends StatelessWidget {
   const _Portals({required this.categories});
@@ -840,35 +1462,30 @@ class _Portals extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tone = ToneColors.from(context);
-
     return _Section(
       title: 'Portails thématiques',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const _SectionIntro(
             'Tous les domaines de l’encyclopédie, avec le nombre d’articles '
-            'publiés.',
-            style: TextStyle(fontSize: 13, height: 1.6, color: tone.muted),
+            'publiés. Chaque portail ouvre sa liste.',
           ),
-          const SizedBox(height: 12),
           LayoutBuilder(
             builder: (context, constraints) {
-              final columns = constraints.maxWidth >= 720
+              final columns = constraints.maxWidth >= 760
                   ? 3
-                  : (constraints.maxWidth >= 440 ? 2 : 1);
-              final width =
-                  (constraints.maxWidth - (columns - 1) * 20) / columns;
+                  : (constraints.maxWidth >= 460 ? 2 : 1);
+              final width = (constraints.maxWidth - (columns - 1) * 16) / columns;
 
               return Wrap(
-                spacing: 20,
-                runSpacing: 0,
+                spacing: 16,
+                runSpacing: 16,
                 children: [
                   for (final category in categories)
                     SizedBox(
                       width: width,
-                      child: _PortalRow(category: category),
+                      child: _PortalCard(category: category),
                     ),
                 ],
               );
@@ -880,56 +1497,88 @@ class _Portals extends StatelessWidget {
   }
 }
 
-class _PortalRow extends StatefulWidget {
-  const _PortalRow({required this.category});
+class _PortalCard extends StatefulWidget {
+  const _PortalCard({required this.category});
 
   final Category category;
 
   @override
-  State<_PortalRow> createState() => _PortalRowState();
+  State<_PortalCard> createState() => _PortalCardState();
 }
 
-class _PortalRowState extends State<_PortalRow> {
+class _PortalCardState extends State<_PortalCard> {
   bool _hover = false;
 
   @override
   Widget build(BuildContext context) {
     final tone = ToneColors.from(context);
-    final color = _hover ? IvoireColors.greenDeep : IvoireColors.link;
+    final category = widget.category;
+    final initial = category.name.isEmpty ? '·' : category.name.substring(0, 1);
 
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       onEnter: (_) => setState(() => _hover = true),
       onExit: (_) => setState(() => _hover = false),
       child: GestureDetector(
-        onTap: () => wikiGo(context, '/categories/${widget.category.slug}'),
         behavior: HitTestBehavior.opaque,
+        onTap: () => wikiGo(context, '/categories/${category.slug}'),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 9),
+          padding: const EdgeInsets.fromLTRB(13, 12, 13, 13),
           decoration: BoxDecoration(
-            border: Border(bottom: BorderSide(color: tone.lineSoft)),
+            color: _hover ? tone.paper : Colors.transparent,
+            border: Border.all(color: _hover ? tone.line : tone.lineSoft),
+            borderRadius: BorderRadius.circular(4),
           ),
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Text(
-                  widget.category.name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w500,
-                    color: color,
-                    decoration: _hover
-                        ? TextDecoration.underline
-                        : TextDecoration.none,
-                    decorationColor: color,
+              Row(
+                children: [
+                  Container(
+                    width: 30,
+                    height: 30,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: IvoireColors.sand,
+                      border: Border.all(color: tone.lineSoft),
+                    ),
+                    child: Text(
+                      initial.toUpperCase(),
+                      style: titleStyle(
+                        size: 15,
+                        weight: FontWeight.w700,
+                        color: IvoireColors.terracotta,
+                      ),
+                    ),
                   ),
-                ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      category.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 14.5,
+                        fontWeight: FontWeight.w600,
+                        color: _hover ? IvoireColors.greenDeep : tone.ink,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    '${category.articleCount}',
+                    style: TextStyle(fontSize: 11.5, color: tone.faint),
+                  ),
+                ],
               ),
+              const SizedBox(height: 8),
               Text(
-                '${widget.category.articleCount}',
-                style: TextStyle(fontSize: 11.5, color: tone.faint),
+                category.description?.trim().isNotEmpty == true
+                    ? category.description!
+                    : 'Portail thématique de l’encyclopédie.',
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 12.5, height: 1.55, color: tone.muted),
               ),
             ],
           ),
@@ -1110,6 +1759,53 @@ StatisticIndicator? _indicator(StatisticsSnapshot? stats, String code) {
   return null;
 }
 
+/// La bibliothèque des sources : le nombre d'institutions et de références
+/// derrière les articles, avec la porte d'entrée de la section.
+class _SourceLibraryBox extends StatelessWidget {
+  const _SourceLibraryBox({required this.sources, required this.institutions});
+
+  final SourceLibrary? sources;
+  final int institutions;
+
+  @override
+  Widget build(BuildContext context) {
+    final tone = ToneColors.from(context);
+    final library = sources;
+    final hasFigures = library != null && library.referenceCount > 0;
+
+    return _AsideBox(
+      title: 'Bibliothèque des sources',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            hasFigures
+                ? '${_grouped(library.referenceCount)} références, '
+                    '${library.institutionCount} institutions, '
+                    '${library.articleCount} articles sourcés.'
+                : 'Les références citées par les articles, classées par '
+                    'institution, avec leur lien.',
+            style: TextStyle(fontSize: 12.5, height: 1.6, color: tone.body),
+          ),
+          if (hasFigures && library.mentionCount > 0) ...[
+            const SizedBox(height: 6),
+            Text(
+              '${_grouped(library.mentionCount)} appels de source dans les textes.',
+              style: TextStyle(fontSize: 11.5, color: tone.faint),
+            ),
+          ],
+          const SizedBox(height: 10),
+          HoverLink(
+            label: 'Ouvrir la bibliothèque',
+            onTap: () => wikiGo(context, '/sources'),
+            style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 /// Reprendre là où le lecteur s'est arrêté, depuis la mémoire de l'appareil.
 class _ReadingResume extends StatelessWidget {
   const _ReadingResume();
@@ -1283,6 +1979,271 @@ class _AsideBox extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Explorer autrement : les autres entrées de l'encyclopédie, avec ce qu'on y
+/// trouve — la page d'accueil ne doit pas être un cul-de-sac.
+class _ExploreIndex extends StatelessWidget {
+  const _ExploreIndex();
+
+  @override
+  Widget build(BuildContext context) {
+    const entries = <_ExploreData>[
+      _ExploreData(
+        title: 'Chronologie',
+        description: 'Les jalons datés, du royaume d’Indénié à la République.',
+        route: '/chronologie',
+      ),
+      _ExploreData(
+        title: 'Lieux et territoires',
+        description: 'Districts, régions et villes du recensement, avec leur climat.',
+        route: '/lieux',
+      ),
+      _ExploreData(
+        title: 'La Côte d’Ivoire en chiffres',
+        description: 'Démographie, économie, éducation et climat, avec leurs sources.',
+        route: '/statistiques',
+      ),
+      _ExploreData(
+        title: 'Récits et mémoire',
+        description: 'Des épisodes racontés, chacun appuyé sur une source.',
+        route: '/histoires',
+      ),
+      _ExploreData(
+        title: 'Bibliothèque des sources',
+        description: 'Les références citées, classées par institution.',
+        route: '/sources',
+      ),
+      _ExploreData(
+        title: 'Ma bibliothèque',
+        description: 'Les articles que vous avez lus, gardés sur cet appareil.',
+        route: '/ma-bibliotheque',
+      ),
+    ];
+
+    return _Section(
+      title: 'Explorer l’encyclopédie',
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final columns = constraints.maxWidth >= 760
+              ? 3
+              : (constraints.maxWidth >= 460 ? 2 : 1);
+          final width = (constraints.maxWidth - (columns - 1) * 16) / columns;
+
+          return Wrap(
+            spacing: 16,
+            runSpacing: 16,
+            children: [
+              for (final entry in entries)
+                SizedBox(width: width, child: _ExploreCard(data: entry)),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _ExploreData {
+  const _ExploreData({
+    required this.title,
+    required this.description,
+    required this.route,
+  });
+
+  final String title;
+  final String description;
+  final String route;
+}
+
+class _ExploreCard extends StatefulWidget {
+  const _ExploreCard({required this.data});
+
+  final _ExploreData data;
+
+  @override
+  State<_ExploreCard> createState() => _ExploreCardState();
+}
+
+class _ExploreCardState extends State<_ExploreCard> {
+  bool _hover = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final tone = ToneColors.from(context);
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hover = true),
+      onExit: (_) => setState(() => _hover = false),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => wikiGo(context, widget.data.route),
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(13, 12, 13, 13),
+          decoration: BoxDecoration(
+            color: _hover ? tone.paper : Colors.transparent,
+            border: Border.all(color: _hover ? tone.line : tone.lineSoft),
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      widget.data.title,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: _hover ? IvoireColors.greenDeep : tone.ink,
+                      ),
+                    ),
+                  ),
+                  Icon(
+                    Icons.arrow_outward,
+                    size: 13,
+                    color: _hover ? IvoireColors.greenDeep : tone.faint,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 5),
+              Text(
+                widget.data.description,
+                style: TextStyle(fontSize: 12.5, height: 1.55, color: tone.muted),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Ce que le site garantit, en pied de page : la charte éditoriale en quatre
+/// phrases, sans chiffre inventé ni promesse qui ne soit tenue par le code.
+class _Charter extends StatelessWidget {
+  const _Charter();
+
+  @override
+  Widget build(BuildContext context) {
+    const promises = <_PromiseData>[
+      _PromiseData(
+        title: 'Des sources citées',
+        body: 'Chaque article publié renvoie à au moins une source consultable.',
+      ),
+      _PromiseData(
+        title: 'Des versions datées',
+        body: 'Chaque soumission et chaque publication laissent une version datée.',
+      ),
+      _PromiseData(
+        title: 'Une lecture libre',
+        body: 'Aucun compte, aucun mur payant, aucune publicité pour lire.',
+      ),
+      _PromiseData(
+        title: 'Des corrections tracées',
+        body: 'Une correction est une nouvelle version, jamais une réécriture muette.',
+      ),
+    ];
+
+    final tone = ToneColors.from(context);
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(18, 16, 18, 18),
+      decoration: BoxDecoration(
+        color: tone.paper,
+        border: Border.all(color: tone.lineSoft),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Ce que garantit IVOIREPEDIA',
+            style: titleStyle(size: 14, weight: FontWeight.w700, color: tone.ink),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'La charte éditoriale, en quatre engagements.',
+            style: TextStyle(fontSize: 12, color: tone.faint),
+          ),
+          const SizedBox(height: 12),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final columns = constraints.maxWidth >= 760
+                  ? 4
+                  : (constraints.maxWidth >= 460 ? 2 : 1);
+              final width = (constraints.maxWidth - (columns - 1) * 16) / columns;
+
+              return Wrap(
+                spacing: 16,
+                runSpacing: 12,
+                children: [
+                  for (final promise in promises)
+                    SizedBox(
+                      width: width,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            promise.title,
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: tone.ink,
+                            ),
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            promise.body,
+                            style: TextStyle(
+                              fontSize: 12,
+                              height: 1.5,
+                              color: tone.muted,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
+          const SizedBox(height: 14),
+          Wrap(
+            spacing: 16,
+            runSpacing: 6,
+            children: [
+              HoverLink(
+                label: 'Lire la charte et les sources',
+                onTap: () => wikiGo(context, '/sources'),
+                style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
+              ),
+              HoverLink(
+                label: 'Contribuer',
+                onTap: () => wikiGo(context, '/inscription'),
+                style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
+              ),
+              HoverLink(
+                label: 'Rechercher un sujet',
+                onTap: () => wikiGo(context, '/recherche'),
+                style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PromiseData {
+  const _PromiseData({required this.title, required this.body});
+
+  final String title;
+  final String body;
 }
 
 class _HomeSkeleton extends StatelessWidget {

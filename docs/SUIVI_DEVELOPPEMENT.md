@@ -1021,6 +1021,39 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 38 — 19 novembre 2026 · Accueil réorganisé comme une page de portail
+
+**Demande**
+- Refaire la page d'accueil : une vraie page d'encyclopédie, bien remplie, à l'image de la Côte d'Ivoire, avec plusieurs sections.
+
+**Fait — le plan de la page**
+- Manchette conservée (signature, devise, compteurs, barre des portails).
+- Nouveau **sommaire** en tête : rubriques numérotées et cliquables (`Scrollable.ensureVisible`) — c'est lui qui fait lire la page comme un portail et non comme un fil.
+- Les **portails thématiques** remontent juste après le sommaire : cartes avec médaillon à initiale, description et nombre d'articles, au lieu d'une simple liste en fin de page.
+
+**Fait — entrées de contenu**
+- Article du jour, « Aujourd'hui dans l'histoire » et frise : conservés.
+- **Explorer les régions** (nouveau) : les huit régions les plus peuplées du recensement, avec effectif, année du RGPH et entrée vers `/lieux`.
+- **Dernières publications** (nouveau) : grille de fiches avec vignette, catégorie, type et résumé.
+- **Récits et mémoire** (nouveau) : trois récits avec période, chapeau et source citée.
+- Colonne de droite : chiffres du pays, article au hasard, **bibliothèque des sources** (références, institutions, appels de source), reprise de lecture, contribuer.
+- Pied de page : **Explorer l'encyclopédie** (six entrées : chronologie, lieux, chiffres, récits, sources, bibliothèque) et **Ce que garantit IVOIREPEDIA** (la charte en quatre engagements).
+
+**Fait — données**
+- `_HomeData` charge en parallèle catégories, articles, frise, statistiques, récits et bibliothèque ; les quatre derniers restent facultatifs : une panne n'emporte pas la « une ».
+- Aucun faux contenu : une rubrique sans donnée ne s'affiche pas, et son entrée de sommaire disparaît avec elle.
+
+**Vérifié**
+- `flutter analyze` : aucune remarque. `flutter test` : **44 tests** verts.
+- Trois assertions de `widget_test.dart` ont été mises à jour, pas affaiblies : le sommaire reprend les titres des rubriques, donc « Article du jour », « Aujourd'hui dans l'histoire » et « La frise en un coup d'œil » apparaissent deux fois ; les tests vérifient désormais ce nombre exact.
+- Le test téléphone (390 px) a attrapé un débordement de 77 px sur les liens du sommaire : libellés repliés avec ellipse.
+
+**Limites**
+- Toujours aucune vérification visuelle : la page n'a été rendue par aucun navigateur, seuls les tests de widgets la dessinent.
+- Trois rubriques restent à écrire faute de donnée : « image du jour » (médias), « index alphabétique » (index des titres), « articles demandés » (propositions des lecteurs). Elles attendent respectivement le dépôt des médias, la recherche plein texte et les signalements.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

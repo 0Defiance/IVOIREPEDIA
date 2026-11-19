@@ -19,7 +19,9 @@ void main() {
 
     expect(find.byKey(const ValueKey('brand-wordmark')), findsWidgets);
     expect(find.textContaining('encyclopédie libre consacrée'), findsOneWidget);
-    expect(find.text('Article du jour'), findsOneWidget);
+    // Le sommaire reprend les libellés des rubriques : chacune apparaît deux
+    // fois, une fois dans le plan et une fois comme titre.
+    expect(find.text('Article du jour'), findsNWidgets(2));
     expect(find.text('Le saviez-vous ?'), findsOneWidget);
     expect(find.text('Portails thématiques'), findsOneWidget);
     expect(find.text('Histoire'), findsWidgets);
@@ -29,8 +31,8 @@ void main() {
     expect(find.text(kTagline), findsWidgets);
     expect(find.text('32 711 547 habitants'), findsOneWidget);
     expect(find.text('+2,5 % par an (2020-2025)'), findsOneWidget);
-    expect(find.text('Aujourd’hui dans l’histoire'), findsOneWidget);
-    expect(find.text('La frise en un coup d’œil'), findsOneWidget);
+    expect(find.text('Aujourd’hui dans l’histoire'), findsNWidgets(2));
+    expect(find.text('La frise en un coup d’œil'), findsNWidgets(2));
     expect(find.text('Le royaume d’Indénié'), findsWidgets);
   });
 
@@ -134,9 +136,9 @@ void main() {
     await tester.pumpWidget(IvoirepediaApp(api: FakeApi()));
     await tester.pumpAndSettle();
 
-    expect(find.text('Article du jour'), findsOneWidget);
+    expect(find.text('Article du jour'), findsNWidgets(2));
     expect(find.text('Portails thématiques'), findsOneWidget);
-    expect(find.text('La frise en un coup d’œil'), findsOneWidget);
+    expect(find.text('La frise en un coup d’œil'), findsNWidgets(2));
     expect(tester.takeException(), isNull);
   });
 }
