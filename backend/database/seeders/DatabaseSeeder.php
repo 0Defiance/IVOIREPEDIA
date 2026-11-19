@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             DevAdminSeeder::class,
             PublicContentSeeder::class,
+            CityArticleSeeder::class,
         ]);
     }
 }

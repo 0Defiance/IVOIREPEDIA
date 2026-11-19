@@ -1081,6 +1081,32 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 40 — 19 novembre 2026 · Série « Villes de Côte d'Ivoire »
+
+**Demande**
+- Intégrer une série d'articles détaillés sur les villes de Côte d'Ivoire.
+
+**Fait — périmètre**
+- Les 40 villes du répertoire public (`/lieux/:slug`, effectifs du RGPH 2021). Cinq avaient déjà leur article (Bouaké, Korhogo, Man, San-Pédro, Yamoussoukro) ; les **35 autres** reçoivent une fiche, du chef-lieu de région (Daloa, Gagnoa, Korhogo…) à la ville moyenne (Katiola, Toumodi, Sikensi).
+- Ce périmètre est celui que l'application sait déjà relier : chaque ville a une page `/lieux/:slug` alimentée par le recensement. Les ~200 communes du pays restent à couvrir.
+
+**Fait — contenu**
+- `backend/database/data/cities.php` : les données éditoriales, séparées du code du seeder — nom, effectif communal 2021, chapeau et 8 à 10 blocs (situation, histoire, économie, vie locale, démographie).
+- `backend/database/seeders/CityArticleSeeder.php` : publie chaque fiche en catégorie « Géographie », type Territoire, étiquette « Ville », infobox `CITY` + population + année du recensement, et une référence au document officiel du RGPH 2021 (ANStat) — la source dont viennent les effectifs cités.
+- Idempotent : `updateOrCreate` par slug, étiquettes synchronisées, références remplacées à chaque passage. Enregistré dans `DatabaseSeeder`, il peut aussi être lancé seul (`php artisan db:seed --class=CityArticleSeeder`).
+- Rien d'inventé : les chiffres sont ceux du recensement ; l'histoire et l'économie restent générales plutôt que précises au hasard, et les épisodes sensibles (Duékoué et la crise de 2010-2011, le Sanwi) sont formulés avec prudence.
+
+**Vérifié**
+- `composer test` : **107 tests, 1 559 assertions** (+4 : une fiche publiée pour chaque ville du répertoire, infobox/source/étiquette de Daloa, idempotence, lecture d'une fiche par l'API publique).
+- `pint --test` propre après `composer format` ; `phpstan` sans erreur.
+- Aucun fichier Flutter touché : les 46 tests de l'application restent la référence.
+
+**Limites**
+- Fiches de synthèse : ni relief, ni quartiers, ni équipements ville par ville, et aucune image de couverture (le panneau ne gère pas encore les crédits d'image).
+- Aucune relecture éditoriale humaine avant publication : à faire avant l'ouverture publique.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
