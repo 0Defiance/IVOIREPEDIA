@@ -9,8 +9,10 @@
     RewriteEngine On
 
     # Anciennes adresses publiées sous /site/ : redirection permanente vers la
-    # racine, pour que les liens déjà partagés continuent de fonctionner.
-    RewriteRule ^site/?(.*)$ /$1 [L,R=301]
+    # racine, pour que les liens déjà partagés continuent de fonctionner. La
+    # barre est obligatoire : sans elle, « /sitemap.xml » serait lu comme
+    # « /site » + « map.xml » et redirigé vers /map.xml.
+    RewriteRule ^site(?:/(.*))?$ /$1 [L,R=301]
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .

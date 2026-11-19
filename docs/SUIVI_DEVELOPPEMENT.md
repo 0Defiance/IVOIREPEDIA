@@ -1226,6 +1226,7 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 - Métadonnées de partage : `og:type=article`, `og:title`, `og:description`, `og:url`, `og:image` (couverture absolue) et `og:image:alt`, `article:published_time`, `article:modified_time`, `article:section`, `article:tag`, `twitter:card` (`summary_large_image` avec couverture, `summary` sinon), lien canonique et `lang="fr"`.
 - `GET /sitemap.xml` : pages fixes, catégories contenant au moins un article publié, articles publiés (`lastmod` = date de publication) et fiches de lieux du recensement, sans doublon. `robots.txt` pointe désormais vers le sitemap.
 - `public/.htaccess` : `/articles/{slug}` et `/sitemap.xml` sont traités par Laravel ; tout le reste continue de recevoir l’application Flutter. Les liens internes et la navigation client ne changent pas : seul un chargement direct (partage, rechargement, crawler) reçoit le HTML pré-rendu.
+- Défaut découvert en production : l’ancienne redirection `^site/?(.*)$` (adresses `/site/...`) lisait `/sitemap.xml` comme `/site` + `map.xml` et le renvoyait en 301 vers `/map.xml`. La règle exige désormais la barre (`^site(?:/(.*))?$`) ; `/site/...` continue de rediriger, `/sitemap.xml` atteint Laravel.
 - `docs/DEPLOIEMENT.md` : procédure et vérifications de la page pré-rendue et du sitemap ; `IVOIREPEDIA_CONTEXT.md` §17 : R-09 passe de « SEO limité » à « SEO partiellement limité ».
 
 **Vérifié**
