@@ -192,6 +192,13 @@
         .actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-start; }
         .actions form { margin: 0; }
         .comment-box { min-height: 0; height: 38px; font-family: var(--sans); font-size: 13.5px; padding: 8px 10px; }
+        .short-box { min-height: 74px; font-family: var(--sans); font-size: 13.5px; line-height: 1.5; }
+
+        .pair-row { display: grid; grid-template-columns: 1fr 1.4fr auto; gap: 10px; margin-bottom: 10px; }
+        .ref-row { display: grid; grid-template-columns: 1.5fr 1fr 1fr 84px 1.4fr auto; gap: 10px; margin-bottom: 10px; }
+        .check { display: inline-flex; align-items: center; gap: 7px; font-size: 13.5px; margin: 0 16px 8px 0; }
+        .check input { width: auto; }
+        .diff-chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0 0; }
 
         .login-wrap { min-height: 100vh; display: grid; place-items: center; padding: 24px; }
         .login-card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); padding: 30px 28px; width: min(420px, 100%); }
@@ -215,6 +222,7 @@
             .cols { grid-template-columns: 1fr; }
             .main { padding: 20px 18px 48px; }
             .form-row.two { grid-template-columns: 1fr; }
+            .pair-row, .ref-row { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -234,6 +242,17 @@
             <a href="{{ route('admin.articles.index') }}" class="{{ request()->routeIs('admin.articles.*') ? 'active' : '' }}">
                 <span class="dot"></span> Articles
             </a>
+            <a href="{{ route('admin.journal') }}" class="{{ request()->routeIs('admin.journal') ? 'active' : '' }}">
+                <span class="dot"></span> Journal
+            </a>
+            @if (auth()->user()?->role->canReview())
+                <a href="{{ route('admin.categories.index') }}" class="{{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+                    <span class="dot"></span> Catégories
+                </a>
+                <a href="{{ route('admin.tags.index') }}" class="{{ request()->routeIs('admin.tags.*') ? 'active' : '' }}">
+                    <span class="dot"></span> Étiquettes
+                </a>
+            @endif
             @if (auth()->user()?->role->canManageUsers())
                 <a href="{{ route('admin.users.index') }}" class="{{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
                     <span class="dot"></span> Comptes
@@ -288,5 +307,6 @@
         @yield('content')
     </main>
 </div>
+@stack('scripts')
 </body>
 </html>

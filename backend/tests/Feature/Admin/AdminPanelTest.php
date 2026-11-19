@@ -81,8 +81,9 @@ it('crée un brouillon depuis le panneau', function () {
             'body' => "## Un plan d’eau habité\n\nLes villages lagunaires vivent de la pêche.\n\nLa lagune borde plusieurs communes.",
             'type' => 'REGION',
             'category_id' => $category->getKey(),
-            'reference_title' => 'Atlas de la Côte d’Ivoire',
-            'reference_publisher' => 'IGN',
+            'references' => [
+                ['title' => 'Atlas de la Côte d’Ivoire', 'publisher' => 'IGN'],
+            ],
         ])
         ->assertRedirect();
 

@@ -11,8 +11,10 @@ use App\Http\Requests\Admin\ArticleRequest;
 use App\Http\Requests\Admin\TransitionRequest;
 use App\Models\Article;
 use App\Models\ArticleReference;
+use App\Models\ArticleVersion;
 use App\Models\Category;
 use App\Models\EditorialAction;
+use App\Models\Tag;
 use App\Models\User;
 use App\Services\ArticleService;
 use App\Services\Workflow;
@@ -39,12 +41,24 @@ class ArticleController extends Controller
 
         $status = ArticleStatus::tryFrom((string) $request->query('statut', ''));
         $search = trim((string) $request->query('q', ''));
+        $categoryId = trim((string) $request->query('categorie', ''));
+        $authorId = trim((string) $request->query('auteur', ''));
+        $missingSource = $request->query('sans_source') === '1';
+        $missingImage = $request->query('sans_image') === '1';
 
         $articles = Article::query()
             ->with(['author', 'category'])
+            ->withCount('references')
             ->when(! $user->role->canReview(), fn ($query) => $query->where('author_id', $user->getKey()))
             ->when($status !== null, fn ($query) => $query->where('status', $status))
             ->when($search !== '', fn ($query) => $query->where('title', 'like', '%'.$search.'%'))
+            ->when($categoryId !== '', fn ($query) => $query->where('category_id', $categoryId))
+            ->when(
+                $user->role->canReview() && $authorId !== '',
+                fn ($query) => $query->where('author_id', $authorId),
+            )
+            ->when($missingSource, fn ($query) => $query->whereDoesntHave('references'))
+            ->when($missingImage, fn ($query) => $query->whereNull('cover_image_url'))
             ->latest('updated_at')
             ->paginate(15)
             ->withQueryString();
@@ -53,6 +67,14 @@ class ArticleController extends Controller
             'articles' => $articles,
             'status' => $status,
             'search' => $search,
+            'categories' => $this->categories(),
+            'categoryId' => $categoryId,
+            'authors' => $user->role->canReview()
+                ? User::query()->whereIn('role', ['CONTRIBUTOR', 'EDITOR', 'ADMIN'])->orderBy('name')->get(['id', 'name'])
+                : collect(),
+            'authorId' => $authorId,
+            'missingSource' => $missingSource,
+            'missingImage' => $missingImage,
         ]);
     }
 
@@ -63,6 +85,7 @@ class ArticleController extends Controller
         return view('admin.articles.form', [
             'article' => new Article(['type' => ArticleType::TOPIC]),
             'categories' => $this->categories(),
+            'tags' => $this->tags(),
         ]);
     }
 
@@ -77,6 +100,7 @@ class ArticleController extends Controller
             'title' => (string) $request->input('title'),
             'summary' => (string) $request->input('summary'),
             'content' => $request->content(),
+            'infobox' => $request->infobox(),
             'type' => $request->input('type'),
             'status' => ArticleStatus::DRAFT,
             'category_id' => (string) $request->input('category_id'),
@@ -91,7 +115,8 @@ class ArticleController extends Controller
         $article->slug = $this->uniqueSlug((string) $request->input('title'));
         $article->save();
 
-        $this->storeReference($article, $request);
+        $this->syncReferences($article, $request);
+        $this->syncTags($article, $request);
 
         EditorialAction::create([
             'article_id' => $article->getKey(),
@@ -111,7 +136,7 @@ class ArticleController extends Controller
     {
         Gate::authorize('view', $article);
 
-        $article->load(['author', 'category', 'references', 'actions.actor', 'versions']);
+        $article->load(['author', 'category', 'references', 'actions.actor', 'versions.author', 'tags']);
 
         /** @var User $user */
         $user = request()->user();
@@ -121,9 +146,30 @@ class ArticleController extends Controller
             fn (string $action): bool => Gate::allows('transition', [$article, $action]),
         ));
 
+        // Le dernier jalon est comparé au contenu courant : l'auteur voit ce
+        // qui n'a pas encore été relu, sans lire deux JSON côte à côte.
+        $previous = $article->versions->last();
+        $changes = [];
+
+        if ($previous instanceof ArticleVersion) {
+            if ($previous->title !== $article->title) {
+                $changes[] = 'titre';
+            }
+
+            if ($previous->summary !== $article->summary) {
+                $changes[] = 'résumé';
+            }
+
+            if ($previous->content_hash !== ArticleVersion::hashContent($article->content)) {
+                $changes[] = 'corps';
+            }
+        }
+
         return view('admin.articles.show', [
             'article' => $article,
             'actions' => $actions,
+            'previousVersion' => $previous,
+            'changes' => $changes,
         ]);
     }
 
@@ -134,6 +180,7 @@ class ArticleController extends Controller
         return view('admin.articles.form', [
             'article' => $article,
             'categories' => $this->categories(),
+            'tags' => $this->tags(),
         ]);
     }
 
@@ -150,6 +197,7 @@ class ArticleController extends Controller
             'title' => (string) $request->input('title'),
             'summary' => (string) $request->input('summary'),
             'content' => $request->content(),
+            'infobox' => $request->infobox(),
             'type' => $request->input('type'),
             'category_id' => (string) $request->input('category_id'),
             'cover_image_url' => $request->input('cover_image_url') ?: null,
@@ -166,7 +214,8 @@ class ArticleController extends Controller
         $article->lock_version = (int) $article->lock_version + 1;
         $article->save();
 
-        $this->storeReference($article, $request);
+        $this->syncReferences($article, $request);
+        $this->syncTags($article, $request);
 
         EditorialAction::create([
             'article_id' => $article->getKey(),
@@ -216,6 +265,12 @@ class ArticleController extends Controller
         return Category::query()->orderBy('position')->orderBy('name')->get();
     }
 
+    /** @return Collection<int, Tag> */
+    private function tags(): Collection
+    {
+        return Tag::query()->orderBy('name')->get();
+    }
+
     /** Slug lisible et unique, sans toucher à celui d'un article publié. */
     private function uniqueSlug(string $title, ?string $ignoreId = null): string
     {
@@ -233,33 +288,29 @@ class ArticleController extends Controller
         return $slug;
     }
 
-    /** La première source saisie au formulaire devient la référence n° 1. */
-    private function storeReference(Article $article, ArticleRequest $request): void
+    /**
+     * Les sources du formulaire remplacent les précédentes, dans l'ordre saisi.
+     *
+     * Un article sans source reste possible en brouillon (la garde de
+     * publication le refuse plus tard), mais l'ordre du formulaire devient
+     * l'ordre des appels `[1]`, `[2]`… dans la fiche publique.
+     */
+    private function syncReferences(Article $article, ArticleRequest $request): void
     {
-        $title = trim((string) $request->input('reference_title'));
+        $article->references()->delete();
 
-        if ($title === '') {
-            return;
+        foreach ($request->references() as $index => $reference) {
+            ArticleReference::create($reference + [
+                'article_id' => $article->getKey(),
+                'position' => $index + 1,
+                'kind' => 'WEBSITE',
+            ]);
         }
+    }
 
-        $existing = $article->references()->where('position', 1)->first();
-
-        $attributes = [
-            'title' => $title,
-            'publisher' => $request->input('reference_publisher') ?: null,
-            'url' => $request->input('reference_url') ?: null,
-            'kind' => 'WEBSITE',
-        ];
-
-        if ($existing instanceof ArticleReference) {
-            $existing->update($attributes);
-
-            return;
-        }
-
-        ArticleReference::create($attributes + [
-            'article_id' => $article->getKey(),
-            'position' => 1,
-        ]);
+    /** Les étiquettes cochées remplacent les précédentes. */
+    private function syncTags(Article $article, ArticleRequest $request): void
+    {
+        $article->tags()->sync($request->tagIds());
     }
 }

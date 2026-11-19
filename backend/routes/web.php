@@ -1,8 +1,11 @@
 <?php
 
 use App\Http\Controllers\Admin\ArticleController;
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\JournalController;
 use App\Http\Controllers\Admin\SessionController;
+use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -37,6 +40,18 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::put('/articles/{article}', [ArticleController::class, 'update'])->name('articles.update');
         Route::post('/articles/{article}/transition', [ArticleController::class, 'transition'])
             ->name('articles.transition');
+
+        Route::get('/journal', JournalController::class)->name('journal');
+
+        Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+        Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+        Route::put('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
+        Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+
+        Route::get('/etiquettes', [TagController::class, 'index'])->name('tags.index');
+        Route::post('/etiquettes', [TagController::class, 'store'])->name('tags.store');
+        Route::put('/etiquettes/{tag}', [TagController::class, 'update'])->name('tags.update');
+        Route::delete('/etiquettes/{tag}', [TagController::class, 'destroy'])->name('tags.destroy');
 
         Route::get('/utilisateurs', [UserController::class, 'index'])->name('users.index');
         Route::patch('/utilisateurs/{user}/role', [UserController::class, 'updateRole'])->name('users.role');

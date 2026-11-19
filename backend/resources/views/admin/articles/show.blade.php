@@ -45,6 +45,23 @@
                 @endif
 
                 <div class="prose">{{ $article->plainText() }}</div>
+
+                @if (! empty($article->infobox))
+                    <h2 style="margin-top:22px">Infobox</h2>
+                    <ul class="refs">
+                        @foreach ($article->infobox as $label => $value)
+                            <li><strong>{{ $label }}</strong> : {{ is_scalar($value) ? $value : json_encode($value) }}</li>
+                        @endforeach
+                    </ul>
+                @endif
+
+                @if ($article->tags->isNotEmpty())
+                    <div class="tags" style="margin-top:16px">
+                        @foreach ($article->tags as $tag)
+                            <span class="pill draft">{{ $tag->name }}</span>
+                        @endforeach
+                    </div>
+                @endif
             </div>
 
             <div class="card">
@@ -72,18 +89,31 @@
 
             <div class="card">
                 <h2>Versions</h2>
+
+                @if ($previousVersion !== null)
+                    <p class="meta">
+                        Dernier jalon : version {{ $previousVersion->number }} ({{ $previousVersion->reason }}).
+                        @if ($changes === [])
+                            Le contenu est identique à celui de ce jalon.
+                        @else
+                            Modifié depuis : {{ implode(', ', $changes) }}.
+                        @endif
+                    </p>
+                @endif
+
                 @if ($article->versions->isEmpty())
                     <p class="meta">Aucun jalon enregistré : la première version naît à la soumission.</p>
                 @else
                     <table class="table">
                         <thead>
-                        <tr><th>N°</th><th>Jalon</th><th>Auteur</th><th>Date</th></tr>
+                        <tr><th>N°</th><th>Jalon</th><th>Empreinte</th><th>Auteur</th><th>Date</th></tr>
                         </thead>
                         <tbody>
                         @foreach ($article->versions as $version)
                             <tr>
                                 <td>{{ $version->number }}</td>
                                 <td>{{ $version->reason }}</td>
+                                <td class="meta" title="{{ $version->content_hash }}">{{ substr($version->content_hash, 0, 12) }}</td>
                                 <td class="meta">{{ $version->author?->name }}</td>
                                 <td class="meta">{{ $version->created_at?->translatedFormat('j M Y, H:i') }}</td>
                             </tr>

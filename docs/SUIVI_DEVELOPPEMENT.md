@@ -989,6 +989,38 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 37 — 19 novembre 2026 · Référentiels, sources multiples et journal
+
+**Demande**
+- Continuer le panneau : combler ce qui manquait encore par rapport à `docs/DASHBOARD_ADMIN.md`.
+
+**Fait — référentiels**
+- `CategoryController` et `TagController` : listes, création, renommage, suppression ; `CategoryRequest` et `TagRequest` valident nom, description, position et catégorie mère (une catégorie ne peut pas être sa propre mère).
+- Le slug découle du nom ; il ne bouge plus dès qu'un article utilise la catégorie, et une catégorie qui porte des articles refuse la suppression — les adresses publiques restent valides.
+- Nouvelle permission `manage-references` (Gate : EDITOR et ADMIN) : un contributeur reçoit 403. Deux entrées de navigation, « Catégories » et « Étiquettes ».
+
+**Fait — formulaire article**
+- Sources multiples : lignes ajoutées et retirées sans quitter la page (gabarits HTML, numérotation des appels dans l'ordre saisi) ; les sources sont remplacées à l'enregistrement, comme le journal le laisse attendre.
+- Infobox : paires libellé/valeur, lignes incomplètes ignorées, stockage `libellé => valeur` — le format déjà lu par la fiche publique.
+- Étiquettes : cases à cocher sur le référentiel, `sync` du pivot `article_tag`.
+- Le test de création passe désormais `references`, qui remplace les anciens champs `reference_title` / `reference_publisher`.
+
+**Fait — lecture**
+- Liste d'articles : filtres catégorie, auteur (éditeurs seulement), « sans source », « sans image » ; colonnes sources et image.
+- Fiche article : infobox, étiquettes, empreinte SHA-256 tronquée par version, et comparaison « dernier jalon ↔ contenu courant » sur le titre, le résumé et le corps.
+- Journal éditorial global `/admin/journal` : filtres par type et par acteur ; un contributeur ne voit que les actions de ses propres articles.
+
+**Vérifié**
+- `composer test` : **103 tests, 1 428 assertions** (+10) ; `pint --test` propre ; `phpstan` sans erreur sur 65 fichiers.
+- `php artisan route:list --path=admin` : 24 routes, dont 9 nouvelles.
+- Aucun fichier Flutter touché : les 44 tests de la séance 36 restent la référence pour l'application.
+
+**Limites**
+- Toujours aucune vérification au navigateur : les gabarits ne sont couverts que par les tests HTTP (statut et contenu), pas par un rendu réel, et l'ajout de lignes en JavaScript n'est exercé par aucun test.
+- Dépôt des médias, éditeur visuel du Delta, 2FA, édition des contenus sourcés et export restent ouverts (phases 3 et 4).
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

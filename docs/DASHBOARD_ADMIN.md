@@ -1,6 +1,8 @@
 # Tableau de bord d'administration — note de cadrage
 
-> **Statut** : réflexion ouverte, rien n'est encore installé.
+> **Statut** : phases 0 et 1 livrées ; phase 2 entamée (formulaire complet,
+> sources, infobox, étiquettes, versions, journal). Restent l'éditeur visuel,
+> le dépôt des médias, la 2FA et l'édition des contenus sourcés.
 > **But** : définir ce que l'administration doit permettre, où elle vit, et dans
 > quel ordre la construire — sans casser le contrat de l'API publique.
 > **Références** : `IVOIREPEDIA_CONTEXT.md` §9 (workflow), §10 (RBAC),
