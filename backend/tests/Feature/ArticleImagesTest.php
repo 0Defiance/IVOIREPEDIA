@@ -71,6 +71,29 @@ it('ne réécrit pas un article dont l’illustration est déjà à jour', funct
     expect($article->fresh()->updated_at->equalTo($updatedAt))->toBeTrue();
 });
 
+it('conserve une image choisie à la main dans le panneau', function () {
+    $article = makeIllustratedArticle('abidjan');
+    $article->forceFill([
+        'cover_image_url' => 'https://example.test/mon-image.jpg',
+        'cover_image_alt' => 'Une photo choisie par la rédaction.',
+        'cover_image_credit' => 'Photographe maison',
+        'cover_image_license' => 'Avec autorisation',
+        'cover_image_source_url' => 'https://example.test/source',
+    ])->save();
+
+    $this->artisan('articles:attach-images')
+        ->expectsOutputToContain('abidjan')
+        ->assertSuccessful();
+
+    expect($article->refresh()->cover_image_url)->toBe('https://example.test/mon-image.jpg');
+
+    // --force reprend explicitement le jeu de données.
+    $this->artisan('articles:attach-images', ['--force' => true])->assertSuccessful();
+
+    expect($article->refresh()->cover_image_url)
+        ->toMatch('#^https://(upload|thumb)\.wikimedia\.org/#');
+});
+
 it('expose la licence et la source de l’image dans l’API', function () {
     makeIllustratedArticle('abidjan');
     $this->artisan('articles:attach-images')->assertSuccessful();

@@ -1165,9 +1165,10 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 - Références : la source du recensement est ajoutée si elle manque, à la position suivante, sans plus rien supprimer.
 - Étiquettes : `syncWithoutDetaching` — l'étiquette « ville » s'ajoute, les étiquettes de la rédaction restent.
 - Aucune écriture inutile : une fiche déjà à jour ne voit plus son `updated_at` bouger.
+- Même défaut, même correction pour les illustrations : `articles:attach-images` réécrivait une couverture choisie dans `/admin`. Elle conserve désormais une image différente du jeu de données et la liste en fin d'exécution ; `--force` reprend explicitement le jeu de données.
 
 **Vérifié**
-- `composer test` : **117 tests, 1 652 assertions** ; les cinq nouveaux cas couvrent la source ajoutée depuis le panneau (deux passages), la fiche modifiée via `PUT /admin/articles/{id}` puis reseedée deux fois, l'étiquette éditoriale conservée, la fiche antérieure au suivi dont le contenu diffère (conservée, signalée en sortie, puis toujours protégée), et l'absence d'écriture inutile (`updated_at` inchangé sur une fiche à jour).
+- `composer test` : **118 tests, 1 657 assertions** ; les six nouveaux cas couvrent la source ajoutée depuis le panneau (deux passages), la fiche modifiée via `PUT /admin/articles/{id}` puis reseedée deux fois, l'étiquette éditoriale conservée, la fiche antérieure au suivi dont le contenu diffère (conservée, signalée en sortie, puis toujours protégée), l'absence d'écriture inutile (`updated_at` inchangé sur une fiche à jour), et la couverture choisie à la main conservée puis reprise avec `--force`.
 - `pint --test` propre, `phpstan` sans erreur ; aucun fichier Flutter touché.
 
 **Mise en ligne**
