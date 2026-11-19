@@ -1,40 +1,11 @@
 @extends('site.layout')
 
-@section('title', $article->title.' — IVOIREPEDIA')
+@section('title', $title.' — IVOIREPEDIA')
 @section('description', $description)
 @section('canonical', $canonical)
 
 @section('social')
-    <meta property="og:site_name" content="IVOIREPEDIA">
-    <meta property="og:locale" content="fr_CI">
-    <meta property="og:type" content="article">
-    <meta property="og:title" content="{{ $article->title }}">
-    <meta property="og:description" content="{{ $description }}">
-    <meta property="og:url" content="{{ $canonical }}">
-    @if ($coverUrl)
-        <meta property="og:image" content="{{ $coverUrl }}">
-        @if ($article->cover_image_alt)
-            <meta property="og:image:alt" content="{{ $article->cover_image_alt }}">
-        @endif
-    @endif
-    @if ($article->published_at)
-        <meta property="article:published_time" content="{{ $article->published_at->toIso8601String() }}">
-    @endif
-    @if ($article->updated_at)
-        <meta property="article:modified_time" content="{{ $article->updated_at->toIso8601String() }}">
-    @endif
-    @if ($article->category)
-        <meta property="article:section" content="{{ $article->category->name }}">
-    @endif
-    @foreach ($article->tags as $tag)
-        <meta property="article:tag" content="{{ $tag->name }}">
-    @endforeach
-    <meta name="twitter:card" content="{{ $coverUrl ? 'summary_large_image' : 'summary' }}">
-    <meta name="twitter:title" content="{{ $article->title }}">
-    <meta name="twitter:description" content="{{ $description }}">
-    @if ($coverUrl)
-        <meta name="twitter:image" content="{{ $coverUrl }}">
-    @endif
+    @include('site.partials.social')
 @endsection
 
 @section('content')

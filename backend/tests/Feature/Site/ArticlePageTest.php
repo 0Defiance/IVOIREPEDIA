@@ -35,7 +35,9 @@ it('sert le contenu de l’article en HTML, avec titre de section ancré', funct
         'year' => 2022,
     ]);
 
-    $response = $this->get('/articles/abidjan')->assertOk();
+    $response = $this->withHeader('User-Agent', 'Googlebot/2.1 (+http://www.google.com/bot.html)')
+        ->get('/articles/abidjan')
+        ->assertOk();
 
     $response->assertHeader('content-type', 'text/html; charset=UTF-8')
         ->assertSee('Abidjan')
@@ -60,7 +62,9 @@ it('expose les cartes de partage Open Graph et la canonique', function () {
         'cover_image_license' => 'CC BY-SA 4.0',
     ]);
 
-    $response = $this->get('/articles/cacao')->assertOk();
+    $response = $this->withHeader('User-Agent', 'Googlebot/2.1 (+http://www.google.com/bot.html)')
+        ->get('/articles/cacao')
+        ->assertOk();
 
     $response->assertSee('<link rel="canonical" href="'.$site.'/articles/cacao">', false)
         ->assertSee('<meta property="og:type" content="article">', false)
@@ -81,7 +85,9 @@ it('échappe le HTML présent dans le contenu éditorial', function () {
         ]],
     ]);
 
-    $response = $this->get('/articles/injection')->assertOk();
+    $response = $this->withHeader('User-Agent', 'Googlebot/2.1 (+http://www.google.com/bot.html)')
+        ->get('/articles/injection')
+        ->assertOk();
 
     $response->assertDontSee('<script>alert(1)</script>', false)
         ->assertSee('&lt;script&gt;alert(1)&lt;/script&gt;', false)
@@ -99,7 +105,9 @@ it('groupe les listes et rend les citations', function () {
         ]],
     ]);
 
-    $response = $this->get('/articles/listes')->assertOk();
+    $response = $this->withHeader('User-Agent', 'Googlebot/2.1 (+http://www.google.com/bot.html)')
+        ->get('/articles/listes')
+        ->assertOk();
 
     $response->assertSee('<ul>', false)
         ->assertSee('<li>Premier point</li>', false)
@@ -111,10 +119,59 @@ it('renvoie 404 pour un article non publié ou inconnu', function () {
     siteArticle(['slug' => 'brouillon', 'status' => ArticleStatus::DRAFT]);
     siteArticle(['slug' => 'programme', 'published_at' => now()->addDay()]);
 
-    $this->get('/articles/brouillon')
+    $this->withHeader('User-Agent', 'Googlebot/2.1 (+http://www.google.com/bot.html)')
+        ->get('/articles/brouillon')
         ->assertNotFound()
         ->assertSee('Cet article n’existe pas ou n’est pas encore publié.');
 
-    $this->get('/articles/programme')->assertNotFound();
-    $this->get('/articles/inconnu')->assertNotFound();
+    $this->withHeader('User-Agent', 'Googlebot/2.1 (+http://www.google.com/bot.html)')
+        ->get('/articles/programme')
+        ->assertNotFound();
+    $this->withHeader('User-Agent', 'Googlebot/2.1 (+http://www.google.com/bot.html)')
+        ->get('/articles/inconnu')
+        ->assertNotFound();
+});
+
+it('sert l’application Flutter aux visiteurs avec les métadonnées de l’article', function () {
+    siteArticle([
+        'title' => 'Daloa',
+        'slug' => 'daloa',
+        'summary' => 'Une ville du centre-ouest ivoirien.',
+    ]);
+
+    $response = $this->withHeader(
+        'User-Agent',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36',
+    )->get('/articles/daloa')->assertOk();
+
+    $response->assertSee('<base href="/">', false)
+        ->assertSee('flutter_bootstrap.js', false)
+        ->assertSee('<title>Daloa — IVOIREPEDIA</title>', false)
+        ->assertSee('<meta property="og:title" content="Daloa">', false)
+        ->assertDontSee('<article class="article">', false);
+});
+
+it('garde la version HTML accessible aux visiteurs avec ?html=1', function () {
+    siteArticle([
+        'title' => 'Daloa',
+        'slug' => 'daloa',
+        'summary' => 'Une ville du centre-ouest ivoirien.',
+    ]);
+
+    $this->withHeader(
+        'User-Agent',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36',
+    )->get('/articles/daloa?html=1')
+        ->assertOk()
+        ->assertSee('<article class="article">', false)
+        ->assertSee('Une ville du centre-ouest ivoirien.');
+});
+
+it('renvoie la coquille Flutter sur un article inconnu pour un visiteur', function () {
+    $this->withHeader(
+        'User-Agent',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36',
+    )->get('/articles/inconnu')
+        ->assertNotFound()
+        ->assertSee('flutter_bootstrap.js', false);
 });

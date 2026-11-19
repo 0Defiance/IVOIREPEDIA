@@ -234,11 +234,11 @@ les routes s'ouvrent directement (`/statistiques`, `/histoires`,
 > Les adresses utilisent la stratégie d'URL par chemin (`usePathUrlStrategy`) :
 > pas de `#`, des liens partageables et lisibles. Le contenu reste rendu côté
 > client sur la plupart des pages (limitation R-09, CONTEXT §17). Les articles
-> font exception : `public/.htaccess` envoie `/articles/{slug}` et
-> `/sitemap.xml` à Laravel, qui renvoie un HTML complet (texte, Open Graph,
-> canonique) et le plan du site. Un partage ou un rechargement d'une page
-> article affiche donc la version pré-rendue ; la navigation interne à
-> l'application reste inchangée.
+> font exception côté serveur : `public/.htaccess` envoie `/articles/{slug}` et
+> `/sitemap.xml` à Laravel. Un visiteur reçoit la coquille Flutter avec le
+> titre, l'Open Graph et la canonique de l'article (l'application affiche
+> ensuite sa page de lecture habituelle) ; un robot ou `?html=1` reçoit le HTML
+> complet, et le sitemap est servi en XML.
 
 ---
 
@@ -309,7 +309,8 @@ php artisan config:cache && php artisan route:cache && php artisan view:cache
 | Base connectée | `php artisan migrate:status` en SSH | Migrations listées, aucune « Pending » |
 | Panneau admin | `https://ivoirepedia.alwaysdata.net/admin` | Écran de connexion Filament (à partir du Sprint 5) |
 | Email | `Mail::raw(...)` en tinker | Message reçu, expéditeur validé |
-| Article pré-rendu | `curl -s https://ivoirepedia.alwaysdata.net/articles/<slug> \| grep -E 'og:title\|canonical'` | Balises présentes, texte de l'article dans le HTML |
+| Article — visiteur | `curl -s https://ivoirepedia.alwaysdata.net/articles/<slug> \| grep 'og:title'` | Balises présentes et coquille Flutter (`flutter_bootstrap.js`) |
+| Article — robot | `curl -s -A 'Googlebot/2.1' https://ivoirepedia.alwaysdata.net/articles/<slug> \| grep -E 'og:title\|<h1>'` | Balises et texte de l'article dans le HTML |
 | Sitemap | `curl -sI https://ivoirepedia.alwaysdata.net/sitemap.xml` | `200`, `application/xml` |
 | Robots | `curl -s https://ivoirepedia.alwaysdata.net/robots.txt` | Ligne `Sitemap:` présente |
 | Journaux | `backend/storage/logs/laravel.log` en SSH | Aucune erreur 500 |

@@ -1225,7 +1225,7 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 - `GET /articles/{slug}` (`ArticlePageController`, vues `site/article`, `site/missing` et `site/layout`) : titre, chapô, couverture créditée, sommaire, contenu, notes et références, catégories et licence CC BY-SA 4.0. Un article non publié, programmé ou inconnu renvoie une page 404 en HTML.
 - Métadonnées de partage : `og:type=article`, `og:title`, `og:description`, `og:url`, `og:image` (couverture absolue) et `og:image:alt`, `article:published_time`, `article:modified_time`, `article:section`, `article:tag`, `twitter:card` (`summary_large_image` avec couverture, `summary` sinon), lien canonique et `lang="fr"`.
 - `GET /sitemap.xml` : pages fixes, catégories contenant au moins un article publié, articles publiés (`lastmod` = date de publication) et fiches de lieux du recensement, sans doublon. `robots.txt` pointe désormais vers le sitemap.
-- `public/.htaccess` : `/articles/{slug}` et `/sitemap.xml` sont traités par Laravel ; tout le reste continue de recevoir l’application Flutter. Les liens internes et la navigation client ne changent pas : seul un chargement direct (partage, rechargement, crawler) reçoit le HTML pré-rendu.
+- `public/.htaccess` : `/articles/{slug}` et `/sitemap.xml` sont traités par Laravel ; tout le reste continue de recevoir l’application Flutter. Les liens internes et la navigation client ne changent pas : au moment de cette livraison, un chargement direct (partage, rechargement, crawler) recevait le HTML pré-rendu — la séance 45 rétablit l’application pour les visiteurs et réserve ce HTML aux robots.
 - Défaut découvert en production : l’ancienne redirection `^site/?(.*)$` (adresses `/site/...`) lisait `/sitemap.xml` comme `/site` + `map.xml` et le renvoyait en 301 vers `/map.xml`. La règle exige désormais la barre (`^site(?:/(.*))?$`) ; `/site/...` continue de rediriger, `/sitemap.xml` atteint Laravel.
 - `docs/DEPLOIEMENT.md` : procédure et vérifications de la page pré-rendue et du sitemap ; `IVOIREPEDIA_CONTEXT.md` §17 : R-09 passe de « SEO limité » à « SEO partiellement limité ».
 
@@ -1241,6 +1241,32 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 - Seules les pages d’articles sont pré-rendues : accueil, catégories, lieux, statistiques et sources restent rendus par Flutter (R-09 partiellement levé).
 - Pas encore de données structurées JSON-LD (`Article`) ni de sitemap d’images : le partage et l’indexation reposent sur Open Graph et le HTML.
 - `robots.txt` fige l’adresse de production ; un changement de domaine exige de le mettre à jour.
+
+---
+
+## Séance 45 — 19 novembre 2026 · Une seule charte pour la page article
+
+**Demande**
+- Signalement après la séance 44 : la page `/articles/daloa` ouverte directement n’a pas le design de l’application, alors que le même article ouvert depuis l’accueil l’a. Deux rendus pour une seule adresse, et une page pré-rendue qui ne suit pas la charte graphique.
+
+**Le défaut**
+- La navigation depuis l’accueil reste dans Flutter : aucun appel serveur, donc l’écran de lecture habituel. Un accès direct ou un rechargement passait par Laravel et affichait la page HTML simplifiée ajoutée pour le SEO et le partage. La palette était proche, mais la typographie, la mise en page et les commandes de l’article différaient.
+
+**Fait**
+- `ArticlePageController` distingue désormais les clients :
+  - un navigateur reçoit `site/shell` — la coquille Flutter (`flutter_bootstrap.js`, écran de lancement, icônes) avec le titre, la description, l’Open Graph et la canonique de l’article dans le `<head>` ; l’application reprend ensuite la main et affiche sa page de lecture, identique à celle atteinte depuis l’accueil ;
+  - un robot (moteur de recherche, aperçu WhatsApp/X/Facebook/LinkedIn, etc.) ou un client qui demande `?html=1` reçoit `site/article`, le HTML complet sans JavaScript.
+- Un article inconnu suit la même règle : page 404 HTML pour les robots, coquille Flutter en 404 pour les visiteurs (l’application affiche son propre écran « page inexistante »).
+- Les balises de partage sont factorisées dans `site/partials/social.blade.php`, utilisé par les deux rendus : elles ne peuvent plus diverger.
+- Aucun changement Flutter : la page de lecture, ses onglets et ses commandes restent celles de l’application.
+
+**Vérifié**
+- `composer test` : **139 tests, 1 766 assertions**. Trois nouveaux cas : un navigateur reçoit la coquille Flutter avec les métadonnées de l’article, `?html=1` renvoie le HTML complet, et un article inconnu renvoie une coquille en 404 pour un visiteur. Les tests du pré-rendu existants passent avec un User-Agent de robot.
+- `composer format:check` et `composer analyse` propres ; vérification en production à l’URL directe (application affichée) et avec un User-Agent Googlebot (HTML complet).
+
+**Reste**
+- La version `?html=1` reste une page de lecture simplifiée, volontairement sans les commandes de l’application ; elle sert de repli sans JavaScript et de contenu aux robots.
+- Les autres pages (accueil, catégories, lieux) n’ont toujours pas de version pré-rendue.
 
 ---
 
