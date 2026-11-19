@@ -1289,8 +1289,11 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 - `composer format:check` et `composer analyse` propres.
 - `flutter analyze` propre ; `flutter test` : **52 tests**, dont un nouveau qui vérifie que « Partager : » se trouve plus bas que les catégories dans la page de lecture.
 
+**Mise en ligne**
+- `flutter build web --release --base-href=/ --dart-define=API_BASE_URL=/api/v1`, envoi du build dans `backend/public/`, `git pull --ff-only` en SSH, `composer install --no-dev`, `migrate --force`, puis `config:cache`, `route:cache` et `view:cache`. La base n’avait aucune migration en attente.
+- Vérifié en production : `/articles/daloa` répond `200` avec `<base href="/">`, `<title>Daloa — IVOIREPEDIA</title>`, `og:title` et le repli `?html=1`, l’accueil répond `200` ; en bas de l’article, après les catégories, on voit « Partager : WhatsApp, X, Facebook, LinkedIn, Copier le lien » (capture `screenshot-partage-bas-article.png`).
+
 **Reste**
-- Le partage en bas de page n’a pas été regardé dans un navigateur à cette étape : la position est vérifiée par le test de widgets, pas par une capture.
 - Les autres pages (accueil, catégories, lieux) n’ont toujours pas de version pré-rendue ; les suites SEO proposées (JSON-LD `Article`, sitemap d’images, image Open Graph par défaut) ne sont pas commencées.
 
 ---
