@@ -1069,8 +1069,15 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 - `flutter analyze` : aucune remarque. `flutter test` : **46 tests** verts (+2).
 - Aucun fichier backend touché : la suite Laravel de la séance 37 reste la référence (103 tests).
 
+**Mise en ligne**
+- Les quatre commits locaux en attente (panneau éditorial, référentiels, accueil, liens de l'accueil) sont poussés : `origin/main` est à `c4e5f70`.
+- Serveur : `git pull --ff-only` de `57e5bdc` à `c4e5f70`, `composer install --no-dev --optimize-autoloader`, `php artisan migrate --force` (« Nothing to migrate », le schéma était déjà à jour), puis `config:cache`, `route:cache` et `view:cache`.
+- Site Flutter reconstruit (`flutter build web --release --base-href=/ --dart-define=API_BASE_URL=/api/v1`, `main.dart.js` de 3 027 454 octets) et extrait à la racine de `backend/public` ; `index.php`, `.htaccess` et `storage` sont restés en place, et un `main.dart.js_1.part.js` résiduel a été supprimé.
+- Contrôles en production : `/api/v1/health` répond `{"status":"ok"…}`, `/statistiques` et `/admin/connexion` répondent 200, la page d'accueil affiche le nouveau sommaire à sept rubriques et les portails.
+
 **Limites**
-- Toujours aucune vérification au navigateur.
+- Le premier chargement reste lent (bundle de 3 Mo servi par l'hébergement mutualisé, vignettes Wikimedia à 5–10 s pièce) : mesuré à ~0,6 s pour le premier rendu et ~3 s pour `main.dart.js` après déploiement, mais une visite froide peut dépasser la minute. Un navigateur qui a l'ancien service worker en cache peut rester sur l'ancienne version : recharger sans cache.
+- Le panneau `/admin` n'a été vérifié que par sa page de connexion : aucun identifiant de production n'a été saisi, donc le parcours éditorial en ligne reste à essayer.
 
 ---
 
