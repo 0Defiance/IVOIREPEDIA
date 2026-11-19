@@ -1317,8 +1317,12 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 - `composer test` : **144 tests, 1 823 assertions**. Trois nouveaux cas : les mêmes données pour un robot et pour un visiteur (type, titre, URL, langue, image, étiquettes, auteur, éditeur, logo, dates), aucun JSON-LD sur une page inconnue, et un titre `</script><script>alert(1)</script>` qui reste du texte dans un bloc toujours analysable.
 - `composer format:check` et `composer analyse` propres ; aucun fichier Flutter touché, les 52 tests de l'application restent valables sans modification.
 
+**Mise en ligne**
+- `git pull --ff-only` en SSH (`4d5cfcc` → `4b966c4`), puis `config:cache`, `route:cache` et `view:cache` ; aucun build Flutter, aucune migration.
+- Vérifié sur `/articles/daloa` : `200` pour Googlebot comme pour un navigateur, un seul bloc `application/ld+json` de chaque côté, données identiques (titre, description, URL, langue, licence, image, dates, section, étiquette, auteur, éditeur et logo) ; pour le visiteur, la coquille charge toujours `flutter_bootstrap.js`. Une page inconnue reste `404` sans aucun bloc.
+
 **Reste**
-- Pas encore déployé : la production ne sert pas encore ces données.
+- `author` porte le nom du compte qui a publié (« Administrateur IVOIREPEDIA ») : une personne réelle ou une signature éditoriale demanderait une décision de contenu.
 - Pas de `BreadcrumbList` ni de `WebSite` (recherche interne), et toujours pas de sitemap d'images.
 
 ---
