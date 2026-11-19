@@ -220,7 +220,7 @@ MSYS_NO_PATHCONV=1 flutter build web --release --base-href=/ --dart-define=API_B
 
 tar -czf - -C build/web . | \
   ssh -i ../.deploy/ivoirepedia_ed25519 ivoirepedia@ssh-ivoirepedia.alwaysdata.net \
-  'rm -rf ~/ivoirepedia/backend/public/site && tar -xzf - -C ~/ivoirepedia/backend/public'
+  'tar -xzf - -C ~/ivoirepedia/backend/public'
 ```
 
 Le build n'embarque plus de `.htaccess` : celui de Laravel, versionné dans le
@@ -296,7 +296,7 @@ php artisan config:cache && php artisan route:cache && php artisan view:cache
 
 `--ff-only` échoue volontairement si le serveur a divergé : c'est le signal qu'un fichier a été modifié à la main en production.
 
-**Site Flutter (dossier `public/site`)** : le fichier `app/web/.htaccess` est recopié dans le build et déployé avec le reste. Il désactive Brotli pour les fichiers `js`/`wasm`/`json`/polices (la compression à la volée d'Alwaysdata fait tomber le débit du bundle à 6 ko/s et empêche la page de se charger) et fixe les en-têtes de cache. Si le dossier est remplacé par un `tar`, vérifier que ce fichier caché est bien extrait : `ls -a ~/ivoirepedia/backend/public/site | grep htaccess`.
+**Site Flutter (racine de `backend/public/`)** : le build Flutter ne contient **aucun** `.htaccess`. Celui du dépôt, `backend/public/.htaccess`, est versionné et reste la seule source de vérité pour la racine : il répartit les requêtes entre Laravel (`/api`, `/admin`, `/articles/{slug}`, `/sitemap.xml`) et `index.html`, et fixe les en-têtes de cache et de compression. L'extraction du `tar` du build dans `~/ivoirepedia/backend/public` ne le touche pas ; après un envoi, vérifier qu'il est toujours là : `ls -a ~/ivoirepedia/backend/public | grep htaccess` (le build n'apporte ni ne remplace ce fichier).
 
 ---
 

@@ -1298,6 +1298,31 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 47 — 19 novembre 2026 · Données structurées JSON-LD, doc de déploiement corrigée
+
+**Demande**
+- Corriger `docs/DEPLOIEMENT.md`, qui décrivait un `app/web/.htaccess` recopié dans le build alors qu'il n'existe pas.
+- Publier chaque article en données structurées JSON-LD, avec tests et documentation.
+
+**Fait — déploiement**
+- §5 : le build Flutter ne contient aucun `.htaccess` ; `backend/public/.htaccess`, versionné, reste la seule source de vérité pour la racine et l'extraction du `tar` ne le touche pas. La vérification devient « le `.htaccess` du dépôt est toujours là », et non « le fichier du build a été extrait ».
+- §3 : la commande d'envoi n'efface plus un dossier `public/site` qui n'existe pas ; le build s'extrait directement dans `backend/public/`, à côté d'`index.php`.
+
+**Fait — JSON-LD**
+- `site/partials/json-ld.blade.php` : bloc `application/ld+json` de type `Article` — `headline`, `description`, `url`, `mainEntityOfPage`, `inLanguage` (`fr-CI`), `isAccessibleForFree`, licence CC BY-SA 4.0, image de couverture, `datePublished`/`dateModified`, `articleSection`, `keywords` (étiquettes), `author` (`Person` quand l'auteur est connu, sinon l'organisation) et `publisher` Organization IVOIREPEDIA avec son logo. Les champs vides sont omis plutôt qu'envoyés vides.
+- Le bloc est inclus dans les deux rendus — `site/article` (robots et `?html=1`) et `site/partials/shell-head` (coquille Flutter) — pour que le même article porte les mêmes données quel que soit le client. Une page 404 n'en émet aucun : rien ne déclare un article qui n'existe pas.
+- Encodage `JSON_HEX_TAG`, `JSON_HEX_AMP`, `JSON_HEX_APOS` et `JSON_HEX_QUOT` : un titre contenant `</script>` ne peut pas fermer le bloc ni injecter de balise.
+
+**Vérifié**
+- `composer test` : **144 tests, 1 823 assertions**. Trois nouveaux cas : les mêmes données pour un robot et pour un visiteur (type, titre, URL, langue, image, étiquettes, auteur, éditeur, logo, dates), aucun JSON-LD sur une page inconnue, et un titre `</script><script>alert(1)</script>` qui reste du texte dans un bloc toujours analysable.
+- `composer format:check` et `composer analyse` propres ; aucun fichier Flutter touché, les 52 tests de l'application restent valables sans modification.
+
+**Reste**
+- Pas encore déployé : la production ne sert pas encore ces données.
+- Pas de `BreadcrumbList` ni de `WebSite` (recherche interne), et toujours pas de sitemap d'images.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
