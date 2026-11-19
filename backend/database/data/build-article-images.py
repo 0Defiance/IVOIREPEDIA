@@ -71,6 +71,35 @@ CHOICES = {
     "san-pedro": ("San-Pédro pendant la CAN 2023 03.jpg", "San-Pédro pendant la Coupe d'Afrique des nations 2023."),
     "senat": ("Sénat ivoirien de yamoussoukro.jpg", "Le bâtiment du Sénat à Yamoussoukro."),
     "yamoussoukro": ("Yamoussoukro panorama.jpg", "Panorama de Yamoussoukro."),
+
+    # Série « Villes de Côte d'Ivoire » : une photographie de la ville elle-même,
+    # jamais une carte de localisation ni un portrait. Les villes sans photo
+    # libre sur Commons restent sans illustration plutôt que d'en recevoir une
+    # qui parle d'autre chose.
+    "abengourou": ("RCI-Abengourou-Cour Royale de l'Indénié.jpg", "La cour royale de l'Indénié, à Abengourou."),
+    "aboisso": ("Pousseur de wotro 02.jpg", "Un pousseur de wotro sur la lagune, à Aboisso."),
+    "adzope": ("Le clocher de la mission catholique d'Adzopé.jpg", "Le clocher de la mission catholique d'Adzopé."),
+    "agboville": ("La Mairie d’Agboville 04.jpg", "La mairie d'Agboville."),
+    "bondoukou": ("Bondoukou Moske ap 001.jpg", "Une mosquée en terre de Bondoukou."),
+    "bouafle": ("Mairie de Bouaflé.jpg", "La mairie de Bouaflé."),
+    "bouna": ("Préfecture de Bouna en 2026 01.jpg", "La préfecture de Bouna."),
+    "boundiali": ("RueBoundiali.jpg", "Une rue de Boundiali."),
+    "dabou": ("Fort Faidherbe - Dabou - Côte d'Ivoire.jpg", "Le fort Faidherbe, à Dabou."),
+    "daloa": ("Préfecture de Daloa.jpg", "La préfecture de Daloa."),
+    "danane": ("Pont entre Danané et Man (Côte d'Ivoire) - btv1b10120161v (1 of 2).jpg", "Un pont sur la route entre Danané et Man, photographié au début du XXe siècle."),
+    "daoukro": ("Daoukro Prefecture de la ville.jpg", "La préfecture de Daoukro."),
+    "divo": ("La place de la réconciliation de la ville de Divo.jpg", "La place de la réconciliation, à Divo."),
+    "duekoue": ("Duékoué, Ouest de la Côte d'Ivoire.JPG", "Une vue de Duékoué, dans l'ouest de la Côte d'Ivoire."),
+    "ferkessedougou": ("Agent de l'état civil (Mairie de Ferkessédougou, Côte d'Ivoire) 02.jpg", "Le service d'état civil de la mairie de Ferkessédougou."),
+    "gagnoa": ("Pharmaciegagnoa.JPG", "Une pharmacie à Gagnoa."),
+    "guiglo": ("Pontnzo.jpg", "Un pont sur le N'Zo, près de Guiglo."),
+    "issia": ("Hôtel le Versant, Issia.jpg", "L'hôtel Le Versant, à Issia."),
+    "katiola": ("MosqueeKatiola.JPG", "La mosquée de Katiola."),
+    "sikensi": ("Hôtel communal de Sikensi.jpg", "L'hôtel communal de Sikensi."),
+    "soubre": ("Paroisse Saints Martyrs de l'Ouganda de Soubré 1.JPG", "La paroisse des Saints-Martyrs-de-l'Ouganda, à Soubré."),
+    "toumodi": ("1904 Toumodi. Le marché.jpg", "Le marché de Toumodi en 1904."),
+    "vavoua": ("Enrée Préfecture Vavoua.JPG", "L'entrée de la préfecture de Vavoua."),
+    "zouan-hounien": ("Zouan-Hounien - Panorama dalla gendarmeria - 2026 Piergiorgio Mariniello.jpg", "Panorama de Zouan-Hounien vu depuis la gendarmerie."),
 }
 
 

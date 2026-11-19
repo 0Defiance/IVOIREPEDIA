@@ -173,7 +173,21 @@
                     <label for="cover_image_credit">Crédit</label>
                     <input id="cover_image_credit" name="cover_image_credit" type="text"
                            value="{{ old('cover_image_credit', $article->cover_image_credit) }}"
-                           placeholder="Photographe, agence, licence">
+                           placeholder="Photographe, agence">
+                </div>
+            </div>
+            <div class="form-row two">
+                <div class="form-row" style="margin:0">
+                    <label for="cover_image_license">Licence</label>
+                    <input id="cover_image_license" name="cover_image_license" type="text"
+                           value="{{ old('cover_image_license', $article->cover_image_license) }}"
+                           placeholder="CC BY-SA 4.0, CC0, domaine public…">
+                </div>
+                <div class="form-row" style="margin:0">
+                    <label for="cover_image_source_url">Page source de l’image</label>
+                    <input id="cover_image_source_url" name="cover_image_source_url" type="url"
+                           value="{{ old('cover_image_source_url', $article->cover_image_source_url) }}"
+                           placeholder="https://commons.wikimedia.org/wiki/File:…">
                 </div>
             </div>
         </div>

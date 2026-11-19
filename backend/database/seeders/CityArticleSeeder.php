@@ -14,20 +14,22 @@ use Illuminate\Support\Str;
 
 /**
  * Série « Villes de Côte d'Ivoire » : une fiche par ville du répertoire
- * public (`/lieux/{slug}`) qui n'avait pas encore d'article.
+ * public (`/lieux/{slug}`).
  *
- * Le seeder ne crée que les fiches absentes : un article qui existe déjà, quel
- * que soit son auteur, n'est jamais réécrit — la série complète le répertoire,
- * elle ne remplace pas le travail éditorial. Relancé, il ne fait donc rien.
- * Chaque fiche reçoit la catégorie « Géographie », l'étiquette « Ville » et la
- * référence officielle du RGPH 2021, celle d'où viennent les effectifs cités.
+ * Deux règles, dans cet ordre :
+ *  - un article déjà publié qui n'appartient pas à la série n'est jamais
+ *    réécrit — la série complète le répertoire, elle ne remplace pas le travail
+ *    éditorial ;
+ *  - une fiche marquée `series = 'villes'` est rafraîchie à chaque passage,
+ *    pour que les ajouts de sections et les corrections de chiffres suivent.
  *
- * Règle éditoriale : rien d'inventé. Les chiffres sont ceux du recensement, les
- * autres affirmations restent générales et prudentes ; une fiche ne raconte pas
- * ce qu'elle ne sait pas.
+ * Les illustrations de couverture ne sont pas gérées ici : elles viennent de
+ * `articles:attach-images`, qui porte la licence et l'auteur de chaque photo.
  */
 class CityArticleSeeder extends Seeder
 {
+    public const SERIES = 'villes';
+
     /**
      * Document officiel des résultats du RGPH 2021, source des effectifs
      * communaux cités par chaque fiche.
@@ -45,6 +47,8 @@ class CityArticleSeeder extends Seeder
     {
         /** @var array<string, array<string, mixed>> $cities */
         $cities = require database_path('data/cities.php');
+        /** @var array<string, array<int, array{0: string, 1: string}>> $details */
+        $details = require database_path('data/cities-details.php');
 
         $author = $this->author();
         $category = Category::query()->firstOrCreate(
@@ -54,28 +58,37 @@ class CityArticleSeeder extends Seeder
         $tag = Tag::query()->updateOrCreate(['slug' => 'ville'], ['name' => 'Ville']);
 
         $created = 0;
-        $existing = 0;
+        $updated = 0;
+        $untouched = 0;
 
         foreach (array_values($cities) as $index => $city) {
             $slug = Str::slug((string) $city['name']);
+            $blocks = array_merge($city['blocks'], $details[$slug] ?? []);
+            $article = Article::withTrashed()->where('slug', $slug)->first();
 
-            if (Article::withTrashed()->where('slug', $slug)->exists()) {
-                $existing++;
+            // Un article écrit par quelqu'un d'autre garde son texte.
+            if ($article !== null && $article->series !== self::SERIES) {
+                $untouched++;
 
                 continue;
             }
 
-            $article = Article::query()->create(
-                [
+            $attributes = [
+                'title' => $city['name'],
+                'summary' => $city['summary'],
+                'content' => $this->delta($blocks),
+                'infobox' => [
+                    'level' => 'CITY',
+                    'population' => $city['population'],
+                    'populationYear' => 2021,
+                ],
+            ];
+
+            if ($article === null) {
+                $article = Article::query()->create([
+                    ...$attributes,
                     'slug' => $slug,
-                    'title' => $city['name'],
-                    'summary' => $city['summary'],
-                    'content' => $this->delta($city['blocks']),
-                    'infobox' => [
-                        'level' => 'CITY',
-                        'population' => $city['population'],
-                        'populationYear' => 2021,
-                    ],
+                    'series' => self::SERIES,
                     'type' => ArticleType::REGION,
                     'status' => ArticleStatus::PUBLISHED,
                     'lock_version' => 1,
@@ -83,24 +96,33 @@ class CityArticleSeeder extends Seeder
                     'author_id' => $author->id,
                     'category_id' => $category->id,
                     'published_at' => now()->subDays($index * 2 + 1),
-                ],
-            );
-
-            $created++;
+                ]);
+                $created++;
+            } else {
+                $article->fill($attributes)->save();
+                $updated++;
+            }
 
             $article->tags()->sync([$tag->id]);
-            $article->references()->delete();
-            $article->references()->create([
-                ...self::CENSUS_REFERENCE,
-                'position' => 1,
-                'accessed_at' => now()->toDateString(),
-            ]);
+
+            // Une seule référence, mais elle est vérifiable : le recensement.
+            $existing = $article->references()->where('url', self::CENSUS_REFERENCE['url'])->exists();
+
+            if (! $existing) {
+                $article->references()->delete();
+                $article->references()->create([
+                    ...self::CENSUS_REFERENCE,
+                    'position' => 1,
+                    'accessed_at' => now()->toDateString(),
+                ]);
+            }
         }
 
         $this->command?->info(sprintf(
-            '%d fiche(s) créée(s), %d déjà présente(s) laissée(s) intacte(s).',
+            '%d fiche(s) créée(s), %d mise(s) à jour, %d article(s) hors série laissé(s) intact(s).',
             $created,
-            $existing,
+            $updated,
+            $untouched,
         ));
     }
 

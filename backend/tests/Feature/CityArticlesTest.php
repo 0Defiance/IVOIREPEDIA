@@ -61,9 +61,43 @@ it('donne à chaque ville son infobox, sa source et son étiquette', function ()
     // Une fiche détaillée : un chapeau, des sections, plusieurs paragraphes.
     $text = $daloa->plainText();
 
-    expect(substr_count($text, "\n"))->toBeGreaterThanOrEqual(5)
+    expect(substr_count($text, "\n"))->toBeGreaterThanOrEqual(10)
         ->and($text)->toContain('Daloa')
-        ->and($daloa->content['ops'])->toHaveCount(8);
+        ->and($daloa->content['ops'])->toHaveCount(14);
+});
+
+it('ajoute le relief, le climat, les quartiers et les équipements', function () {
+    $this->seed(CategorySeeder::class);
+    $this->seed(CityArticleSeeder::class);
+
+    $cities = cityData();
+    $details = require database_path('data/cities-details.php');
+
+    expect($details)->toHaveCount(count($cities));
+
+    foreach (array_keys($cities) as $slug) {
+        $text = Article::query()->where('slug', $slug)->firstOrFail()->plainText();
+
+        expect($text)->toContain('Relief et climat')
+            ->and($text)->toContain('Quartiers et équipements');
+    }
+});
+
+it('rafraîchit une fiche de la série sans toucher à sa date de publication', function () {
+    $this->seed(CategorySeeder::class);
+    $this->seed(CityArticleSeeder::class);
+
+    $article = Article::query()->where('slug', 'katiola')->firstOrFail();
+    $publishedAt = $article->published_at;
+    $article->update(['summary' => 'Résumé périmé.', 'series' => 'villes']);
+
+    $this->seed(CityArticleSeeder::class);
+
+    $article->refresh();
+
+    expect($article->summary)->toBe("Chef-lieu du Hambol, Katiola est la ville des potières tagbanas, au cœur d'une région de savane et de coton.")
+        ->and($article->published_at->equalTo($publishedAt))->toBeTrue()
+        ->and($article->plainText())->toContain('Quartiers et équipements');
 });
 
 it('reste idempotent quand on le relance', function () {

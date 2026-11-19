@@ -1112,6 +1112,41 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 41 — 19 novembre 2026 · Fiches de villes complètes et illustrées
+
+**Demande**
+- Vérifier en production que les 34 fiches s'ouvrent une par une et que les liens depuis `/lieux` mènent à la bonne ville, puis corriger ce qui restait : pas de relief, de quartiers ni d'équipements, aucune image de couverture.
+
+**Vérifié en production (état de départ)**
+- 34 fiches sur 34 : `/api/v1/articles/:slug`, `/api/v1/places/:slug` et la page `/articles/:slug` répondent 200 ; aucune fiche vide, aucun 404.
+- Liens : `/lieux` ouvre `/lieux/:slug`, et la fiche de lieu retrouve son article par titre ou chapô (`LIKE` insensible aux accents : « Soubre » → Soubré, « Duekoue » → Duékoué) puis l'affiche sous « Articles liés ».
+- Manques confirmés : 8 blocs par fiche, aucun paragraphe de relief, de quartier ou d'équipement ; aucune couverture.
+
+**Fait — contenu**
+- `database/data/cities-details.php` (nouveau) : deux sections par ville, « Relief et climat » et « Quartiers et équipements » — relief, climat, quartiers, marché et équipements, sans chiffre inventé. Le seeder les fusionne aux blocs de `cities.php` (chaque fiche passe de 8 à 14 blocs).
+- Quand un détail local n'est pas vérifiable, la section décrit l'organisation générale (un chef-lieu, un marché central, un centre de santé de référence) plutôt que d'inventer un chiffre.
+
+**Fait — images**
+- `build-article-images.py` étendu à 24 villes : fichier, auteur, licence et page source relus un par un sur Wikimedia Commons, puis écrits dans `article-images.php` (75 entrées, 24 couvertures de villes). Les 24 URL répondent 200.
+- `articles:attach-images` pose l'adresse, le texte alternatif, le crédit, la licence et la page source. Le panneau éditorial gagne les champs **Licence** et **Page source de l'image** (le crédit existait déjà) : l'attribution survit désormais à une modification depuis `/admin`.
+
+**Fait — série éditoriale**
+- Migration `add_series_to_articles` : colonne `series` (nullable, indexée). `CityArticleSeeder` marque ses fiches `series = 'villes'` ; il crée les fiches absentes et rafraîchit **seulement** celles de la série. Un article écrit à la main (Grand-Bassam) n'est jamais réécrit, et la date de publication d'origine est conservée lors d'un rafraîchissement.
+
+**Vérifié**
+- `composer test` : **111 tests, 1 636 assertions** (+3 : sections détaillées présentes sur les 34 fiches, rafraîchissement limité à la série sans changer la date de publication, crédit/licence/page source enregistrés depuis le panneau).
+- `pint --test` propre après `composer format` ; `phpstan` sans erreur.
+- Aucun fichier Flutter touché : les 46 tests de l'application restent la référence.
+
+**Mise en ligne**
+- Serveur : `git pull --ff-only`, `php artisan migrate --force`, `php artisan db:seed --class=CityArticleSeeder --force` (rafraîchit les 34 fiches de la série), `php artisan articles:attach-images`, puis `config:cache` et `route:cache`.
+
+**Limites**
+- Dix villes n'ont aucune photo libre réutilisable sur Commons (Agnibilékrou, Bloléquin, Bonon, Buyo, Lakota, Méagui, Oumé, Séguéla, Sinfra, Tengréla) : pas de carte ni de portrait à la place, la fiche reste sans image jusqu'à une photo sous licence libre.
+- Les sections restent générales là où aucune source ne documente le détail local ; la relecture éditoriale humaine avant ouverture publique reste à faire.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

@@ -422,4 +422,196 @@ return [
         'page' => 'https://commons.wikimedia.org/wiki/File:Yamoussoukro_panorama.jpg',
     ],
 
+    'abengourou' => [
+        'url' => 'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dd/RCI-Abengourou-Cour_Royale_de_l%27Ind%C3%A9ni%C3%A9.jpg/1280px-RCI-Abengourou-Cour_Royale_de_l%27Ind%C3%A9ni%C3%A9.jpg',
+        'alt' => 'La cour royale de l\'Indénié, à Abengourou.',
+        'credit' => 'WILLAV-FR',
+        'license' => 'CC BY-SA 4.0',
+        'page' => 'https://commons.wikimedia.org/wiki/File:RCI-Abengourou-Cour_Royale_de_l%27Ind%C3%A9ni%C3%A9.jpg',
+    ],
+
+    'aboisso' => [
+        'url' => 'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fe/Pousseur_de_wotro_02.jpg/1280px-Pousseur_de_wotro_02.jpg',
+        'alt' => 'Un pousseur de wotro sur la lagune, à Aboisso.',
+        'credit' => 'Modjou',
+        'license' => 'CC BY-SA 4.0',
+        'page' => 'https://commons.wikimedia.org/wiki/File:Pousseur_de_wotro_02.jpg',
+    ],
+
+    'adzope' => [
+        'url' => 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/73/Le_clocher_de_la_mission_catholique_d%27Adzop%C3%A9.jpg/1280px-Le_clocher_de_la_mission_catholique_d%27Adzop%C3%A9.jpg',
+        'alt' => 'Le clocher de la mission catholique d\'Adzopé.',
+        'credit' => 'Didierwiki',
+        'license' => 'CC BY-SA 4.0',
+        'page' => 'https://commons.wikimedia.org/wiki/File:Le_clocher_de_la_mission_catholique_d%27Adzop%C3%A9.jpg',
+    ],
+
+    'agboville' => [
+        'url' => 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/75/La_Mairie_d%E2%80%99Agboville_04.jpg/1280px-La_Mairie_d%E2%80%99Agboville_04.jpg',
+        'alt' => 'La mairie d\'Agboville.',
+        'credit' => 'Blessingedi76',
+        'license' => 'CC0',
+        'page' => 'https://commons.wikimedia.org/wiki/File:La_Mairie_d%E2%80%99Agboville_04.jpg',
+    ],
+
+    'bondoukou' => [
+        'url' => 'https://upload.wikimedia.org/wikipedia/commons/3/3c/Bondoukou_Moske_ap_001.jpg',
+        'alt' => 'Une mosquée en terre de Bondoukou.',
+        'credit' => 'Slav4|Ariel Palmon',
+        'license' => 'CC BY-SA 3.0',
+        'page' => 'https://commons.wikimedia.org/wiki/File:Bondoukou_Moske_ap_001.jpg',
+    ],
+
+    'bouafle' => [
+        'url' => 'https://upload.wikimedia.org/wikipedia/commons/1/11/Mairie_de_Bouafl%C3%A9.jpg',
+        'alt' => 'La mairie de Bouaflé.',
+        'credit' => 'Attreman',
+        'license' => 'CC BY-SA 4.0',
+        'page' => 'https://commons.wikimedia.org/wiki/File:Mairie_de_Bouafl%C3%A9.jpg',
+    ],
+
+    'bouna' => [
+        'url' => 'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f8/Pr%C3%A9fecture_de_Bouna_en_2026_01.jpg/1280px-Pr%C3%A9fecture_de_Bouna_en_2026_01.jpg',
+        'alt' => 'La préfecture de Bouna.',
+        'credit' => 'Dadrik',
+        'license' => 'CC BY-SA 4.0',
+        'page' => 'https://commons.wikimedia.org/wiki/File:Pr%C3%A9fecture_de_Bouna_en_2026_01.jpg',
+    ],
+
+    'boundiali' => [
+        'url' => 'https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a4/RueBoundiali.jpg/1280px-RueBoundiali.jpg',
+        'alt' => 'Une rue de Boundiali.',
+        'credit' => 'Bound8',
+        'license' => 'CC BY-SA 3.0',
+        'page' => 'https://commons.wikimedia.org/wiki/File:RueBoundiali.jpg',
+    ],
+
+    'dabou' => [
+        'url' => 'https://upload.wikimedia.org/wikipedia/commons/0/05/Fort_Faidherbe_-_Dabou_-_C%C3%B4te_d%27Ivoire.jpg',
+        'alt' => 'Le fort Faidherbe, à Dabou.',
+        'credit' => 'Wisi eu',
+        'license' => 'CC BY-SA 4.0',
+        'page' => 'https://commons.wikimedia.org/wiki/File:Fort_Faidherbe_-_Dabou_-_C%C3%B4te_d%27Ivoire.jpg',
+    ],
+
+    'daloa' => [
+        'url' => 'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f2/Pr%C3%A9fecture_de_Daloa.jpg/1280px-Pr%C3%A9fecture_de_Daloa.jpg',
+        'alt' => 'La préfecture de Daloa.',
+        'credit' => 'Konan N\'da N\'dri',
+        'license' => 'CC BY-SA 4.0',
+        'page' => 'https://commons.wikimedia.org/wiki/File:Pr%C3%A9fecture_de_Daloa.jpg',
+    ],
+
+    'danane' => [
+        'url' => 'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ef/Pont_entre_Danan%C3%A9_et_Man_%28C%C3%B4te_d%27Ivoire%29_-_btv1b10120161v_%281_of_2%29.jpg/1280px-Pont_entre_Danan%C3%A9_et_Man_%28C%C3%B4te_d%27Ivoire%29_-_btv1b10120161v_%281_of_2%29.jpg',
+        'alt' => 'Un pont sur la route entre Danané et Man, photographié au début du XXe siècle.',
+        'credit' => '',
+        'license' => 'Public domain',
+        'page' => 'https://commons.wikimedia.org/wiki/File:Pont_entre_Danan%C3%A9_et_Man_(C%C3%B4te_d%27Ivoire)_-_btv1b10120161v_(1_of_2).jpg',
+    ],
+
+    'daoukro' => [
+        'url' => 'https://upload.wikimedia.org/wikipedia/commons/d/d8/Daoukro_Prefecture_de_la_ville.jpg',
+        'alt' => 'La préfecture de Daoukro.',
+        'credit' => 'Mr2KM',
+        'license' => 'CC BY-SA 4.0',
+        'page' => 'https://commons.wikimedia.org/wiki/File:Daoukro_Prefecture_de_la_ville.jpg',
+    ],
+
+    'divo' => [
+        'url' => 'https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/La_place_de_la_r%C3%A9conciliation_de_la_ville_de_Divo.jpg/1280px-La_place_de_la_r%C3%A9conciliation_de_la_ville_de_Divo.jpg',
+        'alt' => 'La place de la réconciliation, à Divo.',
+        'credit' => 'Jean-Luc ADON',
+        'license' => 'CC0',
+        'page' => 'https://commons.wikimedia.org/wiki/File:La_place_de_la_r%C3%A9conciliation_de_la_ville_de_Divo.jpg',
+    ],
+
+    'duekoue' => [
+        'url' => 'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/96/Du%C3%A9kou%C3%A9%2C_Ouest_de_la_C%C3%B4te_d%27Ivoire.JPG/1280px-Du%C3%A9kou%C3%A9%2C_Ouest_de_la_C%C3%B4te_d%27Ivoire.JPG',
+        'alt' => 'Une vue de Duékoué, dans l\'ouest de la Côte d\'Ivoire.',
+        'credit' => 'Gillian Zouzoukov',
+        'license' => 'CC BY-SA 3.0',
+        'page' => 'https://commons.wikimedia.org/wiki/File:Du%C3%A9kou%C3%A9,_Ouest_de_la_C%C3%B4te_d%27Ivoire.JPG',
+    ],
+
+    'ferkessedougou' => [
+        'url' => 'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e3/Agent_de_l%27%C3%A9tat_civil_%28Mairie_de_Ferkess%C3%A9dougou%2C_C%C3%B4te_d%27Ivoire%29_02.jpg/1280px-Agent_de_l%27%C3%A9tat_civil_%28Mairie_de_Ferkess%C3%A9dougou%2C_C%C3%B4te_d%27Ivoire%29_02.jpg',
+        'alt' => 'Le service d\'état civil de la mairie de Ferkessédougou.',
+        'credit' => 'Papischou',
+        'license' => 'CC BY-SA 4.0',
+        'page' => 'https://commons.wikimedia.org/wiki/File:Agent_de_l%27%C3%A9tat_civil_(Mairie_de_Ferkess%C3%A9dougou,_C%C3%B4te_d%27Ivoire)_02.jpg',
+    ],
+
+    'gagnoa' => [
+        'url' => 'https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4f/Pharmaciegagnoa.JPG/1280px-Pharmaciegagnoa.JPG',
+        'alt' => 'Une pharmacie à Gagnoa.',
+        'credit' => 'Zenman',
+        'license' => 'CC BY-SA 3.0',
+        'page' => 'https://commons.wikimedia.org/wiki/File:Pharmaciegagnoa.JPG',
+    ],
+
+    'guiglo' => [
+        'url' => 'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f6/Pontnzo.jpg/1280px-Pontnzo.jpg',
+        'alt' => 'Un pont sur le N\'Zo, près de Guiglo.',
+        'credit' => 'Zenman',
+        'license' => 'CC BY-SA 3.0',
+        'page' => 'https://commons.wikimedia.org/wiki/File:Pontnzo.jpg',
+    ],
+
+    'issia' => [
+        'url' => 'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6b/H%C3%B4tel_le_Versant%2C_Issia.jpg/1280px-H%C3%B4tel_le_Versant%2C_Issia.jpg',
+        'alt' => 'L\'hôtel Le Versant, à Issia.',
+        'credit' => 'Sarmate09',
+        'license' => 'CC BY-SA 4.0',
+        'page' => 'https://commons.wikimedia.org/wiki/File:H%C3%B4tel_le_Versant,_Issia.jpg',
+    ],
+
+    'katiola' => [
+        'url' => 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2a/MosqueeKatiola.JPG/1280px-MosqueeKatiola.JPG',
+        'alt' => 'La mosquée de Katiola.',
+        'credit' => 'Zenman',
+        'license' => 'CC BY-SA 3.0',
+        'page' => 'https://commons.wikimedia.org/wiki/File:MosqueeKatiola.JPG',
+    ],
+
+    'sikensi' => [
+        'url' => 'https://upload.wikimedia.org/wikipedia/commons/8/81/H%C3%B4tel_communal_de_Sikensi.jpg',
+        'alt' => 'L\'hôtel communal de Sikensi.',
+        'credit' => 'Amemou',
+        'license' => 'CC BY-SA 4.0',
+        'page' => 'https://commons.wikimedia.org/wiki/File:H%C3%B4tel_communal_de_Sikensi.jpg',
+    ],
+
+    'soubre' => [
+        'url' => 'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/eb/Paroisse_Saints_Martyrs_de_l%27Ouganda_de_Soubr%C3%A9_1.JPG/1280px-Paroisse_Saints_Martyrs_de_l%27Ouganda_de_Soubr%C3%A9_1.JPG',
+        'alt' => 'La paroisse des Saints-Martyrs-de-l\'Ouganda, à Soubré.',
+        'credit' => 'Cyriac Gbogou',
+        'license' => 'CC BY-SA 4.0',
+        'page' => 'https://commons.wikimedia.org/wiki/File:Paroisse_Saints_Martyrs_de_l%27Ouganda_de_Soubr%C3%A9_1.JPG',
+    ],
+
+    'toumodi' => [
+        'url' => 'https://upload.wikimedia.org/wikipedia/commons/4/4d/1904_Toumodi._Le_march%C3%A9.jpg',
+        'alt' => 'Le marché de Toumodi en 1904.',
+        'credit' => 'Pierre Citerne',
+        'license' => 'CC0',
+        'page' => 'https://commons.wikimedia.org/wiki/File:1904_Toumodi._Le_march%C3%A9.jpg',
+    ],
+
+    'vavoua' => [
+        'url' => 'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f6/Enr%C3%A9e_Pr%C3%A9fecture_Vavoua.JPG/1280px-Enr%C3%A9e_Pr%C3%A9fecture_Vavoua.JPG',
+        'alt' => 'L\'entrée de la préfecture de Vavoua.',
+        'credit' => 'Zenman',
+        'license' => 'CC BY-SA 3.0',
+        'page' => 'https://commons.wikimedia.org/wiki/File:Enr%C3%A9e_Pr%C3%A9fecture_Vavoua.JPG',
+    ],
+
+    'zouan-hounien' => [
+        'url' => 'https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5f/Zouan-Hounien_-_Panorama_dalla_gendarmeria_-_2026_Piergiorgio_Mariniello.jpg/1280px-Zouan-Hounien_-_Panorama_dalla_gendarmeria_-_2026_Piergiorgio_Mariniello.jpg',
+        'alt' => 'Panorama de Zouan-Hounien vu depuis la gendarmerie.',
+        'credit' => 'Piergiorgio Mariniello',
+        'license' => 'CC BY 4.0',
+        'page' => 'https://commons.wikimedia.org/wiki/File:Zouan-Hounien_-_Panorama_dalla_gendarmeria_-_2026_Piergiorgio_Mariniello.jpg',
+    ],
+
 ];

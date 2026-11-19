@@ -107,6 +107,8 @@ class ArticleController extends Controller
             'cover_image_url' => $request->input('cover_image_url') ?: null,
             'cover_image_alt' => $request->input('cover_image_alt') ?: null,
             'cover_image_credit' => $request->input('cover_image_credit') ?: null,
+            'cover_image_license' => $request->input('cover_image_license') ?: null,
+            'cover_image_source_url' => $request->input('cover_image_source_url') ?: null,
             'author_id' => $user->getKey(),
             'lock_version' => 0,
             'current_version' => 0,
@@ -203,6 +205,8 @@ class ArticleController extends Controller
             'cover_image_url' => $request->input('cover_image_url') ?: null,
             'cover_image_alt' => $request->input('cover_image_alt') ?: null,
             'cover_image_credit' => $request->input('cover_image_credit') ?: null,
+            'cover_image_license' => $request->input('cover_image_license') ?: null,
+            'cover_image_source_url' => $request->input('cover_image_source_url') ?: null,
         ]);
 
         // Le slug reste stable une fois l'article sorti du brouillon : les

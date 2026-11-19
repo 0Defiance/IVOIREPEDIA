@@ -165,6 +165,32 @@ it('remplace les sources à l’enregistrement, dans l’ordre saisi', function 
     expect($titles)->toBe(['Première source', 'Deuxième source']);
 });
 
+it('enregistre le credit, la licence et la page source de la couverture', function () {
+    $editor = User::factory()->editor()->create();
+    $article = Article::factory()->create();
+
+    $this->actingAs($editor)
+        ->put(route('admin.articles.update', $article), [
+            'title' => $article->title,
+            'summary' => $article->summary,
+            'body' => 'Un corps suffisamment long pour passer la validation.',
+            'type' => $article->type->value,
+            'category_id' => $article->category_id,
+            'cover_image_url' => 'https://example.test/couverture.jpg',
+            'cover_image_alt' => 'Une vue de la ville.',
+            'cover_image_credit' => 'Aman ADO',
+            'cover_image_license' => 'CC BY-SA 4.0',
+            'cover_image_source_url' => 'https://commons.wikimedia.org/wiki/File:Exemple.jpg',
+        ])
+        ->assertRedirect();
+
+    $article->refresh();
+
+    expect($article->cover_image_credit)->toBe('Aman ADO')
+        ->and($article->cover_image_license)->toBe('CC BY-SA 4.0')
+        ->and($article->cover_image_source_url)->toBe('https://commons.wikimedia.org/wiki/File:Exemple.jpg');
+});
+
 it('filtre les articles sans source ou sans image, et par catégorie', function () {
     $editor = User::factory()->editor()->create();
     $category = Category::factory()->create();

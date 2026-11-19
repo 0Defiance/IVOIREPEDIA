@@ -45,7 +45,7 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, EditorialAction> $actions
  */
 #[Fillable([
-    'title', 'slug', 'summary', 'content', 'infobox', 'type', 'status',
+    'title', 'slug', 'summary', 'content', 'infobox', 'type', 'series', 'status',
     'cover_image_url', 'cover_image_alt', 'cover_image_credit',
     'cover_image_license', 'cover_image_source_url',
     'lock_version', 'current_version',
