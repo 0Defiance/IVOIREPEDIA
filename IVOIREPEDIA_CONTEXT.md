@@ -86,7 +86,7 @@ Les documents ont été rédigés successivement. **En cas de contradiction, ce 
 ## 3. Périmètre
 
 ### 3.1 MVP (à construire maintenant)
-Site web **Flutter Web** · Inscription / connexion / vérification email / reset mot de passe · Création et édition d'articles (brouillon, auto-save) · Éditeur riche · Catégories, tags · Image de couverture · Références bibliographiques · Soumission → révision → approbation → publication · Historique des versions · Recherche simple · Pages publiques (accueil, article, catégorie, résultats) · Admin minimal (utilisateurs, catégories, file de validation) · SEO de base (limité : voir §17, risque R-09).
+Site web **Flutter Web** · Inscription / connexion / vérification email / reset mot de passe · Création et édition d'articles (brouillon, auto-save) · Éditeur riche · Catégories, tags · Image de couverture · Références bibliographiques · Soumission → révision → approbation → publication · Historique des versions · Recherche simple · Pages publiques (accueil, article, catégorie, résultats) · Admin minimal (utilisateurs, catégories, file de validation) · SEO de base (pages d'articles pré-rendues et sitemap ; le reste est côté client, voir §17 R-09).
 
 ### 3.2 Hors MVP (ne pas implémenter sans demande)
 Elasticsearch / Meilisearch · Publication Android/iOS (le code Flutter est partagé d'emblée ; la cible mobile vient **après validation du web**, cf. ADR-001) · API publique · Multilingue (langues locales) · IA de modération · Cartes interactives · Commentaires · 2FA · OAuth Google/Facebook · Export chercheurs · Temps réel (WebSocket) · Kubernetes · Microservices · Redis (hors rate-limiting).
@@ -919,7 +919,7 @@ Durées **indicatives** pour un développeur seul à temps partiel ; ajuster sel
 - [ ] Accueil (récents / mis en avant), page article (infobox, références, tags)
 - [ ] Pages catégorie (arborescence) et tag
 - [ ] Recherche simple + page de résultats paginée
-- [ ] Navigation `go_router` avec URLs propres ; métadonnées de base via `web/index.html` (limitation SPA — cf. §17 R-09)
+- [x] Navigation `go_router` avec URLs propres ; pages d'articles pré-rendues côté Laravel (`/articles/{slug}`), Open Graph et `sitemap.xml` (séance 44) — les autres pages restent côté client (§17 R-09)
 - [ ] Responsive mobile-first
 - **Critère de sortie** : un visiteur anonyme trouve et lit un article publié depuis un mobile.
 
@@ -1090,7 +1090,7 @@ jobs:
 | R-06 | Plateforme vide au lancement | Moyenne | ≥ 30 articles de qualité avant ouverture ; recruter 2-3 éditeurs de confiance |
 | R-07 | Qualité éditoriale / vandalisme | Moyenne | Workflow strict, pas de modification directe des articles publiés par les contributeurs |
 | R-08 | Fragmentation moteur MySQL/MariaDB (XAMPP) | Moyenne | Migrations sans fonctions propriétaires, CI sur MySQL, moteur réel consigné dans INSTALLATION |
-| R-09 | **SEO limité (Flutter Web = SPA côté client)** | Moyenne | Pages publiques sans rendu serveur. URLs propres en place depuis la version 1.8 (`/statistiques`, `/articles/{slug}`, sans dièse, servies à la racine du domaine) et métadonnées dans `web/index.html` ; réévaluer un prérendu/SSR statique en V1 si la visibilité devient critique |
+| R-09 | **SEO partiellement limité (Flutter Web = SPA côté client)** | Moyenne | Depuis la séance 44, `/articles/{slug}` est pré-rendu par Laravel (texte, Open Graph, canonique et 404 HTML) et `/sitemap.xml` est servi ; les autres pages (accueil, catégories, lieux, statistiques, sources) restent rendues par Flutter. URLs propres depuis la version 1.8, à la racine du domaine. Poursuivre le pré-rendu des pages d'index si la visibilité le demande |
 | R-10 | Dépendance à l'hébergeur (Alwaysdata mutualisé) | Moyenne | Code portable (MySQL standard, médias derrière un `MediaService`), dépôt Git = source de vérité permettant de redéployer ailleurs ; limites assumées dans `docs/DEPLOIEMENT.md` §7 (ADR-008) |
 
 ### 17.2 Questions ouvertes (à trancher avant la bêta publique)

@@ -1212,6 +1212,37 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 44 — 19 novembre 2026 · Pré-rendu des articles, partage et sitemap
+
+**Demande**
+- Enchaîner sur l’étape 2 : rendre les articles lisibles en HTML côté serveur, fournir des cartes de partage (Open Graph) et un `sitemap.xml`, avec tests et documentation.
+
+**Le défaut**
+- Toutes les adresses non fichiers recevaient `index.html`, l’application Flutter dessinée en canvas : un moteur de recherche ou un aperçu WhatsApp/X/Facebook ne trouvait ni titre, ni texte, ni image. `/sitemap.xml` n’existait pas et `robots.txt` n’indiquait aucun plan du site.
+
+**Fait**
+- `App\Support\DeltaHtml` : rendu serveur du Delta Quill, sans jamais stocker de HTML. Le texte est échappé avant d’être enveloppé dans nos balises ; les blocs suivent la lecture Flutter (chapeau, titres, listes, citations). Les titres reçoivent l’ancre de `sectionAnchor` (`Histoire ancienne` → `histoire-ancienne`) et les appels `[n]` deviennent des liens vers `#reference-n`.
+- `GET /articles/{slug}` (`ArticlePageController`, vues `site/article`, `site/missing` et `site/layout`) : titre, chapô, couverture créditée, sommaire, contenu, notes et références, catégories et licence CC BY-SA 4.0. Un article non publié, programmé ou inconnu renvoie une page 404 en HTML.
+- Métadonnées de partage : `og:type=article`, `og:title`, `og:description`, `og:url`, `og:image` (couverture absolue) et `og:image:alt`, `article:published_time`, `article:modified_time`, `article:section`, `article:tag`, `twitter:card` (`summary_large_image` avec couverture, `summary` sinon), lien canonique et `lang="fr"`.
+- `GET /sitemap.xml` : pages fixes, catégories contenant au moins un article publié, articles publiés (`lastmod` = date de publication) et fiches de lieux du recensement, sans doublon. `robots.txt` pointe désormais vers le sitemap.
+- `public/.htaccess` : `/articles/{slug}` et `/sitemap.xml` sont traités par Laravel ; tout le reste continue de recevoir l’application Flutter. Les liens internes et la navigation client ne changent pas : seul un chargement direct (partage, rechargement, crawler) reçoit le HTML pré-rendu.
+- `docs/DEPLOIEMENT.md` : procédure et vérifications de la page pré-rendue et du sitemap ; `IVOIREPEDIA_CONTEXT.md` §17 : R-09 passe de « SEO limité » à « SEO partiellement limité ».
+
+**Vérifié**
+- `composer test` : **136 tests, 1 755 assertions**. Sept nouveaux cas : contenu et ancre de section avec appel de note, Open Graph/canonique/couverture, échappement d’un `<script>` inséré dans le contenu, listes et citations, 404 pour brouillon/programmé/inconnu, sitemap complet et XML valide, exclusion des articles programmés et du panneau.
+- `composer format:check` et `composer analyse` propres ; aucune modification Flutter (les 51 tests de l’application restent verts, la navigation interne n’a pas bougé).
+
+**Mise en ligne**
+- `git pull --ff-only`, `php artisan config:cache && route:cache && view:cache` ; aucun build Flutter n’est nécessaire.
+- Vérifications sur la production : page article en `200` avec ses balises `og:*` et son texte dans le source, `sitemap.xml` en `application/xml`, `robots.txt` annonçant le sitemap, et toujours `200` sur l’accueil et les autres routes de l’application.
+
+**Reste**
+- Seules les pages d’articles sont pré-rendues : accueil, catégories, lieux, statistiques et sources restent rendus par Flutter (R-09 partiellement levé).
+- Pas encore de données structurées JSON-LD (`Article`) ni de sitemap d’images : le partage et l’indexation reposent sur Open Graph et le HTML.
+- `robots.txt` fige l’adresse de production ; un changement de domaine exige de le mettre à jour.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

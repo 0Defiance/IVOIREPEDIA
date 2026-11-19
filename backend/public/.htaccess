@@ -23,14 +23,20 @@
     # API (et administration Filament) : requêtes traitées par Laravel.
     RewriteRule ^(api|admin|livewire|sanctum|up)(/|$) index.php [L]
 
+    # Pages d'articles pré-rendues et sitemap : Laravel produit le HTML et le
+    # XML, pour que les moteurs de recherche et les cartes de partage voient
+    # le contenu au lieu de la coquille Flutter.
+    RewriteRule ^articles/[^/]+$ index.php [L]
+    RewriteRule ^sitemap\.xml$ index.php [L]
+
     # Fichiers réels : assets Flutter, polices, CanvasKit, manifeste.
     RewriteCond %{REQUEST_FILENAME} -f [OR]
     RewriteCond %{REQUEST_FILENAME} -d
     RewriteRule ^ - [L]
 
     # Toute autre adresse est une route de l'application (/statistiques,
-    # /histoires, /articles/{slug}...) : elle reçoit la page HTML du bootstrap,
-    # qui reconstruit l'écran à partir de l'URL.
+    # /histoires, /categories/{slug}...) : elle reçoit la page HTML du
+    # bootstrap, qui reconstruit l'écran à partir de l'URL.
     RewriteRule ^ index.html [L]
 </IfModule>
 

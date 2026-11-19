@@ -233,7 +233,12 @@ les routes s'ouvrent directement (`/statistiques`, `/histoires`,
 
 > Les adresses utilisent la stratégie d'URL par chemin (`usePathUrlStrategy`) :
 > pas de `#`, des liens partageables et lisibles. Le contenu reste rendu côté
-> client (limitation R-09, CONTEXT §17).
+> client sur la plupart des pages (limitation R-09, CONTEXT §17). Les articles
+> font exception : `public/.htaccess` envoie `/articles/{slug}` et
+> `/sitemap.xml` à Laravel, qui renvoie un HTML complet (texte, Open Graph,
+> canonique) et le plan du site. Un partage ou un rechargement d'une page
+> article affiche donc la version pré-rendue ; la navigation interne à
+> l'application reste inchangée.
 
 ---
 
@@ -286,7 +291,7 @@ git pull --ff-only
 cd backend
 composer install --no-dev --optimize-autoloader
 php artisan migrate --force
-php artisan config:cache && php artisan route:cache
+php artisan config:cache && php artisan route:cache && php artisan view:cache
 ```
 
 `--ff-only` échoue volontairement si le serveur a divergé : c'est le signal qu'un fichier a été modifié à la main en production.
@@ -304,6 +309,9 @@ php artisan config:cache && php artisan route:cache
 | Base connectée | `php artisan migrate:status` en SSH | Migrations listées, aucune « Pending » |
 | Panneau admin | `https://ivoirepedia.alwaysdata.net/admin` | Écran de connexion Filament (à partir du Sprint 5) |
 | Email | `Mail::raw(...)` en tinker | Message reçu, expéditeur validé |
+| Article pré-rendu | `curl -s https://ivoirepedia.alwaysdata.net/articles/<slug> \| grep -E 'og:title\|canonical'` | Balises présentes, texte de l'article dans le HTML |
+| Sitemap | `curl -sI https://ivoirepedia.alwaysdata.net/sitemap.xml` | `200`, `application/xml` |
+| Robots | `curl -s https://ivoirepedia.alwaysdata.net/robots.txt` | Ligne `Sitemap:` présente |
 | Journaux | `backend/storage/logs/laravel.log` en SSH | Aucune erreur 500 |
 
 ---

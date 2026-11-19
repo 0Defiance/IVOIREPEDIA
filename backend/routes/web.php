@@ -8,6 +8,8 @@ use App\Http\Controllers\Admin\MessageController;
 use App\Http\Controllers\Admin\SessionController;
 use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Site\ArticlePageController;
+use App\Http\Controllers\Site\SitemapController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,6 +24,20 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::redirect('/', '/admin');
+
+/*
+|--------------------------------------------------------------------------
+| Pages publiques pré-rendues
+|--------------------------------------------------------------------------
+|
+| Apache envoie ces deux adresses à Laravel (voir public/.htaccess) : le
+| HTML et le XML contiennent le contenu réel, ce que la coquille Flutter ne
+| peut pas offrir aux moteurs de recherche ni aux cartes de partage.
+|
+*/
+
+Route::get('/articles/{slug}', ArticlePageController::class)->name('site.article');
+Route::get('/sitemap.xml', SitemapController::class)->name('site.sitemap');
 
 Route::prefix('admin')->name('admin.')->group(function (): void {
     Route::middleware('guest')->group(function (): void {
