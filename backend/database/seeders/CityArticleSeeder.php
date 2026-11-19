@@ -16,10 +16,11 @@ use Illuminate\Support\Str;
  * Série « Villes de Côte d'Ivoire » : une fiche par ville du répertoire
  * public (`/lieux/{slug}`) qui n'avait pas encore d'article.
  *
- * Le seeder est idempotent : relancé, il met à jour les fiches existantes par
- * leur slug au lieu de les dupliquer. Il rattache chaque ville à la catégorie
- * « Géographie », à l'étiquette « Ville », et à la référence officielle du
- * RGPH 2021 — celle dont viennent les effectifs cités dans les textes.
+ * Le seeder ne crée que les fiches absentes : un article qui existe déjà, quel
+ * que soit son auteur, n'est jamais réécrit — la série complète le répertoire,
+ * elle ne remplace pas le travail éditorial. Relancé, il ne fait donc rien.
+ * Chaque fiche reçoit la catégorie « Géographie », l'étiquette « Ville » et la
+ * référence officielle du RGPH 2021, celle d'où viennent les effectifs cités.
  *
  * Règle éditoriale : rien d'inventé. Les chiffres sont ceux du recensement, les
  * autres affirmations restent générales et prudentes ; une fiche ne raconte pas
@@ -52,10 +53,21 @@ class CityArticleSeeder extends Seeder
         );
         $tag = Tag::query()->updateOrCreate(['slug' => 'ville'], ['name' => 'Ville']);
 
+        $created = 0;
+        $existing = 0;
+
         foreach (array_values($cities) as $index => $city) {
-            $article = Article::query()->updateOrCreate(
-                ['slug' => Str::slug((string) $city['name'])],
+            $slug = Str::slug((string) $city['name']);
+
+            if (Article::withTrashed()->where('slug', $slug)->exists()) {
+                $existing++;
+
+                continue;
+            }
+
+            $article = Article::query()->create(
                 [
+                    'slug' => $slug,
                     'title' => $city['name'],
                     'summary' => $city['summary'],
                     'content' => $this->delta($city['blocks']),
@@ -74,6 +86,8 @@ class CityArticleSeeder extends Seeder
                 ],
             );
 
+            $created++;
+
             $article->tags()->sync([$tag->id]);
             $article->references()->delete();
             $article->references()->create([
@@ -82,6 +96,12 @@ class CityArticleSeeder extends Seeder
                 'accessed_at' => now()->toDateString(),
             ]);
         }
+
+        $this->command?->info(sprintf(
+            '%d fiche(s) créée(s), %d déjà présente(s) laissée(s) intacte(s).',
+            $created,
+            $existing,
+        ));
     }
 
     /**

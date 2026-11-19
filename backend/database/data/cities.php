@@ -335,23 +335,6 @@ return [
         ],
     ],
 
-    'grand-bassam' => [
-        'name' => 'Grand-Bassam',
-        'population' => 124567,
-        'summary' => 'Ancienne capitale coloniale et ville balnéaire, Grand-Bassam est inscrite au patrimoine mondial pour son quartier historique.',
-        'blocks' => [
-            ['p', "Grand-Bassam se trouve sur le littoral, à une quarantaine de kilomètres d'Abidjan, entre l'océan et la lagune Ouladine. La ville est le chef-lieu du département du même nom, dans la région du Sud-Comoé."],
-            ['h2', 'La première capitale'],
-            ['p', "Grand-Bassam a été la capitale de la Côte d'Ivoire coloniale de 1893 à 1900, avant que la fièvre jaune ne pousse l'administration à gagner Bingerville. Il reste de cette époque un quartier colonial dessiné en damier, avec ses maisons à véranda, son palais de justice, sa douane et ses entrepôts."],
-            ['p', "Le quartier historique a été inscrit au patrimoine mondial de l'UNESCO en 2012. Sa restauration, encore inachevée, butte sur l'érosion côtière qui ronge le front de mer et sur la fragilité des bâtiments en banco et en bois."],
-            ['h2', 'Une ville de bord de mer'],
-            ['p', "La plage, les restaurants et les hôtels font de Grand-Bassam une destination de week-end pour les Abidjanais. L'artisanat — pagnes, sculptures, vannerie — occupe les boutiques du centre, et la pêche reste une activité importante des villages lagunaires."],
-            ['p', 'La ville accueille aussi des institutions nationales et des événements culturels, dont le festival de danse et les commémorations du patrimoine.'],
-            ['h2', 'Démographie'],
-            ['p', "Le recensement de 2021 compte 124 567 habitants. La population augmente avec la proximité d'Abidjan et le développement du tourisme."],
-        ],
-    ],
-
     'blolequin' => [
         'name' => 'Bloléquin',
         'population' => 123133,

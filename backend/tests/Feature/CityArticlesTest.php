@@ -3,6 +3,8 @@
 use App\Enums\ArticleStatus;
 use App\Enums\ArticleType;
 use App\Models\Article;
+use App\Models\Category;
+use App\Models\User;
 use Database\Seeders\CategorySeeder;
 use Database\Seeders\CityArticleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -73,15 +75,48 @@ it('reste idempotent quand on le relance', function () {
         ->and(Article::query()->where('slug', 'katiola')->firstOrFail()->references)->toHaveCount(1);
 });
 
+it('ne réécrit jamais un article déjà publié sur la même ville', function () {
+    $this->seed(CategorySeeder::class);
+
+    $category = Category::query()->where('slug', 'geographie')->firstOrFail();
+    $author = User::query()->create([
+        'name' => 'Rédaction existante',
+        'email' => 'existante@ivoirepedia.test',
+        'password_hash' => 'hash',
+        'role' => 'EDITOR',
+        'email_verified_at' => now(),
+    ]);
+    $existing = Article::query()->create([
+        'title' => 'Daloa',
+        'slug' => 'daloa',
+        'summary' => 'Fiche écrite à la main, plus détaillée que la série.',
+        'content' => ['ops' => [['insert' => "Texte éditorial existant.\n"]]],
+        'type' => ArticleType::REGION,
+        'status' => ArticleStatus::PUBLISHED,
+        'author_id' => $author->id,
+        'category_id' => $category->id,
+        'published_at' => now()->subWeek(),
+    ]);
+
+    $this->seed(CityArticleSeeder::class);
+
+    $daloa = Article::query()->where('slug', 'daloa')->firstOrFail();
+
+    expect($daloa->id)->toBe($existing->id)
+        ->and($daloa->summary)->toBe('Fiche écrite à la main, plus détaillée que la série.')
+        ->and($daloa->plainText())->toBe('Texte éditorial existant.')
+        ->and(Article::query()->count())->toBe(count(cityData()));
+});
+
 it('sert chaque fiche sur l’API publique', function () {
     $this->seed(CategorySeeder::class);
     $this->seed(CityArticleSeeder::class);
 
-    $this->getJson('/api/v1/articles/grand-bassam')
+    $this->getJson('/api/v1/articles/katiola')
         ->assertOk()
-        ->assertJsonPath('data.slug', 'grand-bassam')
-        ->assertJsonPath('data.title', 'Grand-Bassam')
-        ->assertJsonPath('data.infobox.population', 124567)
+        ->assertJsonPath('data.slug', 'katiola')
+        ->assertJsonPath('data.title', 'Katiola')
+        ->assertJsonPath('data.infobox.population', 90641)
         ->assertJsonPath('data.type_label', 'Territoire');
 
     $list = $this->getJson('/api/v1/articles?limit=20')->assertOk();

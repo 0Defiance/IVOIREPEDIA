@@ -1087,19 +1087,24 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 - Intégrer une série d'articles détaillés sur les villes de Côte d'Ivoire.
 
 **Fait — périmètre**
-- Les 40 villes du répertoire public (`/lieux/:slug`, effectifs du RGPH 2021). Cinq avaient déjà leur article (Bouaké, Korhogo, Man, San-Pédro, Yamoussoukro) ; les **35 autres** reçoivent une fiche, du chef-lieu de région (Daloa, Gagnoa, Korhogo…) à la ville moyenne (Katiola, Toumodi, Sikensi).
+- Les 40 villes du répertoire public (`/lieux/:slug`, effectifs du RGPH 2021). Six avaient déjà leur article (Bouaké, Grand-Bassam, Korhogo, Man, San-Pédro, Yamoussoukro) ; les **34 autres** reçoivent une fiche, du chef-lieu de région (Daloa, Gagnoa, Soubré…) à la ville moyenne (Katiola, Toumodi, Sikensi).
 - Ce périmètre est celui que l'application sait déjà relier : chaque ville a une page `/lieux/:slug` alimentée par le recensement. Les ~200 communes du pays restent à couvrir.
 
 **Fait — contenu**
 - `backend/database/data/cities.php` : les données éditoriales, séparées du code du seeder — nom, effectif communal 2021, chapeau et 8 à 10 blocs (situation, histoire, économie, vie locale, démographie).
 - `backend/database/seeders/CityArticleSeeder.php` : publie chaque fiche en catégorie « Géographie », type Territoire, étiquette « Ville », infobox `CITY` + population + année du recensement, et une référence au document officiel du RGPH 2021 (ANStat) — la source dont viennent les effectifs cités.
-- Idempotent : `updateOrCreate` par slug, étiquettes synchronisées, références remplacées à chaque passage. Enregistré dans `DatabaseSeeder`, il peut aussi être lancé seul (`php artisan db:seed --class=CityArticleSeeder`).
+- Non destructif : il ne crée que les fiches absentes et ne touche jamais à un article existant, même relancé. Enregistré dans `DatabaseSeeder`, il peut aussi être lancé seul (`php artisan db:seed --class=CityArticleSeeder`).
+- Incident corrigé : le premier passage en production écrivait à l'aveugle et a écrasé l'article **Grand-Bassam** déjà publié. La fiche d'origine a été restaurée depuis `PublicContentSeeder` (texte, étiquettes, référence UNESCO) et un test verrouille désormais la règle : un article existant sur la même ville reste intact.
 - Rien d'inventé : les chiffres sont ceux du recensement ; l'histoire et l'économie restent générales plutôt que précises au hasard, et les épisodes sensibles (Duékoué et la crise de 2010-2011, le Sanwi) sont formulés avec prudence.
 
 **Vérifié**
-- `composer test` : **107 tests, 1 559 assertions** (+4 : une fiche publiée pour chaque ville du répertoire, infobox/source/étiquette de Daloa, idempotence, lecture d'une fiche par l'API publique).
+- `composer test` : **108 tests, 1 560 assertions** (+5 : une fiche publiée pour chaque ville du répertoire, infobox/source/étiquette de Daloa, idempotence, article existant jamais réécrit, lecture d'une fiche par l'API publique).
 - `pint --test` propre après `composer format` ; `phpstan` sans erreur.
 - Aucun fichier Flutter touché : les 46 tests de l'application restent la référence.
+
+**Mise en ligne**
+- Serveur : `git pull --ff-only`, `composer install --no-dev`, `php artisan db:seed --class=CityArticleSeeder --force`, puis `config:cache` et `route:cache`.
+- Le site compte **85 articles publiés** (51 + 34) ; `/api/v1/articles/katiola`, `/daloa`, `/grand-bassam` répondent 200. La fiche d'origine de Grand-Bassam a été restaurée en base à partir de `PublicContentSeeder`, et le seeder corrigé n'écrit plus que des fiches absentes.
 
 **Limites**
 - Fiches de synthèse : ni relief, ni quartiers, ni équipements ville par ville, et aucune image de couverture (le panneau ne gère pas encore les crédits d'image).
