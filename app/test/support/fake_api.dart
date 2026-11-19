@@ -49,6 +49,14 @@ class FakeIvoirepediaApi implements IvoirepediaApi {
   }
 
   @override
+  Future<void> sendContactMessage({
+    required String message,
+    String? name,
+    String? email,
+    String? website,
+  }) async {}
+
+  @override
   Future<List<HistoryStory>> fetchHistory() async => const [];
 
   @override

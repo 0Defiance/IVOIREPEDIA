@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\V1\ArticleController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CategoryController;
+use App\Http\Controllers\Api\V1\ContactController;
 use App\Http\Controllers\Api\V1\HistoryController;
 use App\Http\Controllers\Api\V1\PlaceController;
 use App\Http\Controllers\Api\V1\SearchController;
@@ -74,4 +75,7 @@ Route::prefix('v1')->group(function () {
     // Recherche publique : plafonnée pour éviter le balayage de table (429).
     Route::middleware('throttle:60,1')->get('/search', SearchController::class);
     Route::middleware('throttle:120,1')->get('/search/suggest', SuggestController::class);
+
+    // Formulaire de contact : le message est stocké pour le panneau éditorial.
+    Route::middleware('throttle:5,1')->post('/contact', ContactController::class);
 });

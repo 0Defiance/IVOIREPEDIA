@@ -64,6 +64,16 @@ abstract interface class IvoirepediaApi {
   Future<List<SearchSuggestion>> suggest(String query);
 
   Future<SourceLibrary> fetchSources();
+
+  /// Envoie un message depuis la page « Contact ».
+  ///
+  /// [website] est le piège à robots : le champ reste vide pour un humain.
+  Future<void> sendContactMessage({
+    required String message,
+    String? name,
+    String? email,
+    String? website,
+  });
 }
 
 /// Client HTTP de l'API publique.
@@ -187,6 +197,21 @@ class HttpIvoirepediaApi implements IvoirepediaApi {
   }
 
   @override
+  Future<void> sendContactMessage({
+    required String message,
+    String? name,
+    String? email,
+    String? website,
+  }) async {
+    await _post('/contact', {
+      'message': message,
+      if (name != null && name.isNotEmpty) 'name': name,
+      if (email != null && email.isNotEmpty) 'email': email,
+      if (website != null && website.isNotEmpty) 'website': website,
+    });
+  }
+
+  @override
   Future<ArticleDetail> fetchArticle(String slug) async {
     final payload = await _get('/articles/$slug');
     final data = payload['data'] as Map<String, dynamic>?;
@@ -226,6 +251,72 @@ class HttpIvoirepediaApi implements IvoirepediaApi {
     }
 
     return jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
+  }
+
+  /// Envoi JSON : 201 pour une création, 422 pour un champ invalide.
+  Future<void> _post(String path, Map<String, dynamic> body) async {
+    final uri = Uri.parse('$_baseUrl$path');
+
+    late final http.Response response;
+    try {
+      response = await _client.post(
+        uri,
+        headers: const {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(body),
+      );
+    } on Exception {
+      throw const ApiException(
+        'Impossible de joindre IVOIREPEDIA. Vérifiez votre connexion.',
+      );
+    }
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return;
+    }
+
+    if (response.statusCode == 429) {
+      throw const ApiException(
+        'Trop de messages envoyés. Réessayez dans quelques minutes.',
+        statusCode: 429,
+      );
+    }
+
+    if (response.statusCode == 422) {
+      throw ApiException(_validationMessage(response), statusCode: 422);
+    }
+
+    throw ApiException(
+      'Le serveur a répondu ${response.statusCode}.',
+      statusCode: response.statusCode,
+    );
+  }
+
+  /// Message lisible tiré d'une réponse de validation Laravel.
+  String _validationMessage(http.Response response) {
+    try {
+      final data = jsonDecode(utf8.decode(response.bodyBytes));
+
+      if (data is Map<String, dynamic>) {
+        final errors = data['errors'];
+
+        if (errors is Map && errors['message'] is List && (errors['message'] as List).isNotEmpty) {
+          return '${(errors['message'] as List).first}';
+        }
+
+        final message = data['message'];
+
+        if (message is String && message.isNotEmpty) {
+          return message;
+        }
+      }
+    } on FormatException {
+      // Corps illisible : on retombe sur le message générique.
+    }
+
+    return 'Le message n’a pas pu être envoyé : vérifiez les champs.';
   }
 }
 

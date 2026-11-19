@@ -79,6 +79,7 @@ est une chaîne libre et `AuthController` écrit `'READER'` en dur.
 | Gérer catégories, tags, médias | — | — | ✅ | ✅ |
 | Gérer les comptes et les rôles | — | — | — | ✅ |
 | Consulter le journal éditorial | — | ses articles | tous | tous |
+| Traiter les messages de contact | — | — | ✅ | ✅ |
 
 Trois règles à ne pas perdre de vue :
 
@@ -153,6 +154,15 @@ Elles sont aujourd'hui peuplées par script. Prévoir une **consultation** en
 phase 2 et une **édition** en phase 4 : ce sont des données chiffrées, une
 faute de frappe y est plus grave qu'ailleurs. Chaque modification doit porter
 sa source.
+
+### 4.7 Messages de contact
+
+File des messages envoyés depuis la page « Contact » du site public : date,
+nom et adresse s'ils sont donnés, texte, puis bouton « Marquer comme traité ».
+Un message traité quitte la file et reste consultable sous `?traites=1` ; rien
+n'est supprimé. Aucune réponse n'est envoyée par le panneau : un éditeur
+répond depuis sa propre boîte, s'il y a une adresse. Les contributeurs ne
+voient pas cette file — elle contient des données de lecteurs.
 
 ---
 

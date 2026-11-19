@@ -14,6 +14,7 @@ import 'ui/search_page.dart';
 import 'ui/shell.dart';
 import 'ui/sources_page.dart';
 import 'ui/statistics_page.dart';
+import 'ui/trust_pages.dart';
 import 'ui/timeline_page.dart';
 
 /// Transition commune : fondu court + léger glissement, pour que la navigation
@@ -99,6 +100,23 @@ GoRouter buildRouter() {
         pageBuilder: (context, state) => _page(
           PlacePage(slug: state.pathParameters['slug'] ?? ''),
         ),
+      ),
+      // Pages de confiance : elles répondent aux liens du pied de page.
+      GoRoute(
+        path: '/a-propos',
+        pageBuilder: (context, state) => _page(const AboutPage()),
+      ),
+      GoRoute(
+        path: '/charte',
+        pageBuilder: (context, state) => _page(const CharterPage()),
+      ),
+      GoRoute(
+        path: '/contact',
+        pageBuilder: (context, state) => _page(const ContactPage()),
+      ),
+      GoRoute(
+        path: '/confidentialite',
+        pageBuilder: (context, state) => _page(const PrivacyPage()),
       ),
       GoRoute(
         path: '/ma-bibliotheque',

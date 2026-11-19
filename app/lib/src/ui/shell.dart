@@ -1088,15 +1088,15 @@ class _Footer extends StatelessWidget {
             spacing: 18,
             runSpacing: 8,
             children: [
-              for (final label in [
-                'À propos',
-                'Charte',
-                'Contact',
-                'Confidentialité',
-              ])
+              for (final entry in const {
+                'À propos': '/a-propos',
+                'Charte': '/charte',
+                'Contact': '/contact',
+                'Confidentialité': '/confidentialite',
+              }.entries)
                 HoverLink(
-                  label: label,
-                  onTap: () => wikiNotImplemented(context, label),
+                  label: entry.key,
+                  onTap: () => wikiGo(context, entry.value),
                   style: const TextStyle(fontSize: 12.5),
                 ),
             ],

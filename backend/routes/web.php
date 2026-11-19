@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\JournalController;
+use App\Http\Controllers\Admin\MessageController;
 use App\Http\Controllers\Admin\SessionController;
 use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\UserController;
@@ -42,6 +43,11 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
             ->name('articles.transition');
 
         Route::get('/journal', JournalController::class)->name('journal');
+
+        // Messages du formulaire de contact public.
+        Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
+        Route::post('/messages/{contactMessage}/traiter', [MessageController::class, 'handle'])
+            ->name('messages.handle');
 
         Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
         Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');

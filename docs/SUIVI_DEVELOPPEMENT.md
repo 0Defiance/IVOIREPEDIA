@@ -1180,6 +1180,38 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 43 — 19 novembre 2026 · Pages de confiance et formulaire de contact
+
+**Demande**
+- Les quatre liens du pied de page (« À propos », « Charte », « Contact », « Confidentialité ») ouvraient un dialogue « pas encore disponible ». Créer les pages réelles, avec tests et documentation.
+
+**Fait — site**
+- `app/lib/src/ui/trust_pages.dart` : quatre pages de contenu réel, servies par le routeur aux adresses `/a-propos`, `/charte`, `/contact`, `/confidentialite`.
+  - **À propos** : ce que le site contient, comment il travaille (une source par information, images libres créditées), la licence CC BY-SA 4.0 des textes, et les liens vers la charte, le contact et les sources.
+  - **Charte** : six règles — une information/une source, rien d'inventé, images libres créditées, corrections visibles, neutralité et respect des personnes, licence ouverte.
+  - **Contact** : formulaire (nom et adresse facultatifs, message obligatoire de 20 à 4 000 caractères), état d'envoi, confirmation, message d'erreur lisible tiré de la réponse 422.
+  - **Confidentialité** : favoris, lectures et réglages restent dans le stockage local ; compte facultatif (adresse + mot de passe haché), message de contact, journaux techniques ; ni publicité, ni traqueur, ni revente.
+- Le pied de page utilise désormais `wikiGo` vers ces adresses : plus aucun lien mort de ce côté. La page ne promet rien que le code ne tient pas (pas de relecture humaine annoncée, pas d'adresse électronique inventée).
+
+**Fait — API et panneau**
+- `contact_messages` (migration, modèle `ContactMessage`, enum `ContactMessageStatus`) et `POST /api/v1/contact` : validation par `ContactRequest` (longueurs, adresse, piège à robots `website`), plafond `throttle:5,1`, réponse `201` avec l'identifiant et le statut, adresse normalisée en minuscules.
+- `/admin/messages` : file des messages à traiter, lien « Traités (n) » pour les consulter, bouton « Marquer comme traité » (statut + horodatage, rien n'est supprimé). Entrée « Messages » dans la navigation ; accès réservé aux rôles qui révisent (403 pour un contributeur, redirection vers la connexion pour un visiteur).
+- `docs/DASHBOARD_ADMIN.md` : §4.7 décrit l'écran, le tableau des permissions gagne « Traiter les messages de contact ».
+
+**Vérifié**
+- `composer test` : **129 tests, 1 706 assertions** (6 tests d'API de contact — création, sans nom ni adresse, message court, adresse invalide, piège à robots, plafond à 5 envois ; 5 tests du panneau — liste, séparation traité/à traiter, marquage, refus au contributeur, redirection du visiteur).
+- `flutter analyze` propre ; `flutter test` : **51 tests** (5 nouveaux : les quatre liens du pied de page ouvrent les pages réelles, la charte énonce ses règles, la confidentialité décrit le stockage local, le formulaire envoie puis confirme, le formulaire refuse un message trop court).
+
+**Mise en ligne**
+- `git pull --ff-only`, `php artisan migrate --force`, reconstruction de l'application Flutter (`flutter build web`) pour que les nouvelles pages soient servies, puis `config:cache` et `route:cache`.
+
+**Reste**
+- Aucune adresse de contact publique n'est affichée : le formulaire est le seul canal, faute d'adresse vérifiée à publier.
+- Les messages ne déclenchent pas de courriel : un éditeur doit ouvrir `/admin/messages` (Mailjet est encore en `log`).
+- Les liens « Créer un article », « Discussion », « Modifier une section » et les étiquettes restent, eux, non implémentés.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

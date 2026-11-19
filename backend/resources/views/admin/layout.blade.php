@@ -245,6 +245,9 @@
             <a href="{{ route('admin.journal') }}" class="{{ request()->routeIs('admin.journal') ? 'active' : '' }}">
                 <span class="dot"></span> Journal
             </a>
+            <a href="{{ route('admin.messages.index') }}" class="{{ request()->routeIs('admin.messages.*') ? 'active' : '' }}">
+                <span class="dot green"></span> Messages
+            </a>
             @if (auth()->user()?->role->canReview())
                 <a href="{{ route('admin.categories.index') }}" class="{{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
                     <span class="dot"></span> Catégories
