@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
@@ -343,13 +345,7 @@ class _SectionHeading extends StatelessWidget {
                   ),
                 ),
               if (onCopy != null) ...[
-                HoverLink(
-                  label: 'copier',
-                  color: tone.faint,
-                  hoverColor: IvoireColors.link,
-                  onTap: onCopy!,
-                  style: const TextStyle(fontSize: 11.5, height: 1.2),
-                ),
+                _CopyAction(onCopy: onCopy!, color: tone.faint),
                 const SizedBox(width: 10),
               ],
               HoverLink(
@@ -366,6 +362,67 @@ class _SectionHeading extends StatelessWidget {
             Divider(height: 1, thickness: 1, color: tone.lineSoft),
           ],
         ],
+      ),
+    );
+  }
+}
+
+/// Lien « copier » d'un titre de section : la copie se voit.
+///
+/// Le libellé devient « copié » et passe au vert le temps d'un battement,
+/// puis reprend sa place et son texte. La largeur est réservée pour que les
+/// liens voisins (« modifier ») ne sautent pas pendant la confirmation.
+class _CopyAction extends StatefulWidget {
+  const _CopyAction({required this.onCopy, required this.color});
+
+  final VoidCallback onCopy;
+  final Color color;
+
+  @override
+  State<_CopyAction> createState() => _CopyActionState();
+}
+
+class _CopyActionState extends State<_CopyAction> {
+  static const Duration _confirmation = Duration(milliseconds: 1600);
+
+  Timer? _reset;
+  bool _copied = false;
+
+  @override
+  void dispose() {
+    _reset?.cancel();
+    super.dispose();
+  }
+
+  void _copy() {
+    widget.onCopy();
+
+    _reset?.cancel();
+    setState(() => _copied = true);
+    _reset = Timer(_confirmation, () {
+      if (mounted) {
+        setState(() => _copied = false);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 48,
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: HoverLink(
+          label: _copied ? 'copié' : 'copier',
+          color: _copied ? IvoireColors.green : widget.color,
+          hoverColor: IvoireColors.link,
+          onTap: _copy,
+          style: TextStyle(
+            fontSize: 11.5,
+            height: 1.2,
+            fontWeight: _copied ? FontWeight.w600 : FontWeight.w400,
+          ),
+        ),
       ),
     );
   }

@@ -127,6 +127,18 @@ List<ArticleBlock> sectionBlocks(List<ArticleBlock> blocks, String heading) {
   return section;
 }
 
+/// Nombre de mots du texte (titres de section compris), pour les statistiques
+/// affichées sur la page de lecture.
+int articleWordCount(List<Map<String, dynamic>> ops) {
+  var words = 0;
+
+  for (final block in articleBlocks(ops)) {
+    words += block.text.split(RegExp(r'\s+')).where((word) => word.isNotEmpty).length;
+  }
+
+  return words;
+}
+
 /// Texte prêt pour le presse-papiers : lisible en clair, hors de l'écran.
 String articleAsText(ArticleDetail article) {
   final blocks = articleBlocks(article.contentOps);

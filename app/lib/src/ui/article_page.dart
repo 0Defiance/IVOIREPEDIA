@@ -380,6 +380,7 @@ class _ArticleBodyState extends State<_ArticleBody> {
     final sections = deltaSections(_article.contentOps);
     final infobox = _article.infobox;
     final tone = ToneColors.from(context);
+    final modifiedAt = _article.updatedAt ?? _article.publishedAt;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
@@ -430,9 +431,9 @@ class _ArticleBodyState extends State<_ArticleBody> {
                         fontStyle: FontStyle.italic,
                       ),
                     ),
-                  if (_article.publishedAt != null)
+                  if (modifiedAt != null)
                     Text(
-                      'Dernière modification le ${formatDate(_article.publishedAt)}',
+                      'Dernière modification le ${formatDate(modifiedAt)}',
                       style: TextStyle(fontSize: 12.5, color: tone.faint),
                     ),
                   Text(
@@ -505,26 +506,37 @@ class _ArticleBodyState extends State<_ArticleBody> {
               )
             : (wide ? _AsideCard(article: _article) : null);
 
-        // Sur petit écran, l'infobox passe après le chapeau : le lecteur
-        // rencontre d'abord le texte, comme sur une page d'encyclopédie.
-        final Widget? afterLead =
-            sections.length > 1 || (!wide && aside != null)
-                ? Padding(
-                    padding: const EdgeInsets.only(top: 4),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (sections.length > 1 && !veryWide)
-                          _Sommaire(sections: sections, onTap: _scrollToSection),
-                        if (!wide && aside != null)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 18),
-                            child: aside,
-                          ),
-                      ],
-                    ),
-                  )
-                : null;
+        // La colonne de droite : le repère (infobox ou fiche d'identité), puis
+        // les chiffres de l'article. Sur téléphone, elle passe après le
+        // chapeau pour que le lecteur rencontre d'abord le texte.
+        final sidebar = Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (aside != null) ...[
+              aside,
+              const SizedBox(height: 16),
+            ],
+            _ArticleStats(article: _article),
+          ],
+        );
+
+        final Widget? afterLead = sections.length > 1 || !wide
+            ? Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (sections.length > 1 && !veryWide)
+                      _Sommaire(sections: sections, onTap: _scrollToSection),
+                    if (!wide)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 18),
+                        child: sidebar,
+                      ),
+                  ],
+                ),
+              )
+            : null;
 
         final content = ConstrainedBox(
           key: _textTop,
@@ -581,7 +593,7 @@ class _ArticleBodyState extends State<_ArticleBody> {
               ),
             Expanded(child: content),
             const SizedBox(width: 28),
-            SizedBox(width: 300, child: aside),
+            SizedBox(width: 300, child: sidebar),
           ],
         );
       },
@@ -1027,6 +1039,110 @@ class _AsideCard extends StatelessWidget {
           ),
           TextSpan(text: value, style: TextStyle(fontSize: 12.5, color: tone.ink)),
         ]),
+      ),
+    );
+  }
+}
+
+/// Les chiffres d'un article : longueur, découpage, appareil de notes et
+/// dates. Ils se calculent à partir du contenu déjà chargé — aucune requête
+/// supplémentaire, et ils décrivent exactement ce que le lecteur a sous les
+/// yeux.
+class _ArticleStats extends StatelessWidget {
+  const _ArticleStats({required this.article});
+
+  final ArticleDetail article;
+
+  @override
+  Widget build(BuildContext context) {
+    final tone = ToneColors.from(context);
+    final sections = articleSections(articleBlocks(article.contentOps)).length;
+
+    return Container(
+      key: const ValueKey('article-stats'),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: tone.paper,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: tone.lineSoft),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Statistiques',
+            style: titleStyle(
+              size: 15,
+              weight: FontWeight.w700,
+              color: tone.ink,
+            ),
+          ),
+          const SizedBox(height: 3),
+          Text(
+            'Cet article en chiffres',
+            style: TextStyle(fontSize: 11.5, color: tone.faint),
+          ),
+          const SizedBox(height: 8),
+          _line('Mots', '${articleWordCount(article.contentOps)}', 'stat-mots', tone),
+          if (sections > 0)
+            _line('Sections', '$sections', 'stat-sections', tone),
+          _line(
+            'Références',
+            '${article.references.length}',
+            'stat-references',
+            tone,
+          ),
+          _line(
+            'Temps de lecture',
+            '${article.readingMinutes} min',
+            'stat-reading',
+            tone,
+          ),
+          if (article.tags.isNotEmpty)
+            _line('Étiquettes', '${article.tags.length}', 'stat-tags', tone),
+          if (article.publishedAt != null)
+            _line(
+              'Publié le',
+              formatDate(article.publishedAt),
+              'stat-published',
+              tone,
+            ),
+          if (article.updatedAt != null)
+            _line(
+              'Dernière modification',
+              formatDate(article.updatedAt),
+              'stat-updated',
+              tone,
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _line(String label, String value, String key, ToneColors tone) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.alphabetic,
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(fontSize: 12, color: tone.muted),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Text(
+            value,
+            key: ValueKey(key),
+            style: TextStyle(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w600,
+              color: tone.ink,
+            ),
+          ),
+        ],
       ),
     );
   }

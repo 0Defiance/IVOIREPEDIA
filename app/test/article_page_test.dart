@@ -182,6 +182,52 @@ void main() {
     expect(clipboard.last, contains('$kSiteUrl/articles/felix-houphouet-boigny'));
   });
 
+  testWidgets('le bouton copier d’une section confirme, puis reprend sa place',
+      (tester) async {
+    final messenger = tester.binding.defaultBinaryMessenger;
+
+    messenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      (call) async => null,
+    );
+    addTearDown(
+      () => messenger.setMockMethodCallHandler(SystemChannels.platform, null),
+    );
+
+    await tester.pumpWidget(_wrap(const ArticlePage(slug: 'felix-houphouet-boigny')));
+    await tester.pumpAndSettle();
+
+    final button = find.text('copier').last;
+    await tester.ensureVisible(button);
+    await tester.tap(button);
+    await tester.pump();
+
+    // La copie se voit tout de suite : le lien dit ce qu'il vient de faire.
+    expect(find.text('copié'), findsOneWidget);
+    expect(find.text('copier'), findsOneWidget);
+
+    // Puis la confirmation s'efface d'elle-même, sans quitter la page.
+    await tester.pump(const Duration(milliseconds: 1700));
+    expect(find.text('copié'), findsNothing);
+    expect(find.text('copier'), findsNWidgets(2));
+  });
+
+  testWidgets('la page article affiche les statistiques de l’article',
+      (tester) async {
+    await tester.pumpWidget(_wrap(const ArticlePage(slug: 'felix-houphouet-boigny')));
+    await tester.pumpAndSettle();
+
+    String? value(String key) =>
+        tester.widget<Text>(find.byKey(ValueKey(key))).data;
+
+    expect(find.text('Statistiques'), findsOneWidget);
+    expect(value('stat-mots'), '22');
+    expect(value('stat-sections'), '2');
+    expect(value('stat-references'), '1');
+    expect(value('stat-reading'), '6 min');
+    expect(value('stat-published'), '2 novembre 2026');
+  });
+
   test('les URL partagées sont propres, sans dièse', () {
     expect(kSiteUrl, 'https://ivoirepedia.alwaysdata.net');
     expect(

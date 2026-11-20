@@ -112,6 +112,7 @@ class ArticleDetail extends ArticleSummary {
     this.infobox,
     this.references = const <ArticleReference>[],
     this.tags = const <String>[],
+    this.updatedAt,
     super.categoryName,
     super.categorySlug,
     super.authorName,
@@ -130,12 +131,17 @@ class ArticleDetail extends ArticleSummary {
   final List<ArticleReference> references;
   final List<String> tags;
 
+  /// Dernière modification enregistrée par l'API (`updated_at`), distincte
+  /// de la date de publication.
+  final DateTime? updatedAt;
+
   factory ArticleDetail.fromJson(Map<String, dynamic> json) {
     final base = ArticleSummary.fromJson(json);
     final content = json['content'] as Map<String, dynamic>?;
     final ops = (content?['ops'] as List<dynamic>?) ?? const <dynamic>[];
     final tags = (json['tags'] as List<dynamic>?) ?? const <dynamic>[];
     final references = (json['references'] as List<dynamic>?) ?? const <dynamic>[];
+    final updated = json['updated_at'] as String?;
 
     return ArticleDetail(
       slug: base.slug,
@@ -159,6 +165,7 @@ class ArticleDetail extends ArticleSummary {
       tags: tags
           .map((tag) => (tag as Map<String, dynamic>)['name'] as String)
           .toList(growable: false),
+      updatedAt: updated == null ? null : DateTime.tryParse(updated),
       references: references
           .map((ref) => ArticleReference.fromJson(ref as Map<String, dynamic>))
           .toList(growable: false),
