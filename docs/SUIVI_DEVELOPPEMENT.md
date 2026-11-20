@@ -1327,6 +1327,36 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 48 — 19 novembre 2026 · Nouvelle marque, statistiques d’article, confirmation de copie
+
+**Demande**
+- Intégrer les nouveaux visuels de la marque (emblème et signature) chacun à sa place.
+- Afficher, dans la page de chaque article, les statistiques qui le concernent.
+- Faire réagir le bouton « copier » d'une section : il confirme la copie, puis reprend sa place.
+
+**Fait — marque**
+- `tools/build_brand_assets.py` part des visuels fournis (déjà détourés, canal alpha) : `cutout()` ne sert plus que pour une source revenue sur fond clair. Emblème `marque.webp` (1 010 × 880), mot-symbole `logo-mot.webp` (1 074 × 150) découpé dans la signature, signature `logo.webp` (1 200 × 298) pour la couverture, la manchette et le pied de page.
+- Icônes refaites sur le nouvel emblème : `square_icon()` ajuste désormais la marque sur sa plus grande dimension, sinon un emblème plus large que haut débordait du carré.
+- Le script écrit aussi `backend/public/logo.png` (l'URL que cite le JSON-LD `publisher.logo`), `favicon.png` et `favicon.ico` : la racine du site a ses replis même sans build Flutter.
+- `app/web/index.html` : hauteur du PNG de lancement corrigée (298 px au lieu de 282) pour la nouvelle signature ; `cover.dart` porte la même mesure en commentaire.
+
+**Fait — statistiques d’article**
+- Encart « Statistiques » dans la colonne de droite de l'article (et après le chapeau sur téléphone) : mots, sections, notes et références, temps de lecture, étiquettes, date de publication et dernière modification.
+- Tout se calcule à partir du contenu déjà chargé (`articleWordCount`, `articleSections`, `references`), sans requête supplémentaire. `ArticleDetail` lit maintenant `updated_at`, ce qui distingue la publication de la modification.
+
+**Fait — confirmation de copie**
+- Le lien « copier » d'un titre de section devient « copié » en vert pendant 1,6 s, puis reprend son libellé. La largeur est réservée pour que « modifier » ne saute pas, et le minuteur est annulé au retrait du widget.
+
+**Vérifié**
+- `flutter analyze` : aucun problème. `flutter test` : **54 tests au vert**. Deux tests ajoutés dans `app/test/article_page_test.dart` : statistiques attendues (22 mots, 2 sections, 1 référence, 6 min, « 2 novembre 2026 ») et confirmation de copie qui s'efface. Ces tests ont d'abord révélé un doublon de libellé (« Notes et références » affiché à la fois dans l'encart et comme titre de section), corrigé en « Références » dans l'encart.
+- Aucun fichier du backend modifié hormis des images ; ses tests restent valables sans nouvelle exécution.
+
+**Reste**
+- Rien n'est déployé : les visuels, les statistiques et la confirmation partiront avec le prochain build Flutter.
+- Les trois variantes de signature reçues sont proches : la plus lisible au petit format a été retenue ; remplacer `LOCKUP` dans le script suffit pour en essayer une autre.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
