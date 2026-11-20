@@ -1382,6 +1382,26 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 50 — 20 novembre 2026 · Préchargement du JavaScript critique
+
+**Demande**
+- Ajouter les liens `preload` du JS critique (et `preconnect` vers l'API) dans `app/web/index.html`.
+
+**Fait**
+- `app/web/index.html` : `<link rel="preload" as="script">` pour `flutter_bootstrap.js` et `main.dart.js`, en chemins relatifs pour suivre la même base que le chargeur. Le navigateur les découvre dès la lecture de l'en-tête — environ un aller-retour (~2 s sur le chemin mesuré) gagné avant le premier octet utile.
+- Pas de `preconnect` vers l'API : elle est servie par la même origine (`/api/v1`), la connexion est déjà ouverte, un `preconnect` serait sans effet. Un `preconnect` absolu figerait en plus le domaine de production dans la coquille.
+- `app/test/web_shell_test.dart` : la coquille doit contenir les deux `preload` et aucun `preconnect`.
+
+**Vérifié**
+- `flutter analyze` : aucun problème. `flutter test` : **55 tests au vert** (54 + 1 nouveau).
+- `composer test` : **146 tests au vert** ; `format:check` : PASS (150 fichiers) ; `analyse` : aucune erreur (backend inchangé, contrôles reconduits avant commit).
+- Production après redéploiement : `index.html` servi contient les deux `preload`.
+
+**Reste**
+- Pistes suivantes (séance 49) : brotli précompressé au déploiement, puis audit `--analyze-size` et imports différés.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

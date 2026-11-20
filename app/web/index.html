@@ -10,6 +10,17 @@
   -->
   <base href="$FLUTTER_BASE_HREF">
 
+  <!--
+    Le JavaScript critique part le plus tôt possible : le navigateur découvre
+    ces fichiers dès la lecture de l'en-tête, sans attendre le bas de page.
+    Chemins relatifs, comme la balise du chargeur plus bas : ils suivent la
+    même base, quel que soit le préfixe de déploiement. Pas de preconnect
+    vers l'API : elle est servie par la même origine (/api/v1), la connexion
+    est donc déjà ouverte et un preconnect serait sans effet.
+  -->
+  <link rel="preload" href="flutter_bootstrap.js" as="script">
+  <link rel="preload" href="main.dart.js" as="script">
+
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="viewport" content="width=device-width, initial-scale=1">
