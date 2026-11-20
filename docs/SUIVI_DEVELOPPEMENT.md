@@ -1432,6 +1432,31 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 52 — 20 novembre 2026 · Audit du poids du JS initial : rien de plus à différer
+
+**Demande**
+- Lancer l'audit `--analyze-size`, trouver les dépendances lourdes du JS initial et mettre celles des écrans rares en imports différés.
+
+**Méthode**
+- `flutter build web --analyze-size` n'existe plus sous Flutter 3.47 (option inconnue, sortie 64). Audit remplacé par trois preuves directes : graphe des imports tiers de `app/lib`, contenu comparé de `main.dart.js` et de son différé, et lecture de `flutter_bootstrap.js` pour l'origine du moteur.
+
+**Constaté**
+- Les seules dépendances tierces lourdes sont `pdf` + `file_saver` (export PDF de l'article), et elles sont **déjà en import différé** (`article_page.dart` fait `loadLibrary()` au clic) : les marqueurs du moteur PDF (`Helvetica`, `DCTDecode`) sont absents de `main.dart.js` (3 050 672 o) et présents uniquement dans `main.dart.js_1.part.js` (969 714 o), qui ne part qu'au clic « Télécharger en PDF ».
+- Le reste du JS initial n'importe que le framework, `go_router`, `url_launcher`, `shared_preferences` et `http` : aucune autre bibliothèque tierce à sortir du chemin critique. Différer un écran ne déplacerait que du code applicatif, pour un aller-retour supplémentaire et zéro économie réelle — c'est donc écarté.
+- Le moteur ne vient pas du serveur : `flutter_bootstrap.js` choisit `https://www.gstatic.com/flutter-canvaskit` par défaut (option CDN active). Les 7 Mo de wasm mesurés en séance 49 correspondaient à des requêtes directes, pas au parcours réel des navigateurs, qui profitent du CDN Google et de son cache partagé.
+- `intl` est déclaré dans `pubspec.yaml` mais jamais importé : poids nul (élagué à la compilation), simple note de ménage, sans effet mesurable.
+
+**Décision**
+- Aucun changement de code : il n'y a rien à différer de plus, et inventer un différé serait nuisible. Cette séance est donc documentation seule, sans redéploiement (le build en production est déjà le bon).
+
+**Vérifié**
+- Preuves relues dans le build déployé (`grep` des marqueurs des deux côtés de la séparation, URL gstatic dans le chargeur). Suites au vert de la séance 51 sur un code inchangé depuis : `flutter test` 55/55, `composer test` 147/147.
+
+**Reste**
+- Réduire le JS initial lui-même exigerait un régime (retirer du framework ou du code applicatif), pas un différé : hors périmètre du chargement sans changer de moteur.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
