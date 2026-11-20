@@ -218,6 +218,11 @@ reconstruit l'écran à partir de l'URL).
 cd app
 MSYS_NO_PATHCONV=1 flutter build web --release --base-href=/ --dart-define=API_BASE_URL=/api/v1
 
+# Brotli précompressé (qualité 11) pour le JS et le wasm : Apache sert les
+# variantes `.br` aux navigateurs qui annoncent `br` (règles versionnées dans
+# `backend/public/.htaccess`). À rejouer après chaque build, avant l'envoi.
+python ../tools/precompress_web.py build/web
+
 tar -czf - -C build/web . | \
   ssh -i ../.deploy/ivoirepedia_ed25519 ivoirepedia@ssh-ivoirepedia.alwaysdata.net \
   'tar -xzf - -C ~/ivoirepedia/backend/public'

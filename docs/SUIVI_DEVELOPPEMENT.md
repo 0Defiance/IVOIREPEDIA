@@ -1402,6 +1402,36 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 51 — 20 novembre 2026 · Page de chargement vivante et brotli précompressé
+
+**Demande**
+- Rendre la page de chargement plus attractive, plus compréhensible et plus interactive.
+- Mettre en place le brotli précompressé au déploiement (JS et wasm), avec mesures avant/après.
+
+**Fait — chargement**
+- `app/web/index.html` : trois pastilles d'étapes pilotées par des événements réels (connexion → moteur → encyclopédie), phrase de statut lisible par les lecteurs d'écran, compteur de secondes réellement écoulées après 10 s, et bouton « Recharger la page » en cas de lenteur ou d'échec du chargeur (`onerror`). Le voile se retire toujours à la première image peinte, et `prefers-reduced-motion` coupe les animations.
+- `app/test/web_shell_test.dart` : la coquille doit contenir les étapes, le statut, le compteur, le bouton et les signaux `onload`/`onerror`.
+
+**Fait — brotli**
+- `tools/precompress_web.py` : écrit `<fichier>.br` (qualité 11) à côté de chaque `.js`/`.wasm` du build, en ignorant les sorties à jour et celles qui gonfleraient. Piège : l'option `--squash` du CLI fait échouer la compression sur sortie standard — la comparaison de taille est faite en Python.
+- `backend/public/.htaccess` : quand le navigateur annonce `br` et que la variante existe, c'est elle qui part, avec `Content-Encoding: br`, le type d'origine et la même politique de cache. Le brotli dynamique reste coupé.
+- `backend/tests/Feature/Site/BrotliPrecompressionTest.php` : fige la négociation (JS + wasm, encodage, types, cache). Correction au passage : les motifs `.htaccess` sont échappés (`\.js\.br`), le test les attend désormais tels quels.
+- `docs/DEPLOIEMENT.md` : l'étape de précompression rejoint la procédure de publication du site.
+
+**Mesuré**
+- Avant (gzip serveur) : `main.dart.js` 3 050 672 o → 904 206 o en 44,4 s ; `canvaskit.wasm` 7 284 602 o → 2 923 814 o en 24,2 s.
+- Après (fichiers `.br` qualité 11) : `main.dart.js` → 693 361 o (−23 % contre gzip) ; `canvaskit.wasm` → 1 055 638 o (−64 %) ; total du build 33 316 218 o → 10 061 012 o (−69,8 %). Aller-retour vérifié par décompression (`cmp` identique).
+
+**Vérifié**
+- `flutter analyze` : aucun problème. `flutter test` : **55 tests au vert**.
+- `composer test` : **147 tests au vert** ; `format:check` : PASS (151 fichiers) ; `analyse` : aucune erreur.
+- Production après redéploiement : `main.dart.js` servi en `content-encoding: br` avec le poids du fichier `.br`, page de chargement avec étapes et bouton.
+
+**Reste**
+- Piste suivante (séance 49) : audit `--analyze-size` et imports différés pour réduire le JS initial lui-même.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
