@@ -1431,7 +1431,7 @@ class PublicContentSeeder extends Seeder
                     ['h2', 'Ses pouvoirs'],
                     ['p', "Le président nomme le Premier ministre et les ministres, conduit la politique étrangère, dispose du droit de grâce et peut dissoudre l'Assemblée nationale. En cas de crise grave, il peut prendre des mesures exceptionnelles, sous contrôle du Conseil constitutionnel."],
                     ['h2', 'L’élection'],
-                    ['p', 'Le scrutin se déroule en un seul tour, à la majorité relative. La Commission électorale indépendante organise le vote, le Conseil constitutionnel proclame les résultats. Les élections de 2010, 2015 et 2020 ont chacune été suivies de contestations, et celle de 2010 a conduit à la crise post-électorale.'],
+                    ['p', "Le scrutin se déroule au scrutin de liste majoritaire à deux tours : l'élection est acquise à la majorité absolue des suffrages exprimés, et un second tour oppose les deux listes arrivées en tête si cette majorité n'est pas atteinte (Constitution de 2016, titre III). La Commission électorale indépendante organise le vote, le Conseil constitutionnel proclame les résultats. Les élections de 2010, 2015 et 2020 ont chacune été suivies de contestations, et celle de 2010 a conduit à la crise post-électorale."],
                     ['h2', 'Les titulaires'],
                     ['p', "Félix Houphouët-Boigny (1960-1993), Henri Konan Bédié (1993-1999), Robert Guéï (1999-2000, transition), Laurent Gbagbo (2000-2011) et Alassane Ouattara (depuis 2011) se sont succédé à la tête de l'État. La fonction reste au centre de la vie politique du pays."],
                 ],
@@ -1465,7 +1465,6 @@ class PublicContentSeeder extends Seeder
                 'infobox' => [
                     'officialName' => "Assemblée nationale de Côte d'Ivoire",
                     'institutionType' => 'Chambre législative',
-                    'foundedYear' => 1959,
                     'headquarters' => 'Abidjan',
                 ],
                 'blocks' => [
@@ -1473,9 +1472,11 @@ class PublicContentSeeder extends Seeder
                     ['h2', 'Son rôle'],
                     ['p', "Elle vote les lois, contrôle l'action du gouvernement, examine le budget de l'État et peut mettre en cause la responsabilité du Premier ministre. Les députés siègent en commissions et en séance plénière, et leurs travaux sont publiés au Journal officiel."],
                     ['h2', 'L’élection des députés'],
-                    ['p', "Les élections législatives se déroulent au scrutin uninominal majoritaire à un tour dans chaque circonscription. Les dernières élections générales ont eu lieu en 2021, et l'Assemblée a connu plusieurs crises de présidence et des boycotts de l'opposition."],
+                    ['p', 'Les députés sont élus au suffrage universel direct pour cinq ans, comme le prévoit la Constitution de 2016 (titre IV). La durée de la législature est de cinq ans pour chacune des deux chambres.'],
                     ['h2', 'Un lieu de débat'],
-                    ['p', "Le Palais de l'Assemblée nationale se trouve à Abidjan, au Plateau. C'est là que se discutent les grandes lois du pays : code du travail, code foncier, budget, textes constitutionnels. Les sessions sont publiques et retransmises, ce qui en fait l'un des lieux les plus suivis de la vie politique."],
+                    ['p', "L'Assemblée siège à Abidjan. Elle examine les projets et propositions de loi, dont le budget de l'État, avant leur adoption et leur transmission au Sénat. Le Parlement est composé de cette chambre et du Sénat, qui représente les collectivités territoriales et les Ivoiriens établis hors du pays."],
+                    ['h2', 'Les pouvoirs du Parlement'],
+                    ['p', "La Constitution de 2016 encadre le travail parlementaire : un texte adopté par l'Assemblée peut être soumis à une commission mixte paritaire entre les deux chambres, et le Président de la République peut demander au Parlement l'autorisation de légiférer par ordonnance pendant un délai limité. Les deux chambres peuvent être réunies en Congrès à la demande du Président, notamment pour la révision constitutionnelle."],
                 ],
                 'references' => [
                     [
@@ -1511,13 +1512,14 @@ class PublicContentSeeder extends Seeder
                     'headquarters' => 'Yamoussoukro',
                 ],
                 'blocks' => [
-                    ['p', 'Le Sénat est la chambre haute du Parlement ivoirien, créée par la constitution de 2016. Il compte 99 membres : deux tiers élus indirectement par les élus locaux, un tiers nommé par le président de la République.'],
+                    ['p', 'Le Sénat est la chambre haute du Parlement ivoirien. Il a été institué par la loi n° 2016-886 du 8 novembre 2016 portant Constitution, qui a mis fin à plus d’un demi-siècle de monocaméralisme. Il compte 99 sénateurs : 66 élus au suffrage universel indirect et 33 désignés par le président de la République.'],
                     ['h2', 'Pourquoi une chambre haute'],
-                    ['p', "Le Sénat a été conçu pour représenter les collectivités territoriales et pour apporter une seconde lecture aux textes votés par l'Assemblée nationale. Il examine les projets et propositions de loi, peut proposer des amendements et dispose d'un droit de tirage sur certaines nominations."],
+                    ['p', "Selon la Constitution, le Parlement est composé de l'Assemblée nationale et du Sénat. Le Sénat vote la loi et consent l'impôt avec l'Assemblée, contrôle l'action du Gouvernement et évalue les politiques publiques. Il assure aussi la représentation des collectivités territoriales et des Ivoiriens établis hors de Côte d'Ivoire."],
                     ['h2', 'Son fonctionnement'],
-                    ['p', 'Les sénateurs sont élus par un collège de conseillers régionaux et municipaux, pour un mandat de cinq ans. Le Sénat siège à Yamoussoukro, ce qui renforce le rôle institutionnel de la capitale politique.'],
+                    ['p', "Les 66 sénateurs élus le sont au suffrage indirect, par un collège électoral composé des élus locaux, avec deux sièges par région selon la présentation de l'institution. Le tiers désigné par le président est choisi parmi des Ivoiriens reconnus pour leur expertise dans les domaines politique, administratif, économique, scientifique, culturel, sportif, professionnel et social. Le mandat des sénateurs est de cinq ans, comme celui des députés."],
+                    ['p', 'Le Sénat siège à Yamoussoukro, en face de la Basilique Notre-Dame de la Paix. Il est organisé en commissions permanentes qui étudient les textes soumis à la chambre, et ses sénateurs peuvent se regrouper en groupes parlementaires.'],
                     ['h2', 'Les critiques'],
-                    ['p', "L'institution a été critiquée pour son coût et pour la part des sénateurs nommés, qui échappent au suffrage. Ses défenseurs soulignent son rôle de représentation des territoires et de stabilité législative, dans un pays qui sortait de quinze ans de crises."],
+                    ['p', "L'institution a été critiquée pour son coût et pour la part des sénateurs désignés par le président, qui échappent au suffrage. Ses défenseurs soulignent son rôle de représentation des territoires et de stabilité législative, dans un pays qui sortait de plusieurs décennies de crises politiques."],
                 ],
                 'references' => [
                     [
@@ -1558,7 +1560,7 @@ class PublicContentSeeder extends Seeder
                     ['h2', 'Les élections'],
                     ['p', "C'est lui qui proclame les résultats définitifs de l'élection présidentielle, des législatives et des référendums, après examen des contentieux. Ce rôle l'a placé au centre des crises : en 2010, sa proclamation a divergé de celle de la commission électorale, ouvrant la crise post-électorale."],
                     ['h2', 'Sa composition'],
-                    ['p', "Le Conseil comprend des membres nommés par le président de la République, le président de l'Assemblée nationale et le président du Sénat, ainsi que d'anciens présidents de la République. Ses décisions s'imposent à toutes les autorités administratives et juridictionnelles."],
+                    ['p', "Le Conseil compte sept membres, nommés pour un mandat unique de neuf ans non renouvelable : trois sont nommés par le président de la République, trois désignés par le président de l'Assemblée nationale et un nommé par le président du Sénat. Le président du Conseil est choisi par le chef de l'État parmi ses membres. Ses décisions s'imposent à toutes les autorités administratives et juridictionnelles."],
                 ],
                 'references' => [
                     [
@@ -2107,13 +2109,13 @@ class PublicContentSeeder extends Seeder
                 'category' => 'economie',
                 'tags' => ['agriculture'],
                 'blocks' => [
-                    ['p', "L'anacarde, ou noix de cajou, est devenue la deuxième culture d'exportation de la Côte d'Ivoire. Le pays est le premier producteur africain et l'un des premiers mondiaux, avec des vergers qui couvrent le nord et le centre du pays."],
+                    ['p', "L'anacarde, ou noix de cajou, est devenue la deuxième culture d'exportation de la Côte d'Ivoire, après le cacao. Le pays est le premier producteur mondial de noix de cajou : la production atteint environ 1,5 million de tonnes en 2025, contre 944 673 tonnes en 2024. Les vergers couvrent surtout le nord et le centre du pays."],
                     ['h2', 'Une culture du nord'],
                     ['p', "L'anacardier, résistant à la sécheresse, a été adopté par les paysans du nord comme culture de rente, souvent associée au coton et au vivrier. Les noix sont récoltées puis séchées avant d'être vendues aux collecteurs et aux usines."],
                     ['h2', 'La transformation locale'],
-                    ['p', "Longtemps exportées brutes, les noix sont de plus en plus transformées sur place, dans des usines d'Abidjan et du nord. L'État encourage cette transformation pour créer de la valeur et des emplois, même si elle reste minoritaire face aux volumes exportés."],
+                    ['p', "Longtemps exportées brutes, les noix sont de plus en plus transformées sur place, dans des usines d'Abidjan et du nord. Le taux de transformation locale atteint 36,42 % de la production, ce qui montre que la majorité des volumes est encore exportée sans transformation."],
                     ['h2', 'Les enjeux'],
-                    ['p', "La filière souffre de la volatilité des prix, du manque de financement des planteurs et de la concurrence indienne et vietnamienne sur la transformation. Les coopératives et l'interprofession cherchent à organiser la commercialisation pour mieux négocier."],
+                    ['p', 'La filière est organisée autour du Conseil coton-anacarde, qui encadre la commercialisation et suit les campagnes. Les producteurs restent dépendants des variations de prix sur les marchés internationaux, et le développement de la transformation locale est le principal levier pour capter davantage de valeur dans le pays.'],
                 ],
                 'references' => [
                     [
@@ -2127,10 +2129,10 @@ class PublicContentSeeder extends Seeder
                     [
                         'kind' => 'OTHER',
                         'authors' => null,
-                        'title' => 'Statistiques agricoles',
-                        'publisher' => 'Ministère de l\'Agriculture',
-                        'year' => null,
-                        'url' => 'https://www.agriculture.gouv.ci',
+                        'title' => 'Bilan de l\'agriculture 2011-2025 (anacarde)',
+                        'publisher' => 'Gouvernement de Côte d\'Ivoire',
+                        'year' => 2025,
+                        'url' => 'https://bilan.gouv.ci',
                     ],
                 ],
 
@@ -2147,22 +2149,38 @@ class PublicContentSeeder extends Seeder
                     ['h2', 'Un port pour l’hinterland'],
                     ['p', 'Le port traite le trafic de conteneurs, les produits pétroliers, le cacao, le bois et les marchandises destinées au Burkina Faso, au Mali et au Niger. Cette fonction de transit lui donne une importance régionale : les corridors routiers qui le relient au Sahel conditionnent une partie du commerce de ces pays enclavés, et les camions qui montent vers Ouagadougou ou Bamako font partie du paysage de la route du nord.'],
                     ['h2', 'Les terminaux'],
-                    ['p', "Les installations se répartissent entre terminaux à conteneurs, postes céréaliers et fruitiers, terminal pétrolier, zone de pêche industrielle et bassins destinés au bois. Le port emploie directement des milliers de dockers et de manutentionnaires, et fait vivre un ensemble d'activités de transport, d'entreposage et de courtage."],
+                    ['p', "Le port compte deux terminaux à conteneurs. Le premier, à Vridi, est exploité par Abidjan Terminal. Le deuxième terminal à conteneurs (TC2), exploité par Côte d'Ivoire Terminal, a été inauguré le 2 décembre 2022. Les installations comprennent aussi des postes céréaliers et fruitiers, un terminal pétrolier et des bassins destinés au bois."],
                     ['h2', 'Extension et concurrence'],
-                    ['p', "Le second terminal à conteneurs, mis en service au début des années 2020, a augmenté la capacité du port et réduit les temps d'attente des navires. Abidjan reste en concurrence avec Tema, Lomé et San-Pédro pour le trafic ouest-africain, et la qualité de ses corridors routiers pèse autant que ses infrastructures maritimes."],
+                    ['p', 'Le trafic global du port est passé de 25,4 millions de tonnes en 2020 à 40,1 millions de tonnes en 2024, selon les données publiées par le ministère des Transports. Abidjan reste en concurrence avec Tema, Lomé et San-Pédro pour le trafic ouest-africain, et la qualité de ses corridors routiers pèse autant que ses infrastructures maritimes.'],
                     ['h2', 'Le canal de Vridi'],
                     ['p', "Le canal, entretenu en permanence, doit être dragué pour maintenir la profondeur nécessaire aux navires de commerce. Sa stabilité dépend aussi du littoral voisin, où l'érosion et les aménagements côtiers modifient les courants et le transport de sable."],
                     ['h2', "Aujourd'hui"],
-                    ['p', "Le port reste le premier employeur industriel de la ville et le symbole de son rôle économique. Les projets portent sur la digitalisation des procédures douanières, l'extension des terminaux et la réduction des nuisances pour les quartiers riverains de Treichville, Marcory et Koumassi."],
+                    ['p', 'Le port a annoncé un trafic net de 46,9 millions de tonnes pour 2025, selon son communiqué de résultats. Il reste le symbole du rôle économique de la ville, et les quartiers riverains de Treichville, Marcory et Koumassi sont directement concernés par les nuisances liées à son activité.'],
                 ],
                 'references' => [
                     [
                         'kind' => 'OTHER',
                         'authors' => null,
-                        'title' => 'Port autonome d\'Abidjan',
+                        'title' => 'Installations et activités (canal de Vridi, terminaux à conteneurs)',
                         'publisher' => 'Port autonome d\'Abidjan',
                         'year' => null,
-                        'url' => 'https://www.portabidjan.ci',
+                        'url' => 'https://www.portabidjan.ci/fr/le-port-dabidjan/installations-et-activites',
+                    ],
+                    [
+                        'kind' => 'OTHER',
+                        'authors' => null,
+                        'title' => 'Port d\'Abidjan : renforcement des capacités du deuxième terminal à conteneurs',
+                        'publisher' => 'Ministère des Transports',
+                        'year' => null,
+                        'url' => 'https://www.transports.gouv.ci/actualites/port-dabidjan-renforcement-des-capacites-du-deuxieme-terminal-conteneurs',
+                    ],
+                    [
+                        'kind' => 'OTHER',
+                        'authors' => null,
+                        'title' => 'Transport maritime : trafic du port d\'Abidjan',
+                        'publisher' => 'Portail d\'informations économiques de Côte d\'Ivoire',
+                        'year' => 2024,
+                        'url' => 'https://www.economie-ivoirienne.ci/activites-sectorielles/transport-maritime.html',
                     ],
                     [
                         'kind' => 'OTHER',

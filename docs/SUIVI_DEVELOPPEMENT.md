@@ -1499,6 +1499,26 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 55 — 20 novembre 2026 · Corrections de sources sur les articles de fond
+
+**Demandé**
+- Compléter les articles avec des sources officielles plus larges et corriger les affirmations non vérifiées.
+
+**Constaté et corrigé** (`PublicContentSeeder.php`)
+- Président de la République : le mode d'élection était faux (« un seul tour, majorité relative »). Remplacé par le scrutin à deux tours et la majorité absolue des suffrages exprimés (Constitution 2016, titre III).
+- Sénat et Conseil constitutionnel : composition réécrite d'après la Constitution 2016 et senat.ci.
+- Anacarde : « premier producteur mondial », chiffres 2024–2025 et taux de transformation locale d'après bilan.gouv.ci.
+- Port d'Abidjan : TC1 et TC2 (inauguré le 2 décembre 2022), trafic 2020–2025 d'après les publications du port et du ministère des Transports ; affirmations non sourcées retirées.
+- Assemblée nationale : année de fondation (1959) et date des dernières élections (2021) retirées faute de source ; paragraphes sur le Parlement tirés de la Constitution 2016 (titre IV).
+
+**Vérifié**
+- `composer test` 149 verts (1869 assertions), `format:check` PASS après Pint sur le seul fichier modifié, `analyse` OK.
+
+**Reste à faire**
+- Articles minces (BRVM, parc national de Taï), 34 fiches de villes sans référence, 11 histoires, références de `article-enrichment.php`.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
