@@ -31,6 +31,18 @@
     RewriteRule ^articles/[^/]+$ index.php [L]
     RewriteRule ^sitemap\.xml$ index.php [L]
 
+    # Brotli précompressé au déploiement (`tools/precompress_web.py`, qualité
+    # 11, une fois par build) : quand le navigateur annonce `br` et que la
+    # variante `<fichier>.br` existe à côté de l'original, c'est elle qui
+    # part. Le brotli dynamique reste coupé (trop lent à la volée) : ici le
+    # serveur ne fait que servir des octets déjà compressés. Cette règle
+    # précède « Fichiers réels », sinon le fichier non compressé partirait
+    # d'office avec son drapeau [L].
+    RewriteCond %{HTTP:Accept-Encoding} br
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteCond %{REQUEST_FILENAME}.br -f
+    RewriteRule ^(.+\.(?:js|wasm))$ $1.br [L]
+
     # Fichiers réels : assets Flutter, polices, CanvasKit, manifeste.
     RewriteCond %{REQUEST_FILENAME} -f [OR]
     RewriteCond %{REQUEST_FILENAME} -d
@@ -85,5 +97,21 @@
   # revalide systématiquement.
   <FilesMatch "^(MaterialIcons-Regular\.otf|CupertinoIcons\.ttf)$">
     Header set Cache-Control "no-cache"
+  </FilesMatch>
+
+  # Variantes précompressées : l'encodage et le type d'origine sont rétablis
+  # explicitement (Apache servirait sinon un type générique pour `.br`), et
+  # le cache suit la même politique que le fichier non compressé.
+  <FilesMatch "\.js\.br$">
+    Header set Content-Encoding br
+    Header set Content-Type "text/javascript; charset=utf-8"
+    Header set Cache-Control no-cache
+    Header merge Vary Accept-Encoding
+  </FilesMatch>
+  <FilesMatch "\.wasm\.br$">
+    Header set Content-Encoding br
+    Header set Content-Type application/wasm
+    Header set Cache-Control "public, max-age=86400"
+    Header merge Vary Accept-Encoding
   </FilesMatch>
 </IfModule>
