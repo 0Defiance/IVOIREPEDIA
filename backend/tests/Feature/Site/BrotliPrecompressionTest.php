@@ -25,3 +25,16 @@ it('négocie le brotli précompressé pour le JS et le wasm', function () {
     expect($htaccess)->toContain('\.js\.br');
     expect($htaccess)->toContain('\.wasm\.br');
 });
+
+// Les variantes `.br` sont déjà compressées : Apache ne doit jamais les
+// recompresser à la volée (brotli de brotli = JavaScript illisible,
+// écran de chargement bloqué). Après la réécriture, leur adresse finit en
+// `.br`, donc l'exclusion vise explicitement cette extension, des deux
+// côtés (brotli et gzip).
+it('exclut les variantes précompressées de toute compression à la volée', function () {
+    $htaccess = file_get_contents(public_path('.htaccess'));
+
+    expect($htaccess)
+        ->toContain('\.br$" no-brotli')
+        ->toContain('\.br$" no-gzip');
+});

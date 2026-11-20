@@ -73,8 +73,17 @@
 # Comme l'application pèse plus de 800 ko de JavaScript, la compression brotli
 # empêchait la page de se charger. On la désactive pour les fichiers lourds :
 # gzip reste actif et suffit.
+# Les variantes `.br` déjà compressées sont exclues elles aussi : après la
+# réécriture, leur adresse finit en `.br`, le motif ci-dessus ne correspond
+# plus, et le module recompressait la variante (brotli de brotli, illisible
+# par le navigateur : écran de chargement bloqué, novembre 2026). Même
+# garde-fou côté gzip, par précaution.
 <IfModule mod_brotli.c>
   SetEnvIfNoCase Request_URI "\.(js|wasm|json|ttf|otf|woff2?)$" no-brotli
+  SetEnvIfNoCase Request_URI "\.br$" no-brotli
+</IfModule>
+<IfModule mod_deflate.c>
+  SetEnvIfNoCase Request_URI "\.br$" no-gzip
 </IfModule>
 
 <IfModule mod_headers.c>

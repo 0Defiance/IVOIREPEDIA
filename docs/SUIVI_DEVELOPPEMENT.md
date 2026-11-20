@@ -1457,6 +1457,27 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 53 — 20 novembre 2026 · Le brotli à la volée recompressait les `.br` : site bloqué, correctif déployé
+
+**Signalement**
+- Depuis la séance 51, le site met beaucoup plus de temps à charger, au point de rester bloqué sur l'écran de chargement (panneau « Le moteur tarde à arriver », compteur au-delà de 20 s, bouton de rechargement), alors que les vérifications `curl` semblaient vertes.
+
+**Constaté (navigateur réel, onglet partagé)**
+- Dans un vrai navigateur, `main.dart.js` (677 ko transférés) n'est jamais exécuté : `SyntaxError: Invalid or unexpected token`, puis avertissement « preloaded but not used ». L'écran reste donc affiché indéfiniment : ce n'était pas un ralentissement, c'était un blocage total.
+- Reproduction avec des en-têtes de navigateur (`Accept-Encoding: gzip, deflate, br, zstd`) : le corps décompressé une fois en brotli pèse 693 361 o, soit exactement la variante `.br` elle-même — le serveur servait du **brotli de brotli** (`content-encoding: br` unique, corps doublement compressé, `curl` avec `Accept-Encoding: br` seul ne le révélait pas).
+- Cause : après la réécriture vers `main.dart.js.br`, l'adresse finit en `.br`, le motif d'exclusion `no-brotli` (qui ne vise que `.js`/`.wasm`/…) ne correspond plus, et le brotli dynamique d'Apache recompresse la variante déjà compressée. Le `SetEnvIfNoCase` s'évalue sur l'adresse réécrite, pas sur l'originale.
+
+**Décision**
+- `.htaccess` : exclusion explicite des `.br` de toute compression à la volée, côté brotli (`no-brotli`) comme côté gzip (`no-gzip`, par précaution). Aucun changement applicatif, aucun rebuild Flutter : le correctif est une configuration serveur.
+- Test ajouté (`BrotliPrecompressionTest`) : fige les deux exclusions, dans le style des tests existants qui relisent le `.htaccess`.
+
+**Vérifié**
+- `composer test` : 148 verts ; `format:check` PASS (151 fichiers) ; `analyse` OK.
+- Après déploiement (simple `git pull` serveur, effet immédiat) : re-téléchargement avec en-têtes navigateur → décompression = 3 050 672 o de JavaScript valide ; rechargement dans l'onglet → l'écran de chargement défile (Connexion → Moteur de lecture → Encyclopédie) puis l'application s'affiche.
+- À noter pour la suite : `logo.webp` pèse 153 ko pour l'écran de chargement — acceptable mais perfectible si l'on veut gratter la première seconde.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
