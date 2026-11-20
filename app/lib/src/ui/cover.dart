@@ -104,7 +104,7 @@ class CoverSheet extends StatelessWidget {
         color: IvoireColors.ivory,
         child: LayoutBuilder(
           builder: (context, constraints) {
-            // La signature est très large (1 200 × 282) : c'est la largeur
+            // La signature est très large (1 200 × 298) : c'est la largeur
             // qui contraint, sinon elle déborderait d'un téléphone. Elle est
             // contenue dans cette boîte, jamais rognée.
             final boxWidth = math.max(

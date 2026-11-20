@@ -1,9 +1,10 @@
 """Dérive les visuels de la marque IVOIREPEDIA depuis les originaux fournis.
 
-Les sources sont des images au fond crème (ou blanc) : le script détoure le
-fond par diffusion depuis les bords, retire le liseré clair, puis écrit les
-fichiers utilisés par l'application Flutter, l'écran de chargement HTML et
-les icônes d'onglet.
+Les sources sont fournies par le propriétaire du site : la dernière version
+est déjà détourée (canal alpha), le script se contente alors de la recadrer.
+Si une source revient sur fond crème (ou blanc), `cutout()` la détoure par
+diffusion depuis les bords. Le script écrit ensuite les fichiers utilisés par
+l'application Flutter, l'écran de chargement HTML et les icônes d'onglet.
 
 Utilisation (depuis la racine du dépôt) :
 
@@ -25,8 +26,12 @@ IMAGES = ROOT / "app" / "assets" / "images"
 WEB = ROOT / "app" / "web"
 ICONS = WEB / "icons"
 
-EMBLEM = ATTACHMENTS / "efc7deca08f0108cc6485429b2b50626c5a83b526cc23a76d0b62fd681e9b8cf.webp"
-LOCKUP = ATTACHMENTS / "08ee48063fb1057a7174bb005e4a859aecdca946c20a82558c7cadb9100c67f7.webp"
+EMBLEM = ATTACHMENTS / "454640e5327be3e58ffe4cd789506c13da159cc794a3316add712ab669a3b25b.webp"
+LOCKUP = ATTACHMENTS / "3ec145ef3cfa4d8fe552cbe8cffc0286be1f1b0f454bd8974f37417949e15243.webp"
+
+# Racine servie en production : les fichiers de repli de l'écran de
+# chargement y vivent aussi, JSON-LD (`publisher.logo`) compris.
+INSTANCE = ROOT / "backend" / "public"
 
 # Fond des icônes : le papier ivoire du site, opaque, pour que la marque reste
 # lisible sur un onglet clair comme sur un onglet sombre.
@@ -174,6 +179,12 @@ def _enclosed_holes(
     return holes
 
 
+def transparent(image: Image.Image) -> bool:
+    """Vrai si l'image arrive déjà détourée (fond alpha à zéro)."""
+    alpha = np.asarray(image.convert("RGBA"))[..., 3]
+    return bool((alpha == 0).any())
+
+
 def trim(image: Image.Image, pad: int = 0) -> Image.Image:
     """Recadre sur le sujet, avec une marge optionnelle."""
     box = image.getchannel("A").point(lambda value: 255 if value > 8 else 0).getbbox()
@@ -224,8 +235,12 @@ def square_icon(
     else:
         draw.rectangle((0, 0, size, size), fill=PAPER)
 
+    # Le gabarit est un carré : c'est la plus grande dimension de l'emblème
+    # qui le remplit, sinon une marque large déborderait de l'icône.
     target = round(size * fill)
-    scaled = resize(emblem, height=target)
+    scaled = resize(emblem, width=target)
+    if scaled.height > target:
+        scaled = resize(emblem, height=target)
     canvas.alpha_composite(
         scaled,
         ((size - scaled.width) // 2, (size - scaled.height) // 2),
@@ -237,24 +252,27 @@ def main() -> None:
     for directory in (IMAGES, ICONS):
         directory.mkdir(parents=True, exist_ok=True)
 
-    emblem_source = Image.open(EMBLEM).convert("RGB")
-    lockup_source = Image.open(LOCKUP).convert("RGB")
+    emblem_source = Image.open(EMBLEM).convert("RGBA")
+    lockup_source = Image.open(LOCKUP).convert("RGBA")
 
-    # Emblème : le visuel carré, sans le fond blanc.
-    # Le livre occupe le bas de l'emblème : ses pages restent opaques.
-    emblem = trim(cutout(emblem_source, pages_from=800))
+    # Emblème : le visuel seul, sans le fond. La source est déjà détourée ;
+    # `cutout()` ne sert que si elle revient sur fond clair.
+    emblem = trim(
+        emblem_source if transparent(emblem_source) else cutout(emblem_source, pages_from=800)
+    )
     save_webp(resize(emblem, height=880), IMAGES / "marque.webp")
 
     # Mot-symbole : la ligne « IVOIREPEDIA » de la signature horizontale,
-    # détachée de son emblème et de sa devise.
-    wordmark = trim(cutout(lockup_source.crop((610, 175, 1420, 292))), pad=2)
+    # détachée de son emblème, de son filet et de sa devise (bande y 155-282).
+    wordmark = trim(lockup_source.crop((600, 150, 1570, 290)), pad=2)
     save_webp(resize(wordmark, height=150), IMAGES / "logo-mot.webp")
 
-    # Signature complète : emblème + nom + devise, pour la couverture et le
-    # pied de page. Le fond crème disparaît, le papier du thème prend le relais.
-    # Dans la signature, le livre de l'emblème est plus petit : ses pages
-    # commencent vers y = 330.
-    lockup = trim(cutout(lockup_source, pages_from=330))
+    # Signature complète : emblème + nom + devise, pour la couverture, la
+    # manchette et l'écran de chargement. Le papier du thème prend le relais
+    # là où le fond est transparent.
+    lockup = trim(
+        lockup_source if transparent(lockup_source) else cutout(lockup_source, pages_from=330)
+    )
     save_webp(resize(lockup, width=1200), IMAGES / "logo.webp")
 
     # Écran de chargement HTML : la même signature, WebP puis PNG de repli.
@@ -286,6 +304,18 @@ def main() -> None:
         sizes=[(16, 16), (32, 32), (48, 48), (64, 64)],
     )
     print(f"app/web/favicon.ico  {(WEB / 'favicon.ico').stat().st_size:,} o")
+
+    # Replis côté serveur : la racine du site sert aussi l'emblème (JSON-LD
+    # `publisher.logo`) et les icônes même sans build Flutter.
+    INSTANCE.mkdir(parents=True, exist_ok=True)
+    loader.save(INSTANCE / "logo.png", optimize=True)
+    icon.resize((32, 32), Image.LANCZOS).save(INSTANCE / "favicon.png", optimize=True)
+    icon.resize((64, 64), Image.LANCZOS).save(
+        INSTANCE / "favicon.ico",
+        format="ICO",
+        sizes=[(16, 16), (32, 32), (48, 48), (64, 64)],
+    )
+    print(f"backend/public/logo.png  {(INSTANCE / 'logo.png').stat().st_size:,} o")
 
     # Contrôle visuel : la marque posée sur papier clair, sépia et nuit.
     for name, colour in (
