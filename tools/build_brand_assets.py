@@ -276,8 +276,13 @@ def main() -> None:
     save_webp(resize(lockup, width=1200), IMAGES / "logo.webp")
 
     # Écran de chargement HTML : la même signature, WebP puis PNG de repli.
+    # Le WebP est aplati sur le papier du thème : l'écran de chargement a un
+    # fond uni (#FBF9F4), le canal alpha ne sert à rien et coûte 120 ko.
+    # Le PNG de repli garde sa transparence (vieux navigateurs, tout fond).
     loader = resize(lockup, width=1200)
-    save_webp(loader, WEB / "logo.webp", quality=88)
+    paper = Image.new("RGB", loader.size, (251, 249, 244))
+    paper.paste(loader, mask=loader.split()[3])
+    save_webp(paper, WEB / "logo.webp", quality=80)
     loader.save(WEB / "logo.png", optimize=True)
     print(f"app/web/logo.png  {loader.width}×{loader.height}  {(WEB / 'logo.png').stat().st_size:,} o")
 

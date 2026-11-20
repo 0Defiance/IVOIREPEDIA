@@ -228,6 +228,19 @@ tar -czf - -C build/web . | \
   'tar -xzf - -C ~/ivoirepedia/backend/public'
 ```
 
+Contrôle obligatoire après l'envoi, avec les en-têtes exacts d'un navigateur
+(`Accept-Encoding: gzip, deflate, br, zstd` : `curl` avec `br` seul ne
+révélait pas la double compression de novembre 2026). Le script décompresse
+le JS et le wasm et les compare octet à octet aux originaux :
+
+```bash
+cd app
+python ../tools/verify_deploy.py
+```
+
+Tout doit afficher `OK`, sinon ne pas annoncer la mise en ligne : corriger
+d'abord côté serveur (le plus souvent `.htaccess` ou variantes `.br`).
+
 Le build n'embarque plus de `.htaccess` : celui de Laravel, versionné dans le
 dépôt, est la seule source de vérité pour la racine.
 
@@ -315,6 +328,7 @@ php artisan config:cache && php artisan route:cache && php artisan view:cache
 | Panneau admin | `https://ivoirepedia.alwaysdata.net/admin` | Écran de connexion Filament (à partir du Sprint 5) |
 | Email | `Mail::raw(...)` en tinker | Message reçu, expéditeur validé |
 | Article — visiteur | `curl -s https://ivoirepedia.alwaysdata.net/articles/<slug> \| grep 'og:title'` | Balises présentes et coquille Flutter (`flutter_bootstrap.js`) |
+| Parcours navigateur | `python ../tools/verify_deploy.py` (depuis `app/`) | `OK` partout, JS/wasm décompressés identiques aux originaux |
 | Article — robot | `curl -s -A 'Googlebot/2.1' https://ivoirepedia.alwaysdata.net/articles/<slug> \| grep -E 'og:title\|<h1>'` | Balises et texte de l'article dans le HTML |
 | Sitemap | `curl -sI https://ivoirepedia.alwaysdata.net/sitemap.xml` | `200`, `application/xml` |
 | Robots | `curl -s https://ivoirepedia.alwaysdata.net/robots.txt` | Ligne `Sitemap:` présente |

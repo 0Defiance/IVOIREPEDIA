@@ -1478,6 +1478,27 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 54 — 20 novembre 2026 · Logo de chargement allégé et contrôle post-déploiement navigateur
+
+**Demandé**
+- Alléger le `logo.webp` de l'écran de chargement (153 ko mesurés en séance 53) et ajouter un contrôle post-déploiement avec des en-têtes de navigateur réels, pour ne plus jamais revivre le faux-vert `curl` de la séance 53.
+
+**Constaté (mesures)**
+- Le logo fait 156 610 o à cause du canal alpha : à qualité égale, l'aplatir sur le papier du thème (`#FBF9F4`, fond uni de l'écran) divise le poids par cinq ; réduire la largeur ou la qualité ne gagne que 13 à 41 %.
+- Le PNG de repli (393 ko) ne part presque jamais (navigateurs sans WebP) : laissé tel quel, tout comme le logo JSON-LD.
+
+**Décision**
+- `tools/build_brand_assets.py` : le WebP du chargeur est aplati sur le papier, qualité 80, mêmes dimensions (1200 px, net en rétina) ; le PNG et les autres visuels gardent leur transparence. Résultat : 156 610 → 29 824 o (−81 %), visuel identique vérifié à l'œil.
+- `tools/verify_deploy.py` (nouveau) : rejoue le parcours réel après chaque déploiement — page + `main.dart.js` + différé PDF + `canvaskit.wasm` + logo, avec `Accept-Encoding: gzip, deflate, br, zstd` ; chaque réponse `br` est décompressée et comparée octet à octet à la variante `identity`. Sortie 1 au premier écart. Sa logique de détection est prouvée sur un double-brotli synthétique (693 361 o décodés contre 3 050 672 attendus → écart signalé).
+- `docs/DEPLOIEMENT.md` : le contrôle devient obligatoire (§5, après l'envoi) et rejoint le tableau du §6.
+
+**Vérifié**
+- `flutter analyze` propre, `flutter test` 56 verts (dont « le logo de chargement reste léger », budget 60 ko + repli PNG présent) ; `composer test` 149 verts (dont le contrat du script), `format:check` PASS (152 fichiers), `analyse` OK.
+- Script en direct avant déploiement du logo : tout `OK` sauf le logo encore à 156 610 o — la mesure avant/après est faite par le script lui-même.
+- Déploiement : logo copié à la racine servie (+ `git pull` serveur pour le reste), nouveau passage du script tout `OK` avec le logo à 29 824 o, et capture de l'écran de chargement avec le nouveau logo.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

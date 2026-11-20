@@ -32,4 +32,15 @@ void main() {
     expect(shell, contains('onload='));
     expect(shell, contains('onerror='));
   });
+
+  // Le logo de l'écran de chargement part avant tout le reste : il est
+  // aplati sur le papier du thème (fond uni, l'alpha ne sert à rien) et doit
+  // rester sous les 60 ko, sinon le premier affichage en pâtit.
+  test('le logo de chargement reste léger', () {
+    final logo = File('web/logo.webp');
+    expect(logo.existsSync(), isTrue);
+    expect(logo.lengthSync(), lessThan(60000));
+    // Le repli PNG existe pour les navigateurs sans WebP.
+    expect(File('web/logo.png').existsSync(), isTrue);
+  });
 }
