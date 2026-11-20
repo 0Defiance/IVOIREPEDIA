@@ -66,8 +66,10 @@
       inset: 0;
       z-index: 9999;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
+      gap: 4px;
       padding: 24px;
       box-sizing: border-box;
       /* Le pagne documenté, réduit à deux trames très pâles. */
@@ -96,28 +98,106 @@
       animation: sweep 1.5s ease-in-out infinite;
     }
 
-    /* Message honnête, révélé seulement si le moteur tarde. */
-    #loading .hint {
-      position: absolute;
-      left: 12px;
-      right: 12px;
-      bottom: 16px;
-      margin: 0 auto;
-      max-width: 380px;
+    /* Étapes : ce qui se passe vraiment, piloté par des événements réels. */
+    #loading .steps {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px 18px;
+      margin: 18px 0 0;
+      padding: 0;
       font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
       font-size: 12.5px;
+      color: #8A8478;
+    }
+
+    #loading .steps li {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      white-space: nowrap;
+    }
+
+    #loading .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #D8D2C4;
+      flex: none;
+    }
+
+    #loading li.on {
+      color: #0A5C34;
+      font-weight: 600;
+    }
+
+    #loading li.on .dot {
+      background: #0E7B45;
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+
+    #loading li.done {
+      color: #0A5C34;
+    }
+
+    #loading li.done .dot {
+      background: #0E7B45;
+    }
+
+    @keyframes pulse {
+      50% { transform: scale(1.5); opacity: 0.6; }
+    }
+
+    /* Phrase d'étape, lue par les lecteurs d'écran. */
+    #loading .status {
+      margin: 10px 0 0;
+      max-width: 420px;
+      font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+      font-size: 13px;
       line-height: 1.6;
       text-align: center;
       color: #4A463F;
-      background: rgba(251, 249, 244, 0.92);
-      border-radius: 8px;
-      padding: 6px 10px;
-      opacity: 0;
-      transition: opacity 300ms ease;
+      min-height: 1.6em;
     }
 
-    #loading .hint.slow {
-      opacity: 1;
+    /* Panneau révélé seulement si le moteur tarde : compteur réel + action. */
+    #loading .actions {
+      margin-top: 12px;
+      text-align: center;
+      font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+      font-size: 12.5px;
+      color: #4A463F;
+      background: rgba(251, 249, 244, 0.94);
+      border: 1px solid #E4DED1;
+      border-radius: 10px;
+      padding: 10px 16px;
+      max-width: 380px;
+    }
+
+    #loading .actions[hidden] {
+      display: none;
+    }
+
+    #loading .actions p {
+      margin: 0 0 10px;
+      line-height: 1.6;
+    }
+
+    #loading button {
+      background: #0E7B45;
+      color: #FFFFFF;
+      border: 0;
+      border-radius: 999px;
+      padding: 9px 24px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    #loading button:hover {
+      background: #0A5C34;
     }
 
     /* Le moteur a peint sa première image : le voile se retire. */
@@ -126,8 +206,11 @@
       pointer-events: none;
     }
 
-    #loading .hint a {
-      color: #0A5C34;
+    @media (prefers-reduced-motion: reduce) {
+      #loading .progress,
+      #loading li.on .dot {
+        animation: none;
+      }
     }
 
     @keyframes sweep {
@@ -145,24 +228,74 @@
            alt="Ivoirepedia, l’encyclopédie libre de la Côte d’Ivoire">
     </picture>
     <div class="progress"></div>
-    <div class="hint" id="hint"></div>
+    <ol class="steps" aria-hidden="true">
+      <li class="on" data-step="connect"><span class="dot"></span>Connexion</li>
+      <li data-step="engine"><span class="dot"></span>Moteur de lecture</li>
+      <li data-step="ready"><span class="dot"></span>Encyclopédie</li>
+    </ol>
+    <p class="status" id="status" role="status">Connexion à l’encyclopédie…</p>
+    <div class="actions" id="actions" hidden>
+      <p id="slow">Toujours en chargement… <span id="elapsed">10</span> s écoulées.</p>
+      <button id="retry" type="button">Recharger la page</button>
+    </div>
   </div>
 
   <script>
     (function () {
       var start = Date.now();
-      var hint = document.getElementById('hint');
+      var node = document.getElementById('loading');
+      var status = document.getElementById('status');
+      var actions = document.getElementById('actions');
+      var elapsed = document.getElementById('elapsed');
+      var retry = document.getElementById('retry');
+      var finished = false;
 
-      function showHint(text) {
-        if (!hint) return;
-        hint.innerHTML = text;
-        hint.classList.add('slow');
+      function setStep(name, text) {
+        var items = node ? node.querySelectorAll('.steps li') : [];
+        for (var i = 0; i < items.length; i++) {
+          var step = items[i].getAttribute('data-step');
+          items[i].classList.remove('on');
+          if (step === name) items[i].classList.add('on');
+          else if (step === 'connect' || (step === 'engine' && name === 'ready')) {
+            items[i].classList.add('done');
+          }
+        }
+        if (status && text) status.textContent = text;
       }
+
+      function showActions(text) {
+        if (status && text) status.textContent = text;
+        if (actions) actions.hidden = false;
+      }
+
+      // Compteur réel : le temps déjà passé à attendre le moteur.
+      var counter = setInterval(function () {
+        if (finished || !elapsed) return;
+        elapsed.textContent = String(Math.floor((Date.now() - start) / 1000));
+      }, 1000);
+
+      // Le chargeur est arrivé et s'exécute : c'est lui qui télécharge le
+      // moteur (plusieurs Mo). Le premier cadre peint reste le vrai signal.
+      window.__ivoireLoading = {
+        engine: function () {
+          setStep('engine', 'Téléchargement du moteur de lecture (plusieurs Mo sur connexion lente)…');
+        },
+        failed: function () {
+          clearInterval(timer);
+          finished = true;
+          setStep('engine', 'Le moteur n’a pas pu être téléchargé.');
+          showActions('Vérifiez la connexion, puis rechargez la page.');
+        }
+      };
+
+      if (retry) retry.addEventListener('click', function () {
+        window.location.reload();
+      });
 
       // Message honnête quand la connexion est lente : le moteur ne peint rien
       // tant qu’il n’est pas arrivé.
       var slow = setTimeout(function () {
-        showHint('Chargement de l’encyclopédie… Sur une connexion lente, comptez jusqu’à une minute.');
+        showActions('Le moteur tarde à arriver. Sur une connexion lente, comptez jusqu’à une minute.');
       }, 10000);
 
       function ready() {
@@ -170,10 +303,11 @@
       }
 
       function clear() {
-        var node = document.getElementById('loading');
+        finished = true;
+        clearInterval(counter);
         if (node) {
           node.classList.add('gone');
-          setTimeout(function () { node.remove(); }, 300);
+          setTimeout(function () { if (node.parentNode) node.parentNode.removeChild(node); }, 300);
         }
         clearTimeout(slow);
       }
@@ -181,15 +315,18 @@
       var timer = setInterval(function () {
         if (ready()) {
           clearInterval(timer);
+          setStep('ready');
           clear();
         } else if (Date.now() - start > 90000) {
           clearInterval(timer);
-          showHint('La page ne répond pas. Vérifiez la connexion, puis <a href="">rechargez</a>.');
+          finished = true;
+          setStep('engine', 'La page ne répond toujours pas.');
+          showActions('Vérifiez la connexion, puis rechargez la page.');
         }
       }, 100);
     })();
   </script>
 
-  <script src="flutter_bootstrap.js" async></script>
+  <script src="flutter_bootstrap.js" async onload="window.__ivoireLoading && window.__ivoireLoading.engine()" onerror="window.__ivoireLoading && window.__ivoireLoading.failed()"></script>
 </body>
 </html>

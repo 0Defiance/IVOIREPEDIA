@@ -19,5 +19,17 @@ void main() {
     );
     // L'API est servie par la même origine : un preconnect serait sans effet.
     expect(shell, isNot(contains('rel="preconnect"')));
+
+    // La page de chargement explique les étapes et reste interactive :
+    // pastilles d'étapes, phrase de statut, compteur et bouton de rechargement.
+    expect(shell, contains('data-step="connect"'));
+    expect(shell, contains('data-step="engine"'));
+    expect(shell, contains('data-step="ready"'));
+    expect(shell, contains('id="status"'));
+    expect(shell, contains('id="elapsed"'));
+    expect(shell, contains('id="retry"'));
+    // Le chargeur signale son arrivée et son échec au lieu d'attendre en silence.
+    expect(shell, contains('onload='));
+    expect(shell, contains('onerror='));
   });
 }
