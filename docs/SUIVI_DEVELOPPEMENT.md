@@ -1357,6 +1357,31 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 49 — 20 novembre 2026 · Anciennes images en production et chargement lent
+
+**Demande**
+- Sur d'autres navigateurs, le site affiche encore les anciennes images et met trop de temps à charger.
+
+**Constaté (mesuré, pas supposé)**
+- Les nouveaux visuels n'avaient jamais été déployés : le build Flutter en production datait du 19 novembre 19 h 16, et le serveur Git en était resté à `4b966c4`. Le `/logo.png` servi pesait 253 061 o (ancien) contre 393 303 o (nouveau), empreintes différentes.
+- Le premier chargement télécharge ~10 Mo : `main.dart.js` (3 047 876 o, 904 206 o avec gzip — la compression du serveur fonctionne, vérifiée par `content-encoding: gzip`), son différé `main.dart.js_1.part.js` (~970 ko) et `canvaskit.wasm` (7 284 602 o). Le chemin mesuré vers l'hébergeur plafonne autour de 20 ko/s avec ~2 s de latence par requête (contre ~90 ko/s vers un grand site), d'où des minutes d'attente au premier passage.
+- Optimisation PNG sans effet (`393 303 o` avant comme après) : le fichier est déjà optimisé, on garde les visuels tels quels.
+
+**Fait**
+- `backend/tests/Feature/Site/PublicAssetsTest.php` : le logo cité par le JSON-LD du `publisher` (`/logo.png`) et les favicons de la coquille doivent exister dans `public/`, non vides, au bon type MIME.
+- Serveur : `git pull --ff-only` jusqu'à `971cd82` (il a fallu écarter le `logo.png` déployé non suivi qui bloquait la fusion), `config:cache`, `route:cache`, `view:cache`.
+- Reconstruction `flutter build web --release --base-href=/ --dart-define=API_BASE_URL=/api/v1` (353,8 s) puis transfert vers `~/ivoirepedia/backend/public`. Piège : sous Git Bash, `--base-href=/` exige `MSYS_NO_PATHCONV=1`, sinon la barre oblique est convertie en chemin Windows et le build refuse de partir.
+
+**Vérifié**
+- `composer test` (filtre `PublicAssetsTest`) : 2 tests au vert ; `format:check` : PASS (150 fichiers) ; `analyse` : aucune erreur.
+- Production après déploiement : `/logo.png` servi avec la même empreinte que le nouveau fichier, `index.html` régénéré, `/articles/daloa` en 200 en 0,8 s.
+- Les navigateurs qui gardaient l'ancien build basculent au nouveau au prochain passage (le service worker se met à jour) ; en cas d'image figée, un rechargement forcé suffit.
+
+**Reste**
+- Le premier chargement reste lourd par construction (moteur CanvasKit de ~7 Mo + ~4 Mo de JavaScript, gzip déjà actif) : sur une connexion lente, il faut s'attendre à plusieurs dizaines de secondes la première fois, puis le cache (service worker + `max-age`) prend le relais. Aucune piste simple restante côté dépôt sans changer de moteur de rendu.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
