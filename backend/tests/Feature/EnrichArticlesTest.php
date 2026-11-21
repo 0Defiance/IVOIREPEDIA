@@ -166,3 +166,22 @@ it('publie des articles de fond, pas des notices', function () {
 
     expect($problems)->toBe([]);
 });
+
+it('reprend la monographie de sa région depuis cities-monographs.php', function () {
+    $this->seed(CategorySeeder::class);
+    $this->seed(PublicContentSeeder::class);
+
+    /** @var array{regions: array<string, array{title: string, url: string}>, articles: array<string, string>} $monographs */
+    $monographs = require database_path('data/cities-monographs.php');
+
+    expect($monographs['articles'])->toHaveCount(6);
+
+    foreach ($monographs['articles'] as $slug => $region) {
+        $references = Article::query()->where('slug', $slug)->firstOrFail()->references()->get();
+        $monograph = $references->firstWhere('url', $monographs['regions'][$region]['url']);
+
+        expect($monograph)->not->toBeNull()
+            ->and($monograph->kind)->toBe('REPORT')
+            ->and($monograph->title)->toBe($monographs['regions'][$region]['title']);
+    }
+});

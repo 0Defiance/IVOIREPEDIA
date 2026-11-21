@@ -1697,6 +1697,33 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 63 — 21 novembre 2026 · Une seule table de monographies, et nouvelle tentative sur la Cavally
+
+**Demandé**
+- Faire prendre aux six grands articles leurs références de monographie dans `cities-monographs.php`.
+- Réessayer de récupérer la monographie de la Cavally par une autre voie, pour compléter Guiglo et Bloléquin.
+- Lancer les contrôles à la fin.
+
+**Fait**
+- `cities-monographs.php` porte maintenant les cinq monographies qui manquaient (Abidjan, Yamoussoukro, Gbêkê, Poro, San-Pédro) et une table `articles` qui rattache les six grands slugs à leur région.
+- `PublicContentSeeder` lit ce fichier et ajoute la monographie de la région à la fin des références de l'article, au lieu de recopier le bloc dans les données du seeder ; les six entrées en dur ont été retirées. Les positions restent les mêmes qu'avant (dernière référence de l'article).
+- Les deux seeders puisent donc dans la même table : une monographie a un seul titre et une seule URL dans tout le dépôt.
+
+**Cavally — tentatives de la séance**
+- La page de publication de l'ANStat liste toujours la monographie et un bouton « Télécharger », mais le fichier `File_val_indicateur_20260821150909_c2f00655b318d47b.pdf` renvoie 404, y compris sans `www`, en HTTP et depuis le portail `rp2021.anstat.ci`.
+- Aucun instantané dans l'archive Wayback pour cette URL, et aucun miroir trouvé pour le nom de fichier exact.
+- Le portail `rp2021.anstat.ci` (monographies et répertoires des localités) est protégé par un défi Cloudflare : la page ne se charge pas sans intervention humaine, et les fichiers `wp-content` devinés ne répondent pas.
+- Conclusion : le document n'est plus servi par l'ANStat, et Guiglo et Bloléquin restent à une seule référence. Leur texte dit déjà que le détail départemental n'est pas disponible.
+
+**Vérifié**
+- Test ajouté dans `EnrichArticlesTest` : les six articles portent, après passage du seeder, la référence `REPORT` dont l'URL et le titre sont exactement ceux de leur région dans `cities-monographs.php`.
+- `php -l` OK, `pint` appliqué (153 fichiers) puis `--test` OK, `composer test` 151 verts (2 017 assertions), `format:check` PASS, `analyse` 0 erreur.
+
+**Reste**
+- Guiglo et Bloléquin : projections départementales et de sous-préfecture toujours indisponibles, faute de fichier Cavally. À reprendre si l'ANStat republie la monographie.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

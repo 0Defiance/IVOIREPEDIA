@@ -14,6 +14,11 @@ return [
 
     'regions' => [
 
+        'Abidjan' => [
+            'title' => "Monographie du District autonome d'Abidjan — projections démographiques 2022-2041",
+            'url' => 'https://www.anstat.ci/assets/publications/files/File_val_indicateur1781527276.pdf',
+        ],
+
         'Agnéby-Tiassa' => [
             'title' => "Monographie de la région de l'Agnéby-Tiassa — projections démographiques 2022-2041",
             'url' => 'https://www.anstat.ci/assets/publications/files/File_val_indicateur1767024464.pdf',
@@ -32,6 +37,11 @@ return [
         'Bounkani' => [
             'title' => 'Monographie de la région du Bounkani — projections démographiques 2022-2041',
             'url' => 'https://www.anstat.ci/assets/publications/files/File_val_indicateur_20260818181558_abc74ff7669c98a3.pdf',
+        ],
+
+        'Gbêkê' => [
+            'title' => 'Monographie de la région du Gbêkê — projections démographiques 2022-2041',
+            'url' => 'https://www.anstat.ci/assets/publications/files/File_val_indicateur1767188731.pdf',
         ],
 
         'Gôh' => [
@@ -94,6 +104,16 @@ return [
             'url' => 'https://www.anstat.ci/assets/publications/files/File_val_indicateur_20260901125500_df51e1f4ac79a83d.pdf',
         ],
 
+        'Poro' => [
+            'title' => 'Monographie de la région du Poro — projections démographiques 2022-2041',
+            'url' => 'https://www.anstat.ci/assets/publications/files/File_val_indicateur1767628940.pdf',
+        ],
+
+        'San-Pédro' => [
+            'title' => 'Monographie de la région de San-Pédro — projections démographiques 2022-2041',
+            'url' => 'https://www.anstat.ci/assets/publications/files/File_val_indicateur1767630675.pdf',
+        ],
+
         'Sud-Comoé' => [
             'title' => 'Monographie de la région du Sud-Comoé — projections démographiques 2022-2041',
             'url' => 'https://www.anstat.ci/assets/publications/files/File_val_indicateur_20260901125723_5f817282f5f65995.pdf',
@@ -114,6 +134,21 @@ return [
             'url' => 'https://www.anstat.ci/assets/publications/files/File_val_indicateur_20260901130415_2bd8ca7c3a8a1229.pdf',
         ],
 
+        'Yamoussoukro' => [
+            'title' => 'Monographie du District autonome de Yamoussoukro — projections démographiques 2022-2041',
+            'url' => 'https://www.anstat.ci/assets/publications/files/File_val_indicateur1767023430.pdf',
+        ],
+
+    ],
+
+    // Les six grands articles de `PublicContentSeeder` et leur région.
+    'articles' => [
+        'abidjan' => 'Abidjan',
+        'bouake' => 'Gbêkê',
+        'korhogo' => 'Poro',
+        'man' => 'Tonkpi',
+        'san-pedro' => 'San-Pédro',
+        'yamoussoukro' => 'Yamoussoukro',
     ],
 
     'cities' => [

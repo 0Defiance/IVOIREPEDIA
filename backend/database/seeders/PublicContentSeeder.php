@@ -69,6 +69,8 @@ class PublicContentSeeder extends Seeder
         $author = $this->author();
         $categories = Category::query()->pluck('id', 'slug');
         $tags = $this->tags();
+        /** @var array{regions: array<string, array{title: string, url: string}>, articles: array<string, string>} $monographs */
+        $monographs = require database_path('data/cities-monographs.php');
 
         foreach ($this->articles() as $index => $spec) {
             $article = Article::query()->updateOrCreate(
@@ -96,7 +98,23 @@ class PublicContentSeeder extends Seeder
 
             $article->references()->delete();
 
-            foreach ($spec['references'] ?? [] as $position => $reference) {
+            $references = $spec['references'] ?? [];
+            $monograph = $monographs['regions'][$monographs['articles'][$spec['slug']] ?? ''] ?? null;
+
+            // La monographie régionale vient de `cities-monographs.php`, comme
+            // pour les fiches de villes : elle porte les projections 2024-2025.
+            if ($monograph !== null) {
+                $references[] = [
+                    'kind' => 'REPORT',
+                    'authors' => 'ANStat (ex-INS)',
+                    'title' => $monograph['title'],
+                    'publisher' => 'ANStat',
+                    'year' => null,
+                    'url' => $monograph['url'],
+                ];
+            }
+
+            foreach ($references as $position => $reference) {
                 $article->references()->create([...$reference, 'position' => $position + 1]);
             }
         }
@@ -245,14 +263,6 @@ class PublicContentSeeder extends Seeder
                         'year' => '2026',
                         'url' => 'https://www.gouv.ci',
                     ],
-                    [
-                        'kind' => 'REPORT',
-                        'authors' => 'ANStat (ex-INS)',
-                        'title' => 'Monographie du District autonome d\'Abidjan — projections démographiques 2022-2041',
-                        'publisher' => 'ANStat',
-                        'year' => null,
-                        'url' => 'https://www.anstat.ci/assets/publications/files/File_val_indicateur1781527276.pdf',
-                    ],
                 ],
             ],
             [
@@ -309,14 +319,6 @@ class PublicContentSeeder extends Seeder
                         'publisher' => 'Fondation FHB',
                         'year' => null,
                         'url' => 'https://www.fondation-fhb.org',
-                    ],
-                    [
-                        'kind' => 'REPORT',
-                        'authors' => 'ANStat (ex-INS)',
-                        'title' => 'Monographie du District autonome de Yamoussoukro — projections démographiques 2022-2041',
-                        'publisher' => 'ANStat',
-                        'year' => null,
-                        'url' => 'https://www.anstat.ci/assets/publications/files/File_val_indicateur1767023430.pdf',
                     ],
                 ],
             ],
@@ -740,14 +742,6 @@ class PublicContentSeeder extends Seeder
                         'year' => null,
                         'url' => 'https://www.gouv.ci',
                     ],
-                    [
-                        'kind' => 'REPORT',
-                        'authors' => 'ANStat (ex-INS)',
-                        'title' => 'Monographie de la région du Gbêkê — projections démographiques 2022-2041',
-                        'publisher' => 'ANStat',
-                        'year' => null,
-                        'url' => 'https://www.anstat.ci/assets/publications/files/File_val_indicateur1767188731.pdf',
-                    ],
                 ],
 
             ],
@@ -794,14 +788,6 @@ class PublicContentSeeder extends Seeder
                         'publisher' => 'PASP',
                         'year' => null,
                         'url' => 'https://www.pasp.ci',
-                    ],
-                    [
-                        'kind' => 'REPORT',
-                        'authors' => 'ANStat (ex-INS)',
-                        'title' => 'Monographie de la région de San-Pédro — projections démographiques 2022-2041',
-                        'publisher' => 'ANStat',
-                        'year' => null,
-                        'url' => 'https://www.anstat.ci/assets/publications/files/File_val_indicateur1767630675.pdf',
                     ],
                 ],
 
@@ -851,14 +837,6 @@ class PublicContentSeeder extends Seeder
                         'year' => null,
                         'url' => 'https://www.gouv.ci',
                     ],
-                    [
-                        'kind' => 'REPORT',
-                        'authors' => 'ANStat (ex-INS)',
-                        'title' => 'Monographie de la région du Poro — projections démographiques 2022-2041',
-                        'publisher' => 'ANStat',
-                        'year' => null,
-                        'url' => 'https://www.anstat.ci/assets/publications/files/File_val_indicateur1767628940.pdf',
-                    ],
                 ],
 
             ],
@@ -906,14 +884,6 @@ class PublicContentSeeder extends Seeder
                         'publisher' => 'Gouvernement de Côte d\'Ivoire',
                         'year' => null,
                         'url' => 'https://www.gouv.ci',
-                    ],
-                    [
-                        'kind' => 'REPORT',
-                        'authors' => 'ANStat (ex-INS)',
-                        'title' => 'Monographie de la région du Tonkpi — projections démographiques 2022-2041',
-                        'publisher' => 'ANStat',
-                        'year' => null,
-                        'url' => 'https://www.anstat.ci/assets/publications/files/File_val_indicateur1767631604.pdf',
                     ],
                 ],
 
