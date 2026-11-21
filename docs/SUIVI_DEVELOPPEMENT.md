@@ -1603,6 +1603,28 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 59 — 21 novembre 2026 · Contrôle des tableaux en paysage et seconde tentative sur la Cavally
+
+**Demandé**
+- Relancer la récupération de la monographie de la Cavally pour compléter Guiglo et Bloléquin (département et sous-préfecture, 2024-2025).
+- Vérifier dans les PDF d'origine les chiffres de Sikensi, de la Bagoué et du Bélier, reconstitués à partir des tableaux en paysage.
+
+**Fait**
+- Les trois monographies ont été relues en local : `pdftotext -table` pour les pages droites, puis extraction par coordonnées (pdf.js, axes remis à l'horizontale) pour les pages en paysage, qui portent deux tableaux superposés.
+- Sikensi : département 134 650 (2024) puis 137 490 (2025) ; sous-préfecture 97 078 puis 99 074. Conforme aux fiches.
+- Bagoué : département de Boundiali 218 634 puis 225 553, sous-préfecture 102 413 puis 105 602 ; département de Tengréla 157 031 puis 162 034, sous-préfecture 102 069 puis 105 320. Conforme aux fiches.
+- Bélier : département de Toumodi 180 562 puis 184 413, sous-préfecture 94 749 puis 98 665. Conforme aux fiches.
+- Contrôles arithmétiques dans les mêmes tableaux : chaque sous-préfecture retenue vérifie hommes + femmes = total, et la somme des départements redonne le total régional (Agnéby-Tiassa 2025 : 421 771 + 137 490 + 303 679 + 84 086 = 947 026 ; Bagoué 2025 : 225 553 + 162 034 + 199 360 = 586 947 ; Bélier 2024 : 180 562 + 124 434 + 100 451 + 39 810 = 445 257 ; Guémon 2024 : 296 034 + 458 538 + 158 429 + 103 809 = 1 016 810).
+- Cavally : nouvelle tentative infructueuse. Le fichier `File_val_indicateur_20260821150909_c2f00655b318d47b.pdf` répond toujours 404, en HTTPS comme en HTTP, avec ou sans `www`, en variantes de casse, avec paramètre de cache et via les routes `publication/download`, `publication/file`, `publication/getFile`. Les quatre identifiants de fiche renvoyés par la recherche paginée pointent tous vers la même publication, et le site n'en connaît qu'une (« MONOGRAPHIE DE LA REGION DU CAVALLY », 18/08/2026). Aucun miroir trouvé ; l'archive Internet est injoignable depuis le poste.
+
+**Conséquence**
+- Aucune fiche n'est modifiée par cette séance : les 32 valeurs déjà publiées sont confirmées, et Guiglo comme Bloléquin restent à l'échelle régionale (806 262 habitants projetés en 2025) faute de tableau accessible.
+
+**Vérifié**
+- `php -l` OK, `composer test` 149 verts, `format:check` PASS, `analyse` 0 erreur.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
