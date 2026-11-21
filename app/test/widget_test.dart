@@ -19,21 +19,24 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const ValueKey('brand-wordmark')), findsWidgets);
-    expect(find.textContaining('encyclopédie libre consacrée'), findsOneWidget);
+    expect(
+      find.textContaining('L’encyclopédie de la Côte d’Ivoire'),
+      findsWidgets,
+    );
     // Le sommaire reprend les libellés des rubriques : chacune apparaît deux
     // fois, une fois dans le plan et une fois comme titre.
-    expect(find.text('Article du jour'), findsNWidgets(2));
-    expect(find.text('Le saviez-vous ?'), findsOneWidget);
-    expect(find.text('Portails thématiques'), findsOneWidget);
+    expect(find.text('La une'), findsNWidgets(2));
+    expect(find.text('LE SAVIEZ-VOUS ?'), findsOneWidget);
+    expect(find.text('Tous les portails'), findsOneWidget);
     expect(find.text('Histoire'), findsWidgets);
     expect(find.text('Abidjan'), findsWidgets);
 
     // La manchette porte la devise et les repères du pays.
     expect(find.text(kTagline), findsWidgets);
     expect(find.text('32 711 547 habitants'), findsOneWidget);
-    expect(find.text('+2,5 % par an (2020-2025)'), findsOneWidget);
+    expect(find.textContaining('+2,5 % par an'), findsOneWidget);
     expect(find.text('Aujourd’hui dans l’histoire'), findsNWidgets(2));
-    expect(find.text('La frise en un coup d’œil'), findsNWidgets(2));
+    expect(find.text('Voir la frise complète'), findsOneWidget);
     expect(find.text('Le royaume d’Indénié'), findsWidgets);
   });
 
@@ -43,7 +46,7 @@ void main() {
     await tester.pumpWidget(IvoirepediaApp(api: FakeApi()));
     await tester.pumpAndSettle();
 
-    final button = find.text('Tirer un article');
+    final button = find.text('Au hasard');
     await tester.ensureVisible(button);
     await tester.pumpAndSettle();
     await tester.tap(button);
@@ -195,9 +198,9 @@ void main() {
     await tester.pumpWidget(IvoirepediaApp(api: FakeApi()));
     await tester.pumpAndSettle();
 
-    expect(find.text('Article du jour'), findsNWidgets(2));
-    expect(find.text('Portails thématiques'), findsOneWidget);
-    expect(find.text('La frise en un coup d’œil'), findsNWidgets(2));
+    expect(find.text('La une'), findsNWidgets(2));
+    expect(find.text('Tous les portails'), findsOneWidget);
+    expect(find.text('Voir la frise complète'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 }

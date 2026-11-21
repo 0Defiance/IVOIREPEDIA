@@ -1724,6 +1724,25 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 64 — 21 novembre 2026 · Refonte de la page d’accueil
+
+**Demandé**
+- Améliorer la présentation des sections du site, surtout la page d’accueil, avec un placement plus intelligent et professionnel.
+
+**Fait**
+- Nouveau fichier `app/lib/src/ui/home_sections.dart` : bandeau d’ouverture compact (marque, phrase, compteurs, menu unique des portails), sommaire-rail numéroté, mosaïque de une (article principal + deux secondaires), bande « Aujourd’hui dans l’histoire » fusionnée avec la frise, tuiles de régions avec barre de proportion, fil des publications en trois colonnes avec bandeau « Le saviez-vous ? », bande de tous les portails, poste de travail du lecteur (chiffre national, repères, outils).
+- `home_page.dart` recomposé autour de ces sections ; les anciennes briques devenues inutiles sont supprimées (manchette centrée, barre de portails, boîte « Sommaire », cartes de régions, cartes d’articles, encart « article au hasard », bloc de chiffres). La page perd la triple redondance des catégories et gagne un écran de contenu.
+- Ordre retenu : ouverture → sommaire-rail → une → histoire → régions → fil → récits → domaines → explorer → charte, avec la colonne de droite réduite à quatre blocs hiérarchisés.
+
+**Vérifié**
+- `flutter analyze` : aucun problème. `flutter test` : 56 tests verts, dont les tests de la page d’accueil réécrits pour la nouvelle composition (la une, le menu des portails, la bande histoire, le tirage au sort, le rendu téléphone sans débordement).
+- Un débordement de 42 px du sommaire-rail sur téléphone a été trouvé par le test puis corrigé (libellés tronqués proprement).
+
+**Reste**
+- Le sommaire n’est pas encore « collant » au défilement : l’enveloppe `SiteShell` possède son propre `SingleChildScrollView`, il faudrait la passer en `CustomScrollView` pour épingler la barre. À faire si le besoin se confirme à l’usage.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
