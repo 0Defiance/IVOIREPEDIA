@@ -132,7 +132,7 @@ return [
             ['p', "Le décret de 2011 en fait le siège de la région et du département ; le commerce avec le Liberia n'est pas documenté dans cette fiche."],
             ['h2', 'Démographie'],
             ['p', 'La commune comptait 171 454 habitants lors du recensement de 2021 (RGPH 2021, ANStat).'],
-            ['p', 'L\'ANStat projette 806 262 habitants dans la Cavally en 2025, contre 708 241 au recensement de 2021 ; le détail par département et par sous-préfecture n\'est pas repris ici.'],
+            ['p', 'Les projections 2024 et 2025 du département et de la sous-préfecture ne sont pas disponibles pour la Cavally : seule la projection régionale est publiée à ce jour, soit 806 262 habitants en 2025, contre 708 241 au recensement de 2021.'],
         ],
     ],
 
@@ -356,7 +356,7 @@ return [
             ['p', 'Bloléquin est chef-lieu de son département depuis le découpage de 2011, rattaché à la région de la Cavally.'],
             ['h2', 'Démographie'],
             ['p', 'La commune comptait 123 133 habitants au recensement de 2021 (RGPH 2021, ANStat).'],
-            ['p', 'À l\'échelle de la région, l\'ANStat projette 806 262 habitants dans la Cavally en 2025, contre 708 241 en 2021 ; le détail par département et par sous-préfecture n\'est pas repris ici.'],
+            ['p', 'Pour la Cavally, seules les projections régionales sont publiées : 806 262 habitants en 2025, contre 708 241 en 2021. Le détail par département et par sous-préfecture n\'est pas disponible à ce jour.'],
         ],
     ],
 

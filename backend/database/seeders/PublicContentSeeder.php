@@ -184,6 +184,7 @@ class PublicContentSeeder extends Seeder
                     ['p', "Abidjan, c'est d'abord une lagune, des ponts et une ville qui déborde de partout. Les Ivoiriens l'appellent la capitale économique, et beaucoup disent simplement « Abidjan » comme on dit « la ville » : c'est là qu'on vient chercher la vie, un emploi, une école, un marché. Née d'un village ébrié sur la rive nord de la lagune Ébrié, elle s'est construite autour du port et du Plateau, avant de devenir en 2001 une collectivité à statut particulier, le District autonome d'Abidjan."],
                     ['p', "Le site explique presque tout. La lagune Ébrié, profonde et abritée de la houle par la flèche de sable de Port-Bouët, offre un plan d'eau calme que les navires peuvent rejoindre par le canal de Vridi ; la ville commande en même temps la route du nord, celle de l'est et l'accès maritime du pays. C'est ce triple avantage qui lui a permis de supplanter Grand-Bassam puis Bingerville comme capitale administrative, et d'être, à l'indépendance, la vitrine du pays."],
                     ['p', "Le district couvre 2 140 kilomètres carrés et comptait, au recensement de 2021, 6 321 017 habitants : 3 210 983 hommes et 3 110 034 femmes, répartis en 1 414 136 ménages, avec une taille moyenne de 4,5 personnes par ménage. Cette densité — près de 3 000 habitants au kilomètre carré en moyenne, beaucoup plus dans les quartiers populaires — fait d'Abidjan l'une des agglomérations les plus denses d'Afrique de l'Ouest."],
+                    ['p', "Les projections de l'ANStat pour 2024 et 2025 donnent 6 865 306 puis 7 047 425 habitants au district, qui forme le département d'Abidjan ; les quatre sous-préfectures de la couronne — Anyama, Bingerville, Brofodoumé et Songon — passeraient, elles, de 765 578 à 785 921 habitants. Ce sont des projections, non des dénombrements, et la ville-centre n'y est pas isolée."],
                     ['h2', 'Une capitale économique, pas politique'],
                     ['p', "Si Yamoussoukro est devenue la capitale politique en 1983, Abidjan a gardé l'essentiel : les banques, les assurances, les sièges d'entreprises, les rédactions, les ambassades et la Bourse régionale des valeurs mobilières, commune aux huit pays de l'Union économique et monétaire ouest-africaine. Le Plateau, avec sa Cité administrative et ses tours, reste le centre des affaires, même si les ministères ont officiellement rejoint Yamoussoukro."],
                     ['p', "Le port d'Abidjan, ouvert au trafic international grâce au canal de Vridi en 1950, est la première porte du pays. C'est par lui que partent le cacao, le café, le bois, le caoutchouc et l'anacarde, et qu'entrent le riz, le blé, le poisson congelé, les produits manufacturés et les hydrocarbures raffinés. Le Burkina Faso, le Mali et le Niger y font transiter une partie de leur commerce : la route du nord, celle qui monte vers Ouagadougou, est l'une des artères économiques de la sous-région."],
@@ -197,7 +198,7 @@ class PublicContentSeeder extends Seeder
                     ['li', 'Treichville, avec son marché, son port et son artère commerçante, héritière du noyau colonial'],
                     ['li', 'Marcory et son quartier Anoumabo, Koumassi et son grand marché, Port-Bouët et son aéroport, Vridi et son canal'],
                     ['li', "Attécoubé, adossée à la forêt du Banco, la plus petite par la superficie et l'une des plus denses"],
-                    ['p', "S'y ajoutent trois sous-préfectures — Anyama, Bingerville et Songon — qui forment la couronne du district et absorbent une partie de la croissance urbaine. C'est cet ensemble, et non la seule ville-centre, que le recensement compte."],
+                    ['p', "S'y ajoutent quatre sous-préfectures — Anyama, Bingerville, Brofodoumé et Songon — qui forment la couronne du district et absorbent une partie de la croissance urbaine. C'est cet ensemble, et non la seule ville-centre, que le recensement compte."],
                     ['h2', 'Franchir la lagune'],
                     ['p', "Abidjan s'est construite en franchissant l'eau. Le pont Félix-Houphouët-Boigny, mis en service en 1957, a longtemps été le seul lien entre le Plateau et Treichville ; le pont Charles de Gaulle l'a relayé en 1967, puis le pont Henri Konan Bédié a ouvert en 2014 un troisième passage vers le sud-est. Ces ouvrages sont les points de passage obligés d'une métropole où l'on traverse la lagune matin et soir pour aller travailler : c'est là que se forment les embouteillages que tout Abidjanais connaît."],
                     ['p', 'À côté des ponts, des navettes lagunaires relient certaines rives, et les gbakas — ces minibus bleus et jaunes — font la navette entre les communes. Le transport collectif reste le premier sujet de discussion de la ville : la SOTRA, les gbakas, les woro-woros et les taxis compteurs se partagent des millions de trajets quotidiens, et le chantier du métro, destiné à relier la couronne nord au centre, doit à terme désengorger les axes.'],
@@ -268,6 +269,7 @@ class PublicContentSeeder extends Seeder
                     ['h2', 'La ville du Vieux'],
                     ['p', 'Devenu président, Houphouët-Boigny transforme le village en ville moderne : hôtels, aéroport international, fondation pour la paix, institut polytechnique, lacs artificiels. Il y fait construire sa résidence et y transfère progressivement des institutions. En 1983, l\'Assemblée nationale vote le transfert de la capitale politique d\'Abidjan à Yamoussoukro.'],
                     ['p', 'Le transfert reste incomplet. Les ambassades, les sièges des grandes entreprises et la plupart des administrations restent à Abidjan. Yamoussoukro accueille le président, quelques ministères et des événements officiels, mais vit au rythme d\'une ville moyenne, avec une population de 422 072 habitants au recensement de 2021 [1].'],
+                    ['p', "L'ANStat projette 395 260 habitants dans le département de Yamoussoukro en 2024 et 402 596 en 2025 ; la sous-préfecture du même nom, qui porte la ville, suivrait de 360 828 à 367 466 habitants. Projections, et non effectifs recensés."],
                     ['h2', 'La basilique'],
                     ['p', 'Le monument qui domine la ville est la basilique Notre-Dame de la Paix, consacrée en 1990 par le pape Jean-Paul II [2]. Avec son dôme immense, ses colonnes et ses vitraux, elle est l\'une des plus grandes églises du monde. Elle a coûté très cher et continue de faire débat, dans un pays où les besoins sociaux sont immenses.'],
                     ['p', 'La basilique est aujourd\'hui le premier motif de visite. Autour, on trouve le lac aux caïmans, la fondation Houphouët-Boigny, le palais présidentiel et des bâtiments officiels souvent vides. Les guides racontent l\'histoire du « Vieux » avec fierté, en mêlant souvenirs personnels et récit national.'],
@@ -692,6 +694,7 @@ class PublicContentSeeder extends Seeder
                 ],
                 'blocks' => [
                     ['p', "Bouaké, c'est le poumon du centre du pays. Deuxième ville de Côte d'Ivoire avec 832 371 habitants au recensement de 2021, elle est le grand marché des savanes, le carrefour où l'on change de climat, de langue et de cuisine en descendant d'Abidjan vers le nord."],
+                    ['p', "Le département de Bouaké est projeté à 984 724 habitants en 2024 et 1 001 707 en 2025 ; la sous-préfecture de Bouaké, qui englobe la commune, passerait de 879 084 à 894 082 habitants. L'ANStat présente ces chiffres comme des projections issues du RGPH 2021."],
                     ['h2', 'Un carrefour de transports et de commerce'],
                     ['p', "La ville s'est développée comme relais sur l'axe Abidjan–Ouagadougou et comme centre de collecte du coton et des productions vivrières du centre. Le chemin de fer Abidjan-Niger, construit à l'époque coloniale, y a installé un nœud d'ateliers et de dépôts qui a longtemps fait vivre une partie de la population, et les cars qui montent vers Korhogo et Ferkessédougou y font étape."],
                     ['p', "Son marché central, l'un des plus grands du pays, approvisionne un arrière-pays agricole étendu : coton, igname, maïs, riz, arachide, bétail. On y entend le baoulé, le dioula et le sénoufo, et la ville compte une forte population musulmane, avec ses mosquées et ses commerçants venus du nord et de la sous-région."],
@@ -738,6 +741,7 @@ class PublicContentSeeder extends Seeder
                 ],
                 'blocks' => [
                     ['p', "San-Pédro, c'est la ville qui a poussé avec son port. À l'embouchure du fleuve San-Pédro, dans le sud-ouest forestier, elle comptait 390 654 habitants au recensement de 2021 : une population jeune, venue de tout le pays et de la sous-région pour travailler le bois, le cacao et, désormais, le pétrole."],
+                    ['p', "Les projections de l'ANStat donnent 850 481 habitants au département de San-Pédro en 2024 et 870 575 en 2025, et 420 326 puis 430 038 à la sous-préfecture, qui contient la ville. Ce sont des projections."],
                     ['h2', 'Un port pour le cacao et le bois'],
                     ['p', "La ville est née de la décision, dans les années 1960, d'ouvrir un second port maritime pour désengorger Abidjan et exporter le bois du Sud-Ouest. Le port entre en service au début des années 1970. Il expédie aujourd'hui une part importante du cacao, du café, du bois et du caoutchouc de la région, et dispose d'un terminal pour la pêche industrielle et d'installations pour les produits pétroliers."],
                     ['p', "Sa création a transformé une région jusque-là peu peuplée : routes, cités d'entreprise, zones industrielles et lotissements ont attiré des travailleurs, et la ville s'est organisée autour du port, de la voie ferrée et de la route qui remonte vers Abidjan."],
@@ -748,7 +752,7 @@ class PublicContentSeeder extends Seeder
                     ['h2', 'Entre forêt et littoral'],
                     ['p', "Le parc national de Taï, inscrit au patrimoine mondial de l'UNESCO depuis 1982, se trouve dans la région. Les autres sites touristiques et plages de la région ne sont pas décrits ici, faute de source officielle vérifiée."],
                     ['h2', "Aujourd'hui"],
-                    ['p', 'San-Pédro est la troisième ville du pays et le deuxième port maritime. Les perspectives de la ville ne sont pas détaillées ici, faute de source officielle vérifiée.'],
+                    ['p', 'San-Pédro est la troisième ville du pays et le deuxième port maritime.'],
                 ],
                 'references' => [
                     [
@@ -784,6 +788,7 @@ class PublicContentSeeder extends Seeder
                 ],
                 'blocks' => [
                     ['p', "Korhogo, c'est le nord ivoirien dans ce qu'il a de plus identifiable : les toiles peintes, les masques, le Poro, la chaleur sèche de l'harmattan et les champs de coton. Chef-lieu de la région des Savanes, la ville compte 440 926 habitants au recensement de 2021 et reste le grand centre administratif et commercial du nord."],
+                    ['p', "Pour le département de Korhogo, l'ANStat projette 826 192 habitants en 2024 et 852 647 en 2025 ; la sous-préfecture, qui englobe la ville, suivrait de 487 298 à 502 527 habitants. Il s'agit de projections."],
                     ['h2', 'La ville des toiles et des masques'],
                     ['p', "Les toiles de Korhogo, peintes à la main sur du coton, sont devenues l'un des symboles de l'artisanat ivoirien. On les trouve au quartier artisanal et au musée régional, avec les sculptures, les masques et les objets de bronze. Cette production, aujourd'hui largement destinée aux visiteurs et à l'exportation, fait vivre des familles entières de peintres et de sculpteurs."],
                     ['h2', 'Le Poro et la société sénoufo'],
@@ -831,6 +836,7 @@ class PublicContentSeeder extends Seeder
                 ],
                 'blocks' => [
                     ['p', "Man, c'est la Côte d'Ivoire des montagnes. Chef-lieu de la région du Tonkpi, dans l'ouest forestier, la ville compte 241 969 habitants au recensement de 2021 et reste le centre du pays dan, que l'on appelle aussi yacouba. On y arrive par une route qui monte, entre forêts et plantations, et le paysage change : collines, brume matinale, cascades."],
+                    ['p', "Le département de Man est projeté à 501 118 habitants en 2024 et 514 024 en 2025, la sous-préfecture de Man à 262 278 puis 268 807. Ces valeurs sont des projections de l'ANStat, établies à partir du RGPH 2021."],
                     ['h2', 'Une ville entre montagnes et cascades'],
                     ['p', "La proximité du mont Tonkoui, l'un des points culminants du pays, et de la cascade de Man en fait une destination appréciée des randonneurs et des scolaires. La région des Dix-Huit Montagnes, qui doit son nom aux sommets qui l'entourent, a bâti une partie de son identité sur ce relief."],
                     ['h2', 'Masques et société dan'],

@@ -1625,6 +1625,31 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 60 — 21 novembre 2026 · Projections 2024-2025 dans les six grands articles de villes
+
+**Demandé**
+- Étendre les projections 2024-2025 du département et de la sous-préfecture aux six articles déjà publiés dans `PublicContentSeeder` (Abidjan, Yamoussoukro, Bouaké, Korhogo, Man, San-Pédro), pour homogénéiser la série.
+- Reformuler la phrase des fiches Guiglo et Bloléquin sur la Cavally pour qu'elle ne passe pas pour un choix éditorial.
+
+**Fait**
+- Six monographies supplémentaires ont été récupérées (Gbêkê, Poro, Tonkpi, San-Pédro, District autonome d'Abidjan, District autonome de Yamoussoukro) et lues au chapitre 11, tableau 11.1.
+- Abidjan : district, qui forme le département, 6 865 306 habitants en 2024 puis 7 047 425 en 2025 ; les quatre sous-préfectures de la couronne (Anyama, Bingerville, Brofodoumé, Songon) réunies passent de 765 578 à 785 921 habitants. Le paragraphe précise que la ville-centre n'est pas isolée dans ces totaux, et la phrase qui annonçait « trois sous-préfectures » a été corrigée en quatre.
+- Yamoussoukro : département 395 260 puis 402 596 ; sous-préfecture 360 828 puis 367 466.
+- Bouaké : département 984 724 puis 1 001 707 ; sous-préfecture 879 084 puis 894 082.
+- Korhogo : département 826 192 puis 852 647 ; sous-préfecture 487 298 puis 502 527.
+- Man : département 501 118 puis 514 024 ; sous-préfecture 262 278 puis 268 807.
+- San-Pédro : département 850 481 puis 870 575 ; sous-préfecture 420 326 puis 430 038. La phrase de clôture qui disait les perspectives « non détaillées, faute de source » a été retirée, puisqu'elles le sont désormais.
+- Guiglo et Bloléquin : la phrase ne parle plus d'un détail « non repris ici » mais indique que seules les projections régionales sont publiées à ce jour pour la Cavally (806 262 habitants en 2025), le détail départemental et de sous-préfecture n'étant pas disponible.
+
+**Sources**
+- Monographies régionales ANStat (RGPH 2021), chapitre 11, tableau 11.1 — <https://www.anstat.ci/publications-regionales>.
+
+**Vérifié**
+- Contrôle de cohérence dans les tableaux : pour l'Abidjan, la somme des quatre sous-préfectures redonne 724 517 habitants en 2022, contre 724 518 cités par le commentaire de la monographie ; pour le Gbêkê, Bouaké 879 084 + Bounda, Brobo, Djebonoua et Mamini = 984 724 ; pour le Tonkpi, Man 262 278 + Podiaguiné et les autres sous-préfectures = 501 118.
+- `php -l` OK sur les deux fichiers, `pint` appliqué puis `--test` OK, `composer test` 149 verts (1 869 assertions), `format:check` PASS, `analyse` 0 erreur.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
