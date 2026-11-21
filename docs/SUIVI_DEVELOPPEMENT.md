@@ -1519,6 +1519,30 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 56 — 21 novembre 2026 · Fiches de villes : neutralisation des affirmations non sourcées
+
+**Demandé**
+- Relire les 34 fiches de `database/data/cities.php` une par une et retirer les affirmations descriptives sans source.
+
+**Fait**
+- Chaque fiche ne garde que la position dans le pays, le statut administratif (chef-lieu de région ou de département), l'effectif RGPH 2021 et la répartition non détaillée.
+- Retirés : histoire, peuplement et groupes de population, cultures et économie, pratiques culturelles, distances et durées de trajet, surnoms, chiffres du barrage de Soubré et de Buyo.
+- Les sections « Relief et climat » et « Quartiers et équipements » restent fournies par `cities-details.php`, déjà neutres.
+
+**Sources retenues**
+- Effectifs : RGPH 2021, ANStat — <https://plan.gouv.ci/uploads/publications/RGPH2021-RESULTATS-GLOBAUX-VF.pdf>.
+- Chefs-lieux de régions et de départements : décret n° 2011-263 du 28 septembre 2011 portant organisation du territoire national, annexe — <http://lexterra.ci/data/domaine/coll_terr/CT2/2011-09-28%20D2011-263%20D%C3%A9coupage%20r%C3%A9gional%20&%20districts.pdf>.
+- Rattachement des localités aux régions et départements : répertoires des localités du RGPH 2021 par région — <https://rp2021.anstat.ci/>.
+
+**Vérifié**
+- `composer test` 149 verts (1869 assertions), `format:check` PASS (152 fichiers), `analyse` OK ; `pint` appliqué au seul fichier modifié.
+
+**Reste à faire**
+- Sourcer, si le propriétaire les vérifie, les éléments historiques et économiques retirés : histoire cacaoyère de Daloa, royaume sanwi d'Aboisso, poterie de Katiola, barrage de Buyo.
+- Vérifier la position géographique des 34 villes sur les cartes administratives de l'ANStat (`rp2021.anstat.ci`), seule partie descriptive conservée sans référence explicite.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
