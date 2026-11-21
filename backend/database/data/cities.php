@@ -11,6 +11,9 @@
  * — la liste actuelle des départements de chaque région, telle que la donnent
  *   ces mêmes monographies.
  *
+ * Chaque fiche cite en référence la monographie de sa région ; le rattachement
+ * et les liens sont dans `cities-monographs.php`.
+ *
  * Les projections sont toujours annoncées comme telles : ce ne sont pas des
  * dénombrements, et elles portent sur la sous-préfecture, qui englobe la
  * commune sans se confondre avec elle.

@@ -26,7 +26,8 @@ use Illuminate\Support\Str;
  *    si le contenu diffère de la série, il est conservé, l'empreinte est
  *    posée et la fiche est signalée pour relecture ;
  *  - les sources et les étiquettes ne sont jamais supprimées : la référence
- *    du recensement et l'étiquette « ville » sont ajoutées si elles manquent,
+ *    du recensement, celle de la monographie régionale (qui porte les
+ *    projections) et l'étiquette « ville » sont ajoutées si elles manquent,
  *    sans toucher aux autres.
  *
  * La variable d'environnement `CITY_SEEDER_ADOPT=1` marque une fois les fiches
@@ -63,6 +64,8 @@ class CityArticleSeeder extends Seeder
         $cities = require database_path('data/cities.php');
         /** @var array<string, array<int, array{0: string, 1: string}>> $details */
         $details = require database_path('data/cities-details.php');
+        /** @var array{regions: array<string, array{title: string, url: string}>, cities: array<string, string>} $monographs */
+        $monographs = require database_path('data/cities-monographs.php');
 
         $author = $this->author();
         $category = Category::query()->firstOrCreate(
@@ -157,6 +160,10 @@ class CityArticleSeeder extends Seeder
             $article->tags()->syncWithoutDetaching([$tag->id]);
 
             $this->attachCensusReference($article);
+            $this->attachMonographReference(
+                $article,
+                $monographs['regions'][$monographs['cities'][$slug] ?? ''] ?? null,
+            );
         }
 
         $this->command?->info(sprintf(
@@ -190,6 +197,34 @@ class CityArticleSeeder extends Seeder
 
         $article->references()->create([
             ...self::CENSUS_REFERENCE,
+            'position' => ((int) $article->references()->max('position')) + 1,
+            'accessed_at' => now()->toDateString(),
+        ]);
+    }
+
+    /**
+     * Ajoute la monographie régionale qui porte les projections, si son PDF
+     * est publié sur le site de l'ANStat ; les autres références restent.
+     *
+     * @param  array{title: string, url: string}|null  $monograph
+     */
+    private function attachMonographReference(Article $article, ?array $monograph): void
+    {
+        if ($monograph === null) {
+            return;
+        }
+
+        if ($article->references()->where('url', $monograph['url'])->exists()) {
+            return;
+        }
+
+        $article->references()->create([
+            'kind' => 'REPORT',
+            'authors' => 'ANStat (ex-INS)',
+            'title' => $monograph['title'],
+            'publisher' => 'ANStat',
+            'year' => null,
+            'url' => $monograph['url'],
             'position' => ((int) $article->references()->max('position')) + 1,
             'accessed_at' => now()->toDateString(),
         ]);

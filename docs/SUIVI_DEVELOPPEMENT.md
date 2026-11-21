@@ -1675,6 +1675,28 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 62 — 21 novembre 2026 · Monographies régionales en références des fiches de villes
+
+**Demandé**
+- Ajouter la référence de la monographie régionale ANStat à chacune des fiches de `cities.php` qui utilisent ses projections, pour qu'elles soient sourcées comme les six grands articles, puis lancer les contrôles et commiter.
+
+**Fait**
+- Nouveau fichier de données `backend/database/data/cities-monographs.php` : vingt monographies régionales (titre + lien direct vers le PDF) et le rattachement des trente-quatre fiches à leur région, dans la logique des fichiers compagnons déjà utilisés par la série (`cities-details.php`).
+- `CityArticleSeeder` ajoute désormais, après la référence du recensement, la monographie de la région de la fiche (`attachMonographReference`), en `REPORT`, auteur « ANStat (ex-INS) », éditeur « ANStat », position 2. L'ajout est idempotent et ne supprime aucune référence existante, y compris celles posées depuis `/admin`.
+- Les trente-deux fiches qui portent des projections départementales et de sous-préfecture ont donc deux sources : le RGPH 2021 et la monographie régionale. Guiglo et Bloléquin restent à une source, faute de fichier publié pour la Cavally.
+- En-tête de `cities.php` complété d'une phrase sur ce rattachement.
+
+**Vérifié**
+- Les trente-trois monographies listées par l'ANStat répondent en HTTP 200 ; seule celle de la Cavally renvoie 404, ce qui est la raison de l'exception Guiglo/Bloléquin.
+- Contrôle du contenu dans les PDF téléchargés : le département de Soubré (622 918), celui de Gagnoa (775 499), celui de Divo (613 218) et celui de Bouaflé (321 835) y figurent bien aux dates citées, ce qui confirme que chaque lien pointe sur le document dont la fiche tire ses chiffres.
+- Test ajouté dans `CityArticlesTest` : chaque fiche du rattachement porte l'URL de sa monographie, les fiches de la Cavally restent à une source, et la référence Daloa est bien un `REPORT` en position 2. Les trois tests qui figeaient le nombre de références (une seule) passent à deux, et à trois après ajout manuel.
+- `php -l` OK sur les trois fichiers touchés, `pint` appliqué (153 fichiers) puis `--test` OK, `composer test` 150 verts (1 998 assertions), `format:check` PASS, `analyse` 0 erreur.
+
+**Reste**
+- La monographie de la Cavally (404) empêche toujours de sourcer les projections départementales de Guiglo et Bloléquin.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

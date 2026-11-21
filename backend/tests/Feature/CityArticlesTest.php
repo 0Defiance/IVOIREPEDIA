@@ -56,7 +56,8 @@ it('donne à chaque ville son infobox, sa source et son étiquette', function ()
             'populationYear' => 2021,
         ])
         ->and($daloa->tags->pluck('slug')->all())->toBe(['ville'])
-        ->and($daloa->references)->toHaveCount(1)
+        // Le recensement et la monographie régionale qui porte les projections.
+        ->and($daloa->references)->toHaveCount(2)
         ->and($daloa->references->first()->url)
         ->toBe('https://plan.gouv.ci/uploads/publications/RGPH2021-RESULTATS-GLOBAUX-VF.pdf');
 
@@ -110,7 +111,7 @@ it('reste idempotent quand on le relance', function () {
     $this->seed(CityArticleSeeder::class);
 
     expect(Article::query()->count())->toBe(count(cityData()))
-        ->and(Article::query()->where('slug', 'katiola')->firstOrFail()->references)->toHaveCount(1);
+        ->and(Article::query()->where('slug', 'katiola')->firstOrFail()->references)->toHaveCount(2);
 });
 
 it('adopte une fiche antérieure à la colonne series quand on le demande', function () {
@@ -182,9 +183,41 @@ it('ne supprime pas les références ajoutées depuis le panneau', function () {
 
     $references = $daloa->references()->get();
 
-    expect($references)->toHaveCount(2)
+    expect($references)->toHaveCount(3)
         ->and($references->pluck('url')->all())->toContain('https://example.test/monographie-daloa')
         ->and($references->where('url', CityArticleSeeder::CENSUS_URL))->toHaveCount(1);
+});
+
+it('cite la monographie régionale qui porte ses projections', function () {
+    $this->seed(CategorySeeder::class);
+    $this->seed(CityArticleSeeder::class);
+
+    /** @var array{regions: array<string, array{title: string, url: string}>, cities: array<string, string>} $monographs */
+    $monographs = require database_path('data/cities-monographs.php');
+
+    foreach ($monographs['cities'] as $slug => $region) {
+        $urls = Article::query()->where('slug', $slug)->firstOrFail()
+            ->references()->pluck('url')->all();
+
+        expect($urls)->toContain(CityArticleSeeder::CENSUS_URL);
+
+        // La Cavally n'a pas de fichier publié : sa fiche le dit et reste
+        // sourcée par le seul recensement.
+        if ($region === 'Cavally') {
+            expect($urls)->toHaveCount(1);
+
+            continue;
+        }
+
+        expect($urls)->toContain($monographs['regions'][$region]['url']);
+    }
+
+    $daloa = Article::query()->where('slug', 'daloa')->firstOrFail();
+    $monograph = $daloa->references()->where('url', $monographs['regions']['Haut-Sassandra']['url'])->firstOrFail();
+
+    expect($monograph->kind)->toBe('REPORT')
+        ->and($monograph->publisher)->toBe('ANStat')
+        ->and($monograph->position)->toBe(2);
 });
 
 it('ne réécrit pas une fiche de la série modifiée depuis le panneau', function () {
