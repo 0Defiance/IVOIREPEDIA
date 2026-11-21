@@ -55,7 +55,19 @@ class _HomeData {
 /// couverture doit donner à voir le pays, pas un portrait.
 const Set<String> _visualDomains = {'geographie', 'patrimoine', 'culture'};
 
-/// Tirage de la visite : une photo qui donne à voir le pays ouvre la page, le
+/// Photos de couverture : des vues larges et nettes d'un lieu ou d'une fierté
+/// culturelle du pays — la danse zaouli, la ville historique de Grand-Bassam,
+/// les montagnes de Man, les rues de Korhogo. Le tirage les sert en priorité ;
+/// les autres photos de géographie, de patrimoine ou de culture prennent le
+/// relais quand l'une manque au corpus.
+const Set<String> _coverFavourites = {
+  'le-zaouli',
+  'grand-bassam',
+  'man',
+  'korhogo',
+};
+
+/// Tirage de la visite : une des meilleures photos du pays ouvre la page, le
 /// reste du corpus suit dans un ordre tiré au sort. Deux visites ne montrent
 /// donc pas la même une, sans jamais écarter les articles illustrés.
 List<ArticleSummary> _shuffledForHome(List<ArticleSummary> items) {
@@ -71,12 +83,20 @@ List<ArticleSummary> _shuffledForHome(List<ArticleSummary> items) {
     return List<ArticleSummary>.of(items);
   }
 
+  final favourites = [
+    for (final item in illustrated)
+      if (_coverFavourites.contains(item.slug)) item,
+  ];
   final vistas = [
     for (final item in illustrated)
       if (_visualDomains.contains(item.categorySlug)) item,
-  ]..shuffle(random);
+  ];
 
-  final pool = vistas.isNotEmpty ? vistas : (illustrated..shuffle(random));
+  final pool = favourites.isNotEmpty
+      ? (favourites..shuffle(random))
+      : vistas.isNotEmpty
+      ? (vistas..shuffle(random))
+      : (illustrated..shuffle(random));
   final cover = pool.first;
   final rest = [
     for (final item in items)
@@ -115,7 +135,7 @@ class _HomePageState extends State<HomePage> {
     // « le saviez-vous » — sans jamais réafficher la même entrée. Le tirage
     // de la couverture choisit dans ce corpus, d'où la marge au-delà des dix
     // entrées affichées.
-    final articlesFuture = api.fetchArticles(limit: 20);
+    final articlesFuture = _loadCorpus(api);
     final timelineFuture = _optional(
       api.fetchTimeline,
       const <TimelineEvent>[],
@@ -172,6 +192,48 @@ class _HomePageState extends State<HomePage> {
         sources: sources,
       );
     });
+  }
+
+  /// Tout le corpus publié, page après page : la couverture peut ainsi tirer
+  /// une photo dans les articles plus anciens — le zaouli, Grand-Bassam — et
+  /// pas seulement dans les vingt derniers publiés. Les pages suivantes
+  /// partent ensemble ; une page en panne laisse le tirage sur ce qui est
+  /// déjà chargé.
+  Future<PagedArticles> _loadCorpus(IvoirepediaApi api) async {
+    final first = await api.fetchArticles(limit: 20);
+    final pages = [
+      for (var page = 2; (page - 1) * first.limit < first.total; page++) page,
+    ];
+
+    if (pages.isEmpty) {
+      return first;
+    }
+
+    final rest = await Future.wait([
+      for (final page in pages)
+        _optional(
+          () => api.fetchArticles(page: page, limit: first.limit),
+          first,
+        ),
+    ]);
+
+    final items = <ArticleSummary>[...first.items];
+    final seen = {for (final item in first.items) item.slug};
+
+    for (final paged in rest) {
+      for (final item in paged.items) {
+        if (seen.add(item.slug)) {
+          items.add(item);
+        }
+      }
+    }
+
+    return PagedArticles(
+      items: items,
+      page: first.page,
+      limit: first.limit,
+      total: first.total,
+    );
   }
 
   /// Un appel facultatif : en cas de panne, la valeur de repli suffit.

@@ -171,39 +171,174 @@ class HomeMasthead extends StatelessWidget {
           ),
           if (categories.isNotEmpty) ...[
             const SizedBox(height: 18),
-            Container(
-              decoration: BoxDecoration(
-                color: tone.subtle,
-                border: Border(
-                  top: BorderSide(color: tone.lineSoft),
-                  bottom: BorderSide(color: tone.lineSoft),
+            _MastheadPortalRail(categories: categories),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Rail des domaines : une bande qui défile horizontalement. Quand la suite
+/// reste hors écran, un dégradé et un chevron à droite le disent, et le
+/// chevron fait avancer le rail ; les deux disparaissent une fois le dernier
+/// portail atteint, pour ne jamais masquer un lien.
+class _MastheadPortalRail extends StatefulWidget {
+  const _MastheadPortalRail({required this.categories});
+
+  final List<Category> categories;
+
+  @override
+  State<_MastheadPortalRail> createState() => _MastheadPortalRailState();
+}
+
+class _MastheadPortalRailState extends State<_MastheadPortalRail> {
+  final ScrollController _controller = ScrollController();
+  bool _more = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.addListener(_syncOverflow);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _syncOverflow());
+  }
+
+  @override
+  void dispose() {
+    _controller.removeListener(_syncOverflow);
+    _controller.dispose();
+    super.dispose();
+  }
+
+  /// La suite est-elle hors écran ? La réponse change au défilement comme au
+  /// redimensionnement de la fenêtre, d'où la vérification après chaque
+  /// rendu en plus de l'écoute du défilement.
+  void _syncOverflow() {
+    if (!mounted || !_controller.hasClients) {
+      return;
+    }
+
+    final position = _controller.position;
+    final more = position.maxScrollExtent - position.pixels > 4;
+
+    if (more != _more) {
+      setState(() => _more = more);
+    }
+  }
+
+  void _scrollForward() {
+    if (!_controller.hasClients) {
+      return;
+    }
+
+    _controller.animateTo(
+      (_controller.offset + 180)
+          .clamp(0.0, _controller.position.maxScrollExtent)
+          .toDouble(),
+      duration: const Duration(milliseconds: 240),
+      curve: Curves.easeOutCubic,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final tone = ToneColors.from(context);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => _syncOverflow());
+
+    return ClipRect(
+      child: Container(
+        decoration: BoxDecoration(
+          color: tone.subtle,
+          border: Border(
+            top: BorderSide(color: tone.lineSoft),
+            bottom: BorderSide(color: tone.lineSoft),
+          ),
+        ),
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              controller: _controller,
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(14, 12, 8, 12),
+                    child: Text(
+                      'Portails',
+                      style: titleStyle(
+                        size: 12.5,
+                        weight: FontWeight.w700,
+                        color: tone.ink,
+                      ),
+                    ),
+                  ),
+                  for (final category in widget.categories) ...[
+                    Container(width: 1, height: 13, color: tone.line),
+                    _MastheadPortalLink(category: category),
+                  ],
+                ],
+              ),
+            ),
+            if (_more) ...[
+              Positioned(
+                top: 0,
+                bottom: 0,
+                right: 0,
+                width: 78,
+                child: IgnorePointer(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          tone.subtle.withValues(alpha: 0),
+                          tone.subtle,
+                          tone.subtle,
+                        ],
+                        stops: const [0, 0.45, 1],
+                      ),
+                    ),
+                  ),
                 ),
               ),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(14, 12, 8, 12),
-                      child: Text(
-                        'Portails',
-                        style: titleStyle(
-                          size: 12.5,
-                          weight: FontWeight.w700,
-                          color: tone.ink,
+              Positioned(
+                top: 0,
+                bottom: 0,
+                right: 4,
+                child: Center(
+                  child: Semantics(
+                    button: true,
+                    label: 'Afficher les portails suivants',
+                    child: Tooltip(
+                      message: 'Afficher les portails suivants',
+                      child: MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: GestureDetector(
+                          key: const ValueKey('masthead-rail-more'),
+                          onTap: _scrollForward,
+                          child: Container(
+                            width: 24,
+                            height: 30,
+                            decoration: BoxDecoration(
+                              color: tone.paper,
+                              borderRadius: BorderRadius.circular(15),
+                              border: Border.all(color: tone.lineSoft),
+                            ),
+                            child: Icon(
+                              Icons.chevron_right,
+                              size: 16,
+                              color: tone.muted,
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                    for (final category in categories) ...[
-                      Container(width: 1, height: 13, color: tone.line),
-                      _MastheadPortalLink(category: category),
-                    ],
-                  ],
+                  ),
                 ),
               ),
-            ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }

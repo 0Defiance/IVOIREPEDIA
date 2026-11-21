@@ -111,11 +111,11 @@ class FakeAuthApi implements AuthApi {
   }
 
   AuthUser _user(String email) => AuthUser(
-        id: email,
-        name: _names[email] ?? 'Lecteur',
-        email: email,
-        role: 'READER',
-      );
+    id: email,
+    name: _names[email] ?? 'Lecteur',
+    email: email,
+    role: 'READER',
+  );
 }
 
 void main() {
@@ -125,6 +125,13 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
+  /// L'accueil efface la barre du site au sommet : un défilement la fait
+  /// revenir, comme le ferait un lecteur avant de se connecter.
+  Future<void> revealHeader(WidgetTester tester) async {
+    await tester.dragFrom(const Offset(640, 600), const Offset(0, -220));
+    await tester.pumpAndSettle();
+  }
+
   Future<void> openSignIn(WidgetTester tester, AuthStore store) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(1280, 1000);
@@ -133,6 +140,7 @@ void main() {
     await tester.pumpWidget(IvoirepediaApp(api: FakeApi(), auth: store));
     await tester.pumpAndSettle();
 
+    await revealHeader(tester);
     await tester.tap(find.byKey(const Key('account-signin')));
     await tester.pumpAndSettle();
   }
@@ -156,6 +164,7 @@ void main() {
     );
     await tester.tap(find.byKey(const Key('auth-submit')));
     await tester.pumpAndSettle();
+    await revealHeader(tester);
 
     // Retour à l'accueil, le compte remplace les liens du bandeau.
     expect(find.byKey(const Key('auth-page')), findsNothing);
@@ -184,6 +193,7 @@ void main() {
     await tester.pumpWidget(IvoirepediaApp(api: FakeApi(), auth: store));
     await tester.pumpAndSettle();
 
+    await revealHeader(tester);
     await tester.tap(find.byKey(const Key('account-signup')));
     await tester.pumpAndSettle();
 
@@ -204,6 +214,8 @@ void main() {
     );
     await tester.tap(find.byKey(const Key('auth-submit')));
     await tester.pumpAndSettle();
+    // Retour à l'accueil : la barre du site s'efface au sommet.
+    await revealHeader(tester);
 
     expect(store.signedIn, isTrue);
     expect(store.user?.email, 'koffi@example.test');
@@ -221,7 +233,10 @@ void main() {
       find.byKey(const Key('auth-email')),
       'awa@example.test',
     );
-    await tester.enterText(find.byKey(const Key('auth-password')), 'mauvais123');
+    await tester.enterText(
+      find.byKey(const Key('auth-password')),
+      'mauvais123',
+    );
     await tester.tap(find.byKey(const Key('auth-submit')));
     await tester.pumpAndSettle();
 
@@ -230,36 +245,37 @@ void main() {
     expect(find.text('Adresse ou mot de passe incorrect.'), findsOneWidget);
   });
 
-  testWidgets('le lien « mot de passe oublié » demande un lien sans révéler le compte', (
-    tester,
-  ) async {
-    final api = FakeAuthApi();
-    final store = AuthStore(api: api);
-    await openSignIn(tester, store);
+  testWidgets(
+    'le lien « mot de passe oublié » demande un lien sans révéler le compte',
+    (tester) async {
+      final api = FakeAuthApi();
+      final store = AuthStore(api: api);
+      await openSignIn(tester, store);
 
-    await tester.tap(find.byKey(const Key('auth-forgot')));
-    await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('auth-forgot')));
+      await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('reset-page')), findsOneWidget);
-    expect(find.byKey(const Key('reset-password')), findsNothing);
+      expect(find.byKey(const Key('reset-page')), findsOneWidget);
+      expect(find.byKey(const Key('reset-password')), findsNothing);
 
-    // Une adresse inconnue reçoit exactement la même confirmation.
-    await tester.enterText(
-      find.byKey(const Key('reset-email')),
-      'inconnu@example.test',
-    );
-    await tester.tap(find.byKey(const Key('reset-submit')));
-    await tester.pumpAndSettle();
+      // Une adresse inconnue reçoit exactement la même confirmation.
+      await tester.enterText(
+        find.byKey(const Key('reset-email')),
+        'inconnu@example.test',
+      );
+      await tester.tap(find.byKey(const Key('reset-submit')));
+      await tester.pumpAndSettle();
 
-    expect(api.lastResetRequest, 'inconnu@example.test');
-    expect(find.byKey(const Key('reset-done')), findsOneWidget);
-    expect(
-      find.text(
-        'Si un compte existe avec cette adresse, un lien vient de lui être envoyé.',
-      ),
-      findsOneWidget,
-    );
-  });
+      expect(api.lastResetRequest, 'inconnu@example.test');
+      expect(find.byKey(const Key('reset-done')), findsOneWidget);
+      expect(
+        find.text(
+          'Si un compte existe avec cette adresse, un lien vient de lui être envoyé.',
+        ),
+        findsOneWidget,
+      );
+    },
+  );
 
   testWidgets('un lien reçu permet de choisir un nouveau mot de passe', (
     tester,
@@ -312,42 +328,43 @@ void main() {
     expect(store.user?.email, 'awa@example.test');
   });
 
-  testWidgets('un lien déjà utilisé affiche le refus et permet d’en redemander', (
-    tester,
-  ) async {
-    final store = AuthStore(api: FakeAuthApi());
-    await openSignIn(tester, store);
+  testWidgets(
+    'un lien déjà utilisé affiche le refus et permet d’en redemander',
+    (tester) async {
+      final store = AuthStore(api: FakeAuthApi());
+      await openSignIn(tester, store);
 
-    GoRouter.of(tester.element(find.byKey(const Key('auth-page')))).go(
-      '/mot-de-passe-oublie?token=jeton-perime-1234567890'
-      '&email=awa%40example.test',
-    );
-    await tester.pumpAndSettle();
+      GoRouter.of(tester.element(find.byKey(const Key('auth-page')))).go(
+        '/mot-de-passe-oublie?token=jeton-perime-1234567890'
+        '&email=awa%40example.test',
+      );
+      await tester.pumpAndSettle();
 
-    await tester.enterText(
-      find.byKey(const Key('reset-password')),
-      'nouveaumotdepasse',
-    );
-    await tester.enterText(
-      find.byKey(const Key('reset-confirm')),
-      'nouveaumotdepasse',
-    );
-    await tester.tap(find.byKey(const Key('reset-submit')));
-    await tester.pumpAndSettle();
+      await tester.enterText(
+        find.byKey(const Key('reset-password')),
+        'nouveaumotdepasse',
+      );
+      await tester.enterText(
+        find.byKey(const Key('reset-confirm')),
+        'nouveaumotdepasse',
+      );
+      await tester.tap(find.byKey(const Key('reset-submit')));
+      await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('reset-error')), findsOneWidget);
-    expect(
-      find.text('Ce lien n’est plus valable. Demandez-en un nouveau.'),
-      findsOneWidget,
-    );
+      expect(find.byKey(const Key('reset-error')), findsOneWidget);
+      expect(
+        find.text('Ce lien n’est plus valable. Demandez-en un nouveau.'),
+        findsOneWidget,
+      );
 
-    // Le même écran, sans jeton, redevient la demande de lien.
-    await tester.tap(find.byKey(const Key('reset-restart')));
-    await tester.pumpAndSettle();
+      // Le même écran, sans jeton, redevient la demande de lien.
+      await tester.tap(find.byKey(const Key('reset-restart')));
+      await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('reset-password')), findsNothing);
-    expect(find.byKey(const Key('reset-email')), findsOneWidget);
-  });
+      expect(find.byKey(const Key('reset-password')), findsNothing);
+      expect(find.byKey(const Key('reset-email')), findsOneWidget);
+    },
+  );
 
   testWidgets('la déconnexion ramène les liens de connexion', (tester) async {
     final store = AuthStore(api: FakeAuthApi());
@@ -364,6 +381,8 @@ void main() {
     await tester.tap(find.byKey(const Key('auth-submit')));
     await tester.pumpAndSettle();
 
+    // Retour à l'accueil : la barre s'efface au sommet, on la fait revenir.
+    await revealHeader(tester);
     await tester.tap(find.byTooltip('Mon compte'));
     await tester.pumpAndSettle();
     // Le menu du compte et la colonne de navigation portent le même libellé :

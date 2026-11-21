@@ -4,9 +4,51 @@ import 'package:go_router/go_router.dart';
 
 import 'package:ivoirepedia/src/app.dart';
 import 'package:ivoirepedia/src/brand.dart';
+import 'package:ivoirepedia/src/models/article.dart';
+import 'package:ivoirepedia/src/ui/home_sections.dart';
 import 'package:ivoirepedia/src/ui/widgets/ivorian_patterns.dart';
 
 import 'support/fake_home_api.dart';
+
+/// API en mémoire qui pagine : la photo du zaouli ne figure pas dans la
+/// première page du corpus.
+class _PagedCorpusApi extends FakeApi {
+  @override
+  Future<PagedArticles> fetchArticles({
+    String? category,
+    String? tag,
+    String? query,
+    int page = 1,
+    int limit = 12,
+  }) async {
+    const abidjan = ArticleSummary(
+      slug: 'abidjan',
+      title: 'Abidjan',
+      summary: 'Capitale économique de la Côte d’Ivoire.',
+      typeLabel: 'Territoire',
+      categoryName: 'Géographie',
+      categorySlug: 'geographie',
+      coverImageUrl: 'https://example.test/abidjan.jpg',
+    );
+    const zaouli = ArticleSummary(
+      slug: 'le-zaouli',
+      title: 'Le Zaouli',
+      summary: 'La danse gouro inscrite au patrimoine immatériel.',
+      typeLabel: 'Patrimoine',
+      categoryName: 'Culture',
+      categorySlug: 'culture',
+      coverImageUrl: 'https://example.test/zaouli.jpg',
+    );
+
+    // Le total annonce deux pages : l'accueil doit aller chercher la suite.
+    return PagedArticles(
+      items: page == 1 ? const [abidjan] : const [zaouli],
+      page: page,
+      limit: limit,
+      total: 21,
+    );
+  }
+}
 
 void main() {
   // Pas d'animation de fond : `pumpAndSettle` doit pouvoir se stabiliser.
@@ -174,6 +216,48 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('le rail des domaines annonce la suite et la fait défiler', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(390, 844);
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(IvoirepediaApp(api: FakeApi()));
+    await tester.pumpAndSettle();
+
+    // Sur écran étroit, la fin du plan des domaines est hors champ : un
+    // chevron annonce qu'il reste des portails.
+    final more = find.byKey(const ValueKey('masthead-rail-more'));
+    expect(more, findsOneWidget);
+
+    final before = tester.getTopLeft(find.text('Portails').first).dx;
+    await tester.tap(more);
+    await tester.pumpAndSettle();
+
+    // Le chevron avance le rail au lieu de laisser la suite invisible.
+    expect(tester.getTopLeft(find.text('Portails').first).dx, lessThan(before));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('la couverture prend une des meilleures photos du corpus', (
+    tester,
+  ) async {
+    await tester.pumpWidget(IvoirepediaApp(api: _PagedCorpusApi()));
+    await tester.pumpAndSettle();
+
+    // Le zaouli n'est pas dans la première page : le tirage va le chercher
+    // dans tout le corpus et le préfère à une photo plus banale.
+    expect(
+      find.descendant(
+        of: find.byType(HomeOpening),
+        matching: find.text('Le Zaouli'),
+      ),
+      findsOneWidget,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('la marque, la devise et l’emblème remplacent l’ancien logo', (
     tester,
   ) async {
@@ -204,6 +288,8 @@ void main() {
     expect(find.text('La une'), findsNWidgets(2));
     expect(find.text('Tous les portails'), findsOneWidget);
     expect(find.text('Voir la frise complète'), findsOneWidget);
+    // En grand écran, tout le plan des domaines tient : aucun indice à poser.
+    expect(find.byKey(const ValueKey('masthead-rail-more')), findsNothing);
     expect(tester.takeException(), isNull);
   });
 }

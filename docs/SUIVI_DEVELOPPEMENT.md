@@ -1821,6 +1821,28 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 68 — 21 novembre 2026 · Indice de défilement du rail et couverture privilégiée
+
+**Demandé**
+- Signaler le débordement du rail des domaines sur petit écran par un dégradé et un chevron à droite.
+- Privilégier pour la couverture les photos les plus larges et nettes (zaouli, Grand-Bassam, Man, Korhogo), puis relancer les contrôles et commiter.
+
+**Fait**
+- Le rail de la manchette devient `_MastheadPortalRail` : quand la suite est hors écran, un dégradé partant du sable et un chevron dans une pastille apparaissent à droite ; le chevron avance le rail de 180 px, et l’indice s’efface une fois le dernier portail atteint, pour ne jamais masquer un lien.
+- `_coverFavourites` retient quatre photos larges et nettes — `le-zaouli`, `grand-bassam`, `man`, `korhogo`. Le tirage les mélange et en sert une en priorité ; les autres photos de géographie, de patrimoine ou de culture prennent le relais, puis le corpus illustré.
+- L’accueil charge tout le corpus publié (première page, puis les suivantes en parallèle) au lieu des seuls vingt derniers articles : sans cela le zaouli (37e) et Grand-Bassam (43e) n’entraient jamais dans le tirage. Une page en panne laisse le tirage sur ce qui est déjà chargé.
+- Les parcours d’authentification et du pied de page ont été adaptés à la barre masquée au sommet de l’accueil : ces tests font revenir la barre par un défilement avant de viser le compte ou un lien de pied de page, comme le ferait un lecteur.
+
+**Vérifié**
+- `flutter analyze` : aucun problème. `flutter test` : 58 tests verts, dont le nouveau test du rail (chevron et dégradé présents en 390 px, absents en 1280 px) et celui de la couverture (le zaouli, servi en deuxième page, ouvre la une).
+- La suite complète a été relancée : douze tests étaient rouges depuis la séance 67 (barre masquée au sommet de l’accueil, jamais retestée sur toute la suite) ; ils repassent tous.
+
+**Reste**
+- Le rendu du dégradé et du chevron n’a pas été relu dans un navigateur : à regarder à l’écran avant une mise en production.
+- Les photos de couverture préférées sont désignées par leur slug : toute nouvelle photo de premier plan demande d’allonger la liste, faute de dimensions dans l’API.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

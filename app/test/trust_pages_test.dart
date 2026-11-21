@@ -37,27 +37,37 @@ void main() {
   Future<void> tapFooter(WidgetTester tester, String label) async {
     final link = find.text(label).last;
 
+    // La barre du site revient dès le premier défilement : on la provoque
+    // avant de viser le lien, pour que le pied de page ne bouge plus sous le
+    // doigt au moment du clic.
+    await tester.dragFrom(const Offset(640, 900), const Offset(0, -160));
+    await tester.pumpAndSettle();
     await tester.ensureVisible(link);
     await tester.pumpAndSettle();
     await tester.tap(link);
     await tester.pumpAndSettle();
   }
 
-  testWidgets('les liens du pied de page ouvrent les quatre pages réelles',
-      (tester) async {
+  testWidgets('les liens du pied de page ouvrent les quatre pages réelles', (
+    tester,
+  ) async {
     await openSite(tester);
 
     await tapFooter(tester, 'À propos');
-    expect(find.text('Une encyclopédie ivoirienne, écrite et sourcée'),
-        findsOneWidget);
+    expect(
+      find.text('Une encyclopédie ivoirienne, écrite et sourcée'),
+      findsOneWidget,
+    );
     expect(find.textContaining('« sera activé »'), findsNothing);
 
     await tapFooter(tester, 'Charte');
     expect(find.text('Ce que nous nous engageons à faire'), findsOneWidget);
 
     await tapFooter(tester, 'Contact');
-    expect(find.text('Signaler une erreur, proposer une source'),
-        findsOneWidget);
+    expect(
+      find.text('Signaler une erreur, proposer une source'),
+      findsOneWidget,
+    );
 
     await tapFooter(tester, 'Confidentialité');
     expect(find.text('Ce que le site sait de vous'), findsOneWidget);
@@ -75,12 +85,16 @@ void main() {
     expect(find.textContaining('Rien d’inventé'), findsOneWidget);
   });
 
-  testWidgets('la page confidentialité décrit le stockage local', (tester) async {
+  testWidgets('la page confidentialité décrit le stockage local', (
+    tester,
+  ) async {
     await openSite(tester);
     await tapFooter(tester, 'Confidentialité');
 
-    expect(find.text('Sans compte : rien ne quitte votre navigateur'),
-        findsOneWidget);
+    expect(
+      find.text('Sans compte : rien ne quitte votre navigateur'),
+      findsOneWidget,
+    );
     expect(find.text('Le formulaire de contact'), findsOneWidget);
     expect(find.text('Vos droits'), findsOneWidget);
   });
@@ -127,7 +141,9 @@ void main() {
 
     expect(api.sent, isEmpty);
     expect(
-      find.text('Décrivez votre demande en quelques mots (20 caractères au moins).'),
+      find.text(
+        'Décrivez votre demande en quelques mots (20 caractères au moins).',
+      ),
       findsOneWidget,
     );
   });
