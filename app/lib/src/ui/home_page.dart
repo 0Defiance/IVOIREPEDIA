@@ -50,23 +50,31 @@ class _HomeData {
 }
 
 class _HomePageState extends State<HomePage> {
-  Future<_HomeData>? _future;
+  _HomeData? _data;
+  Object? _error;
+  bool _started = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _future ??= _load();
+
+    if (!_started) {
+      _started = true;
+      _load();
+    }
   }
 
-  Future<_HomeData> _load() async {
+  /// Deux temps de chargement : la une s'affiche dès que les articles sont
+  /// là, les rubriques secondaires (frise, chiffres, récits, sources) la
+  /// complètent quand elles arrivent. L'écran ne reste jamais vide à les
+  /// attendre, alors que la lecture peut commencer sans elles.
+  Future<void> _load() async {
     final api = ApiScope.of(context);
 
-    // Les appels partent ensemble : la page attend le plus lent, pas la somme.
+    // Tous les appels partent ensemble : le second temps ne coûte pas la
+    // durée des requêtes, seulement celle de la plus lente.
     final categoriesFuture = api.fetchCategories();
     final articlesFuture = api.fetchArticles(limit: 9);
-
-    // Les rubriques secondaires ne doivent pas emporter la « une » : la frise,
-    // les chiffres, les récits et la bibliothèque sont facultatifs.
     final timelineFuture = _optional(
       api.fetchTimeline,
       const <TimelineEvent>[],
@@ -75,21 +83,54 @@ class _HomePageState extends State<HomePage> {
     final storiesFuture = _optional(api.fetchHistory, const <HistoryStory>[]);
     final sourcesFuture = _optional(api.fetchSources, null);
 
-    final categories = await categoriesFuture;
-    final articles = await articlesFuture;
+    final PagedArticles articles;
+    final List<Category> categories;
+
+    try {
+      articles = await articlesFuture;
+      categories = await categoriesFuture;
+    } catch (error) {
+      if (!mounted) {
+        return;
+      }
+
+      setState(() => _error = error);
+      return;
+    }
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _error = null;
+      _data = _HomeData(
+        categories: categories,
+        articles: articles,
+        timeline: const [],
+        stories: const [],
+      );
+    });
+
     final timeline = await timelineFuture;
     final statistics = await statisticsFuture;
     final stories = await storiesFuture;
     final sources = await sourcesFuture;
 
-    return _HomeData(
-      categories: categories,
-      articles: articles,
-      timeline: timeline,
-      stories: stories,
-      statistics: statistics,
-      sources: sources,
-    );
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _data = _HomeData(
+        categories: categories,
+        articles: articles,
+        timeline: timeline,
+        stories: stories,
+        statistics: statistics,
+        sources: sources,
+      );
+    });
   }
 
   /// Un appel facultatif : en cas de panne, la valeur de repli suffit.
@@ -128,26 +169,26 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final data = _data;
+    final error = _error;
+
     return SiteShell(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
-        child: FutureBuilder<_HomeData>(
-          future: _future,
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return _ErrorBox(
-                message: '${snapshot.error}',
-                onRetry: () => setState(() => _future = _load()),
-              );
-            }
-
-            if (!snapshot.hasData) {
-              return const _HomeSkeleton();
-            }
-
-            return _HomeBody(data: snapshot.data!, onRandom: _openRandom);
-          },
-        ),
+        child: error != null
+            ? _ErrorBox(
+                message: '$error',
+                onRetry: () {
+                  setState(() {
+                    _data = null;
+                    _error = null;
+                  });
+                  _load();
+                },
+              )
+            : data == null
+            ? const _HomeSkeleton()
+            : _HomeBody(data: data, onRandom: _openRandom),
       ),
     );
   }

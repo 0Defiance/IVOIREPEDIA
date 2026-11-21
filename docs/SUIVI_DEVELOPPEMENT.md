@@ -1743,6 +1743,33 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 65 — 21 novembre 2026 · Chargement de la page d’accueil
+
+**Demandé**
+- La page d’accueil met trop de temps à s’afficher ; réduire ce délai.
+
+**Mesuré avant**
+- Images de couverture : les neuf articles de la une demandaient tous la variante 1280 px de Wikimedia, soit **3,8 Mo** pour sept fichiers mesurés (dont un PNG de 1,7 Mo). Aucune n’était redimensionnée au décodage.
+- Données : la page attendait **tous** les appels (articles, catégories, frise, chiffres, récits, sources) avant de peindre quoi que ce soit, alors que la une suffit à lire.
+- API locale : `/statistics` 2,3 s et `/articles` 2,8 s à chaque appel (base MySQL distante, cache `database`). `/health` seul coûte déjà 0,7 s : c’est le plancher de démarrage.
+
+**Fait**
+- `widgets/article_image.dart` : les couvertures demandent désormais la largeur réellement affichée, en paliers servis par Wikimedia (**250, 500, 960, 1280** — les largeurs arbitraires répondent 400). Décodage limité par `cacheWidth`. Si une variante manque, `_Cover` se rabat sur l’image d’origine au lieu de laisser un cadre vide.
+- `home_page.dart` : chargement en deux temps. La une et les catégories peignent la page ; frise, chiffres, récits et bibliothèque la complètent ensuite, sans bloquer la lecture. Tous les appels partent ensemble : le second temps ne coûte que la requête la plus lente.
+- `ArticleController::index` : la liste publique est mise en cache deux minutes, avec une clé de version (`Article::cacheGeneration`) incrémentée à chaque écriture d’article — pas de contenu périmé après publication.
+- Cache local passé de `database` à `file` dans `.env` (non versionné) : le cache ne dépend plus de la base distante.
+
+**Résultat mesuré**
+- `/articles?limit=9` : 2,76 s → **0,67 s** en cache chaud. `/statistics` : 5,9 s à froid, **0,70 s** ensuite, soit le plancher de démarrage de l’API.
+- Images de la une : **3,8 Mo → 0,7 Mo** pour sept fichiers en 500 px, la grande illustration passant à 960 px (1,0 Mo au lieu de 1,7 Mo).
+
+**Vérifié**
+- `flutter analyze` : aucun problème. `flutter test` : 56 tests verts.
+- `composer test` : 151 tests verts (2 017 assertions) ; `format:check` et `analyse` verts.
+- Le rendu réel n’a pas été inspecté dans un navigateur et le délai n’a pas été chronométré à l’écran : les gains ci-dessus sont mesurés sur l’API et sur les fichiers d’images.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

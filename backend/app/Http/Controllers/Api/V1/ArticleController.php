@@ -10,6 +10,7 @@ use App\Models\Article;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Lecture publique des articles — CONTEXT §11.1.
@@ -18,28 +19,47 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
  */
 class ArticleController extends Controller
 {
+    /**
+     * Fraîcheur de la liste publique. Courte à dessein : chaque écriture
+     * d'article change la version du cache et périme donc l'entrée.
+     */
+    private const INDEX_TTL_MINUTES = 2;
+
     /** `GET /api/v1/articles?category=&tag=&q=&page=&limit=` */
     public function index(ArticleIndexRequest $request): JsonResponse
     {
-        $query = $this->baseQuery($request);
-        $limit = $request->limit();
-        $page = $request->page();
-        $total = (clone $query)->count();
+        // L'accueil demande la même liste à chaque visite : la servir depuis
+        // le cache évite le comptage et la jointure des catégories/auteurs à
+        // chaque chargement de page.
+        $key = 'articles.index.'.Article::cacheGeneration().'.'.md5($request->fullUrl());
 
-        $articles = $query
-            ->with(['category', 'author'])
-            ->orderByDesc('published_at')
-            ->forPage($page, $limit)
-            ->get();
+        $payload = Cache::remember(
+            $key,
+            now()->addMinutes(self::INDEX_TTL_MINUTES),
+            function () use ($request): array {
+                $query = $this->baseQuery($request);
+                $limit = $request->limit();
+                $page = $request->page();
+                $total = (clone $query)->count();
 
-        return response()->json([
-            'data' => ArticleSummaryResource::collection($articles)->resolve(),
-            'meta' => [
-                'page' => $page,
-                'limit' => $limit,
-                'total' => $total,
-            ],
-        ]);
+                $articles = $query
+                    ->with(['category', 'author'])
+                    ->orderByDesc('published_at')
+                    ->forPage($page, $limit)
+                    ->get();
+
+                return [
+                    'data' => ArticleSummaryResource::collection($articles)->resolve(),
+                    'meta' => [
+                        'page' => $page,
+                        'limit' => $limit,
+                        'total' => $total,
+                    ],
+                ];
+            },
+        );
+
+        return response()->json($payload);
     }
 
     /**

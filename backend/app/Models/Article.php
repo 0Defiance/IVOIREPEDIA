@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Article encyclopédique — CONTEXT §8.2/§8.3.
@@ -72,6 +73,30 @@ class Article extends Model
             'lock_version' => 'integer',
             'current_version' => 'integer',
         ];
+    }
+
+    /** Clé de version de la liste publique (voir `cacheGeneration`). */
+    private const CACHE_GENERATION_KEY = 'articles.cache.generation';
+
+    /**
+     * Version de la liste publique : chaque écriture d'article l'incrémente.
+     * Les réponses mises en cache portent ce numéro, ce qui les périme d'un
+     * coup sans avoir à énumérer toutes les combinaisons de filtres.
+     */
+    public static function cacheGeneration(): int
+    {
+        return (int) Cache::get(self::CACHE_GENERATION_KEY, 0);
+    }
+
+    protected static function booted(): void
+    {
+        static::saved(static fn () => self::bumpCacheGeneration());
+        static::deleted(static fn () => self::bumpCacheGeneration());
+    }
+
+    private static function bumpCacheGeneration(): void
+    {
+        Cache::forever(self::CACHE_GENERATION_KEY, self::cacheGeneration() + 1);
     }
 
     /**
