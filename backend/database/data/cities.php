@@ -4,15 +4,20 @@
  * Série « Villes de Côte d'Ivoire » : les fiches des villes du répertoire
  * public (RGPH 2021) qui n'avaient pas encore d'article.
  *
- * Deux sources seulement portent le texte :
- * — le décret n° 2011-263 du 28 septembre 2011 (annexe), pour le statut de
- *   chef-lieu et la liste des départements de chaque région ;
- * — le RGPH 2021 de l'ANStat, pour l'effectif communal.
+ * Trois sources portent le texte :
+ * — les monographies régionales de l'ANStat (RGPH 2021, chapitre 11), pour les
+ *   projections 2024 et 2025 du département et de la sous-préfecture ;
+ * — le RGPH 2021 de l'ANStat, pour l'effectif communal ;
+ * — la liste actuelle des départements de chaque région, telle que la donnent
+ *   ces mêmes monographies.
+ *
+ * Les projections sont toujours annoncées comme telles : ce ne sont pas des
+ * dénombrements, et elles portent sur la sous-préfecture, qui englobe la
+ * commune sans se confondre avec elle.
  *
  * Aucune superficie, altitude, distance, activité économique ou donnée
  * culturelle n'est avancée sans source vérifiée : ces parties sont signalées
- * comme non détaillées. Les projections régionales de l'ANStat (2022-2041)
- * existent mais ne sont pas déclinées par commune ici.
+ * comme non détaillées.
  *
  * Les six plus grandes villes (Abidjan, Yamoussoukro, Bouaké, Korhogo, Man,
  * San-Pédro) ont déjà leur article dans PublicContentSeeder.
@@ -31,7 +36,7 @@ return [
             ['p', 'Daloa cumule le siège de la région et celui du département du même nom, conformément à l\'annexe du décret de découpage de 2011.'],
             ['h2', 'Démographie'],
             ['p', 'Le recensement général de 2021 y a dénombré 421 879 habitants (RGPH 2021, ANStat).'],
-            ['p', "Aucune estimation communale postérieure à ce recensement n'est reprise ici ; les projections de l'ANStat sont régionales."],
+            ['p', 'Les projections de l\'ANStat donnent 746 900 habitants au département de Daloa en 2024 et 759 433 en 2025 ; la sous-préfecture, qui englobe la commune, passerait de 446 420 à 453 672 habitants sur la même période. Ce sont des projections, non des dénombrements.'],
         ],
     ],
 
@@ -47,7 +52,7 @@ return [
             ['p', "Le décret de 2011 fixe à Divo le chef-lieu régional et le siège du département, ce qui en fait le point d'ancrage administratif de tout l'espace Lôh-Djiboua."],
             ['h2', 'Démographie'],
             ['p', 'Au dernier recensement général, en 2021, la ville comptait 294 559 habitants (RGPH 2021, ANStat).'],
-            ['p', "Les chiffres plus récents disponibles à l'ANStat portent sur les régions et les départements, pas sur la commune : ils ne sont pas transposés ici."],
+            ['p', 'Dans ses projections 2022-2041, l\'ANStat chiffre le département de Divo à 613 218 habitants en 2024, puis 626 833 en 2025. La sous-préfecture suit la même trajectoire : 316 276 puis 323 017 habitants. Il s\'agit de projections démographiques, établies à partir du RGPH 2021.'],
         ],
     ],
 
@@ -63,7 +68,7 @@ return [
             ['p', "Chef-lieu de région et de département, Gagnoa abrite les services déconcentrés de l'État pour le Gôh, selon l'annexe du décret n° 2011-263."],
             ['h2', 'Démographie'],
             ['p', 'La population communale s\'élevait à 277 044 habitants au recensement de 2021 (RGPH 2021, ANStat).'],
-            ['p', "Cette fiche s'en tient à ce dénombrement : aucune projection communale récente n'est publiée par l'ANStat."],
+            ['p', 'Pour 2024 et 2025, la monographie régionale du Gôh avance 775 499 puis 792 253 habitants dans le département de Gagnoa, et 296 286 puis 302 432 dans la sous-préfecture du même nom. Ces chiffres sont des projections, pas des effectifs recensés.'],
         ],
     ],
 
@@ -72,14 +77,14 @@ return [
         'population' => 272773,
         'summary' => 'Chef-lieu de la Nawa, Soubré est une ville du sud-ouest ivoirien, sur le Sassandra.',
         'blocks' => [
-            ['p', 'Soubré est le chef-lieu de la Nawa, région du sud-ouest dont les départements sont Soubré et Guéyo dans le découpage de 2011.'],
+            ['p', 'Soubré est le chef-lieu de la Nawa, région du sud-ouest qui compte quatre départements : Soubré, Guéyo, Méagui et Buyo.'],
             ['h2', 'Le cadre géographique'],
             ['p', 'La ville est bâtie sur le Sassandra, le grand fleuve qui traverse le sud-ouest du pays.'],
             ['h2', 'Le barrage'],
             ['p', "Un barrage hydroélectrique barre le fleuve à hauteur de la ville. Sa puissance et sa date de mise en service ne sont pas reprises ici, faute de source officielle vérifiée, et ses effets sur l'urbanisation restent à documenter."],
             ['h2', 'Démographie'],
             ['p', 'Le recensement de 2021 compte 272 773 habitants dans la commune (RGPH 2021, ANStat).'],
-            ['p', "Depuis, l'ANStat produit des projections par région et par département ; aucune ne porte spécifiquement sur la commune de Soubré dans cette fiche."],
+            ['p', 'La projection de l\'ANStat place le département de Soubré à 622 918 habitants en 2024 et 634 609 en 2025 ; la sous-préfecture, plus vaste que la commune, passerait de 287 346 à 292 281 habitants. Projections issues du RGPH 2021, à ne pas lire comme un décompte communal.'],
         ],
     ],
 
@@ -88,14 +93,14 @@ return [
         'population' => 220953,
         'summary' => "Chef-lieu du Guémon, Duékoué est une ville de l'ouest ivoirien.",
         'blocks' => [
-            ['p', "Duékoué est le chef-lieu du Guémon, région de l'ouest qui regroupe les départements de Duékoué, Bangolo et Kouibly."],
+            ['p', "Duékoué est le chef-lieu du Guémon, région de l'ouest qui regroupe les départements de Duékoué, Bangolo, Facobly et Kouibly."],
             ['h2', 'Situation'],
             ['p', "La ville se trouve dans l'ouest du pays, sur les terres qui précèdent les montagnes de la frontière libérienne."],
             ['h2', 'Statut administratif'],
             ['p', "L'annexe du décret de 2011 attribue à Duékoué le chef-lieu de la région du Guémon et celui du département."],
             ['h2', 'Démographie'],
             ['p', 'Le RGPH de 2021 a recensé 220 953 habitants dans la commune (RGPH 2021, ANStat).'],
-            ['p', "Les évolutions postérieures ne sont connues qu'à l'échelle régionale et ne sont pas reprises ici."],
+            ['p', 'Le département de Duékoué compterait 458 538 habitants en 2024 et 471 494 en 2025 selon l\'ANStat, la sous-préfecture 240 649 puis 247 362. Ce sont des projections, distinctes des effectifs du recensement de 2021.'],
         ],
     ],
 
@@ -104,14 +109,14 @@ return [
         'population' => 213967,
         'summary' => 'Chef-lieu de la Marahoué, Bouaflé est une ville du centre-ouest ivoirien.',
         'blocks' => [
-            ['p', 'Bouaflé est le chef-lieu de la Marahoué ; le découpage de 2011 rattache à cette région les départements de Bouaflé, Sinfra et Zuénoula.'],
+            ['p', 'Bouaflé est le chef-lieu de la Marahoué, région qui réunit cinq départements : Bouaflé, Sinfra, Zuénoula, Bonon et Gohitafla.'],
             ['h2', 'Situation'],
             ['p', 'La ville occupe le centre-ouest du pays, dans une zone de transition entre forêt et savane.'],
             ['h2', 'Administration'],
             ['p', "Bouaflé concentre le siège de la région et du département, d'après l'annexe du décret n° 2011-263 du 28 septembre 2011."],
             ['h2', 'Démographie'],
             ['p', "Le recensement général de la population et de l'habitat de 2021 y compte 213 967 habitants (RGPH 2021, ANStat)."],
-            ['p', 'Ce chiffre communal est le dernier publié ; les projections régionales plus récentes ne descendent pas à ce niveau.'],
+            ['p', 'Les projections 2024 et 2025 de l\'ANStat attribuent 321 835 puis 328 477 habitants au département de Bouaflé, et 228 798 puis 233 403 à la sous-préfecture. Il s\'agit de projections, non d\'un recensement.'],
         ],
     ],
 
@@ -120,14 +125,14 @@ return [
         'population' => 171454,
         'summary' => "Chef-lieu de la Cavally, Guiglo est une ville de l'ouest ivoirien.",
         'blocks' => [
-            ['p', 'Guiglo est le chef-lieu de la Cavally, région frontalière du Liberia qui compte les départements de Guiglo, Bloléquin et Toulépleu.'],
+            ['p', 'Guiglo est le chef-lieu de la Cavally, région frontalière du Liberia qui compte quatre départements : Guiglo, Bloléquin, Toulépleu et Taï.'],
             ['h2', 'Géographie'],
             ['p', "La ville occupe l'ouest du pays, à l'entrée de la forêt qui mène vers la frontière libérienne."],
             ['h2', 'Un chef-lieu frontalier'],
             ['p', "Le décret de 2011 en fait le siège de la région et du département ; le commerce avec le Liberia n'est pas documenté dans cette fiche."],
             ['h2', 'Démographie'],
             ['p', 'La commune comptait 171 454 habitants lors du recensement de 2021 (RGPH 2021, ANStat).'],
-            ['p', "Aucune donnée communale plus récente n'est reprise ici, faute de publication officielle à cette échelle."],
+            ['p', 'L\'ANStat projette 806 262 habitants dans la Cavally en 2025, contre 708 241 au recensement de 2021 ; le détail par département et par sous-préfecture n\'est pas repris ici.'],
         ],
     ],
 
@@ -143,7 +148,7 @@ return [
             ['p', "Lakota est chef-lieu de son propre département ; le siège régional reste à Divo, selon l'annexe du décret de 2011."],
             ['h2', 'Démographie'],
             ['p', 'Le recensement de 2021 y a dénombré 169 330 habitants (RGPH 2021, ANStat).'],
-            ['p', "Les tendances démographiques récentes ne sont publiées qu'au niveau régional et ne figurent pas dans cette fiche."],
+            ['p', 'Même exercice pour Lakota : l\'ANStat projette 359 157 habitants dans le département en 2024 et 367 226 en 2025, et 182 300 puis 186 263 dans la sous-préfecture, qui englobe la commune. Ces valeurs sont des projections.'],
         ],
     ],
 
@@ -159,7 +164,7 @@ return [
             ['p', "L'annexe du décret n° 2011-263 fixe à Abengourou le chef-lieu régional et le siège du département."],
             ['h2', 'Démographie'],
             ['p', "Au recensement de 2021, la commune d'Abengourou comptait 164 424 habitants (RGPH 2021, ANStat)."],
-            ['p', 'Les projections publiées depuis concernent la région, non la commune : cette fiche ne les extrapole pas.'],
+            ['p', 'En projection, le département d\'Abengourou réunit 461 974 habitants en 2024 et 471 986 en 2025 ; la sous-préfecture passerait de 177 060 à 180 756 habitants. L\'ANStat parle bien de projections, calculées à partir du RGPH 2021.'],
         ],
     ],
 
@@ -175,7 +180,7 @@ return [
             ['p', "Le décret de 2011 lui attribue le siège de la région et du département ; l'activité économique locale n'est pas documentée ici."],
             ['h2', 'Démographie'],
             ['p', 'Le recensement général de 2021 compte 160 267 habitants dans la commune (RGPH 2021, ANStat).'],
-            ['p', "Faute de chiffre communal plus récent, la fiche s'en tient à ce dénombrement."],
+            ['p', 'Pour le département de Ferkessédougou, l\'ANStat projette 212 104 habitants en 2024 et 219 441 en 2025 ; la sous-préfecture, qui contient la commune, suivrait de 179 202 à 185 376 habitants. Projections, et non effectifs recensés.'],
         ],
     ],
 
@@ -191,7 +196,7 @@ return [
             ['p', "Chef-lieu de région et de département depuis le découpage de 2011, Adzopé abrite les services publics de tout l'espace de La Mé."],
             ['h2', 'Démographie'],
             ['p', 'La commune d\'Adzopé comptait 156 488 habitants au recensement de 2021 (RGPH 2021, ANStat).'],
-            ['p', "Aucune estimation communale postérieure n'a été retenue pour cette fiche."],
+            ['p', 'Les projections de l\'ANStat pour 2024 et 2025 donnent 307 674 puis 315 174 habitants au département d\'Adzopé, 168 883 puis 172 900 à la sous-préfecture. Ce sont des projections démographiques, pas des chiffres de recensement.'],
         ],
     ],
 
@@ -200,14 +205,14 @@ return [
         'population' => 153483,
         'summary' => 'Méagui est une ville de la Nawa, dans le sud-ouest ivoirien.',
         'blocks' => [
-            ['p', "Méagui se situe dans la région de la Nawa, dont Soubré est le chef-lieu et qui s'étend sur le sud-ouest forestier."],
+            ['p', 'Méagui appartient à la Nawa, région du sud-ouest forestier dont Soubré est le chef-lieu et qui compte quatre départements : Soubré, Guéyo, Méagui et Buyo.'],
             ['h2', 'Position'],
             ['p', 'La ville se trouve au sud-ouest du pays, entre les axes qui descendent vers le littoral.'],
             ['h2', 'Administration'],
-            ['p', "Le statut administratif actuel de Méagui n'est pas détaillé ici : le découpage de 2011 ne la retient pas comme chef-lieu, et sa situation actuelle demande une source à jour."],
+            ['p', 'Méagui est aujourd\'hui chef-lieu de département : la monographie régionale de la Nawa la compte parmi les quatre départements de la région.'],
             ['h2', 'Démographie'],
             ['p', 'Le recensement de 2021 y compte 153 483 habitants (RGPH 2021, ANStat).'],
-            ['p', 'Ce chiffre communal reste la seule donnée officielle reprise dans cette fiche.'],
+            ['p', 'Le département de Méagui apparaît dans les projections de l\'ANStat avec 318 730 habitants en 2024 et 324 718 en 2025 ; la sous-préfecture est projetée à 163 537 puis 166 533 habitants. Ces chiffres restent des projections.'],
         ],
     ],
 
@@ -223,7 +228,7 @@ return [
             ['p', "L'annexe du décret de 2011 en fait le siège de la région et du département du même nom."],
             ['h2', 'Démographie'],
             ['p', 'Le RGPH de 2021 y a recensé 141 568 habitants (RGPH 2021, ANStat).'],
-            ['p', 'Les évolutions postérieures ne sont pas déclinées par commune dans cette fiche.'],
+            ['p', 'Dans la monographie du Gontougo, l\'ANStat projette 482 537 habitants dans le département de Bondoukou en 2024, 492 129 en 2025, et 151 259 puis 154 058 dans la sous-préfecture. Il s\'agit bien de projections.'],
         ],
     ],
 
@@ -239,7 +244,7 @@ return [
             ['p', 'Le décret de 2011 fixe à Dabou le siège de la région et du département ; les activités liées à la lagune ne sont pas détaillées ici.'],
             ['h2', 'Démographie'],
             ['p', 'La commune comptait 138 083 habitants lors du recensement de 2021 (RGPH 2021, ANStat).'],
-            ['p', "Aucune projection communale récente n'est reprise dans cette fiche."],
+            ['p', 'Les projections de l\'ANStat placent le département de Dabou à 226 567 habitants en 2024 et 230 405 en 2025, la sous-préfecture à 146 035 puis 148 403. Ce sont des projections, non un décompte de la commune.'],
         ],
     ],
 
@@ -248,14 +253,14 @@ return [
         'population' => 137210,
         'summary' => 'Sinfra est une ville de la Marahoué, dans le centre-ouest ivoirien.',
         'blocks' => [
-            ['p', 'Sinfra appartient à la région de la Marahoué, dont le chef-lieu est Bouaflé et qui compte aussi le département de Zuénoula.'],
+            ['p', 'Sinfra appartient à la région de la Marahoué, dont le chef-lieu est Bouaflé et qui réunit cinq départements : Bouaflé, Sinfra, Zuénoula, Bonon et Gohitafla.'],
             ['h2', 'Position'],
             ['p', 'La ville se situe au centre-ouest du pays, dans une zone de contact entre forêt et savane.'],
             ['h2', 'Administration'],
             ['p', "Sinfra est chef-lieu de son département ; le siège régional reste à Bouaflé, d'après l'annexe du décret n° 2011-263."],
             ['h2', 'Démographie'],
             ['p', 'Le recensement de 2021 compte 137 210 habitants dans la commune (RGPH 2021, ANStat).'],
-            ['p', 'Cette fiche ne reprend pas de chiffre plus récent, faute de publication communale.'],
+            ['p', 'Le département de Sinfra est projeté à 262 157 habitants en 2024 et 267 556 en 2025, la sous-préfecture à 147 121 puis 150 169. L\'ANStat précise qu\'il s\'agit de projections issues du RGPH 2021.'],
         ],
     ],
 
@@ -271,7 +276,7 @@ return [
             ['p', 'Le découpage de 2011 attribue à Agboville le siège de la région et du département.'],
             ['h2', 'Démographie'],
             ['p', "Au recensement général de 2021, la commune d'Agboville comptait 135 082 habitants (RGPH 2021, ANStat)."],
-            ['p', 'Les projections régionales publiées depuis ne sont pas transposées à la commune ici.'],
+            ['p', 'Pour 2024 et 2025, l\'ANStat projette 412 723 puis 421 771 habitants dans le département d\'Agboville, et 145 307 puis 148 359 dans la sous-préfecture, qui englobe la commune. Ce sont des projections.'],
         ],
     ],
 
@@ -287,7 +292,7 @@ return [
             ['p', "Vavoua est chef-lieu de son département ; le siège de la région reste à Daloa, conformément à l'annexe du décret de 2011."],
             ['h2', 'Démographie'],
             ['p', 'La population communale atteignait 132 528 habitants au recensement de 2021 (RGPH 2021, ANStat).'],
-            ['p', "Aucune estimation postérieure à ce recensement n'est reprise ici."],
+            ['p', 'Le département de Vavoua compterait 499 574 habitants en 2024 et 507 762 en 2025 selon les projections de l\'ANStat, la sous-préfecture 138 513 puis 140 603. Projections, et non effectifs recensés.'],
         ],
     ],
 
@@ -296,14 +301,14 @@ return [
         'population' => 131586,
         'summary' => "Danané est une ville du Tonkpi, dans l'ouest ivoirien, proche du Liberia et de la Guinée.",
         'blocks' => [
-            ['p', 'Danané appartient à la région du Tonkpi, dont Man est le chef-lieu et qui réunit aussi Biankouma et Zouan-Hounien dans le découpage de 2011.'],
+            ['p', 'Danané appartient à la région du Tonkpi, dont Man est le chef-lieu et qui compte cinq départements : Man, Biankouma, Danané, Zouan-Hounien et Sipilou.'],
             ['h2', 'Géographie'],
             ['p', "La ville se trouve à l'ouest du pays, dans une zone de collines proche des frontières du Liberia et de la Guinée."],
             ['h2', 'Administration'],
             ['p', "Danané est chef-lieu de son département ; le siège régional est fixé à Man par l'annexe du décret n° 2011-263."],
             ['h2', 'Démographie'],
             ['p', 'Le recensement de 2021 y compte 131 586 habitants (RGPH 2021, ANStat).'],
-            ['p', "Cette fiche s'en tient à ce dénombrement communal."],
+            ['p', 'La monographie du Tonkpi projette 394 381 habitants dans le département de Danané en 2024 et 404 739 en 2025 ; la sous-préfecture suivrait de 141 935 à 145 510 habitants. Ces valeurs sont des projections.'],
         ],
     ],
 
@@ -319,7 +324,7 @@ return [
             ['p', 'Oumé est chef-lieu de son département ; le siège de la région du Gôh reste à Gagnoa, selon le décret de 2011.'],
             ['h2', 'Démographie'],
             ['p', 'Au recensement de 2021, la commune comptait 127 153 habitants (RGPH 2021, ANStat).'],
-            ['p', "Aucune donnée communale plus récente n'est disponible dans cette fiche."],
+            ['p', 'Les projections de l\'ANStat donnent 279 609 habitants au département d\'Oumé en 2024 et 285 755 en 2025, et 136 317 puis 139 315 à la sous-préfecture. Il s\'agit de projections démographiques.'],
         ],
     ],
 
@@ -335,7 +340,7 @@ return [
             ['p', "L'annexe du décret de 2011 fait d'Issia un chef-lieu de département, rattaché à la région du Haut-Sassandra."],
             ['h2', 'Démographie'],
             ['p', 'Le recensement général de 2021 y a dénombré 126 252 habitants (RGPH 2021, ANStat).'],
-            ['p', "Les projections régionales de l'ANStat ne sont pas reprises à l'échelle communale dans cette fiche."],
+            ['p', 'Le département d\'Issia est projeté à 434 815 habitants en 2024 et 442 322 en 2025, la sous-préfecture à 133 446 puis 135 599. L\'ANStat présente ces chiffres comme des projections.'],
         ],
     ],
 
@@ -344,14 +349,14 @@ return [
         'population' => 123133,
         'summary' => "Bloléquin est une ville de la Cavally, dans l'ouest ivoirien, proche du Liberia.",
         'blocks' => [
-            ['p', "Bloléquin est l'un des trois départements de la Cavally, avec Guiglo et Toulépleu ; Guiglo est le chef-lieu régional."],
+            ['p', 'Bloléquin est l\'un des quatre départements de la Cavally, avec Guiglo, Toulépleu et Taï ; Guiglo est le chef-lieu régional.'],
             ['h2', 'Géographie'],
             ['p', "La ville occupe l'ouest du pays, sur les terres forestières qui bordent le Liberia."],
             ['h2', 'Administration'],
             ['p', 'Bloléquin est chef-lieu de son département depuis le découpage de 2011, rattaché à la région de la Cavally.'],
             ['h2', 'Démographie'],
             ['p', 'La commune comptait 123 133 habitants au recensement de 2021 (RGPH 2021, ANStat).'],
-            ['p', 'Ce chiffre reste la référence communale de la fiche.'],
+            ['p', 'À l\'échelle de la région, l\'ANStat projette 806 262 habitants dans la Cavally en 2025, contre 708 241 en 2021 ; le détail par département et par sous-préfecture n\'est pas repris ici.'],
         ],
     ],
 
@@ -360,14 +365,14 @@ return [
         'population' => 116871,
         'summary' => 'Bonon est une ville de la Marahoué, dans le centre-ouest ivoirien.',
         'blocks' => [
-            ['p', 'Bonon se situe dans la région de la Marahoué, dont le chef-lieu est Bouaflé.'],
+            ['p', 'Bonon se situe dans la région de la Marahoué, dont le chef-lieu est Bouaflé et qui compte cinq départements : Bouaflé, Sinfra, Zuénoula, Bonon et Gohitafla.'],
             ['h2', 'Position'],
             ['p', 'La ville occupe le centre-ouest du pays, sur les terres forestières de la Marahoué.'],
             ['h2', 'Administration'],
-            ['p', "Le découpage de 2011 ne retient pas Bonon comme chef-lieu ; son statut administratif actuel n'est pas détaillé ici, faute de texte à jour."],
+            ['p', 'Longtemps simple sous-préfecture, Bonon est devenue chef-lieu de département ; la monographie régionale de la Marahoué la compte parmi les cinq départements de la région.'],
             ['h2', 'Démographie'],
             ['p', 'Le recensement de 2021 compte 116 871 habitants dans la commune (RGPH 2021, ANStat).'],
-            ['p', "Aucune estimation communale postérieure n'est reprise dans cette fiche."],
+            ['p', 'Devenu chef-lieu de département, Bonon est projeté à 177 451 habitants en 2024 et 181 008 en 2025 ; la sous-préfecture, qui englobe la commune, passerait de 123 372 à 125 778 habitants. Ce sont des projections de l\'ANStat.'],
         ],
     ],
 
@@ -376,14 +381,14 @@ return [
         'population' => 111099,
         'summary' => "Zouan-Hounien est une ville frontalière du Tonkpi, dans l'ouest ivoirien.",
         'blocks' => [
-            ['p', "Zouan-Hounien fait partie du Tonkpi, région de l'ouest dont Man est le chef-lieu et qui compte aussi Biankouma et Danané dans le découpage de 2011."],
+            ['p', "Zouan-Hounien fait partie du Tonkpi, région de l'ouest dont Man est le chef-lieu et qui compte cinq départements, dont Biankouma, Danané et Sipilou."],
             ['h2', 'Géographie'],
             ['p', "La ville occupe l'extrême ouest du pays, contre la frontière libérienne."],
             ['h2', 'Administration'],
             ['p', "Zouan-Hounien est chef-lieu de son département, rattaché au Tonkpi par l'annexe du décret n° 2011-263."],
             ['h2', 'Démographie'],
             ['p', 'Le RGPH de 2021 y a recensé 111 099 habitants (RGPH 2021, ANStat).'],
-            ['p', "Les données plus récentes n'existent qu'à l'échelle régionale et ne sont pas transposées ici."],
+            ['p', 'Pour le département de Zouan-Hounien, les projections de l\'ANStat atteignent 272 986 habitants en 2024 et 280 055 en 2025 ; la sous-préfecture est projetée à 120 620 puis 123 680 habitants.'],
         ],
     ],
 
@@ -399,7 +404,7 @@ return [
             ['p', "L'annexe du décret de 2011 fixe à Séguéla le siège de la région et du département."],
             ['h2', 'Démographie'],
             ['p', 'La commune comptait 103 980 habitants au recensement de 2021 (RGPH 2021, ANStat).'],
-            ['p', "Aucun chiffre communal plus récent n'est repris dans cette fiche."],
+            ['p', 'Le département de Séguéla est projeté à 332 719 habitants en 2024 et 344 686 en 2025, la sous-préfecture à 116 014 puis 120 107. Ces chiffres sont des projections issues du RGPH 2021.'],
         ],
     ],
 
@@ -415,7 +420,7 @@ return [
             ['p', 'Le décret de 2011 lui attribue le siège de la région et du département.'],
             ['h2', 'Démographie'],
             ['p', 'Au recensement de 2021, la commune de Daoukro comptait 101 136 habitants (RGPH 2021, ANStat).'],
-            ['p', 'Cette fiche ne reprend pas de projection communale.'],
+            ['p', 'Les projections de l\'ANStat pour 2024 et 2025 donnent 156 736 puis 159 607 habitants au département de Daoukro, et 107 149 puis 109 041 à la sous-préfecture. Ce sont des projections, non des effectifs recensés.'],
         ],
     ],
 
@@ -431,7 +436,7 @@ return [
             ['p', "L'annexe du décret n° 2011-263 fixe à Aboisso le chef-lieu de la région et du département."],
             ['h2', 'Démographie'],
             ['p', 'Le recensement général de 2021 y compte 100 903 habitants (RGPH 2021, ANStat).'],
-            ['p', "Les évolutions postérieures ne sont disponibles qu'au niveau régional."],
+            ['p', 'Le département d\'Aboisso est projeté à 382 622 habitants en 2024 et 389 848 en 2025, la sous-préfecture à 107 396 puis 109 391. L\'ANStat parle de projections, calculées sur la base du RGPH 2021.'],
         ],
     ],
 
@@ -440,14 +445,14 @@ return [
         'population' => 100848,
         'summary' => 'Buyo est une ville de la Nawa, dans le sud-ouest ivoirien, sur le Sassandra.',
         'blocks' => [
-            ['p', 'Buyo se trouve dans la région de la Nawa, dont Soubré est le chef-lieu.'],
+            ['p', 'Buyo se trouve dans la région de la Nawa, dont Soubré est le chef-lieu et qui compte quatre départements : Soubré, Guéyo, Méagui et Buyo.'],
             ['h2', 'Le cadre géographique'],
             ['p', 'La ville est installée sur le Sassandra, en aval de Soubré.'],
             ['h2', 'Le barrage'],
             ['p', 'Un barrage et un lac de retenue portent le nom de la ville. Leur date de mise en service et les activités qui y sont liées ne sont pas reprises ici, faute de source officielle vérifiée.'],
             ['h2', 'Démographie'],
             ['p', 'Le recensement de 2021 compte 100 848 habitants dans la commune (RGPH 2021, ANStat).'],
-            ['p', "Aucune estimation communale récente n'est ajoutée à ce chiffre."],
+            ['p', 'Dans les projections de l\'ANStat, le département de Buyo réunit 187 616 habitants en 2024 et 191 326 en 2025 ; la sous-préfecture passerait de 106 862 à 108 960 habitants. Projections, et non dénombrement.'],
         ],
     ],
 
@@ -463,7 +468,7 @@ return [
             ['p', "Agnibilékrou est chef-lieu de son département, rattaché à l'Indénié-Djuablin par le découpage de 2011."],
             ['h2', 'Démographie'],
             ['p', 'La commune comptait 99 501 habitants au recensement de 2021 (RGPH 2021, ANStat).'],
-            ['p', 'Les chiffres régionaux plus récents ne sont pas transposés à la commune ici.'],
+            ['p', 'Le département d\'Agnibilékrou est projeté à 231 058 habitants en 2024 et 236 079 en 2025 ; la sous-préfecture suivrait, de 106 276 à 108 445 habitants. Ces valeurs sont des projections de l\'ANStat.'],
         ],
     ],
 
@@ -479,7 +484,7 @@ return [
             ['p', 'Le décret de 2011 lui attribue le siège de la région et du département.'],
             ['h2', 'Démographie'],
             ['p', 'Le recensement de 2021 y a dénombré 94 883 habitants (RGPH 2021, ANStat).'],
-            ['p', "Cette fiche s'en tient à ce dénombrement communal."],
+            ['p', 'Les projections de l\'ANStat attribuent 197 421 habitants au département de Bouna en 2024 et 204 135 en 2025, et 105 287 puis 108 828 à la sous-préfecture, qui englobe la commune. Ce sont des projections.'],
         ],
     ],
 
@@ -495,7 +500,7 @@ return [
             ['p', "L'annexe du décret n° 2011-263 fixe à Boundiali le chef-lieu de la région et du département."],
             ['h2', 'Démographie'],
             ['p', 'Au recensement de 2021, la commune comptait 92 792 habitants (RGPH 2021, ANStat).'],
-            ['p', "Aucune donnée communale plus récente n'est reprise ici."],
+            ['p', 'Pour 2024 et 2025, la monographie de la Bagoué projette 218 634 puis 225 553 habitants dans le département de Boundiali, et 102 413 puis 105 602 dans la sous-préfecture. Il s\'agit de projections.'],
         ],
     ],
 
@@ -511,7 +516,7 @@ return [
             ['p', 'Tengréla est chef-lieu de son département, rattaché à la Bagoué par le découpage de 2011.'],
             ['h2', 'Démographie'],
             ['p', 'Le recensement de 2021 compte 92 454 habitants dans la commune (RGPH 2021, ANStat).'],
-            ['p', "Les projections régionales ne descendent pas à l'échelle communale dans cette fiche."],
+            ['p', 'Le département de Tengréla est projeté à 157 031 habitants en 2024 et 162 034 en 2025, la sous-préfecture à 102 069 puis 105 320. Ces chiffres sont des projections.'],
         ],
     ],
 
@@ -527,7 +532,7 @@ return [
             ['p', "Sikensi est chef-lieu de son département, rattaché à l'Agnéby-Tiassa par l'annexe du décret de 2011."],
             ['h2', 'Démographie'],
             ['p', 'La commune comptait 91 032 habitants au recensement général de 2021 (RGPH 2021, ANStat).'],
-            ['p', 'Ce chiffre communal reste la seule donnée de population reprise.'],
+            ['p', 'Les projections de l\'ANStat donnent 134 650 habitants au département de Sikensi en 2024 et 137 490 en 2025, et 97 078 puis 99 074 à la sous-préfecture. Ce sont des projections, non un recensement.'],
         ],
     ],
 
@@ -543,7 +548,7 @@ return [
             ['p', "L'annexe du décret de 2011 en fait le siège de la région et du département."],
             ['h2', 'Démographie'],
             ['p', 'Le recensement de 2021 y compte 90 641 habitants (RGPH 2021, ANStat).'],
-            ['p', "Aucune estimation communale postérieure à ce recensement n'est reprise ici."],
+            ['p', 'Le département de Katiola est projeté à 177 320 habitants en 2024 et 182 901 en 2025, la sous-préfecture à 99 020 puis 102 077. L\'ANStat présente ces chiffres comme des projections.'],
         ],
     ],
 
@@ -552,14 +557,14 @@ return [
         'population' => 88580,
         'summary' => 'Chef-lieu du Bélier, Toumodi est une ville du centre ivoirien.',
         'blocks' => [
-            ['p', 'Toumodi est le chef-lieu du Bélier, région du centre composée des départements de Toumodi, Didiévi et Tiébissou.'],
+            ['p', 'Toumodi est le chef-lieu du Bélier, région du centre composée des départements de Toumodi, Didiévi, Tiébissou et Djékanou.'],
             ['h2', 'Géographie'],
             ['p', 'La ville occupe le centre du pays, dans une zone de transition entre forêt et savane.'],
             ['h2', 'Statut administratif'],
             ['p', 'Le décret n° 2011-263 fixe à Toumodi le chef-lieu de la région et du département.'],
             ['h2', 'Démographie'],
             ['p', 'Au recensement de 2021, la commune comptait 88 580 habitants (RGPH 2021, ANStat).'],
-            ['p', 'Les données plus récentes ne sont pas disponibles à cette échelle dans cette fiche.'],
+            ['p', 'Même logique pour Toumodi : 180 562 habitants projetés dans le département en 2024, 184 413 en 2025, et 94 749 puis 98 665 dans la sous-préfecture. Projections, non effectifs recensés.'],
         ],
     ],
 

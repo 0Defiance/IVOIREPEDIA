@@ -1571,6 +1571,38 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 58 — 21 novembre 2026 · Fiches de villes : projections 2024-2025 et listes de départements à jour
+
+**Demandé**
+- Récupérer une par une les 21 monographies régionales de l'ANStat et ajouter, pour chaque ville, la projection 2024 et 2025 du département et de la sous-préfecture, en précisant qu'il s'agit d'une projection.
+- Uniformiser les listes de départements : Taabo était cité alors que Bonon, Sipilou, Djékanou et Méagui avaient été écartés.
+
+**Fait**
+- Les 21 monographies ont été téléchargées depuis le site de l'ANStat et lues page par page (tableau 11.1, chapitre « Projections démographiques »).
+- 32 fiches sur 34 portent désormais deux couples de chiffres : département puis sous-préfecture, pour 2024 et 2025. La sous-préfecture est présentée comme l'échelon qui englobe la commune, jamais comme un décompte de la ville, et le mot « projection » figure dans chaque paragraphe.
+- Les tournures varient d'une fiche à l'autre (les projections donnent, dans ses projections, la projection place, pour 2024 et 2025, le département compterait, même exercice pour, même logique pour).
+- Listes de départements alignées sur l'état actuel : Nawa à quatre (Soubré, Guéyo, Méagui, Buyo), Guémon à quatre (Duékoué, Bangolo, Facobly, Kouibly), Marahoué à cinq (Bouaflé, Sinfra, Zuénoula, Bonon, Gohitafla), Tonkpi à cinq (Man, Biankouma, Danané, Zouan-Hounien, Sipilou), Cavally à quatre (Guiglo, Bloléquin, Toulépleu, Taï), Bélier à quatre (Toumodi, Didiévi, Tiébissou, Djékanou).
+- Méagui et Bonon ne sont plus décrites comme de simples sous-préfectures : les monographies les comptent parmi les départements de leur région.
+- L'en-tête du fichier de données ne dit plus que les projections ne sont pas déclinées ; il rappelle qu'elles ne sont pas des dénombrements.
+
+**Sources**
+- Projections 2022-2041 par département et sous-préfecture : monographies régionales ANStat (RGPH 2021), chapitre 11, tableau 11.1 — <https://www.anstat.ci/publications-regionales>.
+- Listes de départements : mêmes monographies, chapitre 1.
+- Effectifs communaux : RGPH 2021, ANStat — <https://plan.gouv.ci/uploads/publications/RGPH2021-RESULTATS-GLOBAUX-VF.pdf>.
+
+**Limite**
+- La monographie de la Cavally est inaccessible : le fichier `File_val_indicateur_20260821150909_c2f00655b318d47b.pdf` renvoie 404 sur le site de l'ANStat, alors que sa fiche de publication est en ligne. Guiglo et Bloléquin ne portent donc que la projection régionale 2025 (806 262 habitants), sans détail par département ni par sous-préfecture.
+- Le site renvoie 403 aux requêtes automatisées sans en-tête de navigateur ; les PDF ont été récupérés avec un profil de navigateur et lus hors ligne (les tableaux en paysage exigent une extraction par colonnes).
+
+**Vérifié**
+- `php -l` OK, `pint` appliqué puis `--test` OK, `CityArticlesTest` + `EnrichArticlesTest` 17 verts (241 assertions), `composer test` 149 verts (1 869 assertions), `format:check` PASS, `analyse` OK (0 erreur).
+- Contrôle de structure : 34 fiches, 8 blocs chacune, donc 14 opérations après fusion avec `cities-details.php`.
+
+**Reste à faire**
+- Reprendre la Cavally dès que l'ANStat republie son PDF, pour aligner Guiglo et Bloléquin sur les autres fiches.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
