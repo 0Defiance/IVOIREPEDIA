@@ -1543,6 +1543,34 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 57 — 21 novembre 2026 · Fiches de villes : géographie restaurée et formulations variées
+
+**Demandé**
+- Rétablir la géographie vérifiable des 34 fiches à partir des répertoires et cartes administratives, garder le neutre seulement là où rien n'est sourcé, varier les formulations.
+
+**Fait**
+- Chaque fiche nomme la région, son chef-lieu et la liste de ses départements, puis le statut de la ville (chef-lieu régional ou départemental), d'après l'annexe du décret n° 2011-263.
+- Les intitulés et les tournures varient d'une fiche à l'autre (Situation, Géographie, Position, Statut administratif, Administration, Un chef-lieu de région) ; plus de gabarit unique.
+- Méagui, Bonon : le statut de chef-lieu n'est pas affirmé, le décret de 2011 ne les retenant pas ; la fiche signale qu'une source à jour manque.
+- Tonkpi, Marahoué, Nawa, Bélier : seuls les départements figurant au décret sont cités (pas de Sipilou, Bonon ou Djékanou ajoutés après 2011).
+
+**Sources**
+- Statuts et départements : décret n° 2011-263 du 28 septembre 2011, annexe — <http://lexterra.ci/data/domaine/coll_terr/CT2/2011-09-28%20D2011-263%20D%C3%A9coupage%20r%C3%A9gional%20&%20districts.pdf>.
+- Effectifs communaux : RGPH 2021, ANStat — <https://plan.gouv.ci/uploads/publications/RGPH2021-RESULTATS-GLOBAUX-VF.pdf>.
+- Contrôle des sous-préfectures : répertoires des localités RGPH 2021 (Tchologo, Agnéby-Tiassa) — <https://rp2021.anstat.ci/>.
+
+**Limite de fraîcheur, assumée**
+- 2021 reste le dernier dénombrement communal officiel. L'ANStat publie une estimation nationale à 32,8 millions d'habitants en 2025 (`Chiffres_Cles_CIV_2025.pdf`) et des projections 2022-2041 par département et sous-préfecture dans les 21 monographies régionales, mais aucune série communale récente n'est publiée : les fiches ne convertissent donc pas ces projections en chiffres de ville.
+- Les répertoires `rp2021.anstat.ci` et l'API de l'ANStat renvoient 403 aux requêtes automatisées ; les monographies restent consultables une par une.
+
+**Vérifié**
+- `php -l` OK, `pint` appliqué puis `--test` OK, `CityArticlesTest` + `EnrichArticlesTest` 17 verts (241 assertions), `composer test` 149 verts, `format:check` PASS, `analyse` OK.
+
+**Reste à faire**
+- Récupérer une par une les 21 monographies pour porter les projections 2024-2025 au niveau du département et de la sous-préfecture, si le propriétaire accepte cette échelle.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
