@@ -1650,6 +1650,31 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 61 — 21 novembre 2026 · Monographies régionales en références des six grands articles
+
+**Demandé**
+- Ajouter la monographie régionale ANStat correspondante dans les références des six grands articles, pour que leurs projections 2024-2025 soient sourcées comme les chiffres du RGPH 2021.
+
+**Fait**
+- Chacun des six articles porte maintenant, dans son tableau `references`, une entrée `REPORT` d'auteur « ANStat (ex-INS) », d'éditeur « ANStat », avec le lien direct vers le PDF de sa monographie :
+  - Abidjan — *Monographie du District autonome d'Abidjan — projections démographiques 2022-2041* (`File_val_indicateur1781527276.pdf`) ;
+  - Yamoussoukro — *Monographie du District autonome de Yamoussoukro…* (`File_val_indicateur1767023430.pdf`) ;
+  - Bouaké — *Monographie de la région du Gbêkê…* (`File_val_indicateur1767188731.pdf`) ;
+  - Korhogo — *Monographie de la région du Poro…* (`File_val_indicateur1767628940.pdf`) ;
+  - Man — *Monographie de la région du Tonkpi…* (`File_val_indicateur1767631604.pdf`) ;
+  - San-Pédro — *Monographie de la région de San-Pédro…* (`File_val_indicateur1767630675.pdf`).
+- Le champ `year` reste `null` : aucune des six monographies ne porte de date d'édition lisible (couvertures muettes), et l'horizon des tableaux (2022-2041) ne permet pas de la déduire. Les fiches de ville gardent leur référence unique au RGPH, inchangées.
+
+**Vérifié**
+- Les six URL répondent en HTTP 200 et leur `Content-Length` correspond exactement au PDF lu en séance 60 (17 895 379 ; 8 592 221 ; 12 514 542 ; 10 592 705 ; 10 027 135 ; 11 241 496 octets), donc la référence pointe bien sur le document dont sont tirées les projections.
+- Répartition contrôlée dans le seeder : Abidjan et Yamoussoukro passent à quatre références, Bouaké, Korhogo, Man et San-Pédro à trois ; chaque URL de monographie n'apparaît que dans son article.
+- `php -l` OK, `pint` appliqué puis `--test` OK, `composer test` 149 verts (1 927 assertions), `format:check` PASS, `analyse` 0 erreur.
+
+**Reste**
+- Rien sur ce point. La monographie de la Cavally demeure inaccessible (404), ce qui bloque toujours les projections départementales de Guiglo et Bloléquin.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
