@@ -1770,6 +1770,30 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 66 — 21 novembre 2026 · Accueil éditorial : manchette chiffrée, cartes et couleurs
+
+**Demandé**
+- La présentation issue de la séance 64 est jugée trop minimaliste ; obtenir une page d’accueil plus concrète et plus intéressante.
+
+**Fait**
+- Manchette en deux parties : à gauche la marque, le titre « La Côte d’Ivoire, racontée et sourcée », le chapô et les trois compteurs (pages, domaines, sources) ; à droite la carte d’identité du pays sur fond vert profond (population, tendance annuelle, régions, districts, recensement, lien vers les statistiques). La bande tissée ouvre le bloc, un accès unique aux portails le referme.
+- La une devient une vraie mosaïque : article principal avec photo pleine largeur, étiquette « À la une » posée sur l’image, étiquette de domaine, signature et bouton d’action ; deux entrées secondaires numérotées, illustrées, encadrées.
+- « Aujourd’hui dans l’histoire » passe sur une bande sombre : l’année en or, l’âge du jalon, le récit, puis la frise en cartes sur fond translucide.
+- Les régions deviennent un classement : la première carte passe sur fond vert, les suivantes sur des fiches claires, toutes avec rang, effectif et barre de proportion.
+- Les portails deviennent des cartes à pictogramme et couleur propres à chaque domaine (histoire, géographie, personnalités, institutions, langues, culture, économie, patrimoine), avec le nombre de pages et la part du corpus.
+- Colonne de droite : « Repères nationaux » sur fond sombre (PIB, espérance de vie, alphabétisation, territoires, chronologie, pages publiées) au lieu du seul chiffre de population, déjà présent dans la manchette ; bibliothèque des sources avec son compteur en grand ; encarts réordonnés.
+- Toutes les sections reprennent un en-tête commun (filet d’accent orange, titre, filet tissé) ; le fil, les récits, les outils et la charte passent en cartes bordées, avec survol coloré. Les titres, libellés et parcours existants sont conservés (sommaire, ancres, tirages, liens).
+
+**Vérifié**
+- `flutter analyze` : aucun problème. `flutter test` : 56 tests verts, y compris le rendu téléphone 390 px et le grand écran 1280 px (aucun débordement), le sommaire, la frise et les cartes de régions.
+- Trois débordements apparus pendant la refonte ont été corrigés : en-tête de la carte pays, pied des cartes de portails, et la phrase de manchette qui porte « L’encyclopédie de la Côte d’Ivoire » (attendu par le test d’accueil).
+
+**Reste**
+- Le rendu n’a pas été regardé dans un navigateur : l’aperçu local reste bloqué par le démarrage du serveur Flutter web (voir séance 64), et les tests de widgets rendent avec la police de test, pas avec Inter. À vérifier à l’écran avant une mise en production.
+- Les descriptions de domaines sont vides en base : les cartes de portails affichent le nombre de pages et la part du corpus, sans texte inventé. Une description par catégorie permettrait d’enrichir la carte.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

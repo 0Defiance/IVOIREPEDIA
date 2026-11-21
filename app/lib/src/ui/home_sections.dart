@@ -11,6 +11,7 @@ import 'format.dart';
 import 'wiki_actions.dart';
 import 'widgets/article_image.dart';
 import 'widgets/interactive.dart';
+import 'widgets/ivorian_patterns.dart';
 
 /// Séparateur de milliers à la française : espace fine insécable.
 String groupedNumber(int value) {
@@ -36,15 +37,95 @@ class HomeSectionEntry {
   final String label;
 }
 
-/// Bandeau d'ouverture : la marque tient en trois lignes, les compteurs et
-/// l'accès aux portails sont sur la même ligne. Le contenu commence dans le
-/// premier écran.
+const double _cardRadius = 10;
+
+/// Accent et pictogramme d'un domaine : chaque portail a sa couleur, reprise
+/// sur les tuiles, les étiquettes et les cartes du fil.
+({Color accent, IconData icon}) _domainLook(String slug) {
+  return switch (slug) {
+    'histoire' => (
+      accent: IvoireColors.terracotta,
+      icon: Icons.menu_book_outlined,
+    ),
+    'geographie' => (accent: IvoireColors.green, icon: Icons.public),
+    'personnalites' => (
+      accent: IvoireColors.orangeDeep,
+      icon: Icons.portrait_outlined,
+    ),
+    'institutions' => (
+      accent: IvoireColors.greenDeep,
+      icon: Icons.account_balance_outlined,
+    ),
+    'langues' => (accent: IvoireColors.orangeDeep, icon: Icons.translate),
+    'culture' => (
+      accent: IvoireColors.terracotta,
+      icon: Icons.palette_outlined,
+    ),
+    'economie' => (accent: IvoireColors.green, icon: Icons.trending_up),
+    'patrimoine' => (
+      accent: IvoireColors.terracotta,
+      icon: Icons.museum_outlined,
+    ),
+    _ => (accent: IvoireColors.green, icon: Icons.category_outlined),
+  };
+}
+
+/// Étiquette de domaine : petites capitales sur fond teinté.
+class HomeCategoryChip extends StatelessWidget {
+  const HomeCategoryChip({
+    required this.label,
+    this.slug,
+    this.onDark = false,
+    super.key,
+  });
+
+  final String label;
+  final String? slug;
+  final bool onDark;
+
+  @override
+  Widget build(BuildContext context) {
+    final look = _domainLook(slug ?? '');
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+      decoration: BoxDecoration(
+        color: onDark
+            ? look.accent.withValues(alpha: 0.30)
+            : look.accent.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(3),
+        border: Border.all(
+          color: onDark
+              ? Colors.white.withValues(alpha: 0.22)
+              : look.accent.withValues(alpha: 0.22),
+        ),
+      ),
+      child: Text(
+        label.toUpperCase(),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+          fontFamily: kFont,
+          fontSize: 9.5,
+          height: 1.3,
+          letterSpacing: 0.8,
+          fontWeight: FontWeight.w700,
+          color: onDark ? Colors.white : look.accent,
+        ),
+      ),
+    );
+  }
+}
+
+/// Bandeau d'ouverture : la manchette du portail à gauche, la carte d'identité
+/// du pays à droite. Le contenu (la une) commence juste en dessous.
 class HomeOpening extends StatelessWidget {
   const HomeOpening({
     required this.articleCount,
     required this.domains,
     required this.sourceCount,
     required this.categories,
+    this.stats,
     super.key,
   });
 
@@ -52,78 +133,341 @@ class HomeOpening extends StatelessWidget {
   final int domains;
   final int sourceCount;
   final List<Category> categories;
+  final StatisticsSnapshot? stats;
 
   @override
   Widget build(BuildContext context) {
     final tone = ToneColors.from(context);
-    final narrow = MediaQuery.sizeOf(context).width < 760;
-
-    final brand = Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Image.asset(
-          kLockupAsset,
-          height: narrow ? 54 : 66,
-          fit: BoxFit.contain,
-          filterQuality: FilterQuality.high,
-          semanticLabel: kTagline,
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'L’encyclopédie de la Côte d’Ivoire',
-                style: titleStyle(
-                  size: narrow ? 17 : 21,
-                  weight: FontWeight.w700,
-                  color: tone.ink,
-                  height: 1.2,
-                ),
-              ),
-              const SizedBox(height: 3),
-              Text(
-                '$articleCount articles · $domains domaines · '
-                '$sourceCount sources citées',
-                style: TextStyle(fontSize: 12, color: tone.faint),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-
-    final portals = _PortalMenu(categories: categories);
 
     return Container(
-      padding: const EdgeInsets.only(bottom: 14),
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: tone.lineSoft)),
+        color: tone.paper,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: tone.line),
+        boxShadow: [
+          BoxShadow(
+            color: tone.ink.withValues(alpha: 0.05),
+            blurRadius: 26,
+            offset: const Offset(0, 12),
+          ),
+        ],
       ),
-      child: narrow
-          ? Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                brand,
-                const SizedBox(height: 12),
-                Row(children: [portals]),
-              ],
-            )
-          : Row(
-              children: [
-                Expanded(child: brand),
-                const SizedBox(width: 24),
-                portals,
-              ],
-            ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const KenteBand(height: 9),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final wide = constraints.maxWidth >= 820;
+
+              final intro = _HeroIntro(
+                articleCount: articleCount,
+                domains: domains,
+                sourceCount: sourceCount,
+                categories: categories,
+                narrow: !wide,
+              );
+              final facts = _CountryFacts(stats: stats, narrow: !wide);
+
+              if (!wide) {
+                return Padding(
+                  padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [intro, const SizedBox(height: 18), facts],
+                  ),
+                );
+              }
+
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(26, 22, 22, 22),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(child: intro),
+                    const SizedBox(width: 22),
+                    SizedBox(width: 306, child: facts),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }
 
-/// Un seul accès aux domaines en haut de page : un menu, pas une barre de
-/// douze liens qui prend la largeur de la manchette.
+class _HeroIntro extends StatelessWidget {
+  const _HeroIntro({
+    required this.articleCount,
+    required this.domains,
+    required this.sourceCount,
+    required this.categories,
+    required this.narrow,
+  });
+
+  final int articleCount;
+  final int domains;
+  final int sourceCount;
+  final List<Category> categories;
+  final bool narrow;
+
+  @override
+  Widget build(BuildContext context) {
+    final tone = ToneColors.from(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Image.asset(
+              kLockupAsset,
+              height: narrow ? 44 : 52,
+              fit: BoxFit.contain,
+              filterQuality: FilterQuality.high,
+              semanticLabel: kTagline,
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+        Text(
+          'PORTAIL NATIONAL',
+          style: kickerStyle(color: IvoireColors.orangeDeep),
+        ),
+        const SizedBox(height: 7),
+        Text(
+          'La Côte d’Ivoire,\nracontée et sourcée',
+          style: titleStyle(
+            size: narrow ? 29 : 38,
+            weight: FontWeight.w700,
+            color: tone.ink,
+            height: 1.08,
+            letterSpacing: -0.9,
+          ),
+        ),
+        const SizedBox(height: 10),
+        ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 520),
+          child: Text(
+            'L’encyclopédie de la Côte d’Ivoire : territoires, langues, '
+            'institutions, personnalités et récits — chaque page s’appuie sur '
+            'des sources que vous pouvez ouvrir.',
+            style: TextStyle(fontSize: 14, height: 1.65, color: tone.muted),
+          ),
+        ),
+        const SizedBox(height: 20),
+        Wrap(
+          spacing: 26,
+          runSpacing: 12,
+          crossAxisAlignment: WrapCrossAlignment.start,
+          children: [
+            _HeroStat(value: groupedNumber(articleCount), label: 'pages'),
+            _HeroStat(value: '$domains', label: 'domaines'),
+            _HeroStat(value: groupedNumber(sourceCount), label: 'sources'),
+          ],
+        ),
+        const SizedBox(height: 20),
+        Wrap(
+          spacing: 16,
+          runSpacing: 10,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            _PortalMenu(categories: categories),
+            HoverLink(
+              label: 'Rechercher un sujet',
+              onTap: () => wikiGo(context, '/recherche'),
+              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _HeroStat extends StatelessWidget {
+  const _HeroStat({required this.value, required this.label});
+
+  final String value;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final tone = ToneColors.from(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          value,
+          style: titleStyle(
+            size: 22,
+            weight: FontWeight.w700,
+            color: tone.ink,
+            height: 1.05,
+          ),
+        ),
+        const SizedBox(height: 1),
+        Text(
+          label.toUpperCase(),
+          style: TextStyle(
+            fontSize: 9.5,
+            letterSpacing: 0.9,
+            fontWeight: FontWeight.w600,
+            color: tone.faint,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Carte d'identité du pays : les grands chiffres, sur fond vert profond.
+class _CountryFacts extends StatelessWidget {
+  const _CountryFacts({required this.stats, required this.narrow});
+
+  final StatisticsSnapshot? stats;
+  final bool narrow;
+
+  @override
+  Widget build(BuildContext context) {
+    final population = stats == null ? null : _headline(stats!, 'SP.POP.TOTL');
+    final census = stats?.census;
+    final regions = stats?.regions.length ?? 0;
+    final districts = stats?.districts.length ?? 0;
+
+    return Container(
+      padding: EdgeInsets.fromLTRB(narrow ? 18 : 20, 18, narrow ? 18 : 20, 16),
+      decoration: BoxDecoration(
+        color: IvoireColors.greenDeep,
+        borderRadius: BorderRadius.circular(_cardRadius),
+        border: Border.all(color: IvoireColors.green),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.insights, size: 14, color: IvoireColors.gold),
+              const SizedBox(width: 6),
+              Flexible(
+                child: Text(
+                  'LA CÔTE D’IVOIRE EN CLAIR',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: kickerStyle(color: IvoireColors.gold),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          if (population?.display != null) ...[
+            Text(
+              population!.display!,
+              style: titleStyle(
+                size: narrow ? 26 : 27,
+                weight: FontWeight.w700,
+                color: Colors.white,
+                height: 1.14,
+                letterSpacing: -0.6,
+              ),
+            ),
+            const SizedBox(height: 3),
+            if (population.trend?.display != null)
+              Text(
+                population.trend!.display,
+                style: const TextStyle(
+                  fontSize: 12,
+                  height: 1.45,
+                  fontWeight: FontWeight.w600,
+                  color: IvoireColors.gold,
+                ),
+              ),
+            const SizedBox(height: 1),
+            Text(
+              'Banque mondiale, ${population.year ?? ''}',
+              style: TextStyle(
+                fontSize: 10.5,
+                color: Colors.white.withValues(alpha: 0.55),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Container(height: 1, color: Colors.white.withValues(alpha: 0.16)),
+            const SizedBox(height: 10),
+          ] else ...[
+            Text(
+              'Les repères du pays arrivent avec les statistiques.',
+              style: TextStyle(
+                fontSize: 12.5,
+                height: 1.55,
+                color: Colors.white.withValues(alpha: 0.8),
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
+          if (census != null && regions > 0) ...[
+            _FactRow(label: 'Régions', value: '$regions'),
+            _FactRow(label: 'Districts', value: '$districts'),
+            _FactRow(label: 'Recensement', value: 'RGPH ${census.year}'),
+          ],
+          const SizedBox(height: 12),
+          HoverLink(
+            label: 'Toutes les statistiques',
+            onTap: () => wikiGo(context, '/statistiques'),
+            color: Colors.white,
+            hoverColor: IvoireColors.gold,
+            style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FactRow extends StatelessWidget {
+  const _FactRow({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 5),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.alphabetic,
+        children: [
+          Expanded(
+            child: Text(
+              label.toUpperCase(),
+              style: TextStyle(
+                fontSize: 9.5,
+                letterSpacing: 0.8,
+                fontWeight: FontWeight.w600,
+                color: Colors.white.withValues(alpha: 0.55),
+              ),
+            ),
+          ),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Accès aux domaines : un bouton plein, le plan de l'encyclopédie en menu.
 class _PortalMenu extends StatelessWidget {
   const _PortalMenu({required this.categories});
 
@@ -143,6 +487,12 @@ class _PortalMenu extends StatelessWidget {
             value: category.slug,
             child: Row(
               children: [
+                Icon(
+                  _domainLook(category.slug).icon,
+                  size: 15,
+                  color: _domainLook(category.slug).accent,
+                ),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     category.name,
@@ -159,27 +509,26 @@ class _PortalMenu extends StatelessWidget {
           ),
       ],
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
         decoration: BoxDecoration(
-          color: tone.paper,
-          border: Border.all(color: tone.line),
-          borderRadius: BorderRadius.circular(3),
+          color: IvoireColors.greenDeep,
+          borderRadius: BorderRadius.circular(24),
         ),
-        child: Row(
+        child: const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.grid_view_rounded, size: 14, color: IvoireColors.link),
-            const SizedBox(width: 7),
+            Icon(Icons.grid_view_rounded, size: 15, color: Colors.white),
+            SizedBox(width: 8),
             Text(
               'Portails',
               style: TextStyle(
-                fontSize: 12.5,
+                fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: tone.ink,
+                color: Colors.white,
               ),
             ),
-            const SizedBox(width: 4),
-            Icon(Icons.expand_more, size: 15, color: tone.faint),
+            SizedBox(width: 4),
+            Icon(Icons.expand_more, size: 16, color: Colors.white70),
           ],
         ),
       ),
@@ -203,22 +552,27 @@ class HomeContentsRail extends StatelessWidget {
     final tone = ToneColors.from(context);
 
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
       decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: tone.lineSoft)),
+        color: tone.subtle,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: tone.lineSoft),
       ),
       child: Wrap(
-        spacing: 20,
-        runSpacing: 6,
+        spacing: 4,
+        runSpacing: 2,
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
-          Text(
-            'Au sommaire',
-            style: TextStyle(
-              fontSize: 10.5,
-              letterSpacing: 0.8,
-              fontWeight: FontWeight.w700,
-              color: tone.faint,
+          Padding(
+            padding: const EdgeInsets.only(right: 8, left: 2),
+            child: Text(
+              'AU SOMMAIRE',
+              style: TextStyle(
+                fontSize: 9.5,
+                letterSpacing: 1.1,
+                fontWeight: FontWeight.w700,
+                color: IvoireColors.orangeDeep,
+              ),
             ),
           ),
           for (var i = 0; i < entries.length; i++)
@@ -254,7 +608,6 @@ class _RailLinkState extends State<_RailLink> {
   @override
   Widget build(BuildContext context) {
     final tone = ToneColors.from(context);
-    final color = _hover ? IvoireColors.greenDeep : tone.body;
 
     return MouseRegion(
       cursor: SystemMouseCursors.click,
@@ -262,38 +615,43 @@ class _RailLinkState extends State<_RailLink> {
       onExit: (_) => setState(() => _hover = false),
       child: GestureDetector(
         onTap: widget.onTap,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 250),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              Text(
-                widget.index.toString().padLeft(2, '0'),
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w700,
-                  color: _hover ? IvoireColors.greenDeep : tone.faint,
-                ),
-              ),
-              const SizedBox(width: 5),
-              Flexible(
-                child: Text(
-                  widget.entry.label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 120),
+          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
+          decoration: BoxDecoration(
+            color: _hover ? tone.paper : Colors.transparent,
+            borderRadius: BorderRadius.circular(4),
+            border: Border.all(color: _hover ? tone.line : Colors.transparent),
+          ),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 250),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                Text(
+                  widget.index.toString().padLeft(2, '0'),
                   style: TextStyle(
-                    fontSize: 12.5,
-                    color: color,
-                    decoration: _hover
-                        ? TextDecoration.underline
-                        : TextDecoration.none,
-                    decorationColor: IvoireColors.greenDeep,
+                    fontSize: 9.5,
+                    fontWeight: FontWeight.w700,
+                    color: _hover ? IvoireColors.greenDeep : tone.faint,
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(width: 5),
+                Flexible(
+                  child: Text(
+                    widget.entry.label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      color: _hover ? IvoireColors.greenDeep : tone.body,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -301,8 +659,8 @@ class _RailLinkState extends State<_RailLink> {
   }
 }
 
-/// Mosaïque de une : un article principal, deux secondaires visibles sans
-/// défiler.
+/// Mosaïque de une : un article principal en grand, puis deux entrées
+/// secondaires numérotées.
 class HomeLeadGrid extends StatelessWidget {
   const HomeLeadGrid({required this.page, super.key});
 
@@ -325,62 +683,58 @@ class HomeLeadGrid extends StatelessWidget {
     final lead = page.items.first;
     final secondary = page.items.skip(1).take(2).toList(growable: false);
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final wide = constraints.maxWidth >= 820;
+    return HomeSection(
+      title: 'La une',
+      trailing: Text(
+        'Édition du ${formatDate(DateTime.now())}',
+        style: TextStyle(fontSize: 11, color: tone.faint),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _LeadStory(article: lead),
+          if (secondary.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final side = constraints.maxWidth >= 720;
 
-        final main = _LeadMain(article: lead);
+                if (!side) {
+                  return Column(
+                    children: [
+                      for (var i = 0; i < secondary.length; i++) ...[
+                        if (i > 0) const SizedBox(height: 12),
+                        _SecondaryStory(index: i + 2, article: secondary[i]),
+                      ],
+                    ],
+                  );
+                }
 
-        if (!wide) {
-          return HomeSection(
-            title: 'La une',
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                main,
-                for (final article in secondary) ...[
-                  const SizedBox(height: 18),
-                  _SecondaryStory(article: article),
-                ],
-              ],
-            ),
-          );
-        }
-
-        return HomeSection(
-          title: 'La une',
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(child: main),
-              const SizedBox(width: 28),
-              Container(width: 1, height: 330, color: tone.lineSoft),
-              const SizedBox(width: 28),
-              SizedBox(
-                width: 290,
-                child: Column(
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     for (var i = 0; i < secondary.length; i++) ...[
-                      if (i > 0) ...[
-                        const SizedBox(height: 14),
-                        Divider(height: 1, color: tone.lineSoft),
-                        const SizedBox(height: 14),
-                      ],
-                      _SecondaryStory(article: secondary[i]),
+                      if (i > 0) const SizedBox(width: 14),
+                      Expanded(
+                        child: _SecondaryStory(
+                          index: i + 2,
+                          article: secondary[i],
+                        ),
+                      ),
                     ],
                   ],
-                ),
-              ),
-            ],
-          ),
-        );
-      },
+                );
+              },
+            ),
+          ],
+        ],
+      ),
     );
   }
 }
 
-class _LeadMain extends StatelessWidget {
-  const _LeadMain({required this.article});
+class _LeadStory extends StatelessWidget {
+  const _LeadStory({required this.article});
 
   final ArticleSummary article;
 
@@ -389,58 +743,122 @@ class _LeadMain extends StatelessWidget {
     final tone = ToneColors.from(context);
     final hasImage =
         article.coverImageUrl != null && article.coverImageUrl!.isNotEmpty;
+    final meta = [
+      article.typeLabel,
+      '${article.readingMinutes} min',
+      if (article.publishedAt != null) formatDate(article.publishedAt),
+    ].join(' · ');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (hasImage) ...[
-          ArticleFigure(article: article, height: 300, radius: 2),
-          const SizedBox(height: 14),
+          Stack(
+            children: [
+              ArticleFigure(
+                article: article,
+                height: 320,
+                radius: _cardRadius,
+                requestWidth: 780,
+              ),
+              Positioned(
+                left: 12,
+                top: 12,
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 9,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: IvoireColors.greenDeep,
+                        borderRadius: BorderRadius.circular(3),
+                      ),
+                      child: const Text(
+                        'À LA UNE',
+                        style: TextStyle(
+                          fontFamily: kFont,
+                          fontSize: 9.5,
+                          letterSpacing: 0.9,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    if (article.categoryName != null) ...[
+                      const SizedBox(width: 6),
+                      HomeCategoryChip(
+                        label: article.categoryName!,
+                        slug: article.categorySlug,
+                        onDark: true,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
         ],
-        Text(
-          [
-            if (article.categoryName != null) article.categoryName!,
-            article.typeLabel,
-            '${article.readingMinutes} min',
-            if (article.publishedAt != null) formatDate(article.publishedAt),
-          ].join(' · '),
-          style: TextStyle(fontSize: 11.5, color: tone.faint),
+        Row(
+          children: [
+            if (article.categoryName != null) ...[
+              HomeCategoryChip(
+                label: article.categoryName!,
+                slug: article.categorySlug,
+              ),
+              const SizedBox(width: 8),
+            ],
+            Expanded(
+              child: Text(
+                meta,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 11.5, color: tone.faint),
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 7),
         HoverLink(
           label: article.title,
           onTap: () => wikiGo(context, '/articles/${article.slug}'),
           color: tone.ink,
           hoverColor: IvoireColors.greenDeep,
           style: titleStyle(
-            size: 30,
+            size: 31,
             weight: FontWeight.w700,
             color: tone.ink,
-            height: 1.18,
+            height: 1.16,
+            letterSpacing: -0.7,
           ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 9),
         ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 660),
           child: Text(
             article.summary,
-            style: TextStyle(fontSize: 15.5, height: 1.7, color: tone.body),
+            style: TextStyle(fontSize: 15, height: 1.65, color: tone.body),
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 13),
         Row(
-          mainAxisSize: MainAxisSize.min,
           children: [
-            HoverLink(
+            _ActionPill(
               label: 'Lire l’article',
               onTap: () => wikiGo(context, '/articles/${article.slug}'),
-              style: const TextStyle(
-                fontSize: 13.5,
-                fontWeight: FontWeight.w600,
-              ),
             ),
-            const SizedBox(width: 4),
-            const Icon(Icons.arrow_forward, size: 13, color: IvoireColors.link),
+            const Spacer(),
+            if (article.authorName != null)
+              Flexible(
+                child: Text(
+                  'par ${article.authorName}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 11, color: tone.faint),
+                ),
+              ),
           ],
         ),
       ],
@@ -448,61 +866,167 @@ class _LeadMain extends StatelessWidget {
   }
 }
 
-class _SecondaryStory extends StatelessWidget {
-  const _SecondaryStory({required this.article});
+class _ActionPill extends StatefulWidget {
+  const _ActionPill({required this.label, required this.onTap});
 
-  final ArticleSummary article;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  State<_ActionPill> createState() => _ActionPillState();
+}
+
+class _ActionPillState extends State<_ActionPill> {
+  bool _hover = false;
 
   @override
   Widget build(BuildContext context) {
-    final tone = ToneColors.from(context);
-
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () => wikiGo(context, '/articles/${article.slug}'),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ArticleThumb(article: article, width: 78, height: 78, radius: 3),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  article.categoryName ?? article.typeLabel,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 10.5, color: tone.faint),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  article.title,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                  style: titleStyle(
-                    size: 14.5,
-                    weight: FontWeight.w600,
-                    color: tone.ink,
-                    height: 1.32,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '${article.readingMinutes} min de lecture',
-                  style: TextStyle(fontSize: 11, color: tone.faint),
-                ),
-              ],
-            ),
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hover = true),
+      onExit: (_) => setState(() => _hover = false),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 140),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+          decoration: BoxDecoration(
+            color: _hover ? IvoireColors.greenDeep : IvoireColors.green,
+            borderRadius: BorderRadius.circular(22),
           ),
-        ],
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                widget.label,
+                style: const TextStyle(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(width: 6),
+              const Icon(Icons.arrow_forward, size: 13, color: Colors.white),
+            ],
+          ),
+        ),
       ),
     );
   }
 }
 
-/// Bande historique : l'année en très grand, le récit du jour, puis la frise
-/// continue — une seule section au lieu de deux blocs empilés.
+class _SecondaryStory extends StatefulWidget {
+  const _SecondaryStory({required this.index, required this.article});
+
+  final int index;
+  final ArticleSummary article;
+
+  @override
+  State<_SecondaryStory> createState() => _SecondaryStoryState();
+}
+
+class _SecondaryStoryState extends State<_SecondaryStory> {
+  bool _hover = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final tone = ToneColors.from(context);
+    final article = widget.article;
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hover = true),
+      onExit: (_) => setState(() => _hover = false),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => wikiGo(context, '/articles/${article.slug}'),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 140),
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(
+            color: tone.paper,
+            borderRadius: BorderRadius.circular(_cardRadius),
+            border: Border.all(
+              color: _hover ? IvoireColors.green : tone.lineSoft,
+            ),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: 104,
+                height: 124,
+                child: ArticleThumb(
+                  article: article,
+                  width: 104,
+                  height: 124,
+                  radius: 0,
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 10, 12, 11),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            widget.index.toString().padLeft(2, '0'),
+                            style: const TextStyle(
+                              fontSize: 10.5,
+                              fontWeight: FontWeight.w700,
+                              color: IvoireColors.orangeDeep,
+                            ),
+                          ),
+                          const SizedBox(width: 7),
+                          Expanded(
+                            child: Text(
+                              article.categoryName ?? article.typeLabel,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 10,
+                                letterSpacing: 0.4,
+                                fontWeight: FontWeight.w600,
+                                color: tone.faint,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        article.title,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        style: titleStyle(
+                          size: 14,
+                          weight: FontWeight.w600,
+                          color: _hover ? IvoireColors.greenDeep : tone.ink,
+                          height: 1.3,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        '${article.readingMinutes} min de lecture',
+                        style: TextStyle(fontSize: 10.5, color: tone.faint),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Bande historique : l'année en très grand sur fond sombre, le récit du jour,
+/// puis la frise continue.
 class HomeHistoryBand extends StatelessWidget {
   const HomeHistoryBand({
     required this.events,
@@ -519,123 +1043,201 @@ class HomeHistoryBand extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    final tone = ToneColors.from(context);
     final today = DateTime.now();
     final dayOfYear = today.difference(DateTime(today.year)).inDays;
     final event = events[dayOfYear % events.length];
     final age = today.year - event.year;
 
-    return HomeSection(
-      title: 'Aujourd’hui dans l’histoire',
-      trailing: HoverLink(
-        label: 'Voir la frise complète',
-        onTap: () => wikiGo(context, '/chronologie'),
-        style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
-      ),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final wide = constraints.maxWidth >= 780;
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        color: IvoireColors.ink,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const WeaveRule(height: 3),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'Aujourd’hui dans l’histoire',
+                          style: titleStyle(
+                            size: 18,
+                            weight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      HoverLink(
+                        label: 'Voir la frise complète',
+                        onTap: () => wikiGo(context, '/chronologie'),
+                        color: IvoireColors.gold,
+                        hoverColor: Colors.white,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                  Container(
+                    height: 1,
+                    color: Colors.white.withValues(alpha: 0.14),
+                  ),
+                  const SizedBox(height: 16),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final wide = constraints.maxWidth >= 700;
 
-          final story = Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                width: 132,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '${event.year}',
-                      style: titleStyle(
-                        size: 44,
-                        weight: FontWeight.w700,
-                        color: tone.ink,
-                        height: 1.05,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      age > 0 ? 'il y a $age ans' : 'cette année',
-                      style: const TextStyle(
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.w600,
-                        color: IvoireColors.orangeDeep,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    HoverLink(
-                      label: event.title,
-                      onTap: () => onOpen(event.slug),
-                      color: tone.ink,
-                      hoverColor: IvoireColors.greenDeep,
-                      style: titleStyle(
-                        size: 18,
-                        weight: FontWeight.w600,
-                        color: tone.ink,
-                        height: 1.35,
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    Text(
-                      event.teaser,
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 13.5,
-                        height: 1.6,
-                        color: tone.body,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    HoverLink(
-                      label: 'Lire ce récit',
-                      onTap: () => onOpen(event.slug),
-                      style: const TextStyle(
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          );
+                      final story = Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: 132,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  event.year < 0
+                                      ? '${-event.year}'
+                                      : '${event.year}',
+                                  style: titleStyle(
+                                    size: 46,
+                                    weight: FontWeight.w700,
+                                    color: IvoireColors.gold,
+                                    height: 1,
+                                    letterSpacing: -1.2,
+                                  ),
+                                ),
+                                if (event.year < 0)
+                                  const Text(
+                                    'av. J.-C.',
+                                    style: TextStyle(
+                                      fontSize: 10.5,
+                                      fontWeight: FontWeight.w600,
+                                      color: IvoireColors.gold,
+                                    ),
+                                  ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  age > 0 ? 'il y a $age ans' : 'cette année',
+                                  style: const TextStyle(
+                                    fontSize: 11.5,
+                                    fontWeight: FontWeight.w600,
+                                    color: IvoireColors.orange,
+                                  ),
+                                ),
+                                if (event.era.isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 2),
+                                    child: Text(
+                                      event.era.toUpperCase(),
+                                      style: TextStyle(
+                                        fontSize: 9.5,
+                                        letterSpacing: 0.8,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white.withValues(
+                                          alpha: 0.45,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                HoverLink(
+                                  label: event.title,
+                                  onTap: () => onOpen(event.slug),
+                                  color: Colors.white,
+                                  hoverColor: IvoireColors.gold,
+                                  style: titleStyle(
+                                    size: 19,
+                                    weight: FontWeight.w600,
+                                    color: Colors.white,
+                                    height: 1.3,
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  event.teaser,
+                                  maxLines: 3,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    height: 1.6,
+                                    color: Colors.white.withValues(alpha: 0.72),
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                HoverLink(
+                                  label: 'Lire ce récit',
+                                  onTap: () => onOpen(event.slug),
+                                  color: IvoireColors.gold,
+                                  hoverColor: Colors.white,
+                                  style: const TextStyle(
+                                    fontSize: 12.5,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      );
 
-          final rail = SizedBox(
-            height: 116,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: events.length,
-              itemBuilder: (context, index) => _RailEvent(
-                event: events[index],
-                onTap: () => onOpen(events[index].slug),
+                      final rail = SizedBox(
+                        height: 124,
+                        child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: events.length,
+                          separatorBuilder: (_, _) => const SizedBox(width: 10),
+                          itemBuilder: (context, index) => _RailEvent(
+                            event: events[index],
+                            onTap: () => onOpen(events[index].slug),
+                          ),
+                        ),
+                      );
+
+                      if (!wide) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [story, const SizedBox(height: 18), rail],
+                        );
+                      }
+
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(child: story),
+                          const SizedBox(width: 20),
+                          Container(
+                            width: 1,
+                            height: 124,
+                            color: Colors.white.withValues(alpha: 0.12),
+                          ),
+                          const SizedBox(width: 18),
+                          SizedBox(width: 290, child: rail),
+                        ],
+                      );
+                    },
+                  ),
+                ],
               ),
             ),
-          );
-
-          // La frise se glisse sous le récit quand la largeur manque.
-          return wide
-              ? Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(child: story),
-                    const SizedBox(width: 24),
-                    Container(width: 1, height: 116, color: tone.lineSoft),
-                    const SizedBox(width: 20),
-                    SizedBox(width: 300, child: rail),
-                  ],
-                )
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [story, const SizedBox(height: 18), rail],
-                );
-        },
+          ],
+        ),
       ),
     );
   }
@@ -656,7 +1258,6 @@ class _RailEventState extends State<_RailEvent> {
 
   @override
   Widget build(BuildContext context) {
-    final tone = ToneColors.from(context);
     final year = widget.event.year;
     final label = year < 0 ? '${-year} av. J.-C.' : '$year';
 
@@ -667,8 +1268,17 @@ class _RailEventState extends State<_RailEvent> {
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: widget.onTap,
-        child: SizedBox(
-          width: 186,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 140),
+          width: 190,
+          padding: const EdgeInsets.fromLTRB(12, 10, 12, 11),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: _hover ? 0.13 : 0.06),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: _hover ? 0.32 : 0.12),
+            ),
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -679,48 +1289,33 @@ class _RailEventState extends State<_RailEvent> {
                 style: titleStyle(
                   size: 17,
                   weight: FontWeight.w700,
-                  color: _hover
-                      ? IvoireColors.greenDeep
-                      : IvoireColors.terracotta,
+                  color: IvoireColors.gold,
                   height: 1.1,
                 ),
               ),
-              const SizedBox(height: 8),
-              SizedBox(
-                height: 9,
-                child: Row(
-                  children: [
-                    Container(
-                      width: 9,
-                      height: 9,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: _hover
-                            ? IvoireColors.green
-                            : IvoireColors.terracotta,
-                        border: Border.all(color: tone.paper, width: 2),
-                      ),
-                    ),
-                    Expanded(
-                      child: Container(
-                        height: 1,
-                        color: _hover
-                            ? IvoireColors.green.withValues(alpha: 0.45)
-                            : tone.line,
-                      ),
-                    ),
-                  ],
+              const SizedBox(height: 5),
+              Expanded(
+                child: Text(
+                  widget.event.title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 12,
+                    height: 1.35,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white.withValues(alpha: 0.88),
+                  ),
                 ),
               ),
-              const SizedBox(height: 9),
+              const SizedBox(height: 4),
               Text(
-                widget.event.title,
-                maxLines: 2,
+                widget.event.era,
+                maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: 12,
-                  height: 1.4,
-                  color: _hover ? IvoireColors.greenDeep : tone.muted,
+                  fontSize: 9.5,
+                  letterSpacing: 0.5,
+                  color: Colors.white.withValues(alpha: 0.45),
                 ),
               ),
             ],
@@ -731,7 +1326,8 @@ class _RailEventState extends State<_RailEvent> {
   }
 }
 
-/// Tuiles de régions : le chiffre d'abord, la comparaison ensuite.
+/// Classement des régions : la première carte passe sur fond vert, les autres
+/// restent des fiches claires avec leur rang.
 class HomeRegionTiles extends StatelessWidget {
   const HomeRegionTiles({
     required this.regions,
@@ -767,23 +1363,25 @@ class HomeRegionTiles extends StatelessWidget {
           ),
           LayoutBuilder(
             builder: (context, constraints) {
-              final columns = constraints.maxWidth >= 620
-                  ? 3
-                  : (constraints.maxWidth >= 400 ? 2 : 1);
+              final columns = constraints.maxWidth >= 700
+                  ? 4
+                  : (constraints.maxWidth >= 440 ? 2 : 1);
               final width =
-                  (constraints.maxWidth - (columns - 1) * 12) / columns;
+                  (constraints.maxWidth - (columns - 1) * 10) / columns;
 
               return Wrap(
-                spacing: 12,
-                runSpacing: 12,
+                spacing: 10,
+                runSpacing: 10,
                 children: [
-                  for (final region in regions)
+                  for (var i = 0; i < regions.length; i++)
                     SizedBox(
                       width: width,
                       child: _RegionTile(
-                        region: region,
+                        rank: i + 1,
+                        region: regions[i],
                         census: census,
-                        share: max == 0 ? 0 : region.population / max,
+                        share: max == 0 ? 0 : regions[i].population / max,
+                        leading: i == 0,
                       ),
                     ),
                 ],
@@ -798,14 +1396,18 @@ class HomeRegionTiles extends StatelessWidget {
 
 class _RegionTile extends StatefulWidget {
   const _RegionTile({
+    required this.rank,
     required this.region,
     required this.census,
     required this.share,
+    required this.leading,
   });
 
+  final int rank;
   final StatisticDivision region;
   final String census;
   final double share;
+  final bool leading;
 
   @override
   State<_RegionTile> createState() => _RegionTileState();
@@ -819,6 +1421,17 @@ class _RegionTileState extends State<_RegionTile> {
     final tone = ToneColors.from(context);
     final region = widget.region;
     final slug = region.slug;
+    final dark = widget.leading;
+
+    final nameColor = dark
+        ? Colors.white
+        : (_hover ? IvoireColors.greenDeep : tone.ink);
+    final captionColor = dark
+        ? Colors.white.withValues(alpha: 0.6)
+        : tone.faint;
+    final trackColor = dark
+        ? Colors.white.withValues(alpha: 0.18)
+        : tone.lineSoft;
 
     return MouseRegion(
       cursor: SystemMouseCursors.click,
@@ -830,16 +1443,58 @@ class _RegionTileState extends State<_RegionTile> {
           context,
           slug == null || slug.isEmpty ? '/lieux' : '/lieux/$slug',
         ),
-        child: Container(
-          padding: const EdgeInsets.fromLTRB(13, 11, 13, 13),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 140),
+          padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
           decoration: BoxDecoration(
-            color: _hover ? tone.paper : Colors.transparent,
-            border: Border.all(color: _hover ? tone.line : tone.lineSoft),
-            borderRadius: BorderRadius.circular(4),
+            color: dark
+                ? IvoireColors.greenDeep
+                : (_hover ? tone.paper : Colors.transparent),
+            border: Border.all(
+              color: dark
+                  ? IvoireColors.greenDeep
+                  : (_hover ? IvoireColors.green : tone.lineSoft),
+            ),
+            borderRadius: BorderRadius.circular(8),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: dark
+                          ? IvoireColors.gold
+                          : IvoireColors.terracotta.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(3),
+                    ),
+                    child: Text(
+                      widget.rank.toString().padLeft(2, '0'),
+                      style: TextStyle(
+                        fontSize: 9.5,
+                        fontWeight: FontWeight.w700,
+                        color: dark
+                            ? IvoireColors.ink
+                            : IvoireColors.terracotta,
+                      ),
+                    ),
+                  ),
+                  const Spacer(),
+                  Icon(
+                    Icons.arrow_outward,
+                    size: 12,
+                    color: dark
+                        ? Colors.white.withValues(alpha: 0.6)
+                        : (_hover ? IvoireColors.green : tone.faint),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 7),
               Text(
                 region.name,
                 maxLines: 1,
@@ -847,39 +1502,34 @@ class _RegionTileState extends State<_RegionTile> {
                 style: TextStyle(
                   fontSize: 12.5,
                   fontWeight: FontWeight.w600,
-                  color: _hover ? IvoireColors.greenDeep : tone.muted,
+                  color: nameColor,
                 ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 2),
               Text(
                 groupedNumber(region.population),
                 style: titleStyle(
-                  size: 19,
+                  size: 20,
                   weight: FontWeight.w700,
-                  color: tone.ink,
+                  color: dark ? Colors.white : tone.ink,
                 ),
               ),
               const SizedBox(height: 7),
               ClipRRect(
                 borderRadius: BorderRadius.circular(2),
-                child: Container(
-                  height: 3,
-                  color: tone.lineSoft,
-                  alignment: Alignment.centerLeft,
-                  child: FractionallySizedBox(
-                    widthFactor: widget.share.clamp(0.04, 1.0),
-                    child: Container(
-                      color: _hover
-                          ? IvoireColors.green
-                          : IvoireColors.terracotta,
-                    ),
+                child: LinearProgressIndicator(
+                  value: widget.share.clamp(0.04, 1.0),
+                  minHeight: 4,
+                  backgroundColor: trackColor,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    dark ? IvoireColors.gold : IvoireColors.green,
                   ),
                 ),
               ),
               const SizedBox(height: 6),
               Text(
                 widget.census,
-                style: TextStyle(fontSize: 10.5, color: tone.faint),
+                style: TextStyle(fontSize: 10, color: captionColor),
               ),
             ],
           ),
@@ -889,8 +1539,8 @@ class _RegionTileState extends State<_RegionTile> {
   }
 }
 
-/// Fil des publications : une grille de fiches, puis trois entrées « le
-/// saviez-vous » sur une seule ligne.
+/// Fil des publications : une grille de fiches illustrées, puis trois entrées
+/// « le saviez-vous » sur une seule ligne.
 class HomeFeed extends StatelessWidget {
   const HomeFeed({required this.articles, required this.facts, super.key});
 
@@ -921,11 +1571,11 @@ class HomeFeed extends StatelessWidget {
                   ? 3
                   : (constraints.maxWidth >= 440 ? 2 : 1);
               final width =
-                  (constraints.maxWidth - (columns - 1) * 18) / columns;
+                  (constraints.maxWidth - (columns - 1) * 14) / columns;
 
               return Wrap(
-                spacing: 18,
-                runSpacing: 18,
+                spacing: 14,
+                runSpacing: 14,
                 children: [
                   for (final article in articles)
                     SizedBox(
@@ -937,61 +1587,118 @@ class HomeFeed extends StatelessWidget {
             },
           ),
           if (facts.isNotEmpty) ...[
-            const SizedBox(height: 18),
+            const SizedBox(height: 16),
             Container(
-              padding: const EdgeInsets.symmetric(vertical: 12),
+              clipBehavior: Clip.antiAlias,
               decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(color: tone.lineSoft),
-                  bottom: BorderSide(color: tone.lineSoft),
-                ),
+                color: tone.highlight,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: tone.lineSoft),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'LE SAVIEZ-VOUS ?',
-                    style: TextStyle(
-                      fontSize: 10,
-                      letterSpacing: 1,
-                      fontWeight: FontWeight.w700,
-                      color: tone.faint,
+                  Container(height: 3, color: IvoireColors.orange),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(14, 11, 14, 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'LE SAVIEZ-VOUS ?',
+                          style: TextStyle(
+                            fontSize: 9.5,
+                            letterSpacing: 1.1,
+                            fontWeight: FontWeight.w700,
+                            color: IvoireColors.orangeDeep,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        LayoutBuilder(
+                          builder: (context, constraints) {
+                            final wide = constraints.maxWidth >= 640;
+
+                            final items = [
+                              for (final fact in facts)
+                                _FactItem(article: fact),
+                            ];
+
+                            if (!wide) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  for (var i = 0; i < items.length; i++) ...[
+                                    if (i > 0) const SizedBox(height: 8),
+                                    items[i],
+                                  ],
+                                ],
+                              );
+                            }
+
+                            return Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                for (var i = 0; i < items.length; i++) ...[
+                                  if (i > 0) ...[
+                                    const SizedBox(width: 12),
+                                    Container(
+                                      width: 1,
+                                      height: 54,
+                                      color: tone.line,
+                                    ),
+                                    const SizedBox(width: 12),
+                                  ],
+                                  Expanded(child: items[i]),
+                                ],
+                              ],
+                            );
+                          },
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 6),
-                  for (final fact in facts)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 4),
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () => wikiGo(context, '/articles/${fact.slug}'),
-                        child: Text.rich(
-                          TextSpan(
-                            children: [
-                              TextSpan(
-                                text: '${fact.title} — ',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                  color: IvoireColors.link,
-                                ),
-                              ),
-                              TextSpan(
-                                text: fact.summary,
-                                style: TextStyle(color: tone.body),
-                              ),
-                            ],
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(fontSize: 13, height: 1.5),
-                        ),
-                      ),
-                    ),
                 ],
               ),
             ),
           ],
+        ],
+      ),
+    );
+  }
+}
+
+class _FactItem extends StatelessWidget {
+  const _FactItem({required this.article});
+
+  final ArticleSummary article;
+
+  @override
+  Widget build(BuildContext context) {
+    final tone = ToneColors.from(context);
+
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => wikiGo(context, '/articles/${article.slug}'),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            article.title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: IvoireColors.link,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            article.summary,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 12, height: 1.5, color: tone.body),
+          ),
         ],
       ),
     );
@@ -1022,159 +1729,79 @@ class _FeedCardState extends State<_FeedCard> {
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () => wikiGo(context, '/articles/${article.slug}'),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(3),
-              child: ArticleThumb(
-                article: article,
-                width: double.infinity,
-                height: 96,
-                radius: 3,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              article.categoryName ?? article.typeLabel,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 10.5, color: tone.faint),
-            ),
-            const SizedBox(height: 3),
-            Text(
-              article.title,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: titleStyle(
-                size: 14.5,
-                weight: FontWeight.w600,
-                color: _hover ? IvoireColors.greenDeep : tone.ink,
-                height: 1.32,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              article.summary,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 12.5, height: 1.5, color: tone.muted),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Bande des portails : tout le plan de l'encyclopédie, une fois, en bas de
-/// page, avec le nombre d'articles de chaque domaine.
-class HomePortalsBand extends StatelessWidget {
-  const HomePortalsBand({required this.categories, super.key});
-
-  final List<Category> categories;
-
-  @override
-  Widget build(BuildContext context) {
-    if (categories.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    return HomeSection(
-      title: 'Tous les portails',
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final columns = constraints.maxWidth >= 760
-              ? 3
-              : (constraints.maxWidth >= 460 ? 2 : 1);
-          final width = (constraints.maxWidth - (columns - 1) * 16) / columns;
-
-          return Wrap(
-            spacing: 16,
-            runSpacing: 12,
-            children: [
-              for (final category in categories)
-                SizedBox(
-                  width: width,
-                  child: _PortalStrip(category: category),
-                ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _PortalStrip extends StatefulWidget {
-  const _PortalStrip({required this.category});
-
-  final Category category;
-
-  @override
-  State<_PortalStrip> createState() => _PortalStripState();
-}
-
-class _PortalStripState extends State<_PortalStrip> {
-  bool _hover = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final tone = ToneColors.from(context);
-    final category = widget.category;
-
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) => setState(() => _hover = true),
-      onExit: (_) => setState(() => _hover = false),
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () => wikiGo(context, '/categories/${category.slug}'),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 9),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
-            border: Border(bottom: BorderSide(color: tone.lineSoft)),
+            color: tone.paper,
+            borderRadius: BorderRadius.circular(_cardRadius),
+            border: Border.all(
+              color: _hover ? IvoireColors.green : tone.lineSoft,
+            ),
           ),
-          child: Row(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                width: 22,
-                child: Text(
-                  '${category.articleCount}',
-                  style: titleStyle(
-                    size: 12,
-                    weight: FontWeight.w700,
-                    color: _hover
-                        ? IvoireColors.greenDeep
-                        : IvoireColors.terracotta,
-                  ),
-                ),
+              ArticleThumb(
+                article: article,
+                width: double.infinity,
+                height: 124,
+                radius: 0,
               ),
-              Expanded(
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      category.name,
+                      article.categoryName ?? article.typeLabel,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w600,
-                        color: _hover ? IvoireColors.greenDeep : tone.ink,
+                        fontSize: 9.5,
+                        letterSpacing: 0.8,
+                        fontWeight: FontWeight.w700,
+                        color: _domainLook(article.categorySlug ?? '').accent,
                       ),
                     ),
-                    if (category.description?.trim().isNotEmpty == true)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 2),
-                        child: Text(
-                          category.description!,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(fontSize: 11.5, color: tone.faint),
-                        ),
+                    const SizedBox(height: 4),
+                    Text(
+                      article.title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: titleStyle(
+                        size: 14.5,
+                        weight: FontWeight.w600,
+                        color: _hover ? IvoireColors.greenDeep : tone.ink,
+                        height: 1.3,
                       ),
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      article.summary,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 12,
+                        height: 1.5,
+                        color: tone.muted,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Text(
+                          '${article.readingMinutes} min',
+                          style: TextStyle(fontSize: 10.5, color: tone.faint),
+                        ),
+                        const Spacer(),
+                        Icon(
+                          Icons.arrow_forward,
+                          size: 12,
+                          color: _hover ? IvoireColors.green : tone.faint,
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -1186,8 +1813,186 @@ class _PortalStripState extends State<_PortalStrip> {
   }
 }
 
-/// Poste de travail du lecteur : le chiffre national en tête, trois repères,
-/// puis les outils (hasard, bibliothèque, sources).
+/// Bande des portails : le plan de l'encyclopédie en cartes, chacune avec son
+/// pictogramme, sa couleur et le nombre de pages publiées.
+class HomePortalsBand extends StatelessWidget {
+  const HomePortalsBand({required this.categories, super.key});
+
+  final List<Category> categories;
+
+  @override
+  Widget build(BuildContext context) {
+    if (categories.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final total = categories.fold<int>(
+      0,
+      (sum, category) => sum + category.articleCount,
+    );
+
+    return HomeSection(
+      title: 'Tous les portails',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const HomeIntro(
+            'Huit domaines pour entrer dans l’encyclopédie. Chaque portail '
+            'rassemble ses pages et leurs sous-catégories.',
+          ),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final columns = constraints.maxWidth >= 820
+                  ? 4
+                  : (constraints.maxWidth >= 520 ? 2 : 1);
+              final width =
+                  (constraints.maxWidth - (columns - 1) * 12) / columns;
+
+              return Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: [
+                  for (final category in categories)
+                    SizedBox(
+                      width: width,
+                      child: _PortalCard(category: category, total: total),
+                    ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PortalCard extends StatefulWidget {
+  const _PortalCard({required this.category, required this.total});
+
+  final Category category;
+  final int total;
+
+  @override
+  State<_PortalCard> createState() => _PortalCardState();
+}
+
+class _PortalCardState extends State<_PortalCard> {
+  bool _hover = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final tone = ToneColors.from(context);
+    final category = widget.category;
+    final look = _domainLook(category.slug);
+    final share = widget.total == 0
+        ? 0.0
+        : category.articleCount / widget.total;
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hover = true),
+      onExit: (_) => setState(() => _hover = false),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => wikiGo(context, '/categories/${category.slug}'),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          padding: const EdgeInsets.fromLTRB(14, 13, 14, 13),
+          decoration: BoxDecoration(
+            color: tone.paper,
+            borderRadius: BorderRadius.circular(_cardRadius),
+            border: Border.all(color: _hover ? look.accent : tone.lineSoft),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 38,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      color: look.accent.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(look.icon, size: 19, color: look.accent),
+                  ),
+                  const Spacer(),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        '${category.articleCount}',
+                        style: titleStyle(
+                          size: 20,
+                          weight: FontWeight.w700,
+                          color: _hover ? look.accent : tone.ink,
+                          height: 1,
+                        ),
+                      ),
+                      Text(
+                        category.articleCount > 1 ? 'pages' : 'page',
+                        style: TextStyle(fontSize: 9.5, color: tone.faint),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Text(
+                category.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: titleStyle(
+                  size: 15.5,
+                  weight: FontWeight.w700,
+                  color: tone.ink,
+                ),
+              ),
+              const SizedBox(height: 8),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(2),
+                child: LinearProgressIndicator(
+                  value: share.clamp(0.03, 1.0),
+                  minHeight: 3,
+                  backgroundColor: tone.lineSoft,
+                  valueColor: AlwaysStoppedAnimation<Color>(look.accent),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Flexible(
+                    child: Text(
+                      'Parcourir ce portail',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w600,
+                        color: _hover ? look.accent : tone.muted,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Icon(
+                    Icons.arrow_forward,
+                    size: 11,
+                    color: _hover ? look.accent : tone.faint,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Poste de travail du lecteur : les repères nationaux sur fond sombre, puis
+/// les portes d'entrée (hasard, statistiques).
 class HomeReaderDesk extends StatelessWidget {
   const HomeReaderDesk({
     required this.stats,
@@ -1205,91 +2010,122 @@ class HomeReaderDesk extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tone = ToneColors.from(context);
-    final population = _indicator(stats, 'SP.POP.TOTL');
-    final census = stats?.census;
+    final gdp = stats == null ? null : _headline(stats!, 'NY.GDP.MKTP.CD');
+    final life = stats == null ? null : _themed(stats!, 'SP.DYN.LE00.IN');
+    final literacy = stats == null ? null : _themed(stats!, 'SE.ADT.LITR.ZS');
     final regions = stats?.regions.length ?? 0;
     final districts = stats?.districts.length ?? 0;
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(14, 13, 14, 13),
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: tone.paper,
+        borderRadius: BorderRadius.circular(_cardRadius),
         border: Border.all(color: tone.lineSoft),
-        borderRadius: BorderRadius.circular(4),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            'LA CÔTE D’IVOIRE',
-            style: TextStyle(
-              fontSize: 10,
-              letterSpacing: 1,
-              fontWeight: FontWeight.w700,
-              color: tone.faint,
+          Container(
+            color: IvoireColors.ink,
+            padding: const EdgeInsets.fromLTRB(14, 12, 14, 13),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.flag_outlined,
+                      size: 13,
+                      color: IvoireColors.gold,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      'REPÈRES NATIONAUX',
+                      style: kickerStyle(color: IvoireColors.gold),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                if (gdp?.display != null) ...[
+                  Text(
+                    gdp!.display!,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 13.5,
+                      height: 1.35,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '${gdp.label} · ${gdp.year ?? ''}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: Colors.white.withValues(alpha: 0.55),
+                    ),
+                  ),
+                ] else
+                  Text(
+                    'Les indicateurs du pays sont en cours de chargement.',
+                    style: TextStyle(
+                      fontSize: 11.5,
+                      height: 1.5,
+                      color: Colors.white.withValues(alpha: 0.7),
+                    ),
+                  ),
+              ],
             ),
           ),
-          if (population != null) ...[
-            const SizedBox(height: 6),
-            Text(
-              population.display ?? '—',
-              style: titleStyle(
-                size: 28,
-                weight: FontWeight.w700,
-                color: tone.ink,
-                height: 1.15,
-              ),
-            ),
-            if (population.trend?.display != null)
-              Text(
-                population.trend!.display,
-                style: TextStyle(fontSize: 11.5, color: tone.muted),
-              ),
-          ],
-          const SizedBox(height: 8),
-          if (census != null && regions > 0)
-            _DeskRow(
-              label: 'Territoires',
-              value: '$regions régions',
-              caption: '$districts districts · RGPH ${census.year}',
-              route: '/lieux',
-            ),
-          if (timelineCount > 0)
-            _DeskRow(
-              label: 'Histoire',
-              value: '$timelineCount jalons',
-              caption: 'Chronologie datée',
-              route: '/chronologie',
-            ),
-          _DeskRow(
-            label: 'Le savoir',
-            value: '$articleCount articles',
-            caption: 'Sources citées, lecture libre',
-            route: '/ma-bibliotheque',
-          ),
-          const SizedBox(height: 10),
-          Wrap(
-            spacing: 14,
-            runSpacing: 6,
-            children: [
-              HoverLink(
-                label: 'Au hasard',
-                onTap: onRandom,
-                style: const TextStyle(
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w600,
+          Padding(
+            padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (life?.display != null)
+                  _DeskRow(label: 'Espérance de vie', value: life!.display!),
+                if (literacy?.display != null)
+                  _DeskRow(label: 'Alphabétisation', value: literacy!.display!),
+                if (regions > 0)
+                  _DeskRow(label: 'Territoires', value: '$regions régions'),
+                if (districts > 0)
+                  _DeskRow(label: 'Districts', value: '$districts'),
+                if (timelineCount > 0)
+                  _DeskRow(
+                    label: 'Chronologie',
+                    value: '$timelineCount jalons',
+                  ),
+                _DeskRow(label: 'Pages publiées', value: '$articleCount'),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 14,
+                  runSpacing: 6,
+                  children: [
+                    HoverLink(
+                      label: 'Au hasard',
+                      onTap: onRandom,
+                      style: const TextStyle(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    HoverLink(
+                      label: 'Statistiques complètes',
+                      onTap: () => wikiGo(context, '/statistiques'),
+                      style: const TextStyle(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              HoverLink(
-                label: 'Bibliothèque des sources',
-                onTap: () => wikiGo(context, '/sources'),
-                style: const TextStyle(
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
@@ -1297,90 +2133,46 @@ class HomeReaderDesk extends StatelessWidget {
   }
 }
 
-class _DeskRow extends StatefulWidget {
-  const _DeskRow({
-    required this.label,
-    required this.value,
-    required this.caption,
-    required this.route,
-  });
+class _DeskRow extends StatelessWidget {
+  const _DeskRow({required this.label, required this.value});
 
   final String label;
   final String value;
-  final String caption;
-  final String route;
-
-  @override
-  State<_DeskRow> createState() => _DeskRowState();
-}
-
-class _DeskRowState extends State<_DeskRow> {
-  bool _hover = false;
 
   @override
   Widget build(BuildContext context) {
     final tone = ToneColors.from(context);
 
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) => setState(() => _hover = true),
-      onExit: (_) => setState(() => _hover = false),
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () => wikiGo(context, widget.route),
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 7),
-          decoration: BoxDecoration(
-            border: Border(bottom: BorderSide(color: tone.lineSoft)),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.alphabetic,
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 11.5, color: tone.muted),
+            ),
           ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.label,
-                      style: TextStyle(
-                        fontSize: 10.5,
-                        letterSpacing: 0.3,
-                        fontWeight: FontWeight.w600,
-                        color: tone.faint,
-                      ),
-                    ),
-                    const SizedBox(height: 1),
-                    Text(
-                      widget.caption,
-                      style: TextStyle(fontSize: 11, color: tone.muted),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                widget.value,
-                style: titleStyle(
-                  size: 13.5,
-                  weight: FontWeight.w700,
-                  color: _hover ? IvoireColors.greenDeep : tone.ink,
-                ),
-              ),
-            ],
+          const SizedBox(width: 8),
+          Text(
+            value,
+            style: titleStyle(
+              size: 12.5,
+              weight: FontWeight.w700,
+              color: tone.ink,
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
 }
 
-StatisticIndicator? _indicator(StatisticsSnapshot? stats, String code) {
-  if (stats == null) {
-    return null;
-  }
-
+StatisticIndicator? _headline(StatisticsSnapshot stats, String code) {
   for (final indicator in stats.headline) {
     if (indicator.code == code) {
       return indicator;
@@ -1390,8 +2182,19 @@ StatisticIndicator? _indicator(StatisticsSnapshot? stats, String code) {
   return null;
 }
 
-/// Section numérotée : un libellé à gauche, un filet, puis le contenu. Le
-/// rythme vient de la typographie, comme le reste du site.
+StatisticIndicator? _themed(StatisticsSnapshot stats, String code) {
+  for (final theme in stats.themes) {
+    for (final indicator in theme.indicators) {
+      if (indicator.code == code) {
+        return indicator;
+      }
+    }
+  }
+
+  return _headline(stats, code);
+}
+
+/// Section numérotée : un filet d'accent à gauche, un titre, puis le contenu.
 class HomeSection extends StatelessWidget {
   const HomeSection({
     required this.title,
@@ -1409,9 +2212,29 @@ class HomeSection extends StatelessWidget {
     final tone = ToneColors.from(context);
     final narrow = MediaQuery.sizeOf(context).width < 460;
 
-    final heading = Text(
-      title,
-      style: titleStyle(size: 17, weight: FontWeight.w700, color: tone.ink),
+    final heading = Row(
+      children: [
+        Container(
+          width: 4,
+          height: 19,
+          decoration: BoxDecoration(
+            color: IvoireColors.orange,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        const SizedBox(width: 9),
+        Expanded(
+          child: Text(
+            title,
+            style: titleStyle(
+              size: 18,
+              weight: FontWeight.w700,
+              color: tone.ink,
+              letterSpacing: -0.3,
+            ),
+          ),
+        ),
+      ],
     );
 
     return Column(
@@ -1428,15 +2251,21 @@ class HomeSection extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Expanded(child: heading),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 1),
-                child: trailing,
-              ),
+              if (trailing != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 2),
+                  child: trailing,
+                ),
             ],
           ),
-        const SizedBox(height: 7),
-        Container(height: 1, color: tone.lineSoft),
-        const SizedBox(height: 14),
+        const SizedBox(height: 9),
+        Row(
+          children: [
+            SizedBox(width: 58, child: const WeaveRule(height: 3)),
+            Expanded(child: Container(height: 1, color: tone.lineSoft)),
+          ],
+        ),
+        const SizedBox(height: 15),
         child,
       ],
     );
