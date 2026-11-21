@@ -29,18 +29,21 @@ class _HistoryApi extends FakeIvoirepediaApi {
     String? category,
     String? tag,
     String? query,
+    List<String>? slugs,
     int page = 1,
     int limit = 12,
-  }) async =>
-      const PagedArticles(items: [], page: 1, limit: 12, total: 0);
+  }) async => const PagedArticles(items: [], page: 1, limit: 12, total: 0);
 
   @override
   Future<ArticleDetail> fetchArticle(String slug) async =>
       throw const ApiException('non utilisé');
 
   @override
-  Future<PagedArticles> search(String query, {int page = 1, int limit = 12}) async =>
-      const PagedArticles(items: [], page: 1, limit: 12, total: 0);
+  Future<PagedArticles> search(
+    String query, {
+    int page = 1,
+    int limit = 12,
+  }) async => const PagedArticles(items: [], page: 1, limit: 12, total: 0);
 }
 
 void main() {

@@ -10,14 +10,18 @@ import 'package:ivoirepedia/src/ui/widgets/ivorian_patterns.dart';
 
 import 'support/fake_home_api.dart';
 
-/// API en mémoire qui pagine : la photo du zaouli ne figure pas dans la
-/// première page du corpus.
-class _PagedCorpusApi extends FakeApi {
+/// API en mémoire : la photo du zaouli n'est pas dans la première page du
+/// corpus, elle n'arrive que par la requête des candidats à la couverture.
+class _CoverCandidatesApi extends FakeApi {
+  /// Les listes de slugs réclamées par l'accueil, dans l'ordre des appels.
+  final List<List<String>> askedFor = <List<String>>[];
+
   @override
   Future<PagedArticles> fetchArticles({
     String? category,
     String? tag,
     String? query,
+    List<String>? slugs,
     int page = 1,
     int limit = 12,
   }) async {
@@ -40,12 +44,27 @@ class _PagedCorpusApi extends FakeApi {
       coverImageUrl: 'https://example.test/zaouli.jpg',
     );
 
-    // Le total annonce deux pages : l'accueil doit aller chercher la suite.
+    if (slugs != null && slugs.isNotEmpty) {
+      askedFor.add(slugs);
+
+      final items = [
+        for (final slug in slugs)
+          if (slug == zaouli.slug) zaouli,
+      ];
+
+      return PagedArticles(
+        items: items,
+        page: 1,
+        limit: limit,
+        total: items.length,
+      );
+    }
+
     return PagedArticles(
-      items: page == 1 ? const [abidjan] : const [zaouli],
+      items: const [abidjan],
       page: page,
       limit: limit,
-      total: 21,
+      total: 1,
     );
   }
 }
@@ -243,11 +262,17 @@ void main() {
   testWidgets('la couverture prend une des meilleures photos du corpus', (
     tester,
   ) async {
-    await tester.pumpWidget(IvoirepediaApp(api: _PagedCorpusApi()));
+    final api = _CoverCandidatesApi();
+
+    await tester.pumpWidget(IvoirepediaApp(api: api));
     await tester.pumpAndSettle();
 
-    // Le zaouli n'est pas dans la première page : le tirage va le chercher
-    // dans tout le corpus et le préfère à une photo plus banale.
+    // L'accueil ne réclame que les photos candidates, pas tout le corpus :
+    // une seule requête de slugs, celle des favoris.
+    expect(api.askedFor, hasLength(1));
+    expect(api.askedFor.single, contains('le-zaouli'));
+
+    // Le zaouli, absent de la première page, ouvre pourtant la une.
     expect(
       find.descendant(
         of: find.byType(HomeOpening),

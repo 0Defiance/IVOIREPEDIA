@@ -25,9 +25,33 @@ class ArticleIndexRequest extends FormRequest
             'category' => ['nullable', 'string', 'max:120'],
             'tag' => ['nullable', 'string', 'max:120'],
             'q' => ['nullable', 'string', 'max:100'],
+            // Slugs précis : l'accueil ne récupère ainsi que les articles
+            // candidats à la couverture, au lieu de tout le corpus.
+            'slugs' => [
+                'nullable',
+                'string',
+                'max:400',
+                'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*(?:,[a-z0-9]+(?:-[a-z0-9]+)*)*$/',
+            ],
             'page' => ['nullable', 'integer', 'min:1'],
             'limit' => ['nullable', 'integer', 'min:1', 'max:20'],
         ];
+    }
+
+    /**
+     * Articles demandés nommément, dans l'ordre de la requête.
+     *
+     * @return list<string>
+     */
+    public function slugs(): array
+    {
+        $value = (string) $this->validated('slugs', '');
+
+        if ($value === '') {
+            return [];
+        }
+
+        return array_slice(explode(',', $value), 0, 20);
     }
 
     public function limit(): int

@@ -21,6 +21,7 @@ class FakeApi extends FakeIvoirepediaApi {
     String? category,
     String? tag,
     String? query,
+    List<String>? slugs,
     int page = 1,
     int limit = 12,
   }) async {

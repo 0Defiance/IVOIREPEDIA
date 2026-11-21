@@ -133,6 +133,10 @@ class ArticleController extends Controller
             $query->matching($term);
         }
 
+        if ($slugs = $request->slugs()) {
+            $query->whereIn('slug', $slugs);
+        }
+
         return $query;
     }
 

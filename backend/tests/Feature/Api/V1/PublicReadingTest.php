@@ -84,6 +84,23 @@ it('refuse une limite supérieure à 20 (ENF-PERF-05)', function () {
         ->assertJsonValidationErrors('limit');
 });
 
+it('ne renvoie que les articles demandés par leur slug', function () {
+    makeArticle(['slug' => 'le-zaouli', 'published_at' => now()->subDays(3)]);
+    makeArticle(['slug' => 'man', 'published_at' => now()->subDays(2)]);
+    makeArticle(['slug' => 'korhogo', 'published_at' => now()->subDay()]);
+
+    $response = $this->getJson('/api/v1/articles?slugs=le-zaouli,korhogo')->assertOk();
+
+    expect($response->json('data.*.slug'))->toBe(['korhogo', 'le-zaouli'])
+        ->and($response->json('meta.total'))->toBe(2);
+});
+
+it('refuse une liste de slugs mal formée', function () {
+    $this->getJson('/api/v1/articles?slugs=Le%20Zaouli')
+        ->assertStatus(422)
+        ->assertJsonValidationErrors('slugs');
+});
+
 it('filtre la liste par catégorie', function () {
     $culture = Category::query()->create(['name' => 'Culture', 'slug' => 'culture', 'position' => 2]);
     makeArticle(['slug' => 'dans-culture', 'category_id' => $culture->id]);

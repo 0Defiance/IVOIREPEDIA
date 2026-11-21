@@ -11,11 +11,13 @@ import 'package:ivoirepedia/src/models/history.dart';
 import 'package:ivoirepedia/src/models/statistics.dart';
 
 import 'support/statistics_fixture.dart';
+
 import 'package:ivoirepedia/src/theme.dart';
 import 'package:ivoirepedia/src/ui/widgets/ivorian_patterns.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:ivoirepedia/src/ui/article_page.dart';
+
 import 'support/fake_api.dart';
 
 class _ArticleApi extends FakeIvoirepediaApi {
@@ -27,14 +29,17 @@ class _ArticleApi extends FakeIvoirepediaApi {
     String? category,
     String? tag,
     String? query,
+    List<String>? slugs,
     int page = 1,
     int limit = 12,
-  }) async =>
-      const PagedArticles(items: [], page: 1, limit: 12, total: 0);
+  }) async => const PagedArticles(items: [], page: 1, limit: 12, total: 0);
 
   @override
-  Future<PagedArticles> search(String query, {int page = 1, int limit = 12}) async =>
-      const PagedArticles(items: [], page: 1, limit: 12, total: 0);
+  Future<PagedArticles> search(
+    String query, {
+    int page = 1,
+    int limit = 12,
+  }) async => const PagedArticles(items: [], page: 1, limit: 12, total: 0);
 
   @override
   Future<StatisticsSnapshot> fetchStatistics() async => statisticsFixture();
@@ -56,8 +61,14 @@ class _ArticleApi extends FakeIvoirepediaApi {
       readingMinutes: 6,
       contentOps: const [
         {'insert': 'Il est né à N’Gokro, devenu Yamoussoukro.\n'},
-        {'insert': 'La présidence\n', 'attributes': {'header': 2}},
-        {'insert': 'Le RDA et la loi-cadre\n', 'attributes': {'header': 2}},
+        {
+          'insert': 'La présidence\n',
+          'attributes': {'header': 2},
+        },
+        {
+          'insert': 'Le RDA et la loi-cadre\n',
+          'attributes': {'header': 2},
+        },
         {'insert': 'Il dirige le pays de 1960 à 1993.\n'},
       ],
       infobox: const {
@@ -82,8 +93,10 @@ class _ArticleApi extends FakeIvoirepediaApi {
 class _MissingApi extends _ArticleApi {
   @override
   Future<ArticleDetail> fetchArticle(String slug) async =>
-      throw const ApiException('Cette page n’existe pas ou n’est pas publiée.',
-          statusCode: 404);
+      throw const ApiException(
+        'Cette page n’existe pas ou n’est pas publiée.',
+        statusCode: 404,
+      );
 }
 
 Widget _wrap(Widget child, {IvoirepediaApi? api}) {
@@ -100,9 +113,12 @@ void main() {
   // Pas d'animation de fond : `pumpAndSettle` doit pouvoir se stabiliser.
   setUp(() => ivoireMotionEnabled = false);
 
-  testWidgets('la page article affiche titre, infobox, contenu et références',
-      (tester) async {
-    await tester.pumpWidget(_wrap(const ArticlePage(slug: 'felix-houphouet-boigny')));
+  testWidgets('la page article affiche titre, infobox, contenu et références', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(const ArticlePage(slug: 'felix-houphouet-boigny')),
+    );
     await tester.pumpAndSettle();
 
     expect(find.text('Félix Houphouët-Boigny'), findsWidgets);
@@ -113,32 +129,41 @@ void main() {
     expect(find.text('Nom complet'), findsOneWidget);
     expect(find.text('18 octobre 1905'), findsOneWidget);
     expect(find.text('Notes et références'), findsOneWidget);
-    expect(find.textContaining('RGPH 2021', findRichText: true), findsOneWidget);
+    expect(
+      find.textContaining('RGPH 2021', findRichText: true),
+      findsOneWidget,
+    );
     expect(find.text('Catégories :'), findsOneWidget);
   });
 
-  testWidgets('seuls les titres de section sont mis en forme comme des titres',
-      (tester) async {
-    await tester.pumpWidget(_wrap(const ArticlePage(slug: 'felix-houphouet-boigny')));
-    await tester.pumpAndSettle();
+  testWidgets(
+    'seuls les titres de section sont mis en forme comme des titres',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(const ArticlePage(slug: 'felix-houphouet-boigny')),
+      );
+      await tester.pumpAndSettle();
 
-    // Le paragraphe qui suit un titre reste un paragraphe : il héritait
-    // auparavant des attributs du titre précédent.
-    final paragraph =
-        tester.widget<Text>(find.text('Il dirige le pays de 1960 à 1993.'));
-    expect(paragraph.style?.fontSize, 15.5);
-    expect(paragraph.style?.fontWeight, FontWeight.w400);
+      // Le paragraphe qui suit un titre reste un paragraphe : il héritait
+      // auparavant des attributs du titre précédent.
+      final paragraph = tester.widget<Text>(
+        find.text('Il dirige le pays de 1960 à 1993.'),
+      );
+      expect(paragraph.style?.fontSize, 15.5);
+      expect(paragraph.style?.fontWeight, FontWeight.w400);
 
-    final heading = tester.widget<Text>(find.text('La présidence').last);
-    expect(heading.style?.fontSize, 21);
-    expect(heading.style?.fontWeight, FontWeight.w600);
+      final heading = tester.widget<Text>(find.text('La présidence').last);
+      expect(heading.style?.fontSize, 21);
+      expect(heading.style?.fontWeight, FontWeight.w600);
 
-    // Un lien « modifier » par titre seulement.
-    expect(find.text('modifier'), findsNWidgets(2));
-  });
+      // Un lien « modifier » par titre seulement.
+      expect(find.text('modifier'), findsNWidgets(2));
+    },
+  );
 
-  testWidgets('l’article se copie en entier, puis section par section',
-      (tester) async {
+  testWidgets('l’article se copie en entier, puis section par section', (
+    tester,
+  ) async {
     final clipboard = <String>[];
     final messenger = tester.binding.defaultBinaryMessenger;
 
@@ -152,7 +177,9 @@ void main() {
       () => messenger.setMockMethodCallHandler(SystemChannels.platform, null),
     );
 
-    await tester.pumpWidget(_wrap(const ArticlePage(slug: 'felix-houphouet-boigny')));
+    await tester.pumpWidget(
+      _wrap(const ArticlePage(slug: 'felix-houphouet-boigny')),
+    );
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('Copier l’article'));
@@ -163,8 +190,14 @@ void main() {
     expect(clipboard.last, contains('Il est né à N’Gokro'));
     expect(clipboard.last, contains('La présidence'));
     expect(clipboard.last, contains('1. RGPH 2021, 2022'));
-    expect(clipboard.last, contains('Catégories : Personnalités, Indépendance'));
-    expect(clipboard.last, contains('$kSiteUrl/articles/felix-houphouet-boigny'));
+    expect(
+      clipboard.last,
+      contains('Catégories : Personnalités, Indépendance'),
+    );
+    expect(
+      clipboard.last,
+      contains('$kSiteUrl/articles/felix-houphouet-boigny'),
+    );
 
     // Chaque titre de section offre sa propre copie.
     expect(find.text('copier'), findsNWidgets(2));
@@ -179,42 +212,52 @@ void main() {
     expect(clipboard.last, startsWith('Le RDA et la loi-cadre'));
     expect(clipboard.last, contains('Il dirige le pays de 1960 à 1993.'));
     expect(clipboard.last, isNot(contains('La présidence')));
-    expect(clipboard.last, contains('$kSiteUrl/articles/felix-houphouet-boigny'));
+    expect(
+      clipboard.last,
+      contains('$kSiteUrl/articles/felix-houphouet-boigny'),
+    );
   });
 
-  testWidgets('le bouton copier d’une section confirme, puis reprend sa place',
-      (tester) async {
-    final messenger = tester.binding.defaultBinaryMessenger;
+  testWidgets(
+    'le bouton copier d’une section confirme, puis reprend sa place',
+    (tester) async {
+      final messenger = tester.binding.defaultBinaryMessenger;
 
-    messenger.setMockMethodCallHandler(
-      SystemChannels.platform,
-      (call) async => null,
+      messenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        (call) async => null,
+      );
+      addTearDown(
+        () => messenger.setMockMethodCallHandler(SystemChannels.platform, null),
+      );
+
+      await tester.pumpWidget(
+        _wrap(const ArticlePage(slug: 'felix-houphouet-boigny')),
+      );
+      await tester.pumpAndSettle();
+
+      final button = find.text('copier').last;
+      await tester.ensureVisible(button);
+      await tester.tap(button);
+      await tester.pump();
+
+      // La copie se voit tout de suite : le lien dit ce qu'il vient de faire.
+      expect(find.text('copié'), findsOneWidget);
+      expect(find.text('copier'), findsOneWidget);
+
+      // Puis la confirmation s'efface d'elle-même, sans quitter la page.
+      await tester.pump(const Duration(milliseconds: 1700));
+      expect(find.text('copié'), findsNothing);
+      expect(find.text('copier'), findsNWidgets(2));
+    },
+  );
+
+  testWidgets('la page article affiche les statistiques de l’article', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(const ArticlePage(slug: 'felix-houphouet-boigny')),
     );
-    addTearDown(
-      () => messenger.setMockMethodCallHandler(SystemChannels.platform, null),
-    );
-
-    await tester.pumpWidget(_wrap(const ArticlePage(slug: 'felix-houphouet-boigny')));
-    await tester.pumpAndSettle();
-
-    final button = find.text('copier').last;
-    await tester.ensureVisible(button);
-    await tester.tap(button);
-    await tester.pump();
-
-    // La copie se voit tout de suite : le lien dit ce qu'il vient de faire.
-    expect(find.text('copié'), findsOneWidget);
-    expect(find.text('copier'), findsOneWidget);
-
-    // Puis la confirmation s'efface d'elle-même, sans quitter la page.
-    await tester.pump(const Duration(milliseconds: 1700));
-    expect(find.text('copié'), findsNothing);
-    expect(find.text('copier'), findsNWidgets(2));
-  });
-
-  testWidgets('la page article affiche les statistiques de l’article',
-      (tester) async {
-    await tester.pumpWidget(_wrap(const ArticlePage(slug: 'felix-houphouet-boigny')));
     await tester.pumpAndSettle();
 
     String? value(String key) =>
@@ -257,8 +300,9 @@ void main() {
     expect(savedBytes!.length, greaterThan(2000));
   });
 
-  testWidgets('une erreur 404 affiche un message et un retour à l’accueil',
-      (tester) async {
+  testWidgets('une erreur 404 affiche un message et un retour à l’accueil', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       _wrap(const ArticlePage(slug: 'inconnu'), api: _MissingApi()),
     );
@@ -268,7 +312,9 @@ void main() {
     expect(find.text('Retour à la page d’accueil'), findsOneWidget);
   });
 
-  testWidgets('un appel de note ouvre la fiche de la référence', (tester) async {
+  testWidgets('un appel de note ouvre la fiche de la référence', (
+    tester,
+  ) async {
     final router = GoRouter(
       initialLocation: '/articles/felix-houphouet-boigny',
       routes: [
@@ -300,7 +346,9 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final link = find.byTooltip('Voir la fiche dans la bibliothèque des sources');
+    final link = find.byTooltip(
+      'Voir la fiche dans la bibliothèque des sources',
+    );
     await tester.ensureVisible(link);
     await tester.pumpAndSettle();
     await tester.tap(link);
@@ -310,9 +358,12 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('le partage se trouve en bas de l’article, après le texte',
-      (tester) async {
-    await tester.pumpWidget(_wrap(const ArticlePage(slug: 'felix-houphouet-boigny')));
+  testWidgets('le partage se trouve en bas de l’article, après le texte', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(const ArticlePage(slug: 'felix-houphouet-boigny')),
+    );
     await tester.pumpAndSettle();
 
     expect(find.text('Partager :'), findsOneWidget);

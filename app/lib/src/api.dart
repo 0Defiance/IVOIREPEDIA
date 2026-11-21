@@ -35,10 +35,14 @@ class ApiException implements Exception {
 abstract interface class IvoirepediaApi {
   Future<List<Category>> fetchCategories();
 
+  /// [slugs] restreint la liste à des articles nommés : l'accueil ne
+  /// télécharge ainsi que les photos candidates à la couverture, sans
+  /// parcourir tout le corpus.
   Future<PagedArticles> fetchArticles({
     String? category,
     String? tag,
     String? query,
+    List<String>? slugs,
     int page = 1,
     int limit = 12,
   });
@@ -79,8 +83,8 @@ abstract interface class IvoirepediaApi {
 /// Client HTTP de l'API publique.
 class HttpIvoirepediaApi implements IvoirepediaApi {
   HttpIvoirepediaApi({http.Client? client, String? baseUrl})
-      : _client = client ?? http.Client(),
-        _baseUrl = baseUrl ?? apiBaseUrl;
+    : _client = client ?? http.Client(),
+      _baseUrl = baseUrl ?? apiBaseUrl;
 
   final http.Client _client;
   final String _baseUrl;
@@ -100,6 +104,7 @@ class HttpIvoirepediaApi implements IvoirepediaApi {
     String? category,
     String? tag,
     String? query,
+    List<String>? slugs,
     int page = 1,
     int limit = 12,
   }) async {
@@ -107,6 +112,7 @@ class HttpIvoirepediaApi implements IvoirepediaApi {
       if (category != null && category.isNotEmpty) 'category': category,
       if (tag != null && tag.isNotEmpty) 'tag': tag,
       if (query != null && query.isNotEmpty) 'q': query,
+      if (slugs != null && slugs.isNotEmpty) 'slugs': slugs.join(','),
       'page': '$page',
       'limit': '$limit',
     });
@@ -127,7 +133,11 @@ class HttpIvoirepediaApi implements IvoirepediaApi {
   }
 
   @override
-  Future<PagedArticles> search(String query, {int page = 1, int limit = 12}) async {
+  Future<PagedArticles> search(
+    String query, {
+    int page = 1,
+    int limit = 12,
+  }) async {
     final payload = await _get('/search', {
       'q': query,
       'page': '$page',
@@ -231,7 +241,10 @@ class HttpIvoirepediaApi implements IvoirepediaApi {
 
     late final http.Response response;
     try {
-      response = await _client.get(uri, headers: {'Accept': 'application/json'});
+      response = await _client.get(
+        uri,
+        headers: {'Accept': 'application/json'},
+      );
     } on Exception {
       throw const ApiException(
         "Impossible de joindre IVOIREPEDIA. Vérifiez votre connexion.",
@@ -239,8 +252,10 @@ class HttpIvoirepediaApi implements IvoirepediaApi {
     }
 
     if (response.statusCode == 404) {
-      throw const ApiException("Cette page n'existe pas ou n'est pas publiée.",
-          statusCode: 404);
+      throw const ApiException(
+        "Cette page n'existe pas ou n'est pas publiée.",
+        statusCode: 404,
+      );
     }
 
     if (response.statusCode != 200) {
@@ -302,7 +317,9 @@ class HttpIvoirepediaApi implements IvoirepediaApi {
       if (data is Map<String, dynamic>) {
         final errors = data['errors'];
 
-        if (errors is Map && errors['message'] is List && (errors['message'] as List).isNotEmpty) {
+        if (errors is Map &&
+            errors['message'] is List &&
+            (errors['message'] as List).isNotEmpty) {
           return '${(errors['message'] as List).first}';
         }
 

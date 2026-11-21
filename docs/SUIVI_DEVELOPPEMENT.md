@@ -1843,6 +1843,27 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 69 — 21 novembre 2026 · Seuls les candidats de la couverture sont téléchargés
+
+**Demandé**
+- Ne plus télécharger tout le corpus pour choisir la couverture, la page de garde étant déjà signalée comme lente.
+- Vérifier le rendu du dégradé et du chevron du rail dans un navigateur, à 390 px.
+
+**Fait**
+- `GET /api/v1/articles` accepte `slugs=` (liste séparée par des virgules, validée, plafonnée à 20) : la liste publique renvoie exactement les articles nommés, sans parcourir le corpus.
+- L’accueil fait deux petits appels au lieu des trois pages du corpus : les vingt derniers articles, puis les quatre candidats (`?slugs=le-zaouli,grand-bassam,man,korhogo`, 3 Ko en tout). La page de garde ne télécharge donc plus les 51 résumés pour choisir une photo.
+- Les faux API des tests acceptent `slugs` ; le test de couverture vérifie qu’une seule requête de slugs part, celle des favoris, et que le zaouli, absent de la première page, ouvre la une.
+
+**Vérifié**
+- `flutter analyze` : aucun problème. `flutter test` : 58 tests verts.
+- Backend : `php artisan test --filter=PublicReadingTest` — 10 tests verts, dont le filtre par slugs et le refus d’une liste mal formée.
+- Navigateur, 390 × 844, application réelle servie par `flutter run -d web-server` sur l’API locale : le rail déborde bien, la fin du libellé s’efface sous le dégradé et le chevron apparaît dans sa pastille. Capture : `screenshot-rail-390.png`.
+
+**Reste**
+- Le backend doit être déployé pour que cette version de l’app fonctionne : un serveur qui ignore `?slugs` renvoie la première page, et la couverture retombe alors sur les articles récents, sans erreur.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

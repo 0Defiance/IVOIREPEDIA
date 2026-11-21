@@ -38,18 +38,21 @@ class _StatisticsApi extends FakeIvoirepediaApi {
     String? category,
     String? tag,
     String? query,
+    List<String>? slugs,
     int page = 1,
     int limit = 12,
-  }) async =>
-      const PagedArticles(items: [], page: 1, limit: 12, total: 0);
+  }) async => const PagedArticles(items: [], page: 1, limit: 12, total: 0);
 
   @override
   Future<ArticleDetail> fetchArticle(String slug) async =>
       throw const ApiException('non utilisé');
 
   @override
-  Future<PagedArticles> search(String query, {int page = 1, int limit = 12}) async =>
-      const PagedArticles(items: [], page: 1, limit: 12, total: 0);
+  Future<PagedArticles> search(
+    String query, {
+    int page = 1,
+    int limit = 12,
+  }) async => const PagedArticles(items: [], page: 1, limit: 12, total: 0);
 }
 
 /// Charge réellement renvoyée par `GET /api/v1/statistics` en production,
@@ -81,8 +84,9 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('les chiffres du recensement et les indicateurs s’affichent',
-      (tester) async {
+  testWidgets('les chiffres du recensement et les indicateurs s’affichent', (
+    tester,
+  ) async {
     await openStatistics(tester);
 
     expect(find.text('La Côte d’Ivoire en chiffres'), findsOneWidget);
@@ -98,8 +102,9 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('chaque indicateur porte son évolution annuelle moyenne',
-      (tester) async {
+  testWidgets('chaque indicateur porte son évolution annuelle moyenne', (
+    tester,
+  ) async {
     await openStatistics(tester);
 
     // Année la plus récente publiée, affichée en tête de page.
@@ -114,8 +119,9 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('les vignettes de série portent leur année de début et de fin',
-      (tester) async {
+  testWidgets('les vignettes de série portent leur année de début et de fin', (
+    tester,
+  ) async {
     await openStatistics(tester);
 
     // Espérance de vie : série 2000-2024, bornes affichées sous la courbe.
@@ -124,8 +130,9 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('la pluviométrie affiche les mois et les cumuls annuels',
-      (tester) async {
+  testWidgets('la pluviométrie affiche les mois et les cumuls annuels', (
+    tester,
+  ) async {
     await openStatistics(tester);
 
     expect(find.text('PLUVIOMÉTRIE'), findsOneWidget);

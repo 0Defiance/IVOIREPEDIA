@@ -22,6 +22,7 @@ class FakeIvoirepediaApi implements IvoirepediaApi {
     String? category,
     String? tag,
     String? query,
+    List<String>? slugs,
     int page = 1,
     int limit = 12,
   }) async {
@@ -39,7 +40,11 @@ class FakeIvoirepediaApi implements IvoirepediaApi {
   }
 
   @override
-  Future<PagedArticles> search(String query, {int page = 1, int limit = 12}) async {
+  Future<PagedArticles> search(
+    String query, {
+    int page = 1,
+    int limit = 12,
+  }) async {
     return const PagedArticles(items: [], page: 1, limit: 12, total: 0);
   }
 

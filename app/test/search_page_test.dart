@@ -9,9 +9,11 @@ import 'package:ivoirepedia/src/models/history.dart';
 import 'package:ivoirepedia/src/models/statistics.dart';
 
 import 'support/statistics_fixture.dart';
+
 import 'package:ivoirepedia/src/theme.dart';
 import 'package:ivoirepedia/src/ui/search_page.dart';
 import 'package:ivoirepedia/src/ui/widgets/ivorian_patterns.dart';
+
 import 'support/fake_api.dart';
 
 /// API de recherche en mémoire : elle note chaque terme reçu, ce qui permet
@@ -27,10 +29,10 @@ class _SearchApi extends FakeIvoirepediaApi {
     String? category,
     String? tag,
     String? query,
+    List<String>? slugs,
     int page = 1,
     int limit = 12,
-  }) async =>
-      const PagedArticles(items: [], page: 1, limit: 12, total: 0);
+  }) async => const PagedArticles(items: [], page: 1, limit: 12, total: 0);
 
   @override
   Future<ArticleDetail> fetchArticle(String slug) async =>
@@ -43,7 +45,11 @@ class _SearchApi extends FakeIvoirepediaApi {
   Future<List<HistoryStory>> fetchHistory() async => const [];
 
   @override
-  Future<PagedArticles> search(String query, {int page = 1, int limit = 12}) async {
+  Future<PagedArticles> search(
+    String query, {
+    int page = 1,
+    int limit = 12,
+  }) async {
     queries.add(query);
 
     return PagedArticles(
@@ -79,8 +85,9 @@ Widget _wrap(SearchPage page, IvoirepediaApi api) {
 void main() {
   setUp(() => ivoireMotionEnabled = false);
 
-  testWidgets('une recherche passée dans l’URL est lancée à l’arrivée',
-      (tester) async {
+  testWidgets('une recherche passée dans l’URL est lancée à l’arrivée', (
+    tester,
+  ) async {
     final api = _SearchApi();
 
     await tester.pumpWidget(_wrap(const SearchPage(query: 'anacarde'), api));

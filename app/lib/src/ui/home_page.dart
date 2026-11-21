@@ -133,8 +133,7 @@ class _HomePageState extends State<HomePage> {
     final categoriesFuture = api.fetchCategories();
     // Vingt articles : la couverture, trois à la une, quatre au fil et deux
     // « le saviez-vous » — sans jamais réafficher la même entrée. Le tirage
-    // de la couverture choisit dans ce corpus, d'où la marge au-delà des dix
-    // entrées affichées.
+    // y joint les seuls articles candidats à la couverture.
     final articlesFuture = _loadCorpus(api);
     final timelineFuture = _optional(
       api.fetchTimeline,
@@ -194,37 +193,27 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  /// Tout le corpus publié, page après page : la couverture peut ainsi tirer
-  /// une photo dans les articles plus anciens — le zaouli, Grand-Bassam — et
-  /// pas seulement dans les vingt derniers publiés. Les pages suivantes
-  /// partent ensemble ; une page en panne laisse le tirage sur ce qui est
+  /// La première page du corpus, plus les seuls articles candidats à la
+  /// couverture : le zaouli (37e publié) et Grand-Bassam (43e) ne figurent pas
+  /// dans les vingt derniers articles, mais on ne télécharge pas pour autant
+  /// tout le corpus. Un appel en panne laisse la couverture sur ce qui est
   /// déjà chargé.
   Future<PagedArticles> _loadCorpus(IvoirepediaApi api) async {
     final first = await api.fetchArticles(limit: 20);
-    final pages = [
-      for (var page = 2; (page - 1) * first.limit < first.total; page++) page,
-    ];
-
-    if (pages.isEmpty) {
-      return first;
-    }
-
-    final rest = await Future.wait([
-      for (final page in pages)
-        _optional(
-          () => api.fetchArticles(page: page, limit: first.limit),
-          first,
-        ),
-    ]);
+    final candidates = await _optional(
+      () => api.fetchArticles(
+        slugs: _coverFavourites.toList(growable: false),
+        limit: _coverFavourites.length,
+      ),
+      const PagedArticles(items: [], page: 1, limit: 0, total: 0),
+    );
 
     final items = <ArticleSummary>[...first.items];
     final seen = {for (final item in first.items) item.slug};
 
-    for (final paged in rest) {
-      for (final item in paged.items) {
-        if (seen.add(item.slug)) {
-          items.add(item);
-        }
+    for (final item in candidates.items) {
+      if (seen.add(item.slug)) {
+        items.add(item);
       }
     }
 
