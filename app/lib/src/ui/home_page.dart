@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../api.dart';
@@ -49,6 +51,41 @@ class _HomeData {
   final SourceLibrary? sources;
 }
 
+/// Domaines dont la photo montre un lieu, un paysage ou un patrimoine : la
+/// couverture doit donner à voir le pays, pas un portrait.
+const Set<String> _visualDomains = {'geographie', 'patrimoine', 'culture'};
+
+/// Tirage de la visite : une photo qui donne à voir le pays ouvre la page, le
+/// reste du corpus suit dans un ordre tiré au sort. Deux visites ne montrent
+/// donc pas la même une, sans jamais écarter les articles illustrés.
+List<ArticleSummary> _shuffledForHome(List<ArticleSummary> items) {
+  final random = math.Random();
+  final illustrated = [
+    for (final item in items)
+      if ((item.coverImageUrl ?? '').isNotEmpty) item,
+  ];
+
+  // Corpus sans photo : l'ordre servi reste celui de l'API, faute d'image à
+  // mettre en avant.
+  if (illustrated.isEmpty) {
+    return List<ArticleSummary>.of(items);
+  }
+
+  final vistas = [
+    for (final item in illustrated)
+      if (_visualDomains.contains(item.categorySlug)) item,
+  ]..shuffle(random);
+
+  final pool = vistas.isNotEmpty ? vistas : (illustrated..shuffle(random));
+  final cover = pool.first;
+  final rest = [
+    for (final item in items)
+      if (item.slug != cover.slug) item,
+  ]..shuffle(random);
+
+  return [cover, ...rest];
+}
+
 class _HomePageState extends State<HomePage> {
   _HomeData? _data;
   Object? _error;
@@ -74,9 +111,11 @@ class _HomePageState extends State<HomePage> {
     // Tous les appels partent ensemble : le second temps ne coûte pas la
     // durée des requêtes, seulement celle de la plus lente.
     final categoriesFuture = api.fetchCategories();
-    // Douze articles : la couverture, trois à la une, quatre au fil et deux
-    // « le saviez-vous » — sans jamais réafficher la même entrée.
-    final articlesFuture = api.fetchArticles(limit: 12);
+    // Vingt articles : la couverture, trois à la une, quatre au fil et deux
+    // « le saviez-vous » — sans jamais réafficher la même entrée. Le tirage
+    // de la couverture choisit dans ce corpus, d'où la marge au-delà des dix
+    // entrées affichées.
+    final articlesFuture = api.fetchArticles(limit: 20);
     final timelineFuture = _optional(
       api.fetchTimeline,
       const <TimelineEvent>[],
@@ -175,6 +214,7 @@ class _HomePageState extends State<HomePage> {
     final error = _error;
 
     return SiteShell(
+      immersiveHeader: true,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
         child: error != null
@@ -210,6 +250,12 @@ class _HomeBody extends StatefulWidget {
 class _HomeBodyState extends State<_HomeBody> {
   final Map<String, GlobalKey> _sections = <String, GlobalKey>{};
 
+  /// L'ordre est tiré une fois par visite : la couverture ne change pas sous
+  /// les yeux du lecteur pendant qu'il parcourt la page.
+  late final List<ArticleSummary> _articles = _shuffledForHome(
+    widget.data.articles.items,
+  );
+
   GlobalKey _anchor(String id) =>
       _sections.putIfAbsent(id, () => GlobalKey(debugLabel: id));
 
@@ -236,16 +282,13 @@ class _HomeBodyState extends State<_HomeBody> {
     // La une consomme l'article principal et deux secondaires ; le fil prend
     // la suite sans jamais les répéter, et « le saviez-vous » ferme le corpus.
     // Sur un corpus court, les deux sections se rabattent sur ce qui existe.
-    final rest = data.articles.items.skip(1).toList(growable: false);
+    final rest = _articles.skip(1).toList(growable: false);
     final leadPage = rest.take(3).toList(growable: false);
     final feedPage = rest.skip(3).take(4).toList(growable: false);
     final feed = feedPage.isEmpty
         ? rest.take(4).toList(growable: false)
         : feedPage;
-    final factsPage = data.articles.items
-        .skip(9)
-        .take(2)
-        .toList(growable: false);
+    final factsPage = _articles.skip(9).take(2).toList(growable: false);
     final facts = factsPage.isEmpty
         ? feed.take(2).toList(growable: false)
         : factsPage;
@@ -269,12 +312,17 @@ class _HomeBodyState extends State<_HomeBody> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        HomeMasthead(
+          articleCount: data.articles.total,
+          domains: data.categories.length,
+          categories: data.categories,
+        ),
         HomeOpening(
           articleCount: data.articles.total,
           domains: data.categories.length,
           sourceCount: data.sources?.referenceCount ?? 0,
           categories: data.categories,
-          articles: data.articles.items,
+          articles: _articles,
           stats: data.statistics,
         ),
         const SizedBox(height: 4),

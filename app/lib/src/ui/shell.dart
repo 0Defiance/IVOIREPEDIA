@@ -35,10 +35,20 @@ class PageContainer extends StatelessWidget {
 /// l'en-tête, la colonne et la feuille changent ensemble, sans toucher aux
 /// accents de la marque.
 class SiteShell extends StatefulWidget {
-  const SiteShell({required this.child, this.searchQuery = '', super.key});
+  const SiteShell({
+    required this.child,
+    this.searchQuery = '',
+    this.immersiveHeader = false,
+    super.key,
+  });
 
   final Widget child;
   final String searchQuery;
+
+  /// Sur l'accueil, la manchette du jour tient lieu de bandeau : l'en-tête du
+  /// site s'efface au sommet de la page et revient dès que le lecteur défile.
+  /// Les autres pages gardent leur en-tête en permanence.
+  final bool immersiveHeader;
 
   @override
   State<SiteShell> createState() => _SiteShellState();
@@ -95,10 +105,17 @@ class _SiteShellState extends State<SiteShell> {
               if (reading)
                 _ReadingModeBar(tone: tone)
               else
-                _Header(
-                  searchQuery: widget.searchQuery,
-                  elevated: _scrolled,
-                  tone: tone,
+                AnimatedSize(
+                  duration: const Duration(milliseconds: 220),
+                  curve: Curves.easeOutCubic,
+                  alignment: Alignment.topCenter,
+                  child: !widget.immersiveHeader || _scrolled
+                      ? _Header(
+                          searchQuery: widget.searchQuery,
+                          elevated: _scrolled,
+                          tone: tone,
+                        )
+                      : const SizedBox(width: double.infinity),
                 ),
               _ProgressBar(value: _progress),
               Expanded(
@@ -422,7 +439,11 @@ class _AccountMenu extends StatelessWidget {
               ),
               Text(
                 user.email,
-                style: TextStyle(fontFamily: kFont, fontSize: 11.5, color: tone.faint),
+                style: TextStyle(
+                  fontFamily: kFont,
+                  fontSize: 11.5,
+                  color: tone.faint,
+                ),
               ),
             ],
           ),
@@ -498,10 +519,17 @@ void _openAccount(BuildContext context) {
           children: [
             Text(
               user.name,
-              style: titleStyle(size: 17, weight: FontWeight.w600, color: tone.ink),
+              style: titleStyle(
+                size: 17,
+                weight: FontWeight.w600,
+                color: tone.ink,
+              ),
             ),
             const SizedBox(height: 2),
-            Text(user.email, style: TextStyle(fontSize: 12.5, color: tone.muted)),
+            Text(
+              user.email,
+              style: TextStyle(fontSize: 12.5, color: tone.muted),
+            ),
             const SizedBox(height: 16),
             ListTile(
               contentPadding: EdgeInsets.zero,

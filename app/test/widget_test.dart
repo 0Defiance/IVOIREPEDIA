@@ -18,7 +18,9 @@ void main() {
     await tester.pumpWidget(IvoirepediaApp(api: FakeApi()));
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const ValueKey('brand-wordmark')), findsWidgets);
+    // La manchette du jour porte la signature complète : l'en-tête du site
+    // s'efface au sommet de l'accueil.
+    expect(find.byKey(const ValueKey('brand-lockup')), findsOneWidget);
     expect(
       find.textContaining('L’encyclopédie de la Côte d’Ivoire'),
       findsWidgets,
@@ -166,7 +168,8 @@ void main() {
     await tester.pumpWidget(IvoirepediaApp(api: FakeApi()));
     await tester.pumpAndSettle();
 
-    expect(find.text('Portails'), findsOneWidget);
+    // Le plan des domaines de la manchette et le menu de la couverture.
+    expect(find.text('Portails'), findsNWidgets(2));
     expect(find.text('32 711 547 habitants'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
@@ -185,7 +188,7 @@ void main() {
     // L'emblème, le mot-symbole et la signature complète sont des images
     // fournies, et l'emblème veille aussi dans le fond du site.
     expect(find.byKey(const ValueKey('brand-emblem')), findsWidgets);
-    expect(find.byKey(const ValueKey('brand-wordmark')), findsWidgets);
+    expect(find.byKey(const ValueKey('brand-lockup')), findsOneWidget);
     expect(find.byKey(const ValueKey('backdrop-emblem')), findsOneWidget);
     expect(tester.takeException(), isNull);
   });

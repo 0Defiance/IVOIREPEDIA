@@ -117,6 +117,135 @@ class HomeCategoryChip extends StatelessWidget {
   }
 }
 
+/// Manchette du jour : la signature de l'encyclopédie, sa promesse, puis le
+/// plan des domaines. Elle occupe le sommet de l'accueil, là où l'en-tête du
+/// site s'efface, et précède la couverture photo.
+class HomeMasthead extends StatelessWidget {
+  const HomeMasthead({
+    required this.articleCount,
+    required this.domains,
+    required this.categories,
+    super.key,
+  });
+
+  final int articleCount;
+  final int domains;
+  final List<Category> categories;
+
+  @override
+  Widget build(BuildContext context) {
+    final tone = ToneColors.from(context);
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 18),
+      child: Column(
+        children: [
+          const SizedBox(height: 18),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 460),
+            child: Image.asset(
+              kLockupAsset,
+              key: const ValueKey('brand-lockup'),
+              fit: BoxFit.contain,
+              filterQuality: FilterQuality.high,
+              semanticLabel: kTagline,
+            ),
+          ),
+          const SizedBox(height: 16),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 690),
+            child: Text(
+              'Une encyclopédie libre consacrée à la Côte d’Ivoire : ses '
+              'territoires, son histoire, ses langues, ses institutions, ses '
+              'cultures et son patrimoine.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14.5, height: 1.65, color: tone.muted),
+            ),
+          ),
+          const SizedBox(height: 7),
+          Text(
+            '${groupedNumber(articleCount)} articles · $domains domaines · '
+            'Chaque article cite ses sources',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 11.5, height: 1.5, color: tone.faint),
+          ),
+          if (categories.isNotEmpty) ...[
+            const SizedBox(height: 18),
+            Container(
+              decoration: BoxDecoration(
+                color: tone.subtle,
+                border: Border(
+                  top: BorderSide(color: tone.lineSoft),
+                  bottom: BorderSide(color: tone.lineSoft),
+                ),
+              ),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(14, 12, 8, 12),
+                      child: Text(
+                        'Portails',
+                        style: titleStyle(
+                          size: 12.5,
+                          weight: FontWeight.w700,
+                          color: tone.ink,
+                        ),
+                      ),
+                    ),
+                    for (final category in categories) ...[
+                      Container(width: 1, height: 13, color: tone.line),
+                      _MastheadPortalLink(category: category),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Entrée du plan des domaines : le nom du portail dans sa couleur, son
+/// nombre de pages en gris.
+class _MastheadPortalLink extends StatelessWidget {
+  const _MastheadPortalLink({required this.category});
+
+  final Category category;
+
+  @override
+  Widget build(BuildContext context) {
+    final tone = ToneColors.from(context);
+    final accent = _domainLook(category.slug).accent;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(9, 8, 9, 8),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.alphabetic,
+        children: [
+          HoverLink(
+            label: category.name,
+            onTap: () => wikiGo(context, '/categories/${category.slug}'),
+            color: accent,
+            hoverColor: IvoireColors.greenDeep,
+            style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w500),
+          ),
+          const SizedBox(width: 4),
+          Text(
+            '${category.articleCount}',
+            style: TextStyle(fontSize: 10.5, color: tone.faint),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 /// Couverture : la une en pleine page. La photo de l'article porte le bloc,
 /// le titre se lit sur un voile sombre, et la bande des chiffres du pays
 /// ferme la couverture.
@@ -166,24 +295,23 @@ class HomeOpening extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: IvoireColors.ivory,
-                              borderRadius: BorderRadius.circular(7),
-                            ),
-                            child: Image.asset(
-                              kLockupAsset,
-                              height: narrow ? 30 : 34,
-                              fit: BoxFit.contain,
-                              filterQuality: FilterQuality.high,
-                              semanticLabel: kTagline,
+                          Flexible(
+                            child: Text(
+                              'ÉDITION DU '
+                              '${formatDate(DateTime.now()).toUpperCase()}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontFamily: kFont,
+                                fontSize: 9.5,
+                                letterSpacing: 1.1,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white.withValues(alpha: 0.66),
+                              ),
                             ),
                           ),
                           const Spacer(),
+                          const SizedBox(width: 12),
                           Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 9,

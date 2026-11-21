@@ -1797,6 +1797,30 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 67 — 21 novembre 2026 · Manchette au sommet, en-tête escamotable et une tirée au sort
+
+**Demandé**
+- Voir en haut de l’accueil la manchette de marque (signature complète, promesse, nombres d’articles et de domaines, plan des domaines) avant la couverture photo.
+- Masquer la barre du site au sommet de l’accueil ; la faire revenir dès qu’on défile, et la garder sur toutes les autres pages.
+- Tirer la une au hasard, parmi des articles dont la photo montre un lieu ou une fierté culturelle du pays.
+
+**Fait**
+- Nouvelle manchette `HomeMasthead` en tête de l’accueil : signature complète centrée (460 px), promesse en une phrase, ligne « 51 articles · 8 domaines · Chaque article cite ses sources », puis un rail de domaines bordé haut et bas — nom du portail dans sa couleur, nombre de pages en gris, séparateurs verticaux. Les compteurs viennent de l’API ; sur téléphone le rail défile au doigt.
+- `SiteShell` reçoit `immersiveHeader` : sur l’accueil, l’en-tête s’efface au sommet et revient en 220 ms dès quatre pixels de défilement ; ailleurs il reste affiché. Le tiroir de navigation reste accessible dès que la barre revient.
+- La couverture ne répète plus la marque : la plaque du logo cède la place à « ÉDITION DU 21 NOVEMBRE 2026 » à gauche, l’étiquette « LA UNE » restant à droite.
+- Tirage de la visite (`_shuffledForHome`) : les articles illustrés de géographie, patrimoine ou culture sont mélangés, le premier ouvre la couverture, tout le reste est rebattu — la une, le fil et « le saviez-vous » changent à chaque visite sans se répéter. Un corpus sans photo garde l’ordre de l’API (et les tests restent déterministes).
+- Vingt articles sont chargés au lieu de douze, pour élargir le tirage de la couverture.
+
+**Vérifié**
+- `flutter analyze` : aucun problème. `flutter test` : 56 tests verts ; le test d’accueil vérifie désormais la signature de la manchette et les deux entrées « Portails » (rail de la manchette et menu de la couverture).
+- Aperçu local relu à l’écran : au sommet, aucune barre de site et la manchette complète ; après défilement, la barre revient avec logo, recherche et compte ; la couverture affiche une photo de ville tirée au sort (Yamoussoukro sur le contrôle).
+
+**Reste**
+- La qualité des photos varie selon les fichiers Wikimedia (ciel voilé sur le panorama de Yamoussoukro) ; le tirage ne peut pas juger la lumière d’une image.
+- Le rail des domaines tient sur une ligne en grand écran, mais défile horizontalement en dessous de 1 000 px : la fin de la liste est atteignable au doigt ou à la molette horizontale, sans indice visuel de débordement.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
