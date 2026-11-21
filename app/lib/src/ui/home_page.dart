@@ -74,7 +74,9 @@ class _HomePageState extends State<HomePage> {
     // Tous les appels partent ensemble : le second temps ne coûte pas la
     // durée des requêtes, seulement celle de la plus lente.
     final categoriesFuture = api.fetchCategories();
-    final articlesFuture = api.fetchArticles(limit: 9);
+    // Douze articles : la couverture, trois à la une, quatre au fil et deux
+    // « le saviez-vous » — sans jamais réafficher la même entrée.
+    final articlesFuture = api.fetchArticles(limit: 12);
     final timelineFuture = _optional(
       api.fetchTimeline,
       const <TimelineEvent>[],
