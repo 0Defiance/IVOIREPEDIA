@@ -1783,6 +1783,8 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 - Les portails deviennent des cartes à pictogramme et couleur propres à chaque domaine (histoire, géographie, personnalités, institutions, langues, culture, économie, patrimoine), avec le nombre de pages et la part du corpus.
 - Colonne de droite : « Repères nationaux » sur fond sombre (PIB, espérance de vie, alphabétisation, territoires, chronologie, pages publiées) au lieu du seul chiffre de population, déjà présent dans la manchette ; bibliothèque des sources avec son compteur en grand ; encarts réordonnés.
 - Toutes les sections reprennent un en-tête commun (filet d’accent orange, titre, filet tissé) ; le fil, les récits, les outils et la charte passent en cartes bordées, avec survol coloré. Les titres, libellés et parcours existants sont conservés (sommaire, ancres, tirages, liens).
+- Deuxième passe sur la même séance : l’ouverture devient une **couverture** sur fond vert profond, avec la mosaïque de quatre photos d’articles (domaine et titre sur voile sombre) et une bande de chiffres en pied (population, régions, districts, pages, domaines, sources). Les sections « régions », « récits » et « portails » sont posées sur des bandes teintées (sable, surligné) pour alterner les fonds.
+- Le fil ne répète plus les articles de la une : celle-ci garde l’article principal et deux secondaires, le fil prend les suivants, « le saviez-vous » ferme le corpus ; sur un corpus court, les deux sections se rabattent sur ce qui existe.
 
 **Vérifié**
 - `flutter analyze` : aucun problème. `flutter test` : 56 tests verts, y compris le rendu téléphone 390 px et le grand écran 1280 px (aucun débordement), le sommaire, la frise et les cartes de régions.

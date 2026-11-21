@@ -117,14 +117,15 @@ class HomeCategoryChip extends StatelessWidget {
   }
 }
 
-/// Bandeau d'ouverture : la manchette du portail à gauche, la carte d'identité
-/// du pays à droite. Le contenu (la une) commence juste en dessous.
+/// Couverture du portail : la promesse sur fond vert profond, une mosaïque de
+/// photos d'articles, puis la bande des chiffres du pays en pied.
 class HomeOpening extends StatelessWidget {
   const HomeOpening({
     required this.articleCount,
     required this.domains,
     required this.sourceCount,
     required this.categories,
+    required this.articles,
     this.stats,
     super.key,
   });
@@ -133,23 +134,24 @@ class HomeOpening extends StatelessWidget {
   final int domains;
   final int sourceCount;
   final List<Category> categories;
+  final List<ArticleSummary> articles;
   final StatisticsSnapshot? stats;
 
   @override
   Widget build(BuildContext context) {
-    final tone = ToneColors.from(context);
+    final mosaic = [for (final article in articles.take(4)) article];
 
     return Container(
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
-        color: tone.paper,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: tone.line),
+        color: IvoireColors.greenDeep,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: IvoireColors.green),
         boxShadow: [
           BoxShadow(
-            color: tone.ink.withValues(alpha: 0.05),
-            blurRadius: 26,
-            offset: const Offset(0, 12),
+            color: IvoireColors.ink.withValues(alpha: 0.10),
+            blurRadius: 30,
+            offset: const Offset(0, 14),
           ),
         ],
       ),
@@ -159,39 +161,47 @@ class HomeOpening extends StatelessWidget {
           const KenteBand(height: 9),
           LayoutBuilder(
             builder: (context, constraints) {
-              final wide = constraints.maxWidth >= 820;
+              final wide = constraints.maxWidth >= 860;
 
-              final intro = _HeroIntro(
-                articleCount: articleCount,
-                domains: domains,
-                sourceCount: sourceCount,
-                categories: categories,
-                narrow: !wide,
-              );
-              final facts = _CountryFacts(stats: stats, narrow: !wide);
+              final intro = _HeroIntro(categories: categories, narrow: !wide);
+              final pictures = mosaic.isEmpty
+                  ? const SizedBox.shrink()
+                  : _CoverMosaic(articles: mosaic, narrow: !wide);
 
               if (!wide) {
                 return Padding(
-                  padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [intro, const SizedBox(height: 18), facts],
+                    children: [
+                      intro,
+                      if (mosaic.isNotEmpty) ...[
+                        const SizedBox(height: 18),
+                        pictures,
+                      ],
+                    ],
                   ),
                 );
               }
 
               return Padding(
-                padding: const EdgeInsets.fromLTRB(26, 22, 22, 22),
+                padding: const EdgeInsets.fromLTRB(28, 24, 24, 24),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(child: intro),
-                    const SizedBox(width: 22),
-                    SizedBox(width: 306, child: facts),
+                    const SizedBox(width: 26),
+                    SizedBox(width: 348, child: pictures),
                   ],
                 ),
               );
             },
+          ),
+          _CoverFigures(
+            stats: stats,
+            articleCount: articleCount,
+            domains: domains,
+            sourceCount: sourceCount,
           ),
         ],
       ),
@@ -200,42 +210,34 @@ class HomeOpening extends StatelessWidget {
 }
 
 class _HeroIntro extends StatelessWidget {
-  const _HeroIntro({
-    required this.articleCount,
-    required this.domains,
-    required this.sourceCount,
-    required this.categories,
-    required this.narrow,
-  });
+  const _HeroIntro({required this.categories, required this.narrow});
 
-  final int articleCount;
-  final int domains;
-  final int sourceCount;
   final List<Category> categories;
   final bool narrow;
 
   @override
   Widget build(BuildContext context) {
-    final tone = ToneColors.from(context);
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Image.asset(
-              kLockupAsset,
-              height: narrow ? 44 : 52,
-              fit: BoxFit.contain,
-              filterQuality: FilterQuality.high,
-              semanticLabel: kTagline,
-            ),
-          ],
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: IvoireColors.ivory,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Image.asset(
+            kLockupAsset,
+            height: narrow ? 40 : 46,
+            fit: BoxFit.contain,
+            filterQuality: FilterQuality.high,
+            semanticLabel: kTagline,
+          ),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 18),
         Text(
-          'PORTAIL NATIONAL',
-          style: kickerStyle(color: IvoireColors.orangeDeep),
+          'L’ENCYCLOPÉDIE LIBRE',
+          style: kickerStyle(color: IvoireColors.gold),
         ),
         const SizedBox(height: 7),
         Text(
@@ -243,31 +245,24 @@ class _HeroIntro extends StatelessWidget {
           style: titleStyle(
             size: narrow ? 29 : 38,
             weight: FontWeight.w700,
-            color: tone.ink,
+            color: Colors.white,
             height: 1.08,
             letterSpacing: -0.9,
           ),
         ),
         const SizedBox(height: 10),
         ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 520),
+          constraints: const BoxConstraints(maxWidth: 500),
           child: Text(
             'L’encyclopédie de la Côte d’Ivoire : territoires, langues, '
             'institutions, personnalités et récits — chaque page s’appuie sur '
             'des sources que vous pouvez ouvrir.',
-            style: TextStyle(fontSize: 14, height: 1.65, color: tone.muted),
+            style: TextStyle(
+              fontSize: 14,
+              height: 1.65,
+              color: Colors.white.withValues(alpha: 0.78),
+            ),
           ),
-        ),
-        const SizedBox(height: 20),
-        Wrap(
-          spacing: 26,
-          runSpacing: 12,
-          crossAxisAlignment: WrapCrossAlignment.start,
-          children: [
-            _HeroStat(value: groupedNumber(articleCount), label: 'pages'),
-            _HeroStat(value: '$domains', label: 'domaines'),
-            _HeroStat(value: groupedNumber(sourceCount), label: 'sources'),
-          ],
         ),
         const SizedBox(height: 20),
         Wrap(
@@ -279,6 +274,8 @@ class _HeroIntro extends StatelessWidget {
             HoverLink(
               label: 'Rechercher un sujet',
               onTap: () => wikiGo(context, '/recherche'),
+              color: Colors.white,
+              hoverColor: IvoireColors.gold,
               style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
             ),
           ],
@@ -288,50 +285,153 @@ class _HeroIntro extends StatelessWidget {
   }
 }
 
-class _HeroStat extends StatelessWidget {
-  const _HeroStat({required this.value, required this.label});
+/// Quatre photos d'articles, en deux colonnes, chacune avec son domaine et son
+/// titre sur un voile sombre : la couverture montre le corpus, pas un décor.
+class _CoverMosaic extends StatelessWidget {
+  const _CoverMosaic({required this.articles, required this.narrow});
 
-  final String value;
-  final String label;
+  final List<ArticleSummary> articles;
+  final bool narrow;
 
   @override
   Widget build(BuildContext context) {
-    final tone = ToneColors.from(context);
+    const gap = 4.0;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          value,
-          style: titleStyle(
-            size: 22,
-            weight: FontWeight.w700,
-            color: tone.ink,
-            height: 1.05,
-          ),
-        ),
-        const SizedBox(height: 1),
-        Text(
-          label.toUpperCase(),
-          style: TextStyle(
-            fontSize: 9.5,
-            letterSpacing: 0.9,
-            fontWeight: FontWeight.w600,
-            color: tone.faint,
-          ),
-        ),
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = (constraints.maxWidth - gap) / 2;
+        final height = narrow ? 118.0 : 158.0;
+
+        return Wrap(
+          spacing: gap,
+          runSpacing: gap,
+          children: [
+            for (final article in articles)
+              SizedBox(
+                width: width,
+                height: height,
+                child: _MosaicTile(article: article),
+              ),
+          ],
+        );
+      },
     );
   }
 }
 
-/// Carte d'identité du pays : les grands chiffres, sur fond vert profond.
-class _CountryFacts extends StatelessWidget {
-  const _CountryFacts({required this.stats, required this.narrow});
+class _MosaicTile extends StatefulWidget {
+  const _MosaicTile({required this.article});
+
+  final ArticleSummary article;
+
+  @override
+  State<_MosaicTile> createState() => _MosaicTileState();
+}
+
+class _MosaicTileState extends State<_MosaicTile> {
+  bool _hover = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final article = widget.article;
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hover = true),
+      onExit: (_) => setState(() => _hover = false),
+      child: GestureDetector(
+        onTap: () => wikiGo(context, '/articles/${article.slug}'),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 140),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(
+              color: _hover
+                  ? IvoireColors.gold
+                  : Colors.white.withValues(alpha: 0.10),
+            ),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(5),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                ArticleThumb(
+                  article: article,
+                  width: double.infinity,
+                  height: double.infinity,
+                  radius: 0,
+                ),
+                const DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Color(0x00000000), Color(0xD910150F)],
+                      stops: [0.30, 1],
+                    ),
+                  ),
+                ),
+                Positioned(
+                  left: 10,
+                  right: 10,
+                  bottom: 9,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        (article.categoryName ?? article.typeLabel)
+                            .toUpperCase(),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontFamily: kFont,
+                          fontSize: 8.5,
+                          letterSpacing: 0.9,
+                          fontWeight: FontWeight.w700,
+                          color: IvoireColors.gold,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        article.title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontFamily: kFont,
+                          fontSize: 12,
+                          height: 1.25,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Bande des chiffres, en pied de couverture : le pays et le corpus, côte à
+/// côte, sur fond d'encre.
+class _CoverFigures extends StatelessWidget {
+  const _CoverFigures({
+    required this.stats,
+    required this.articleCount,
+    required this.domains,
+    required this.sourceCount,
+  });
 
   final StatisticsSnapshot? stats;
-  final bool narrow;
+  final int articleCount;
+  final int domains;
+  final int sourceCount;
 
   @override
   Widget build(BuildContext context) {
@@ -341,128 +441,101 @@ class _CountryFacts extends StatelessWidget {
     final districts = stats?.districts.length ?? 0;
 
     return Container(
-      padding: EdgeInsets.fromLTRB(narrow ? 18 : 20, 18, narrow ? 18 : 20, 16),
-      decoration: BoxDecoration(
-        color: IvoireColors.greenDeep,
-        borderRadius: BorderRadius.circular(_cardRadius),
-        border: Border.all(color: IvoireColors.green),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      color: IvoireColors.ink,
+      padding: const EdgeInsets.fromLTRB(24, 14, 24, 15),
+      child: Wrap(
+        spacing: 26,
+        runSpacing: 12,
+        crossAxisAlignment: WrapCrossAlignment.start,
         children: [
-          Row(
-            children: [
-              const Icon(Icons.insights, size: 14, color: IvoireColors.gold),
-              const SizedBox(width: 6),
-              Flexible(
-                child: Text(
-                  'LA CÔTE D’IVOIRE EN CLAIR',
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: kickerStyle(color: IvoireColors.gold),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          if (population?.display != null) ...[
-            Text(
-              population!.display!,
-              style: titleStyle(
-                size: narrow ? 26 : 27,
-                weight: FontWeight.w700,
-                color: Colors.white,
-                height: 1.14,
-                letterSpacing: -0.6,
-              ),
+          if (population?.display != null)
+            _CoverFigure(
+              value: population!.display!,
+              label: 'POPULATION · ${population.year ?? ''}',
+              note: population.trend?.display,
+            )
+          else
+            const _CoverFigure(
+              value: '—',
+              label: 'POPULATION',
+              note: 'Chiffres en cours de chargement',
             ),
-            const SizedBox(height: 3),
-            if (population.trend?.display != null)
-              Text(
-                population.trend!.display,
-                style: const TextStyle(
-                  fontSize: 12,
-                  height: 1.45,
-                  fontWeight: FontWeight.w600,
-                  color: IvoireColors.gold,
-                ),
-              ),
-            const SizedBox(height: 1),
-            Text(
-              'Banque mondiale, ${population.year ?? ''}',
-              style: TextStyle(
-                fontSize: 10.5,
-                color: Colors.white.withValues(alpha: 0.55),
-              ),
+          if (regions > 0)
+            _CoverFigure(
+              value: '$regions',
+              label: 'RÉGIONS',
+              note: census == null ? null : 'RGPH ${census.year}',
             ),
-            const SizedBox(height: 12),
-            Container(height: 1, color: Colors.white.withValues(alpha: 0.16)),
-            const SizedBox(height: 10),
-          ] else ...[
-            Text(
-              'Les repères du pays arrivent avec les statistiques.',
-              style: TextStyle(
-                fontSize: 12.5,
-                height: 1.55,
-                color: Colors.white.withValues(alpha: 0.8),
-              ),
+          if (districts > 0)
+            _CoverFigure(value: '$districts', label: 'DISTRICTS'),
+          _CoverFigure(value: groupedNumber(articleCount), label: 'PAGES'),
+          _CoverFigure(value: '$domains', label: 'DOMAINES'),
+          if (sourceCount > 0)
+            _CoverFigure(
+              value: groupedNumber(sourceCount),
+              label: 'SOURCES CITÉES',
             ),
-            const SizedBox(height: 12),
-          ],
-          if (census != null && regions > 0) ...[
-            _FactRow(label: 'Régions', value: '$regions'),
-            _FactRow(label: 'Districts', value: '$districts'),
-            _FactRow(label: 'Recensement', value: 'RGPH ${census.year}'),
-          ],
-          const SizedBox(height: 12),
-          HoverLink(
-            label: 'Toutes les statistiques',
-            onTap: () => wikiGo(context, '/statistiques'),
-            color: Colors.white,
-            hoverColor: IvoireColors.gold,
-            style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
-          ),
         ],
       ),
     );
   }
 }
 
-class _FactRow extends StatelessWidget {
-  const _FactRow({required this.label, required this.value});
+class _CoverFigure extends StatelessWidget {
+  const _CoverFigure({required this.value, required this.label, this.note});
 
-  final String label;
   final String value;
+  final String label;
+  final String? note;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 5),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.baseline,
-        textBaseline: TextBaseline.alphabetic,
-        children: [
-          Expanded(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          value,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: titleStyle(
+            size: 21,
+            weight: FontWeight.w700,
+            color: Colors.white,
+            height: 1.12,
+          ),
+        ),
+        if (note != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 2),
             child: Text(
-              label.toUpperCase(),
-              style: TextStyle(
-                fontSize: 9.5,
-                letterSpacing: 0.8,
+              note!,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 10,
+                height: 1.4,
                 fontWeight: FontWeight.w600,
-                color: Colors.white.withValues(alpha: 0.55),
+                color: IvoireColors.gold,
               ),
             ),
           ),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 12.5,
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
+        Padding(
+          padding: const EdgeInsets.only(top: 3),
+          child: Text(
+            label,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 8.5,
+              letterSpacing: 1,
+              height: 1.4,
+              fontWeight: FontWeight.w600,
+              color: Colors.white.withValues(alpha: 0.5),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -511,24 +584,24 @@ class _PortalMenu extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
         decoration: BoxDecoration(
-          color: IvoireColors.greenDeep,
+          color: IvoireColors.gold,
           borderRadius: BorderRadius.circular(24),
         ),
         child: const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.grid_view_rounded, size: 15, color: Colors.white),
+            Icon(Icons.grid_view_rounded, size: 15, color: IvoireColors.ink),
             SizedBox(width: 8),
             Text(
               'Portails',
               style: TextStyle(
                 fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
+                fontWeight: FontWeight.w700,
+                color: IvoireColors.ink,
               ),
             ),
             SizedBox(width: 4),
-            Icon(Icons.expand_more, size: 16, color: Colors.white70),
+            Icon(Icons.expand_more, size: 16, color: IvoireColors.ink),
           ],
         ),
       ),
@@ -2268,6 +2341,37 @@ class HomeSection extends StatelessWidget {
         const SizedBox(height: 15),
         child,
       ],
+    );
+  }
+}
+
+/// Bande teintée : donne à une section son propre fond, pour que la page
+/// alterne papier, sable et encre au lieu d'empiler des blocs identiques.
+class HomeBand extends StatelessWidget {
+  const HomeBand({
+    required this.child,
+    this.highlight = false,
+    this.padding = const EdgeInsets.fromLTRB(16, 16, 16, 18),
+    super.key,
+  });
+
+  final Widget child;
+  final bool highlight;
+  final EdgeInsetsGeometry padding;
+
+  @override
+  Widget build(BuildContext context) {
+    final tone = ToneColors.from(context);
+
+    return Container(
+      width: double.infinity,
+      padding: padding,
+      decoration: BoxDecoration(
+        color: highlight ? tone.highlight : tone.subtle,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: tone.lineSoft),
+      ),
+      child: child,
     );
   }
 }

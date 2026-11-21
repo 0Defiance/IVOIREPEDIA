@@ -231,13 +231,21 @@ class _HomeBodyState extends State<_HomeBody> {
   Widget build(BuildContext context) {
     final data = widget.data;
     final timeline = data.timeline;
-    // Le fil prend la suite de la une ; « le saviez-vous » prend ce qui
-    // reste, et se rabat sur les mêmes entrées quand le corpus est court.
+    // La une consomme l'article principal et deux secondaires ; le fil prend
+    // la suite sans jamais les répéter, et « le saviez-vous » ferme le corpus.
+    // Sur un corpus court, les deux sections se rabattent sur ce qui existe.
     final rest = data.articles.items.skip(1).toList(growable: false);
-    final feed = rest.take(6).toList(growable: false);
-    final facts = rest.length > 6
-        ? rest.skip(6).take(3).toList(growable: false)
-        : rest.take(2).toList(growable: false);
+    final feedPage = rest.skip(2).take(4).toList(growable: false);
+    final feed = feedPage.isEmpty
+        ? rest.take(4).toList(growable: false)
+        : feedPage;
+    final factsPage = data.articles.items
+        .skip(7)
+        .take(2)
+        .toList(growable: false);
+    final facts = factsPage.isEmpty
+        ? feed.take(2).toList(growable: false)
+        : factsPage;
     final regions = _topRegions(data.statistics);
 
     final contents = <HomeSectionEntry>[
@@ -263,6 +271,7 @@ class _HomeBodyState extends State<_HomeBody> {
           domains: data.categories.length,
           sourceCount: data.sources?.referenceCount ?? 0,
           categories: data.categories,
+          articles: data.articles.items,
           stats: data.statistics,
         ),
         const SizedBox(height: 4),
@@ -296,9 +305,11 @@ class _HomeBodyState extends State<_HomeBody> {
                     const SizedBox(height: 30),
                     Container(
                       key: _anchor('regions'),
-                      child: HomeRegionTiles(
-                        regions: regions,
-                        censusYear: data.statistics?.census.year,
+                      child: HomeBand(
+                        child: HomeRegionTiles(
+                          regions: regions,
+                          censusYear: data.statistics?.census.year,
+                        ),
                       ),
                     ),
                   ],
@@ -313,8 +324,11 @@ class _HomeBodyState extends State<_HomeBody> {
                     const SizedBox(height: 30),
                     Container(
                       key: _anchor('recits'),
-                      child: _MemoryStories(
-                        stories: data.stories.take(3).toList(),
+                      child: HomeBand(
+                        highlight: true,
+                        child: _MemoryStories(
+                          stories: data.stories.take(3).toList(),
+                        ),
                       ),
                     ),
                   ],
@@ -362,7 +376,9 @@ class _HomeBodyState extends State<_HomeBody> {
           const SizedBox(height: 34),
           Container(
             key: _anchor('portails'),
-            child: HomePortalsBand(categories: data.categories),
+            child: HomeBand(
+              child: HomePortalsBand(categories: data.categories),
+            ),
           ),
         ],
         const SizedBox(height: 34),
