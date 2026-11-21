@@ -235,12 +235,13 @@ class _HomeBodyState extends State<_HomeBody> {
     // la suite sans jamais les répéter, et « le saviez-vous » ferme le corpus.
     // Sur un corpus court, les deux sections se rabattent sur ce qui existe.
     final rest = data.articles.items.skip(1).toList(growable: false);
-    final feedPage = rest.skip(2).take(4).toList(growable: false);
+    final leadPage = rest.take(3).toList(growable: false);
+    final feedPage = rest.skip(3).take(4).toList(growable: false);
     final feed = feedPage.isEmpty
         ? rest.take(4).toList(growable: false)
         : feedPage;
     final factsPage = data.articles.items
-        .skip(7)
+        .skip(9)
         .take(2)
         .toList(growable: false);
     final facts = factsPage.isEmpty
@@ -288,7 +289,7 @@ class _HomeBodyState extends State<_HomeBody> {
                 children: [
                   Container(
                     key: _anchor('article'),
-                    child: HomeLeadGrid(page: data.articles),
+                    child: HomeLeadGrid(articles: leadPage),
                   ),
                   if (timeline.isNotEmpty) ...[
                     const SizedBox(height: 30),

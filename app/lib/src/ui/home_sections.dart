@@ -117,8 +117,9 @@ class HomeCategoryChip extends StatelessWidget {
   }
 }
 
-/// Couverture du portail : la promesse sur fond vert profond, une mosaïque de
-/// photos d'articles, puis la bande des chiffres du pays en pied.
+/// Couverture : la une en pleine page. La photo de l'article porte le bloc,
+/// le titre se lit sur un voile sombre, et la bande des chiffres du pays
+/// ferme la couverture.
 class HomeOpening extends StatelessWidget {
   const HomeOpening({
     required this.articleCount,
@@ -139,271 +140,203 @@ class HomeOpening extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mosaic = [for (final article in articles.take(4)) article];
-
-    return Container(
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
-        color: IvoireColors.greenDeep,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: IvoireColors.green),
-        boxShadow: [
-          BoxShadow(
-            color: IvoireColors.ink.withValues(alpha: 0.10),
-            blurRadius: 30,
-            offset: const Offset(0, 14),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const KenteBand(height: 9),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final wide = constraints.maxWidth >= 860;
-
-              final intro = _HeroIntro(categories: categories, narrow: !wide);
-              final pictures = mosaic.isEmpty
-                  ? const SizedBox.shrink()
-                  : _CoverMosaic(articles: mosaic, narrow: !wide);
-
-              if (!wide) {
-                return Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      intro,
-                      if (mosaic.isNotEmpty) ...[
-                        const SizedBox(height: 18),
-                        pictures,
-                      ],
-                    ],
-                  ),
-                );
-              }
-
-              return Padding(
-                padding: const EdgeInsets.fromLTRB(28, 24, 24, 24),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(child: intro),
-                    const SizedBox(width: 26),
-                    SizedBox(width: 348, child: pictures),
-                  ],
-                ),
-              );
-            },
-          ),
-          _CoverFigures(
-            stats: stats,
-            articleCount: articleCount,
-            domains: domains,
-            sourceCount: sourceCount,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _HeroIntro extends StatelessWidget {
-  const _HeroIntro({required this.categories, required this.narrow});
-
-  final List<Category> categories;
-  final bool narrow;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-            color: IvoireColors.ivory,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Image.asset(
-            kLockupAsset,
-            height: narrow ? 40 : 46,
-            fit: BoxFit.contain,
-            filterQuality: FilterQuality.high,
-            semanticLabel: kTagline,
-          ),
-        ),
-        const SizedBox(height: 18),
-        Text(
-          'L’ENCYCLOPÉDIE LIBRE',
-          style: kickerStyle(color: IvoireColors.gold),
-        ),
-        const SizedBox(height: 7),
-        Text(
-          'La Côte d’Ivoire,\nracontée et sourcée',
-          style: titleStyle(
-            size: narrow ? 29 : 38,
-            weight: FontWeight.w700,
-            color: Colors.white,
-            height: 1.08,
-            letterSpacing: -0.9,
-          ),
-        ),
-        const SizedBox(height: 10),
-        ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 500),
-          child: Text(
-            'L’encyclopédie de la Côte d’Ivoire : territoires, langues, '
-            'institutions, personnalités et récits — chaque page s’appuie sur '
-            'des sources que vous pouvez ouvrir.',
-            style: TextStyle(
-              fontSize: 14,
-              height: 1.65,
-              color: Colors.white.withValues(alpha: 0.78),
-            ),
-          ),
-        ),
-        const SizedBox(height: 20),
-        Wrap(
-          spacing: 16,
-          runSpacing: 10,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            _PortalMenu(categories: categories),
-            HoverLink(
-              label: 'Rechercher un sujet',
-              onTap: () => wikiGo(context, '/recherche'),
-              color: Colors.white,
-              hoverColor: IvoireColors.gold,
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-/// Quatre photos d'articles, en deux colonnes, chacune avec son domaine et son
-/// titre sur un voile sombre : la couverture montre le corpus, pas un décor.
-class _CoverMosaic extends StatelessWidget {
-  const _CoverMosaic({required this.articles, required this.narrow});
-
-  final List<ArticleSummary> articles;
-  final bool narrow;
-
-  @override
-  Widget build(BuildContext context) {
-    const gap = 4.0;
+    final lead = articles.isEmpty ? null : articles.first;
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final width = (constraints.maxWidth - gap) / 2;
-        final height = narrow ? 118.0 : 158.0;
+        final narrow = constraints.maxWidth < 760;
 
-        return Wrap(
-          spacing: gap,
-          runSpacing: gap,
-          children: [
-            for (final article in articles)
-              SizedBox(
-                width: width,
-                height: height,
-                child: _MosaicTile(article: article),
-              ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-class _MosaicTile extends StatefulWidget {
-  const _MosaicTile({required this.article});
-
-  final ArticleSummary article;
-
-  @override
-  State<_MosaicTile> createState() => _MosaicTileState();
-}
-
-class _MosaicTileState extends State<_MosaicTile> {
-  bool _hover = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final article = widget.article;
-
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) => setState(() => _hover = true),
-      onExit: (_) => setState(() => _hover = false),
-      child: GestureDetector(
-        onTap: () => wikiGo(context, '/articles/${article.slug}'),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 140),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(6),
-            border: Border.all(
-              color: _hover
-                  ? IvoireColors.gold
-                  : Colors.white.withValues(alpha: 0.10),
-            ),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(5),
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(14),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: narrow ? 470 : 430),
             child: Stack(
-              fit: StackFit.expand,
               children: [
-                ArticleThumb(
-                  article: article,
-                  width: double.infinity,
-                  height: double.infinity,
-                  radius: 0,
-                ),
-                const DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [Color(0x00000000), Color(0xD910150F)],
-                      stops: [0.30, 1],
-                    ),
+                Positioned.fill(child: _CoverBackdrop(article: lead)),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    narrow ? 20 : 30,
+                    narrow ? 18 : 24,
+                    narrow ? 20 : 30,
+                    narrow ? 18 : 24,
                   ),
-                ),
-                Positioned(
-                  left: 10,
-                  right: 10,
-                  bottom: 9,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        (article.categoryName ?? article.typeLabel)
-                            .toUpperCase(),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontFamily: kFont,
-                          fontSize: 8.5,
-                          letterSpacing: 0.9,
-                          fontWeight: FontWeight.w700,
-                          color: IvoireColors.gold,
-                        ),
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: IvoireColors.ivory,
+                              borderRadius: BorderRadius.circular(7),
+                            ),
+                            child: Image.asset(
+                              kLockupAsset,
+                              height: narrow ? 30 : 34,
+                              fit: BoxFit.contain,
+                              filterQuality: FilterQuality.high,
+                              semanticLabel: kTagline,
+                            ),
+                          ),
+                          const Spacer(),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 9,
+                              vertical: 5,
+                            ),
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: IvoireColors.gold,
+                                width: 1.2,
+                              ),
+                              borderRadius: BorderRadius.circular(3),
+                            ),
+                            child: Text(
+                              'LA UNE',
+                              style: TextStyle(
+                                fontFamily: kFont,
+                                fontSize: 9.5,
+                                letterSpacing: 1.1,
+                                fontWeight: FontWeight.w700,
+                                color: IvoireColors.gold,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 2),
-                      Text(
-                        article.title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontFamily: kFont,
-                          fontSize: 12,
-                          height: 1.25,
-                          fontWeight: FontWeight.w600,
+                      SizedBox(height: narrow ? 96 : 132),
+                      if (lead != null) ...[
+                        Row(
+                          children: [
+                            if (lead.categoryName != null) ...[
+                              HomeCategoryChip(
+                                label: lead.categoryName!,
+                                slug: lead.categorySlug,
+                                onDark: true,
+                              ),
+                              const SizedBox(width: 8),
+                            ],
+                            Flexible(
+                              child: Text(
+                                lead.typeLabel,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 10.5,
+                                  letterSpacing: 0.8,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white.withValues(alpha: 0.7),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 9),
+                        HoverLink(
+                          label: lead.title,
+                          onTap: () =>
+                              wikiGo(context, '/articles/${lead.slug}'),
                           color: Colors.white,
+                          hoverColor: IvoireColors.gold,
+                          style: titleStyle(
+                            size: narrow ? 31 : 44,
+                            weight: FontWeight.w700,
+                            color: Colors.white,
+                            height: 1.1,
+                            letterSpacing: -1.0,
+                          ),
+                        ),
+                        const SizedBox(height: 9),
+                        ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 620),
+                          child: Text(
+                            lead.summary,
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 14,
+                              height: 1.6,
+                              color: Colors.white.withValues(alpha: 0.82),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        Row(
+                          children: [
+                            _CoverCta(
+                              label: 'Lire l’article',
+                              onTap: () =>
+                                  wikiGo(context, '/articles/${lead.slug}'),
+                            ),
+                            const SizedBox(width: 14),
+                            Flexible(
+                              child: Text(
+                                [
+                                  '${lead.readingMinutes} min',
+                                  if (lead.publishedAt != null)
+                                    formatDate(lead.publishedAt),
+                                ].join(' · '),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: Colors.white.withValues(alpha: 0.65),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ] else
+                        Text(
+                          'L’encyclopédie de la Côte d’Ivoire',
+                          style: titleStyle(
+                            size: narrow ? 30 : 42,
+                            weight: FontWeight.w700,
+                            color: Colors.white,
+                            height: 1.1,
+                          ),
+                        ),
+                      const SizedBox(height: 16),
+                      Wrap(
+                        spacing: 16,
+                        runSpacing: 10,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          _PortalMenu(categories: categories),
+                          HoverLink(
+                            label: 'Rechercher un sujet',
+                            onTap: () => wikiGo(context, '/recherche'),
+                            color: Colors.white,
+                            hoverColor: IvoireColors.gold,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      _CoverFigures(
+                        stats: stats,
+                        articleCount: articleCount,
+                        domains: domains,
+                        sourceCount: sourceCount,
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'L’encyclopédie de la Côte d’Ivoire · lecture libre · '
+                        'sources citées',
+                        maxLines: 2,
+                        style: TextStyle(
+                          fontSize: 10,
+                          height: 1.4,
+                          letterSpacing: 0.3,
+                          color: Colors.white.withValues(alpha: 0.55),
                         ),
                       ),
                     ],
@@ -412,6 +345,121 @@ class _MosaicTileState extends State<_MosaicTile> {
               ],
             ),
           ),
+        );
+      },
+    );
+  }
+}
+
+/// Fond de la couverture : la photo de l'article, sous un voile qui laisse
+/// voir l'image en haut et assure la lecture du titre en bas.
+class _CoverBackdrop extends StatelessWidget {
+  const _CoverBackdrop({required this.article});
+
+  final ArticleSummary? article;
+
+  @override
+  Widget build(BuildContext context) {
+    final url = article?.coverImageUrl;
+    final hasImage = url != null && url.isNotEmpty;
+
+    return ColoredBox(
+      color: IvoireColors.greenDeep,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          if (url != null && url.isNotEmpty)
+            Image.network(
+              sizedCoverUrl(url, 1280),
+              fit: BoxFit.cover,
+              cacheWidth: 1280,
+              filterQuality: FilterQuality.medium,
+              semanticLabel: article?.coverImageAlt,
+              errorBuilder: (_, _, _) => const SizedBox.shrink(),
+            ),
+          if (hasImage) ...[
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0x9916211B),
+                    Color(0x5916211B),
+                    Color(0xF216211B),
+                  ],
+                  stops: [0, 0.42, 1],
+                ),
+              ),
+            ),
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [Color(0x8C16211B), Color(0x0016211B)],
+                  stops: [0, 0.75],
+                ),
+              ),
+            ),
+          ] else
+            const Align(
+              alignment: Alignment.topCenter,
+              child: KenteBand(height: 9),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CoverCta extends StatefulWidget {
+  const _CoverCta({required this.label, required this.onTap});
+
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  State<_CoverCta> createState() => _CoverCtaState();
+}
+
+class _CoverCtaState extends State<_CoverCta> {
+  bool _hover = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hover = true),
+      onExit: (_) => setState(() => _hover = false),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 140),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+          decoration: BoxDecoration(
+            color: _hover ? Colors.white : IvoireColors.gold,
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                widget.label,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: IvoireColors.ink,
+                ),
+              ),
+              const SizedBox(width: 6),
+              const Icon(
+                Icons.arrow_forward,
+                size: 14,
+                color: IvoireColors.ink,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -419,7 +467,7 @@ class _MosaicTileState extends State<_MosaicTile> {
 }
 
 /// Bande des chiffres, en pied de couverture : le pays et le corpus, côte à
-/// côte, sur fond d'encre.
+/// côte.
 class _CoverFigures extends StatelessWidget {
   const _CoverFigures({
     required this.stats,
@@ -441,11 +489,16 @@ class _CoverFigures extends StatelessWidget {
     final districts = stats?.districts.length ?? 0;
 
     return Container(
-      color: IvoireColors.ink,
-      padding: const EdgeInsets.fromLTRB(24, 14, 24, 15),
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(14, 11, 14, 12),
+      decoration: BoxDecoration(
+        color: IvoireColors.ink.withValues(alpha: 0.62),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.14)),
+      ),
       child: Wrap(
-        spacing: 26,
-        runSpacing: 12,
+        spacing: 24,
+        runSpacing: 10,
         crossAxisAlignment: WrapCrossAlignment.start,
         children: [
           if (population?.display != null)
@@ -499,10 +552,10 @@ class _CoverFigure extends StatelessWidget {
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
           style: titleStyle(
-            size: 21,
+            size: 19,
             weight: FontWeight.w700,
             color: Colors.white,
-            height: 1.12,
+            height: 1.14,
           ),
         ),
         if (note != null)
@@ -513,7 +566,7 @@ class _CoverFigure extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
-                fontSize: 10,
+                fontSize: 9.5,
                 height: 1.4,
                 fontWeight: FontWeight.w600,
                 color: IvoireColors.gold,
@@ -528,10 +581,10 @@ class _CoverFigure extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
               fontSize: 8.5,
-              letterSpacing: 1,
+              letterSpacing: 0.9,
               height: 1.4,
               fontWeight: FontWeight.w600,
-              color: Colors.white.withValues(alpha: 0.5),
+              color: Colors.white.withValues(alpha: 0.55),
             ),
           ),
         ),
@@ -732,29 +785,26 @@ class _RailLinkState extends State<_RailLink> {
   }
 }
 
-/// Mosaïque de une : un article principal en grand, puis deux entrées
-/// secondaires numérotées.
+/// Sommaire de la une : les trois articles qui suivent la couverture, chacun
+/// avec sa vignette, son domaine et sa durée de lecture.
 class HomeLeadGrid extends StatelessWidget {
-  const HomeLeadGrid({required this.page, super.key});
+  const HomeLeadGrid({required this.articles, super.key});
 
-  final PagedArticles page;
+  final List<ArticleSummary> articles;
 
   @override
   Widget build(BuildContext context) {
     final tone = ToneColors.from(context);
 
-    if (page.items.isEmpty) {
+    if (articles.isEmpty) {
       return HomeSection(
         title: 'La une',
         child: Text(
-          'Aucun article publié pour le moment.',
+          'Aucun autre article publié pour le moment.',
           style: TextStyle(color: tone.muted),
         ),
       );
     }
-
-    final lead = page.items.first;
-    final secondary = page.items.skip(1).take(2).toList(growable: false);
 
     return HomeSection(
       title: 'La une',
@@ -765,224 +815,11 @@ class HomeLeadGrid extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _LeadStory(article: lead),
-          if (secondary.isNotEmpty) ...[
-            const SizedBox(height: 16),
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final side = constraints.maxWidth >= 720;
-
-                if (!side) {
-                  return Column(
-                    children: [
-                      for (var i = 0; i < secondary.length; i++) ...[
-                        if (i > 0) const SizedBox(height: 12),
-                        _SecondaryStory(index: i + 2, article: secondary[i]),
-                      ],
-                    ],
-                  );
-                }
-
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    for (var i = 0; i < secondary.length; i++) ...[
-                      if (i > 0) const SizedBox(width: 14),
-                      Expanded(
-                        child: _SecondaryStory(
-                          index: i + 2,
-                          article: secondary[i],
-                        ),
-                      ),
-                    ],
-                  ],
-                );
-              },
-            ),
+          for (var i = 0; i < articles.length; i++) ...[
+            if (i > 0) const SizedBox(height: 12),
+            _SecondaryStory(index: i + 2, article: articles[i]),
           ],
         ],
-      ),
-    );
-  }
-}
-
-class _LeadStory extends StatelessWidget {
-  const _LeadStory({required this.article});
-
-  final ArticleSummary article;
-
-  @override
-  Widget build(BuildContext context) {
-    final tone = ToneColors.from(context);
-    final hasImage =
-        article.coverImageUrl != null && article.coverImageUrl!.isNotEmpty;
-    final meta = [
-      article.typeLabel,
-      '${article.readingMinutes} min',
-      if (article.publishedAt != null) formatDate(article.publishedAt),
-    ].join(' · ');
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (hasImage) ...[
-          Stack(
-            children: [
-              ArticleFigure(
-                article: article,
-                height: 320,
-                radius: _cardRadius,
-                requestWidth: 780,
-              ),
-              Positioned(
-                left: 12,
-                top: 12,
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 9,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: IvoireColors.greenDeep,
-                        borderRadius: BorderRadius.circular(3),
-                      ),
-                      child: const Text(
-                        'À LA UNE',
-                        style: TextStyle(
-                          fontFamily: kFont,
-                          fontSize: 9.5,
-                          letterSpacing: 0.9,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    if (article.categoryName != null) ...[
-                      const SizedBox(width: 6),
-                      HomeCategoryChip(
-                        label: article.categoryName!,
-                        slug: article.categorySlug,
-                        onDark: true,
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-        ],
-        Row(
-          children: [
-            if (article.categoryName != null) ...[
-              HomeCategoryChip(
-                label: article.categoryName!,
-                slug: article.categorySlug,
-              ),
-              const SizedBox(width: 8),
-            ],
-            Expanded(
-              child: Text(
-                meta,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 11.5, color: tone.faint),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 7),
-        HoverLink(
-          label: article.title,
-          onTap: () => wikiGo(context, '/articles/${article.slug}'),
-          color: tone.ink,
-          hoverColor: IvoireColors.greenDeep,
-          style: titleStyle(
-            size: 31,
-            weight: FontWeight.w700,
-            color: tone.ink,
-            height: 1.16,
-            letterSpacing: -0.7,
-          ),
-        ),
-        const SizedBox(height: 9),
-        ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 660),
-          child: Text(
-            article.summary,
-            style: TextStyle(fontSize: 15, height: 1.65, color: tone.body),
-          ),
-        ),
-        const SizedBox(height: 13),
-        Row(
-          children: [
-            _ActionPill(
-              label: 'Lire l’article',
-              onTap: () => wikiGo(context, '/articles/${article.slug}'),
-            ),
-            const Spacer(),
-            if (article.authorName != null)
-              Flexible(
-                child: Text(
-                  'par ${article.authorName}',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 11, color: tone.faint),
-                ),
-              ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class _ActionPill extends StatefulWidget {
-  const _ActionPill({required this.label, required this.onTap});
-
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  State<_ActionPill> createState() => _ActionPillState();
-}
-
-class _ActionPillState extends State<_ActionPill> {
-  bool _hover = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) => setState(() => _hover = true),
-      onExit: (_) => setState(() => _hover = false),
-      child: GestureDetector(
-        onTap: widget.onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 140),
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
-          decoration: BoxDecoration(
-            color: _hover ? IvoireColors.greenDeep : IvoireColors.green,
-            borderRadius: BorderRadius.circular(22),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                widget.label,
-                style: const TextStyle(
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(width: 6),
-              const Icon(Icons.arrow_forward, size: 13, color: Colors.white),
-            ],
-          ),
-        ),
       ),
     );
   }
@@ -1027,12 +864,12 @@ class _SecondaryStoryState extends State<_SecondaryStory> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                width: 104,
-                height: 124,
+                width: 112,
+                height: 128,
                 child: ArticleThumb(
                   article: article,
-                  width: 104,
-                  height: 124,
+                  width: 112,
+                  height: 128,
                   radius: 0,
                 ),
               ),
@@ -1075,10 +912,21 @@ class _SecondaryStoryState extends State<_SecondaryStory> {
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                         style: titleStyle(
-                          size: 14,
+                          size: 14.5,
                           weight: FontWeight.w600,
                           color: _hover ? IvoireColors.greenDeep : tone.ink,
                           height: 1.3,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        article.summary,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 12,
+                          height: 1.5,
+                          color: tone.muted,
                         ),
                       ),
                       const SizedBox(height: 6),
