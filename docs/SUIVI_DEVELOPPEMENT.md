@@ -1864,6 +1864,29 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 70 — 22 novembre 2026 · Couverture en 960 px, refonte de l’accueil et index alphabétique
+
+**Demandé**
+- La photo de couverture domine le temps de chargement : demander les photos en plus petit (800 px) et réécrire les URL d’origine en URL de vignette, avec un test sur `sizedCoverUrl`, puis re-mesurer les quatre photos.
+- Refonte globale du rendu visuel, sans rien changer de l’identité (palette, Inter, parcours) ; ajouter les fonctionnalités classiques d’une encyclopédie, à partir de ce qui existe déjà.
+
+**Fait**
+- `sizedCoverUrl` réécrit : une URL d’origine (`upload.wikimedia.org/…/a/b/Fichier.jpg`) devient une URL de vignette (`thumb.wikimedia.org/…/thumb/a/b/Fichier.jpg/960px-Fichier.jpg`), les caractères encodés du nom étant conservés. Les URL étrangères à Wikimedia et les chaînes vides restent intactes.
+- La couverture demande **960 px au lieu de 1280** (image et décodage). Wikimedia répond **400 à 800 px** — vérifié sur les quatre photos le 22/11/2026 : 800 px n’est pas un palier servi (320, 640, 768 et 1024 répondent aussi 400) ; 960 px est le plus petit palier au-dessus, et `Special:FilePath?width=800` y aboutit de la même façon.
+- Refonte de l’accueil (parcours, libellés et routes inchangés) : manchette plus lisible (signature agrandie, chapeau en 15,5 px), couverture plus haute et plus arrondie (titre 46 px, crédit photo « Photo : auteur — licence » en pied, comme une encyclopédie), titres de rubriques en 21 px avec filet tissé allongé, cartes à coins 14 px avec ombre au survol, hauteur d’image du fil portée à 148 px, descriptions des portails affichées quand elles existent, rayon des cartes du thème aligné (14 px).
+- Nouvelle fonctionnalité d’encyclopédie : **Index de A à Z** (`HomeAlphaIndex`) — vingt-six initiales qui ouvrent `/recherche?q=<lettre>`, comme l’entrée d’une encyclopédie imprimée ; l’entrée « Index de A à Z » rejoint le sommaire de l’accueil et son ancre de défilement.
+
+**Vérifié**
+- `flutter analyze` : aucun problème. `flutter test` : **67 tests verts** (8 nouveaux sur `sizedCoverUrl`/`coverWidthFor`, 1 sur l’index A→Z qui ouvre `/recherche?q=K`, dont le rendu 390 px sans débordement).
+- Re-mesure des quatre photos à 960 px (en-têtes réels, `curl`) : Korhogo 506 → **288 Ko** (7,1 → 2,1 s), Man 403 → **238 Ko** (3,4 → 1,6 s), Grand-Bassam 259 → **152 Ko** (2,0 → 1,0 s). **Le Zaouli régresse** : 127 → **312 Ko** (2,2 → 1,8 s en temps, mais plus d’octets) — son original ne fait que 681 px de large, Wikimedia agrandit la variante 960 px au lieu de la réduire. Poids moyens : 324 → 247 Ko (−24 %), pire temps : 7,1 → 2,1 s.
+
+**Reste**
+- Le Zaouli montre la limite de la réécriture côté client : sans danger de dimensions dans l’API, on ne sait pas si l’original est déjà petit. La correction propre est côté API : servir l’URL de vignette et la largeur d’origine avec chaque résumé.
+- Le contrôle visuel dans le navigateur n’a pas abouti : l’onglet n’est pas dessiné tant que la fenêtre Freebuff est réduite (capture impossible). Le rendu 390 px est couvert par les tests de widgets ; il reste à relire à l’écran avant mise en production.
+- Les serveurs de vérification restent actifs : `flutter run -d web-server` sur `127.0.0.1:8090`, `php artisan serve` sur `127.0.0.1:8000`.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

@@ -63,16 +63,17 @@ TextStyle kickerStyle({Color color = IvoireColors.terracotta}) {
 }
 
 ThemeData buildIvoireTheme() {
-  final scheme = ColorScheme.fromSeed(
-    seedColor: IvoireColors.green,
-    brightness: Brightness.light,
-  ).copyWith(
-    primary: IvoireColors.green,
-    secondary: IvoireColors.orange,
-    surface: IvoireColors.paper,
-    onSurface: IvoireColors.ink,
-    outline: IvoireColors.line,
-  );
+  final scheme =
+      ColorScheme.fromSeed(
+        seedColor: IvoireColors.green,
+        brightness: Brightness.light,
+      ).copyWith(
+        primary: IvoireColors.green,
+        secondary: IvoireColors.orange,
+        surface: IvoireColors.paper,
+        onSurface: IvoireColors.ink,
+        outline: IvoireColors.line,
+      );
 
   final base = ThemeData(
     colorScheme: scheme,
@@ -113,7 +114,7 @@ ThemeData buildIvoireTheme() {
       elevation: 0,
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(14),
         side: const BorderSide(color: IvoireColors.lineSoft),
       ),
     ),
@@ -128,9 +129,7 @@ ThemeData buildIvoireTheme() {
           fontSize: 14,
           fontWeight: FontWeight.w600,
         ),
-      ).copyWith(
-        overlayColor: const WidgetStatePropertyAll(Color(0x1FFFFFFF)),
-      ),
+      ).copyWith(overlayColor: const WidgetStatePropertyAll(Color(0x1FFFFFFF))),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
@@ -187,11 +186,19 @@ ThemeData buildIvoireTheme() {
     ),
     snackBarTheme: const SnackBarThemeData(
       backgroundColor: IvoireColors.ink,
-      contentTextStyle: TextStyle(fontFamily: kFont, color: Colors.white, fontSize: 14),
+      contentTextStyle: TextStyle(
+        fontFamily: kFont,
+        color: Colors.white,
+        fontSize: 14,
+      ),
       behavior: SnackBarBehavior.floating,
     ),
     tooltipTheme: const TooltipThemeData(
-      textStyle: TextStyle(fontFamily: kFont, fontSize: 12, color: Colors.white),
+      textStyle: TextStyle(
+        fontFamily: kFont,
+        fontSize: 12,
+        color: Colors.white,
+      ),
       decoration: BoxDecoration(
         color: IvoireColors.ink,
         borderRadius: BorderRadius.all(Radius.circular(6)),

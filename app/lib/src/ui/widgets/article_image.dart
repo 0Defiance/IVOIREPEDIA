@@ -8,8 +8,9 @@ import '../display_settings.dart';
 /// que le cache du navigateur serve plusieurs vignettes avec un seul
 /// téléchargement.
 // Seuls ces paliers sont servis par Wikimedia Commons : une largeur
-// arbitraire (640 px, par exemple) répond 400. Si un fichier n'a pas encore
-// sa variante, `_Cover` se rabat sur l'original.
+// arbitraire (640 ou 800 px, par exemple) répond 400 — vérifié le
+// 22 novembre 2026 sur les quatre photos de couverture. Si un fichier n'a
+// pas encore sa variante, `_Cover` se rabat sur l'original.
 const List<int> _coverWidths = [250, 500, 960, 1280];
 
 int coverWidthFor(int pixels) {
@@ -26,29 +27,52 @@ int coverWidthFor(int pixels) {
 /// type `…/thumb/a/b/Fichier.jpg/1280px-Fichier.jpg`. On demande la largeur
 /// réellement affichée : une vignette de 96 px n'a pas besoin du fichier de
 /// 1280 px, qui pèse plusieurs centaines de ko.
+///
+/// Une URL d'origine (`upload.wikimedia.org/…/a/b/Fichier.jpg`, sans
+/// variante) est réécrite en URL de vignette : sans cela, la photo part
+/// entière — parfois plusieurs mégaoctets — là où une variante de quelques
+/// centaines de ko suffirait. Wikimedia gère le reste : la variante
+/// demandée n'existe pas encore (400) et `_Cover` retombe sur l'original.
 String sizedCoverUrl(String url, int width) {
   if (url.isEmpty) {
     return url;
   }
 
+  final target = coverWidthFor(width);
   final match = RegExp(r'/(\d+)px-([^/]+)$').firstMatch(url);
 
-  if (match == null) {
+  if (match != null) {
+    final current = int.parse(match.group(1)!);
+
+    if (current <= target) {
+      return url;
+    }
+
+    return url.replaceRange(
+      match.start,
+      match.end,
+      '/${target}px-${match.group(2)}',
+    );
+  }
+
+  // URL d'origine : on insère `/thumb` après `/commons` et on suffixe le
+  // nom du fichier avec la largeur visée, pour obtenir la variante.
+  final origin = RegExp(
+    r'^(https?://[^/]+/wikipedia/)commons/([^/]+/[^/]+)/([^/]+)$',
+  ).firstMatch(url);
+
+  if (origin == null) {
     return url;
   }
 
-  final current = int.parse(match.group(1)!);
-  final target = coverWidthFor(width);
-
-  if (current <= target) {
-    return url;
-  }
-
-  return url.replaceRange(
-    match.start,
-    match.end,
-    '/${target}px-${match.group(2)}',
-  );
+  return Uri.parse(url)
+      .replace(
+        host: 'thumb.wikimedia.org',
+        path:
+            '/wikipedia/commons/thumb/${origin.group(2)}/'
+            '${origin.group(3)}/${target}px-${origin.group(3)}',
+      )
+      .toString();
 }
 
 /// Illustration d'un article, avec sa mention de source.

@@ -356,6 +356,7 @@ class _HomeBodyState extends State<_HomeBody> {
       if (data.stories.isNotEmpty)
         const HomeSectionEntry('recits', 'Récits et mémoire'),
       const HomeSectionEntry('sources', 'Bibliothèque des sources'),
+      const HomeSectionEntry('index', 'Index de A à Z'),
       if (data.categories.isNotEmpty)
         const HomeSectionEntry('portails', 'Les domaines'),
     ];
@@ -483,6 +484,8 @@ class _HomeBodyState extends State<_HomeBody> {
             ),
           ),
         ],
+        const SizedBox(height: 34),
+        Container(key: _anchor('index'), child: const HomeAlphaIndex()),
         const SizedBox(height: 34),
         const _ExploreIndex(),
         const SizedBox(height: 34),

@@ -37,7 +37,7 @@ class HomeSectionEntry {
   final String label;
 }
 
-const double _cardRadius = 10;
+const double _cardRadius = 14;
 
 /// Accent et pictogramme d'un domaine : chaque portail a sa couleur, reprise
 /// sur les tuiles, les étiquettes et les cartes du fil.
@@ -142,7 +142,7 @@ class HomeMasthead extends StatelessWidget {
         children: [
           const SizedBox(height: 18),
           ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 460),
+            constraints: const BoxConstraints(maxWidth: 520),
             child: Image.asset(
               kLockupAsset,
               key: const ValueKey('brand-lockup'),
@@ -153,13 +153,13 @@ class HomeMasthead extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 690),
+            constraints: const BoxConstraints(maxWidth: 720),
             child: Text(
               'Une encyclopédie libre consacrée à la Côte d’Ivoire : ses '
               'territoires, son histoire, ses langues, ses institutions, ses '
               'cultures et son patrimoine.',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14.5, height: 1.65, color: tone.muted),
+              style: TextStyle(fontSize: 15.5, height: 1.7, color: tone.muted),
             ),
           ),
           const SizedBox(height: 7),
@@ -411,9 +411,9 @@ class HomeOpening extends StatelessWidget {
         final narrow = constraints.maxWidth < 760;
 
         return ClipRRect(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(18),
           child: ConstrainedBox(
-            constraints: BoxConstraints(minHeight: narrow ? 470 : 430),
+            constraints: BoxConstraints(minHeight: narrow ? 500 : 460),
             child: Stack(
               children: [
                 Positioned.fill(child: _CoverBackdrop(article: lead)),
@@ -507,11 +507,11 @@ class HomeOpening extends StatelessWidget {
                           color: Colors.white,
                           hoverColor: IvoireColors.gold,
                           style: titleStyle(
-                            size: narrow ? 31 : 44,
+                            size: narrow ? 33 : 46,
                             weight: FontWeight.w700,
                             color: Colors.white,
-                            height: 1.1,
-                            letterSpacing: -1.0,
+                            height: 1.08,
+                            letterSpacing: -1.2,
                           ),
                         ),
                         const SizedBox(height: 9),
@@ -602,6 +602,24 @@ class HomeOpening extends StatelessWidget {
                           color: Colors.white.withValues(alpha: 0.55),
                         ),
                       ),
+                      if (lead?.imageCredit != null) ...[
+                        const SizedBox(height: 6),
+                        Text(
+                          [
+                            'Photo : ${lead!.imageCredit}',
+                            if ((lead.coverImageLicense ?? '').isNotEmpty)
+                              lead.coverImageLicense!,
+                          ].join(' — '),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.right,
+                          style: TextStyle(
+                            fontSize: 9.5,
+                            height: 1.3,
+                            color: Colors.white.withValues(alpha: 0.5),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -633,9 +651,12 @@ class _CoverBackdrop extends StatelessWidget {
         children: [
           if (url != null && url.isNotEmpty)
             Image.network(
-              sizedCoverUrl(url, 1280),
+              // 960 px est le plus petit palier servi au-dessus de 800 :
+              // Wikimedia répond 400 à 800, et la variante 1280 pèse
+              // presque le double. Voir `sizedCoverUrl`.
+              sizedCoverUrl(url, 960),
               fit: BoxFit.cover,
-              cacheWidth: 1280,
+              cacheWidth: 960,
               filterQuality: FilterQuality.medium,
               semanticLabel: article?.coverImageAlt,
               errorBuilder: (_, _, _) => const SizedBox.shrink(),
@@ -1929,7 +1950,7 @@ class _FeedCardState extends State<_FeedCard> {
               ArticleThumb(
                 article: article,
                 width: double.infinity,
-                height: 124,
+                height: 148,
                 radius: 0,
               ),
               Padding(
@@ -2087,6 +2108,15 @@ class _PortalCardState extends State<_PortalCard> {
             color: tone.paper,
             borderRadius: BorderRadius.circular(_cardRadius),
             border: Border.all(color: _hover ? look.accent : tone.lineSoft),
+            boxShadow: _hover
+                ? [
+                    BoxShadow(
+                      color: look.accent.withValues(alpha: 0.14),
+                      blurRadius: 18,
+                      offset: const Offset(0, 6),
+                    ),
+                  ]
+                : null,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -2134,6 +2164,20 @@ class _PortalCardState extends State<_PortalCard> {
                   color: tone.ink,
                 ),
               ),
+              if (category.description != null &&
+                  category.description!.isNotEmpty) ...[
+                const SizedBox(height: 4),
+                Text(
+                  category.description!,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 12,
+                    height: 1.45,
+                    color: tone.muted,
+                  ),
+                ),
+              ],
               const SizedBox(height: 8),
               ClipRRect(
                 borderRadius: BorderRadius.circular(2),
@@ -2411,10 +2455,10 @@ class HomeSection extends StatelessWidget {
           child: Text(
             title,
             style: titleStyle(
-              size: 18,
+              size: 21,
               weight: FontWeight.w700,
               color: tone.ink,
-              letterSpacing: -0.3,
+              letterSpacing: -0.35,
             ),
           ),
         ),
@@ -2442,14 +2486,14 @@ class HomeSection extends StatelessWidget {
                 ),
             ],
           ),
-        const SizedBox(height: 9),
+        const SizedBox(height: 11),
         Row(
           children: [
-            SizedBox(width: 58, child: const WeaveRule(height: 3)),
+            SizedBox(width: 76, child: const WeaveRule(height: 3)),
             Expanded(child: Container(height: 1, color: tone.lineSoft)),
           ],
         ),
-        const SizedBox(height: 15),
+        const SizedBox(height: 18),
         child,
       ],
     );
@@ -2502,6 +2546,91 @@ class HomeIntro extends StatelessWidget {
       child: Text(
         text,
         style: TextStyle(fontSize: 13, height: 1.6, color: tone.muted),
+      ),
+    );
+  }
+}
+
+/// Index alphabétique : l'entrée classique des encyclopédies. Chaque lettre
+/// ouvre la recherche sur les titres qui commencent par elle — sans requête
+/// supplémentaire, le moteur de recherche répond déjà sur un préfixe.
+class HomeAlphaIndex extends StatelessWidget {
+  const HomeAlphaIndex({super.key});
+
+  static const _letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+  @override
+  Widget build(BuildContext context) {
+    return HomeSection(
+      title: 'Index de A à Z',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const HomeIntro(
+            'Parcourir les titres par leur initiale, comme dans une '
+            'encyclopédie imprimée.',
+          ),
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            children: [
+              for (var i = 0; i < _letters.length; i++)
+                _AlphaLetter(letter: _letters[i]),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AlphaLetter extends StatefulWidget {
+  const _AlphaLetter({required this.letter});
+
+  final String letter;
+
+  @override
+  State<_AlphaLetter> createState() => _AlphaLetterState();
+}
+
+class _AlphaLetterState extends State<_AlphaLetter> {
+  bool _hover = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final tone = ToneColors.from(context);
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hover = true),
+      onExit: (_) => setState(() => _hover = false),
+      child: GestureDetector(
+        key: ValueKey('alpha-${widget.letter}'),
+        onTap: () => wikiGo(
+          context,
+          '/recherche?q=${Uri.encodeQueryComponent(widget.letter)}',
+        ),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 120),
+          width: 34,
+          height: 34,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: _hover ? IvoireColors.greenDeep : tone.paper,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: _hover ? IvoireColors.greenDeep : tone.line,
+            ),
+          ),
+          child: Text(
+            widget.letter,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: _hover ? Colors.white : tone.ink,
+            ),
+          ),
+        ),
       ),
     );
   }

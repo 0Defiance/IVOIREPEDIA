@@ -302,6 +302,33 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('l’index alphabétique ouvre la recherche sur l’initiale', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1280, 1000);
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(IvoirepediaApp(api: FakeApi()));
+    await tester.pumpAndSettle();
+
+    // Les vingt-six initiales sont présentes, sans faux contenu.
+    expect(find.byKey(const ValueKey('alpha-A')), findsOneWidget);
+    expect(find.byKey(const ValueKey('alpha-Z')), findsOneWidget);
+
+    final letter = find.byKey(const ValueKey('alpha-K'));
+    await tester.ensureVisible(letter);
+    await tester.pumpAndSettle();
+    await tester.tap(letter);
+    await tester.pumpAndSettle();
+
+    // La lettre conduit à la recherche, comme une entrée d’encyclopédie.
+    final router = GoRouter.of(tester.element(find.text('K').first));
+    final location = router.routerDelegate.currentConfiguration.uri.toString();
+    expect(location, contains('/recherche?q=K'));
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('la page d’accueil se rend aussi en grand écran', (tester) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(1280, 1000);
