@@ -2080,6 +2080,35 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 78 — 23 novembre 2026 · Palmarès de CAN vérifiés et deuxième tranche de sportifs
+
+**Demandé**
+- Recouper les palmarès de Coupe d’Afrique des nations des fiches de sportifs avec les notices Wikipédia citées, et corriger ce qui n’est pas étayé.
+- Ajouter la tranche suivante de sportifs vérifiés vers 100 et la publier.
+
+**Fait**
+- **Trois erreurs de palmarès corrigées** après lecture des notices citées : Kolo Touré n’est pas resté sans CAN (il est finaliste en 2006 et 2012, puis vainqueur en 2015) ; Romaric ne faisait pas partie du groupe de la CAN 2012, sa notice signalant explicitement son absence, et il est finaliste en 2006 ; Kader Keïta n’a disputé ni la finale de 2006 ni celle de 2012, sa notice ne documentant que la CAN 2002 au Mali et le Mondial 2006.
+- Trois formulations précisées : Serge Aurier est vainqueur en 2015 et 2023, la mention de capitaine — absente de la notice — étant retirée ; Seko Fofana est champion lors de la CAN 2023 et non « en 2024 » ; Franck Kessié est crédité de son but en finale 2023 et de sa place dans l’équipe type. La fiche Yaya Touré est alignée sur ses trois titres de Premier League (2012, 2014, 2018).
+- **27 fiches de sportifs ajoutées** : Ibrahim Sangaré, Odilon Kossounou, Evan Ndicka, Simon Adingra, Wilfried Singo, Amad Diallo, Jérémie Boga, Maxwel Cornet, Jean-Philippe Krasso, Christian Kouamé, Hamed Junior Traoré, Jean-Daniel Akpa-Akpro, Emmanuel Agbadou, Ghislain Konan, Emerse Faé, Sinaly Diomandé, Seydou Doumbia, Bakari Koné, Guy Demel, Siaka Tiéné, Kanga Akalé, Bonaventure Kalou, Gilles Yapi-Yapo, Alain Gouaméné, Joël Tiéhi, Oumar Diakité et Wilfried Kanon.
+- Le groupe sportifs passe de **37 à 64 fiches** ; l’ensemble compte **169 biographies** (60 politiques, 37 écrivains, 64 sportifs, 8 artistes). La tranche mêle internationaux des années 2000-2020 et champions d’Afrique 1992 et 2015.
+- Deux candidats écartés après vérification de leur notice : Yves Bissouma et Cheick Doucouré, nés en Côte d’Ivoire mais internationaux maliens.
+- Documentation du fichier de données mise à jour (séance 78).
+
+**Vérifié**
+- `php -l` : aucune erreur ; compteurs **60 / 37 / 64 / 8**, **169 slugs uniques**, aucun doublon.
+- Backend : `composer test` **159 tests verts (3 560 assertions)**, `composer format:check` **157 fichiers conformes**, `composer analyse` aucun problème.
+- App : `flutter analyze` aucun problème, `flutter test` **70 tests verts**.
+- Production : `git pull --ff-only` (`255ad54` → `885fccd`), seeder en **1 377 ms**. Le site passe de **227 à 254 articles**, la catégorie « Personnalités » de **151 à 178 pages**, le tag `biographies-sportifs` de **37 à 64 articles**.
+- L’API sert les corrections : `kolo-toure` contient bien « remporte l’édition 2015 », `romaric` « finaliste de la CAN 2006 », `kader-keita` « CAN 2002 au Mali ». Les nouvelles fiches `ibrahim-sangare`, `simon-adingra`, `emerse-fae` et `joel-tiehi` répondent avec slug, infobox et une référence.
+- Pages pré-rendues : `/articles/ibrahim-sangare`, `/articles/simon-adingra`, `/articles/kolo-toure`, `/articles/emerse-fae`, `/articles/joel-tiehi` et `/articles/wilfried-kanon` → **200**, `<title>Nom — IVOIREPEDIA` vérifié sur deux d’entre elles.
+
+**Reste**
+- Les sportifs sont à **64/100** : la suite peut compléter le football féminin, le handball, le judo et les disciplines olympiques.
+- Les écrivains restent à 37/100 et les politiques à 60/100 ; les artistes sont à 8.
+- Le rendu visuel de cette tranche n’a pas été capturé en 390 × 844 ; seules les réponses HTML et API ont été contrôlées.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
