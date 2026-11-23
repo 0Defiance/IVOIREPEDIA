@@ -1992,6 +1992,35 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 75 — 23 novembre 2026 · Ministres, députés et maires
+
+**Demandé**
+- Poursuivre l’extension des biographies politiques (ministres, députés, maires) vers 100, avec la même exigence de sources.
+- Publier cette tranche en production et vérifier les nouvelles pages.
+
+**Fait**
+- **27 fiches ajoutées** : Hervé Alliali, Roger Adom, Kouadio Konan Bertin, Thomas Camara, Amadou Coulibaly, Pierre Dimba, Ahoua Don Mello, Alphonse Douati, Mohamed Lamine Fadika, Jean-Louis Billon, Paul Antoine Bohoun Bouabré, Mathieu Babaud Darret, Sidiki Diakité, Jean-Marc Yacé, Augustin Thiam, Amy Toungara, Germain Yanon Yapo, Vincent Toh Bi Irié, Louis Kouakou-Habonouan, Nicolas Djibo, Amah Marie Tehoua, Emmanuel Esmel Essis, Jean-Jacques Béchio, Zémogo Fofana, Claude Isaac Dé, Joachim Bony et Pascal Abinan Kouakou.
+- Le groupe politiques passe de **33 à 60 fiches** ; l’ensemble compte **88 biographies** (60 politiques, 10 écrivains, 10 sportifs, 8 artistes).
+- La tranche couvre les trois profils demandés : ministres et anciens ministres, députés, maires et ministres-gouverneurs de district. Chaque fiche suit le format existant (résumé, deux sections, trois paragraphes, infobox, bibliographie) et s’appuie sur la notice Wikipédia citée, avec les dates et mandats recoupés.
+- Aucune figure déjà présente n’est dupliquée ; le seeder reste idempotent par slug.
+- Documentation du fichier de données mise à jour (séance 75, 60 politiques).
+
+**Vérifié**
+- `php -l database/data/personalities.php` : aucune erreur ; compteurs **60 / 10 / 10 / 8**, **88 slugs uniques**, aucun doublon.
+- Backend : `composer test` **159 tests verts (2 831 assertions)**, `composer format:check` **157 fichiers conformes** (correction Pint `single_quote`), `composer analyse` aucun problème.
+- App : `flutter analyze` aucun problème, `flutter test` **70 tests verts**.
+- Production : `git pull --ff-only` (`b819c5a` → `4ec67f4`), seeder en **962 ms**. L’API passe de **146 à 173 articles**, la catégorie « personnalités » de **70 à 97 pages**, le tag `biographies-politiciens` de **33 à 60 articles**.
+- Fiches servies avec `type_label: Biographie`, l’étiquette « Biographies : Politiques » et leur référence : `joachim-bony`, `jean-louis-billon`, `nicolas-djibo`, `claude-isaac-de`, `sidiki-diakite`, `pierre-dimba`.
+- Pages pré-rendues : `/articles/joachim-bony`, `/articles/jean-louis-billon` et `/articles/nicolas-djibo` → **200**, `<title>… — IVOIREPEDIA` avec le nom de la fiche.
+- Rendu réel à 390 × 844 sur `/articles/joachim-bony` : en-tête « Personnalités · Biographie », titre, sommaire à deux entrées et début d’infobox visibles. Capture : `screenshot-prod-390-s75-bony.png`.
+
+**Reste**
+- Les politiques sont à **60/100** : la suite peut compléter avec les ministres et parlementaires restants, les présidents de conseils régionaux et les maires des grandes communes.
+- Les écrivains (10), sportifs (10) et artistes (8) restent à étendre.
+- Aucun build web n’a été nécessaire : seules les données lues par l’API ont changé.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
