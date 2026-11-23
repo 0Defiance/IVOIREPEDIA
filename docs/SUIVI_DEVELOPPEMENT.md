@@ -1963,6 +1963,35 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 74 — 23 novembre 2026 · Extension des biographies politiques
+
+**Demandé**
+- Reprendre l’extension des biographies vers 100 par domaine, en commençant par les politiques, avec la même exigence de sources que les 38 fiches déjà en ligne.
+- Publier les nouvelles fiches en production et vérifier qu’elles s’affichent.
+
+**Fait**
+- **23 fiches politiques ajoutées** à `database/data/personalities.php` : Guillaume Soro, Pascal Affi N’Guessan, Seydou Diarra, Jeannot Ahoussou-Kouadio, Hamed Bakayoko, Patrick Achi, Robert Beugré Mambé, Kandia Camara, Charles Blé Goudé, Djéni Kobina, Jean Konan Banny, Jean-Baptiste Mockey, Philippe Yacé, Adama Bictogo, Ally Coulibaly, Vagondo Diomandé, Souleymane Diarrassouba, Louis-André Dacoury-Tabley, Aboudramane Sangaré, Maurice Bandaman, Laurent Dona Fologo, Marcel Zadi Kessy et Youssouf Bakayoko. Le groupe politiques passe de **10 à 33 fiches** ; l’ensemble compte **61 biographies** (33 politiques, 10 écrivains, 10 sportifs, 8 artistes).
+- Chaque fiche suit le format existant : résumé d’une phrase, deux sections et trois paragraphes, infobox `BIOGRAPHY`, bibliographie. Les dates, lieux et mandats ont été recoupés sur la notice Wikipédia citée ; les sept Premiers ministres citent en plus la liste officielle des anciens chefs de gouvernement de la Primature.
+- Aucune figure déjà traitée n’est dupliquée : Henri Konan Bédié, Laurent Gbagbo, Alassane Ouattara et Robert Guéï ont déjà leur article dans `PublicContentSeeder` (slugs `henri-konan-bedie`, `laurent-gbagbo`, `alassane-ouattara`, `robert-guei`), hors série des `biographies-politiciens`.
+- Le seeder reste idempotent : relancé, il met à jour les fiches par leur slug sans créer de doublon.
+- Documentation du fichier de données mise à jour (tranche politiques 10 → 33, séance 74).
+
+**Vérifié**
+- `php -l database/data/personalities.php` : aucune erreur ; compteurs du fichier **33 / 10 / 10 / 8**, **61 slugs uniques**, aucun doublon.
+- Backend : `composer test` **159 tests verts (2 588 assertions)**, `composer format:check` **157 fichiers conformes** (une correction Pint `single_quote` sur le fichier de données), `composer analyse` aucun problème.
+- App : `flutter analyze` aucun problème, `flutter test` **70 tests verts** (aucun code Flutter modifié).
+- Production : `git pull --ff-only` (`8dc1b7c` → `0617dcc`), `php artisan db:seed --class=PersonalitiesSeeder --force` en **893 ms**. L’API passe de **123 à 146 articles publiés** ; la catégorie « personnalités » de **47 à 70 pages** ; le tag `biographies-politiciens` renvoie **33 articles**.
+- Fiches servies par l’API avec `type_label: Biographie`, l’étiquette « Biographies : Politiques », leur infobox et 1 à 2 références : `guillaume-soro`, `kandia-camara`, `patrick-achi`, `marcel-zadi-kessy`, `youssouf-bakayoko`.
+- Pages pré-rendues : `GET /articles/guillaume-soro`, `/articles/kandia-camara` et `/articles/marcel-zadi-kessy` → **200**, `<title>… — IVOIREPEDIA` avec le nom de la fiche.
+- Rendu réel à 390 × 844 sur `https://ivoirepedia.alwaysdata.net/articles/guillaume-soro` : en-tête « Personnalités · Biographie », titre, sommaire à deux entrées et infobox visibles. Capture : `screenshot-prod-390-s74-soro.png`.
+
+**Reste**
+- Les politiques sont à **33/100** : les tranches suivantes peuvent puiser dans les ministres, députés, maires et présidents de conseils régionaux déjà catégorisés sur Wikipédia, en gardant la même vérification fiche par fiche.
+- Les écrivains (10), sportifs (10) et artistes (8) restent à leur première tranche ; la structure par étiquettes permet de les étendre sans changer le seeder.
+- Le build web n’a pas été refait : cette séance ne touche que des données lues par l’API, déjà servies par le bundle en ligne.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
