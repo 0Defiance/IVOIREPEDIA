@@ -21,6 +21,18 @@
   <link rel="preload" href="flutter_bootstrap.js" as="script">
   <link rel="preload" href="main.dart.js" as="script">
 
+  <!--
+    Les trois graisses d'Inter partent en même temps que le JavaScript, au lieu
+    d'attendre que Flutter les réclame une fois le moteur démarré : sur une
+    première visite à cache vide, cette mise en série coûtait plusieurs
+    secondes. Elles sont servies précompressées en brotli (`Inter-*.ttf.br`,
+    voir `tools/precompress_web.py`) et restent un jour en cache. `as="fetch"`
+    correspond à la requête XHR que fait le moteur pour charger une police.
+  -->
+  <link rel="preload" href="assets/assets/fonts/Inter-400.ttf" as="fetch" crossorigin="anonymous" fetchpriority="high">
+  <link rel="preload" href="assets/assets/fonts/Inter-600.ttf" as="fetch" crossorigin="anonymous" fetchpriority="high">
+  <link rel="preload" href="assets/assets/fonts/Inter-700.ttf" as="fetch" crossorigin="anonymous" fetchpriority="high">
+
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="viewport" content="width=device-width, initial-scale=1">

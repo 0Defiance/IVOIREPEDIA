@@ -1934,8 +1934,31 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 - Fiche `/articles/le-zaouli` : l’image s’affiche avec sa ligne de crédit. Le navigateur ne demande que l’original `upload.wikimedia.org/…/Cizaouli.jpg` (127 207 o) : la largeur visée (960) dépasse l’original (681), donc `sizedCoverUrl` renvoie le fichier source, plus léger que la vignette de 500 px (144 394 o). Aucune variante 960/1210 px n’est plus demandée. Capture : `screenshot-prod-390-zaouli-b.png`.
 
 **Reste**
-- Sur une première visite (cache vide), la photo de couverture s’est peinte une vingtaine de secondes après le reste de la page ; la capture a été reprise une fois l’image affichée. À rejouer sur un réseau ordinaire avant d’en tirer une conclusion.
+- ~~Sur une première visite (cache vide), la photo de couverture s’est peinte une vingtaine de secondes après le reste de la page~~ : mesuré et corrigé en séance 73 (polices préchargées et précompressées).
 - Le contrôle desktop et la capture de la bande « Le saviez-vous ? » n’ont été faits qu’en local (séance 71) : la fenêtre de prévisualisation ne dépasse pas ~486 px.
+
+---
+
+## Séance 73 — 23 novembre 2026 · Démarrage à froid et biographies en ligne
+
+**Demandé**
+- Appliquer le correctif du démarrage à froid (polices Inter en brotli + préchargement dans `index.html`), mesurer le gain sur une visite à cache vide.
+- Publier les biographies en production et vérifier qu’elles sont visibles sur le site.
+
+**Fait**
+- **Polices précompressées** : `tools/precompress_web.py` traite aussi les `.ttf` (les `.otf` d’icônes restent dehors, ils font 14 Ko et se revalident à chaque visite) ; `backend/public/.htaccess` réécrit `Inter-*.ttf` vers `…ttf.br` quand le navigateur annonce `br`, avec `Content-Encoding br`, `Content-Type font/ttf` et un jour de cache. Mesure au déploiement : 324 820 + 326 048 + 326 468 o → 122 540 + 126 118 + 126 019 o, soit **977 336 → 374 677 o (954 → 366 Ko)**.
+- **Préchargement** : `app/web/index.html` annonce les trois graisses (`<link rel="preload" as="fetch" crossorigin="anonymous" fetchpriority="high">`) avant toute autre chose, pour qu’elles descendent **avec** `main.dart.js` au lieu d’attendre que le moteur les réclame. Sans `crossorigin`, Chrome téléchargeait la police puis la redemandait (« credentials mode does not match ») ; avec, aucune requête en double et aucun avertissement de console.
+- **Biographies en production** : `php artisan db:seed --class=PersonalitiesSeeder --force` sur `ivoirepedia_prod` (2,4 s, idempotent). La base passe de **85 à 123 articles publiés**, dont **38 biographies** (10 politiques, 10 écrivains, 10 sportifs, 8 artistes) ; la catégorie « personnalités » compte 47 pages avec celles qui existaient déjà.
+
+**Vérifié**
+- **Avant**, cache vide (partition incognito neuve, 390 × 844) : `main.dart.js` 2,6 → 19,6 s (683 Ko br), `canvaskit.wasm` 2,8 → 9,2 s, **polices 20,4 → 27,7 s** (957 Ko non compressés, demandées seulement après le JS), API 28,0 → 31,0 s.
+- **Après**, même protocole : polices **0,4 → 2,4 s / 2,4 s / 11,9 s** (122-123 Ko br chacune, démarrées avec le JS), `main.dart.js` 0,4 → 5,2 s, `canvaskit.wasm` 0,6 → 10,4 s, API **13,5 → 18,1 s**. Les polices ne sont plus sur le chemin critique et les premiers appels API partent une quinzaine de secondes plus tôt ; aucune requête de police en double, console propre.
+- `python ../tools/verify_deploy.py` : page, `main.dart.js`, `main.dart.js_1.part.js`, `canvaskit.wasm` servis en `br` et identiques aux originaux — « Tout est bon » ; `curl` sur les trois `Inter-*.ttf` : `content-encoding: br`, 122-126 Ko.
+- Site : `GET /api/v1/articles?page=1&limit=20` renvoie 123 articles et les vingt plus récents sont des biographies (Ernesto Djédjé, Yaya Touré, Bernard Dadier, Tidjane Thiam, Tiken Jah Fakoly…), donc elles occupent « La une » et le fil ; fiche `ernesto-djedje` : étiquette `biographies-artistes`, infobox complète, 5 blocs de contenu, 1 référence ; la page pré-rendue servie aux robots porte `<title>Ernesto Djédjé — IVOIREPEDIA` et le `<h1>`.
+
+**Reste**
+- La capture du site n’a pas pu être prise cette fois : la fenêtre de prévisualisation est restée couverte, donc le canevas Flutter n’a jamais été peint. Les biographies sont vérifiées par l’API, par la page pré-rendue et par les tests de widgets, pas par une capture.
+- Les 38 fiches restent une tranche : il en faudra 100 par groupe pour tenir la promesse initiale.
 
 ---
 

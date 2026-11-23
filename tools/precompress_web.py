@@ -2,9 +2,11 @@
 """Precompress heavy Flutter web assets with Brotli at deploy time.
 
 Scans a `flutter build web` output directory and writes `<name>.br` next to
-every `.js` and `.wasm` file, so Apache can serve the precompressed bytes to
-browsers that announce `br` (see the rewrite rules in
-`backend/public/.htaccess`). Dynamic Brotli stays off: quality 11 once per
+every `.js`, `.wasm` and `.ttf` file, so Apache can serve the precompressed
+bytes to browsers that announce `br` (see the rewrite rules in
+`backend/public/.htaccess`). Les polices Inter pèsent près d'un mégaoctet et
+n'étaient servies qu'en TTF brut : le brotli de déploiement les ramène à
+environ un tiers. Dynamic Brotli stays off: quality 11 once per
 deploy costs nothing per request.
 
 Usage: `python tools/precompress_web.py [build_dir]` (default `app/build/web`).
@@ -16,7 +18,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-EXTENSIONS = (".js", ".wasm")
+EXTENSIONS = (".js", ".wasm", ".ttf")
 QUALITY = 11
 
 

@@ -41,7 +41,7 @@
     RewriteCond %{HTTP:Accept-Encoding} br
     RewriteCond %{REQUEST_FILENAME} -f
     RewriteCond %{REQUEST_FILENAME}.br -f
-    RewriteRule ^(.+\.(?:js|wasm))$ $1.br [L]
+    RewriteRule ^(.+\.(?:js|wasm|ttf))$ $1.br [L]
 
     # Fichiers réels : assets Flutter, polices, CanvasKit, manifeste.
     RewriteCond %{REQUEST_FILENAME} -f [OR]
@@ -120,6 +120,12 @@
   <FilesMatch "\.wasm\.br$">
     Header set Content-Encoding br
     Header set Content-Type application/wasm
+    Header set Cache-Control "public, max-age=86400"
+    Header merge Vary Accept-Encoding
+  </FilesMatch>
+  <FilesMatch "\.ttf\.br$">
+    Header set Content-Encoding br
+    Header set Content-Type font/ttf
     Header set Cache-Control "public, max-age=86400"
     Header merge Vary Accept-Encoding
   </FilesMatch>
