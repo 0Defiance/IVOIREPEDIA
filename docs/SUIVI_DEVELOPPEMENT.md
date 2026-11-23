@@ -2215,6 +2215,35 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 83 — 23 novembre 2026 · Consolidation de quatre fiches d’écrivains
+
+**Demandé**
+- Consolider les fiches les plus minces de la série des écrivains : Serge Grah, Alafé Wakili, Hanny Tchelley et Marie-Laure N’Goran.
+- Retrouver les années de naissance manquantes, puis re-seeder la production.
+- Faire les captures visuelles des nouvelles pages en 390 × 844.
+
+**Fait**
+- **Serge Grah** : bibliographie complète (2008-2024) et section sur la reconnaissance, dont le prix Jeanne de Cavally 2018.
+- **Alafé Wakili** : parcours universitaire et FESCI, carrière de presse, création de L’Intelligent d’Abidjan en septembre 2003, conseil ministériel 2006-2007, master soutenu en juillet 2026, livres (2009, 2013, 2016) et distinctions (2007, 2014, 2020).
+- **Hanny Tchelley** : formation artistique et chorégraphique, parcours à Population Services International, FICA depuis 1998, exil après 2010-2011, retour le 25 juillet 2022, Et si c’était à refaire ? (GAD Éditions, 2023) et projets en cours.
+- **Marie-Laure N’Goran** : parcours FAO puis RTI, élection à la présidence de l’UNJCI le 7 juin 2026, distinctions 2012-2026 et situation familiale.
+- **Années de naissance retrouvées et sourcées** : Hanny Tchelley **1953** (Wikidata Q3126861), Gina Dick Boguifo **1951** (liste des écrivains ivoiriens), Irié Goli Bi **1960** (même liste, précisée au 9 mai 1960 à Vrigrita par Wikiquote).
+- **Quatre fiches restent sans année** : Marie-Laure N’Goran (seule la date du 6 août est documentée), Assita Sidibé, Pierrette Fauste et Adja Mariam Mahre Soro. Wikidata est muet (Q sans P569) et le catalogue SRU de la BnF ne renvoie aucune notice ; aucune année n’a été inventée.
+- Fiche d’Irié Goli Bi complétée (lieu de naissance, métier, situation familiale).
+
+**Vérifié**
+- `php -l` : aucune erreur ; compteurs **60 / 100 / 100 / 8**, **268 slugs uniques**.
+- Backend : `composer test` **159 tests verts (4 451 assertions)**, `composer format:check` **157 fichiers conformes**, `composer analyse` aucun problème.
+- App : `flutter analyze` aucun problème, `flutter test` **70 tests verts**.
+- Production : `git pull --ff-only` (`8b85380` → `dbfa351`), seeder en **2 790 ms** ; les **276** personnalités et **352** articles sont inchangés en nombre, les fiches sont mises à jour.
+- Les six fiches contrôlées sur l’API portent le bon résumé (« née en 1953 », « née en 1951 », « né en 1960 ») avec infobox et référence.
+- Captures **390 × 844** des quatre fiches consolidées et de quatre nouvelles pages (Marguerite Abouet, Louis Akin, Nincemon Fallé, Irié Goli Bi), enregistrées dans `captures/`.
+
+**Reste**
+- Écrivains **100/100**, sportifs **100/100**, politiques **60/100**, artistes **8/100**.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
