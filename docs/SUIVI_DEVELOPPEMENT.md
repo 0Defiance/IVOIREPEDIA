@@ -2117,7 +2117,7 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 **Fait**
 - **27 fiches de sportifs ajoutées** : Laurent Pokou, Donald-Olivier Sié, Basile Aka Kouamé, Gadji Celi, Serge Maguy, Rufin Lué, Lassina Dao, Oumar Ben Salah, Aruna Dindane, Ibrahima Bakayoko, François Zahoui, Cyril Domoraud et Tchiressoua Guel (football masculin) ; Josée Nahi, Ida Guehai, Nina Kpaho, Inès Konan, Rosemonde Kouassi et Christine Lohoues (football féminin) ; Seydou Gbané, Firmin Zokou et Aaron Kobenan (taekwondo) ; Avognan Nogboum, Franck Waota, Marius Loua et Paul Fernand Kra Koffi (athlétisme, dont un médaillé paralympique) ; Jean-Marc Kraidy (basket-ball).
 - Le groupe sportifs passe de **64 à 91 fiches** ; l’ensemble compte **196 biographies** (60 politiques, 37 écrivains, 91 sportifs, 8 artistes). La tranche couvre les générations 1960-2000, six championnes de football, les taekwondoïstes des Jeux africains et un médaillé de bronze des Jeux paralympiques de Sydney.
-- Les candidats ont été repérés dans les catégories Wikipédia (267 footballeurs internationaux, 38 footballeuses, 15 athlètes, 10 taekwondoïstes, 8 basketteurs), puis chaque fiche a été recoupée sur sa notice. Ont été écartés les noms dont la notice ne fournissait pas assez de faits datés, ainsi que Yves Bissouma et Cheick Doucouré, internationaux maliens.
+- Les candidats ont été repérés dans les catégories Wikipédia (267 footballeurs internationaux, 38 footballeuses, 15 athlètes, 10 taekwondoïstes, 8 basketteurs), puis chaque fiche a été recoupée sur sa notice. Ont été écartés les noms dont la notice ne fournissait pas assez de faits datés. Yves Bissouma et Cheick Doucouré, internationaux maliens, avaient déjà été écartés lors de la tranche de la séance 78.
 - Documentation du fichier de données mise à jour (séance 79).
 
 **Vérifié**
@@ -2131,6 +2131,32 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 **Reste**
 - Les sportifs sont à **91/100** : neuf fiches suffisent pour atteindre l’objectif, à choisir dans le football féminin, le taekwondo et l’athlétisme.
 - Les écrivains restent à 37/100 et les politiques à 60/100 ; les artistes sont à 8.
+- Le rendu visuel de cette tranche n’a pas été capturé en 390 × 844 ; seules les réponses HTML et API ont été contrôlées.
+
+---
+
+## Séance 80 — 23 novembre 2026 · Série des sportifs terminée à 100
+
+**Demandé**
+- Terminer la série des sportifs avec 9 fiches vérifiées pour atteindre 100, publier et vérifier les nouvelles pages.
+- Corriger la phrase du journal qui laissait croire que Bissouma et Doucouré avaient été écartés lors de la tranche précédente.
+
+**Fait**
+- **9 fiches de sportifs ajoutées** : Boubacar Barry Copa, Arthur Boka, Serey Dié, Sol Bamba, Jonathan Kodjia, Roger Assalé, Jean-Philippe Gbamin, Ousmane Diomande et Yannick Sagbo. Toutes ont été recoupées sur leur notice Wikipédia citée.
+- Le groupe sportifs passe de **91 à 100 fiches** ; l’ensemble compte **205 biographies** (60 politiques, 37 écrivains, 100 sportifs, 8 artistes). La série des sportifs est complète.
+- **Journal corrigé** : la phrase de la séance 79 qui semblait exclure Yves Bissouma et Cheick Doucouré lors de cette tranche précise désormais que leur exclusion date de la séance 78.
+- Documentation du fichier de données mise à jour (séance 80).
+
+**Vérifié**
+- `php -l` : aucune erreur ; compteurs **60 / 37 / 100 / 8**, **205 slugs uniques**, aucun doublon.
+- Backend : `composer test` **159 tests verts (3 884 assertions)**, `composer format:check` **157 fichiers conformes**, `composer analyse` aucun problème.
+- App : `flutter analyze` aucun problème, `flutter test` **70 tests verts**.
+- Production : `git pull --ff-only` (`73a7b4f` → `8176b0a`), seeder en **1 856 ms**. Le site passe de **281 à 290 articles**, la catégorie « Personnalités » de **205 à 214 pages**, le tag `biographies-sportifs` de **91 à 100 articles**.
+- Les neuf nouvelles fiches répondent sur l’API avec slug, infobox, une référence et le texte attendu.
+- Les neuf pages pré-rendues `/articles/boubacar-barry-copa`, `arthur-boka`, `serey-die`, `sol-bamba`, `jonathan-kodjia`, `roger-assale`, `jean-philippe-gbamin`, `ousmane-diomande` et `yannick-sagbo` → **200**, avec `<title>Nom — IVOIREPEDIA`.
+
+**Reste**
+- Les sportifs sont à **100/100**. Les écrivains restent à 37/100, les politiques à 60/100 et les artistes à 8/100.
 - Le rendu visuel de cette tranche n’a pas été capturé en 390 × 844 ; seules les réponses HTML et API ont été contrôlées.
 
 ---
