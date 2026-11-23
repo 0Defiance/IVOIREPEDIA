@@ -2333,6 +2333,33 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 87 — 23 novembre 2026 · Sources rétablies et lot 1 des politiques
+
+**Demandé**
+- Terminer la vérification des 36 fiches d’écrivains en ajoutant la source des détails exacts plutôt qu’en les supprimant.
+- Établir la liste des 55 candidats politiques avec leurs sources et démarrer le lot 1.
+
+**Fait — écrivains**
+- **Hanny Tchelley** : le passage PSI (1993), le stage sur le sida à Santa Cruz (1995) et la direction du centre de production (1996-1998) sont rétablis, sourcés par sa fiche Africultures ; le retour du 25 juillet 2022 est précisé par Yeclo (réception par le ministre Kouadio Konan Bertin). La fiche porte **4 références**.
+- **Irié Goli Bi** : date et lieu de naissance (9 mai 1960, Vrigrita), fonction de censeur au lycée moderne 1 de Grand-Bassam et famille (cinq enfants) rétablis, sourcés par Babelio et Wikiquote. La fiche porte **4 références**.
+- **Marie-Laure N’Goran** : présentation du roman au Sofitel Hôtel Ivoire sous le parrainage de Mariatou Koné rétablie, conformément à sa notice.
+
+**Fait — politiques**
+- **Liste de 55 candidats** établie à partir des catégories Wikipédia (présidents, Premiers ministres, femmes politiques, diplomates, maires, députés, gouverneurs, ministres), dédoublonnée avec les 60 fiches existantes ; **les 55 URL ont été testées et répondent en 200**.
+- **Lot 1 livré (10 fiches, 60 → 70)** : Félix Houphouët-Boigny, Henri Konan Bédié, Robert Guéï, Laurent Gbagbo, Alassane Ouattara, Auguste Denise, Ernest Boka, Mamadou Koulibaly, Francis Wodié et Tiémoko Meyliet Koné. Chaque fiche s’appuie sur sa notice et, pour les chefs d’État et présidents d’institution, sur le site officiel correspondant.
+
+**Vérifié**
+- `php -l` : aucune erreur ; compteurs **70 / 100 / 100 / 8**, **278 slugs uniques**.
+- Backend : `composer test` **159 tests verts (4 541 assertions)**, `composer format:check` **157 fichiers conformes**, `composer analyse` aucun problème.
+- App : `flutter analyze` aucun problème, `flutter test` **70 tests verts**.
+- Production : `git pull --ff-only` (`fdc21f1` → `5e6a3c2`), seeder en **2 604 ms** ; les **10** nouvelles pages répondent en **200** et exposent leurs références (1 à 2 par fiche).
+
+**Reste**
+- Politiques **70/100** : 30 fiches à écrire (lots 2 à 4 du plan).
+- Écrivains **100/100**, sportifs **100/100**, artistes **8/100**.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
