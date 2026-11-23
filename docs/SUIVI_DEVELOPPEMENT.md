@@ -2161,6 +2161,33 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 81 — 23 novembre 2026 · Écrivains : 37 → 64 fiches
+
+**Demandé**
+- Enchaîner une tranche de 27 écrivains ivoiriens (37 → 64) avec la même exigence de sources, puis publier et vérifier les nouvelles pages.
+
+**Fait**
+- **27 fiches d’écrivains ajoutées** : Serge Bilé, Ahmadou Kourouma, Josette Abondio, Fargass Assandé, Timité Bassori, Tiburce Koffi, Alain Tailly, Zan Tiato Daniel, Assamala Amoi, Mahoua S. Bakayoko, Isabelle Boni-Claverie, Jeanne de Cavally, Micheline Coulibaly, Muriel Diallo, Edwige-Renée Dro, Grâce Minlibé, Flore Hazoumé, Adjoua Flore Kouamé, Agnès Kraidy, Michelle Lora, Charlette N’Guessan, Anzata Ouattara, Constance Yaï, Tidiss Koné, Yehni Djidji, Foua Ernest de Saint-Sauveur et Yacouba Konaté. Chacune est recoupée sur sa notice Wikipédia citée.
+- Le groupe écrivains passe de **37 à 64 fiches** ; l’ensemble compte **232 biographies** (60 politiques, 64 écrivains, 100 sportifs, 8 artistes).
+- **Candidats écartés** : Hermas Gbaguidi (poète béninois, pas ivoirien), Irié Goli Bi (notice sans biographie), Angénic Agnero (notice trop mince), Assita Sidibé et Cédric Marshall Kissy (aucune date de naissance), Haminatraoré (redirection).
+- **Doublon évité** : Maurice Bandaman figurait déjà dans le groupe politiques ; sa notice a donc été remplacée par celle de Timité Bassori pour ne pas dupliquer le slug.
+- Documentation du fichier de données mise à jour (séance 81).
+
+**Vérifié**
+- `php -l` : aucune erreur ; compteurs **60 / 64 / 100 / 8**, **232 slugs uniques**, aucun doublon.
+- Backend : `composer test` **159 tests verts (4 127 assertions)**, `composer format:check` **157 fichiers conformes**, `composer analyse` aucun problème.
+- App : `flutter analyze` aucun problème, `flutter test` **70 tests verts**.
+- Production : `git pull --ff-only` (`052c56c` → `dd2e168`), seeder en **4 159 ms**. Les articles passent de **290 à 316**, la catégorie « Personnalités » de **214 à 240**, le tag `biographies-ecrivains` de **37 à 64**.
+- Le gain de 26 articles s’explique : la fiche `ahmadou-kourouma` existait déjà comme page « Personnalités » créée le 4 novembre ; le seeder l’a mise à jour au lieu d’en créer une seconde.
+- Les **27** fiches répondent sur l’API avec slug, infobox, une référence et le texte attendu.
+- Les **27** pages pré-rendues `/articles/…` répondent en **200** avec `<title>Nom — IVOIREPEDIA`.
+
+**Reste**
+- Écrivains **64/100**, politiques **60/100**, sportifs **100/100**, artistes **8/100**.
+- Le rendu visuel de cette tranche n’a pas été capturé en 390 × 844 ; seules les réponses HTML et API ont été contrôlées.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
