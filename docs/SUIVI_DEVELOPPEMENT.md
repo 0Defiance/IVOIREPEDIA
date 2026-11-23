@@ -1914,7 +1914,28 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 - Le canevas Flutter ignore la molette de l’outil de prévisualisation (geste synthétique) : les captures plus bas dans la page s’obtiennent en envoyant un `WheelEvent` sur `flt-glass-pane` depuis la console du navigateur.
 - Le contrôle desktop n’a pas abouti : la fenêtre du navigateur de prévisualisation ne fait qu’environ 486 px de large, un rendu 1440 px y est rogné. Le rendu 390 px et les 70 tests couvrent le cas étroit ; une capture desktop reste à faire sur une fenêtre plus large.
 - Les 38 fiches sont une tranche vérifiée, pas les 400 annoncées : la structure (tags par groupe, bibliographie, sources) permet de monter à 100 par domaine sans changer le code.
-- La production sert encore l’ancien bundle : la migration `cover_image_width` doit être appliquée avant de déployer l’app.
+- ~~La production sert encore l’ancien bundle~~ : mise en ligne faite le 23 novembre 2026 (séance 72) — migration `cover_image_width` appliquée, bundle et API au niveau du commit `94d58c6`.
+
+---
+
+## Séance 72 — 23 novembre 2026 · Migration `cover_image_width` et mise en ligne
+
+**Demandé**
+- Appliquer la migration `cover_image_width` en production, déployer le nouveau bundle, puis vérifier l’accueil et la vignette du Zaouli sur le site en ligne.
+
+**Fait**
+- **Serveur** : `git pull --ff-only` dans `~/ivoirepedia` (`c87049c` → `94d58c6`, 25 commits), `composer install --no-dev --optimize-autoloader` (dépendances inchangées depuis `c87049c`), `php artisan migrate --force` → `2026_11_22_000001_add_cover_image_width_to_articles` appliquée en 35 ms, aucune migration « Pending » ; caches `config`, `route` et `view` reconstruits.
+- **Bundle** : build de production pris sur un arbre propre au commit `94d58c6` — les reformatages `dart format` non commités ont été mis de côté (`git stash`) puis restaurés après l’envoi, pour ne pas livrer un code absent du dépôt. Commande : `flutter build web --release --base-href=/ --dart-define=API_BASE_URL=/api/v1`, puis `python ../tools/precompress_web.py build/web` (33,3 Mo → 10,1 Mo, 69,8 % de moins) et envoi par `tar` dans `~/ivoirepedia/backend/public`. Le `.htaccess` de Laravel, versionné, est resté en place.
+
+**Vérifié**
+- `python ../tools/verify_deploy.py` : page d’accueil `200`, `main.dart.js` et `main.dart.js_1.part.js` servis en `br` et identiques aux originaux après décompression, `canvaskit.wasm` idem, `logo.webp` non compressé — « Tout est bon ».
+- API de production : `/api/v1/health` → `{"status":"ok"}` ; `GET /api/v1/articles?slugs=le-zaouli` → `cover_image_width: 681` et `cover_image_thumb_url: …/500px-Cizaouli.jpg`.
+- Navigateur, 390 px, onglet incognito sur `https://ivoirepedia.alwaysdata.net/` : aucune erreur CORS (l’app appelle `/api/v1` sur la même origine), 85 articles, couverture « Man » avec sa photo et la mention « Photo : Sahi Tia — CC BY-SA 4.0 », sommaire numéroté « 01 La une · 02 Le saviez-vous ? ». Capture : `screenshot-prod-390-accueil-c.png`.
+- Fiche `/articles/le-zaouli` : l’image s’affiche avec sa ligne de crédit. Le navigateur ne demande que l’original `upload.wikimedia.org/…/Cizaouli.jpg` (127 207 o) : la largeur visée (960) dépasse l’original (681), donc `sizedCoverUrl` renvoie le fichier source, plus léger que la vignette de 500 px (144 394 o). Aucune variante 960/1210 px n’est plus demandée. Capture : `screenshot-prod-390-zaouli-b.png`.
+
+**Reste**
+- Sur une première visite (cache vide), la photo de couverture s’est peinte une vingtaine de secondes après le reste de la page ; la capture a été reprise une fois l’image affichée. À rejouer sur un réseau ordinaire avant d’en tirer une conclusion.
+- Le contrôle desktop et la capture de la bande « Le saviez-vous ? » n’ont été faits qu’en local (séance 71) : la fenêtre de prévisualisation ne dépasse pas ~486 px.
 
 ---
 
