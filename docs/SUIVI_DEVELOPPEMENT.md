@@ -1955,9 +1955,10 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 - **Après**, même protocole : polices **0,4 → 2,4 s / 2,4 s / 11,9 s** (122-123 Ko br chacune, démarrées avec le JS), `main.dart.js` 0,4 → 5,2 s, `canvaskit.wasm` 0,6 → 10,4 s, API **13,5 → 18,1 s**. Les polices ne sont plus sur le chemin critique et les premiers appels API partent une quinzaine de secondes plus tôt ; aucune requête de police en double, console propre.
 - `python ../tools/verify_deploy.py` : page, `main.dart.js`, `main.dart.js_1.part.js`, `canvaskit.wasm` servis en `br` et identiques aux originaux — « Tout est bon » ; `curl` sur les trois `Inter-*.ttf` : `content-encoding: br`, 122-126 Ko.
 - Site : `GET /api/v1/articles?page=1&limit=20` renvoie 123 articles et les vingt plus récents sont des biographies (Ernesto Djédjé, Yaya Touré, Bernard Dadier, Tidjane Thiam, Tiken Jah Fakoly…), donc elles occupent « La une » et le fil ; fiche `ernesto-djedje` : étiquette `biographies-artistes`, infobox complète, 5 blocs de contenu, 1 référence ; la page pré-rendue servie aux robots porte `<title>Ernesto Djédjé — IVOIREPEDIA` et le `<h1>`.
+- Captures de production à 390 px : l’accueil annonce **123 pages** et « La une » s’ouvre sur une biographie (« DJ Arafat — Personnalités »), la bande « Le saviez-vous ? » venant juste après. Fichiers : `screenshot-prod-390-bios-2.png` et `screenshot-prod-390-bios-4.png`.
 
 **Reste**
-- La capture du site n’a pas pu être prise cette fois : la fenêtre de prévisualisation est restée couverte, donc le canevas Flutter n’a jamais été peint. Les biographies sont vérifiées par l’API, par la page pré-rendue et par les tests de widgets, pas par une capture.
+- Le bundle a été construit depuis l’arbre de travail, qui porte encore les reformatages `dart format` non commités de la séance 71 (mise en page seulement, aucun changement de comportement) ; un build depuis un `HEAD` propre reste à faire si l’on veut un artefact strictement identique au dépôt.
 - Les 38 fiches restent une tranche : il en faudra 100 par groupe pour tenir la promesse initiale.
 
 ---
