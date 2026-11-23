@@ -2021,6 +2021,35 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 76 — 23 novembre 2026 · Deuxième tranche d’écrivains
+
+**Demandé**
+- Étendre le domaine des écrivains avec une deuxième tranche vérifiée vers 100, avec la même exigence de sources.
+- Publier cette tranche en production et vérifier les nouvelles pages.
+
+**Fait**
+- **27 fiches ajoutées** : Véronique Tadjo, Tanella Boni, Josué Guébo, Charles Nokan, Koffi Kwahulé, Venance Konan, Simone Kaya, Regina Yaou, Anne-Marie Adiaffi, Germain Coffi Gadeau, François-Joseph Amon d’Aby, Amadou Koné, Fatou Keïta, Gauz, Werewere-Liking, Anoma Kanié, Bertin B. Doutéo, Michel Thew Adjié, Denis Oussou-Essui, Gaston Ouassénan Koné, Kitia Touré, Innocent Naki, Michel Gbagbo, Yaya Diomandé, Alphonse Tiérou, Sidney Karams et Paul Koffi Koffi.
+- Le groupe écrivains passe de **10 à 37 fiches** ; l’ensemble compte **115 biographies** (60 politiques, 37 écrivains, 10 sportifs, 8 artistes).
+- La tranche couvre romanciers, poètes, dramaturges, essayistes et auteurs de jeunesse, de la première génération (Coffi Gadeau, Amon d’Aby, Anoma Kanié, Thew Adjié, Doutéo) aux voix contemporaines (Gauz, Yaya Diomandé, Josué Guébo). Chaque fiche suit le format existant (résumé, deux sections, trois paragraphes, infobox, bibliographie) et s’appuie sur la notice Wikipédia citée, avec dates, œuvres et distinctions recoupées.
+- Figures écartées de cette tranche : Ahmadou Kourouma, qui a déjà son article, et Souleymane Koly, né en Guinée. Alphonse Tiérou est retenu pour son œuvre écrite et théorique sur la danse.
+- Aucune figure déjà présente n’est dupliquée ; le seeder reste idempotent par slug. Documentation du fichier de données mise à jour (séance 76, 37 écrivains).
+
+**Vérifié**
+- `php -l database/data/personalities.php` : aucune erreur ; compteurs **60 / 37 / 10 / 8**, **115 slugs uniques**, aucun doublon.
+- Backend : `composer test` **159 tests verts (3 074 assertions)**, `composer format:check` **157 fichiers conformes** (correction Pint `single_quote`), `composer analyse` aucun problème.
+- App : `flutter analyze` aucun problème, `flutter test` **70 tests verts**.
+- Production : `git pull --ff-only` (`47980ca` → `5e596a2`), seeder en **1 150 ms**. Le site passe de **173 à 200 articles**, la catégorie « personnalités » de **97 à 124 pages**, le tag `biographies-ecrivains` de **10 à 37 articles**.
+- Fiches servies avec leur infobox et leur référence : `veronique-tadjo`, `gauz`, `charles-nokan`, `fatou-keita`, `werewere-liking` → API **200**, `references = 1`.
+- Pages pré-rendues : les cinq mêmes adresses `/articles/…` → **200**, `<title>Nom — IVOIREPEDIA`.
+- Rendu réel à 390 × 844 sur `/articles/veronique-tadjo` : en-tête « Personnalités · Biographie », titre, résumé, sommaire à deux entrées et début d’infobox visibles. Capture : `screenshot-prod-390-s76-tadjo.png`.
+
+**Reste**
+- Les écrivains sont à **37/100** : la suite peut puiser dans les auteurs de jeunesse, les essayistes et les dramaturges restants.
+- Les sportifs (10) et artistes (8) restent à étendre ; les politiques sont à 60/100.
+- Aucun build web n’a été nécessaire : seules les données lues par l’API ont changé.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
