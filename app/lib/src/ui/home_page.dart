@@ -331,8 +331,9 @@ class _HomeBodyState extends State<_HomeBody> {
     final data = widget.data;
     final timeline = data.timeline;
     // La une consomme l'article principal et deux secondaires ; le fil prend
-    // la suite sans jamais les répéter, et « le saviez-vous » ferme le corpus.
-    // Sur un corpus court, les deux sections se rabattent sur ce qui existe.
+    // la suite sans jamais les répéter, et « le saviez-vous » puise plus loin
+    // dans le corpus. Sur un corpus court, les sections se rabattent sur ce
+    // qui existe.
     final rest = _articles.skip(1).toList(growable: false);
     final leadPage = rest.take(3).toList(growable: false);
     final feedPage = rest.skip(3).take(4).toList(growable: false);
@@ -347,14 +348,14 @@ class _HomeBodyState extends State<_HomeBody> {
 
     final contents = <HomeSectionEntry>[
       const HomeSectionEntry('article', 'La une'),
+      if (facts.isNotEmpty)
+        const HomeSectionEntry('saviez-vous', 'Le saviez-vous ?'),
       if (timeline.isNotEmpty)
         const HomeSectionEntry('histoire', 'Aujourd’hui dans l’histoire'),
       if (regions.isNotEmpty)
         const HomeSectionEntry('regions', 'Explorer les régions'),
       if (feed.isNotEmpty)
         const HomeSectionEntry('articles', 'Le fil des publications'),
-      if (facts.isNotEmpty)
-        const HomeSectionEntry('saviez-vous', 'Le saviez-vous ?'),
       if (data.stories.isNotEmpty)
         const HomeSectionEntry('recits', 'Récits et mémoire'),
       const HomeSectionEntry('sources', 'Bibliothèque des sources'),
@@ -395,6 +396,13 @@ class _HomeBodyState extends State<_HomeBody> {
                     key: _anchor('article'),
                     child: HomeLeadGrid(articles: leadPage),
                   ),
+                  if (facts.isNotEmpty) ...[
+                    const SizedBox(height: 30),
+                    Container(
+                      key: _anchor('saviez-vous'),
+                      child: HomeFactBand(facts: facts),
+                    ),
+                  ],
                   if (timeline.isNotEmpty) ...[
                     const SizedBox(height: 30),
                     Container(
@@ -423,13 +431,6 @@ class _HomeBodyState extends State<_HomeBody> {
                     Container(
                       key: _anchor('articles'),
                       child: HomeFeed(articles: feed),
-                    ),
-                  ],
-                  if (facts.isNotEmpty) ...[
-                    const SizedBox(height: 30),
-                    Container(
-                      key: _anchor('saviez-vous'),
-                      child: HomeFactBand(facts: facts),
                     ),
                   ],
                   if (data.stories.isNotEmpty) ...[

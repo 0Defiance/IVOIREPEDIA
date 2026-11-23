@@ -1896,10 +1896,11 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 - Vérifier l’accueil refondu en capture à 390 px et en desktop.
 
 **Fait**
-- **« Le saviez-vous ? » sort du fil** : la bande devient `HomeFactBand`, un bloc autonome (carte dorée, titre de rubrique, filet tissé) placé entre la une et les portails, avec sa propre entrée « Le saviez-vous ? » dans le sommaire et son ancre de défilement. `HomeFeed` ne porte plus les faits.
+- **« Le saviez-vous ? » sort du fil** : la bande devient `HomeFactBand`, un bloc autonome (carte dorée, titre de rubrique, filet tissé) placé **juste après la une**, avant « Aujourd’hui dans l’histoire », les régions et le fil, avec sa propre entrée « Le saviez-vous ? » en deuxième position du sommaire et son ancre de défilement. `HomeFeed` ne porte plus les faits.
 - **Biographies vérifiées** : `database/data/personalities.php` réunit **38 fiches** (10 politiques, 10 écrivains, 10 sportifs, 8 artistes) avec naissance, repères biographiques, bibliographie ou œuvres quand elles existent et sources citées. `PersonalitiesSeeder` est idempotent, rattache les fiches à la catégorie « personnalités », les tague `biographies-politiciens`, `biographies-ecrivains`, `biographies-sportifs` ou `biographies-artistes`, et les publie par vagues de deux jours pour qu’elles n’écrasent pas la une. La base de développement compte désormais **89 articles publiés, dont 47 biographies**.
 - **Le Zaouli servi par l’API** : migration `add_cover_image_width_to_articles` (colonne `cover_image_width`, remplie par backfill : zaouli 681, grand-bassam 3840, man 4424, korhogo 4624) ; `ArticleSummaryResource` sert `cover_image_width` et `cover_image_thumb_url` ; l’app choisit le plus grand palier Wikimedia ≤ min(960, largeur d’origine) — 500 px pour le Zaouli — et `sizedCoverUrl(..., originalWidth:)` ne dépasse jamais l’original. `AttachArticleImages` enregistre la largeur à l’import.
 - **Cartes sans photo** : ni la carte verticale du fil (148 px) ni la ligne de « La une » (vignette 112 × 128) n’ouvrent plus un cadre vide avec icône ; une fiche de biographie sans portrait garde son rythme avec un filet dégradé à la couleur de son domaine (3 px).
+- **Position corrigée** : la bande était restée sous le fil ; elle passe maintenant **juste après la une**, avant la frise, les régions et le fil, et le sommaire la numérote « 02 Le saviez-vous ? ». Le test d’accueil vérifie l’ordre (bande sous la une, au-dessus du fil) ; le parcours de sommaire à 1280 × 1000 ramène d’abord l’entrée du rail à l’écran, puisqu’elle tombe désormais sur une deuxième ligne.
 - **Bandeau d’édition** : en mode étroit, la date est abrégée (`formatDateShort` → « 23 NOV. 2026 ») et la ligne d’édition reçoit toute la largeur restante (le `Spacer` la coupait en deux, « ÉDITION DU 23 N… »).
 
 **Vérifié**
@@ -1907,10 +1908,11 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 - `flutter analyze` : aucun problème. `flutter test` : **70 tests verts**. `flutter build web --release` : construit.
 - Backend : `composer test` **159 tests verts** (2 381 assertions), `composer format:check` 157 fichiers conformes, `composer analyse` aucun problème.
 - Navigateur, 390 × 844, bundle release servi par `php -S 127.0.0.1:8090` sur l’API locale : le libellé « ÉDITION DU 23 NOV. 2026 » tient sur une ligne, la couverture Zaouli demande bien `thumb.wikimedia.org/…/500px-Cizaouli.jpg` ; les lignes de biographies de « La une » n’affichent plus de cadre vide. Capture : `screenshot-s71d-390-accueil.png`.
+- Bande « Le saviez-vous ? » vue à 390 px : elle s’ouvre immédiatement après la troisième fiche de « La une » (Paco Séry), avec ses deux cartes (Simone Gbagbo, Murielle Ahouré) sourcées « Dans Personnalités ». Capture : `screenshot-s71e-390-saviez-band.png` ; le sommaire porte « 02 Le saviez-vous ? » juste après « 01 La une ».
 
 **Reste**
-- La bande « Le saviez-vous ? » n’a pas pu être capturée à l’écran : le canevas Flutter ne répond ni à la molette ni aux flèches de l’outil de prévisualisation. Elle n’est vérifiée que par le test de widget et par l’entrée « 04 Le saviez-vous ? » du sommaire (`screenshot-s71-390-b.png`).
-- Le contrôle desktop n’a pas abouti non plus : la fenêtre du navigateur de prévisualisation ne fait qu’environ 486 px de large, un rendu 1440 px y est rogné. Le rendu 390 px et les 70 tests couvrent le cas étroit ; une capture desktop reste à faire sur une fenêtre plus large.
+- Le canevas Flutter ignore la molette de l’outil de prévisualisation (geste synthétique) : les captures plus bas dans la page s’obtiennent en envoyant un `WheelEvent` sur `flt-glass-pane` depuis la console du navigateur.
+- Le contrôle desktop n’a pas abouti : la fenêtre du navigateur de prévisualisation ne fait qu’environ 486 px de large, un rendu 1440 px y est rogné. Le rendu 390 px et les 70 tests couvrent le cas étroit ; une capture desktop reste à faire sur une fenêtre plus large.
 - Les 38 fiches sont une tranche vérifiée, pas les 400 annoncées : la structure (tags par groupe, bibliographie, sources) permet de monter à 100 par domaine sans changer le code.
 - La production sert encore l’ancien bundle : la migration `cover_image_width` doit être appliquée avant de déployer l’app.
 

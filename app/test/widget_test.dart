@@ -92,6 +92,10 @@ void main() {
     // « Le saviez-vous ? » est sa propre rubrique, au sommaire et en titre.
     expect(find.text('Le saviez-vous ?'), findsNWidgets(2));
     expect(find.byType(HomeFactBand), findsOneWidget);
+    // La bande suit immédiatement la une, avant la frise et le fil.
+    final factsTop = tester.getTopLeft(find.byType(HomeFactBand)).dy;
+    expect(tester.getTopLeft(find.byType(HomeLeadGrid)).dy, lessThan(factsTop));
+    expect(factsTop, lessThan(tester.getTopLeft(find.byType(HomeFeed)).dy));
     expect(find.text('Tous les portails'), findsOneWidget);
     expect(find.text('Histoire'), findsWidgets);
     expect(find.text('Abidjan'), findsWidgets);
@@ -174,8 +178,12 @@ void main() {
     await tester.pumpAndSettle();
 
     // Le libellé vaut deux fois : l'entrée du sommaire, puis le titre de la
-    // rubrique, qui commence sous la ligne de flottaison.
+    // rubrique, qui commence sous la ligne de flottaison. L'entrée du rail
+    // peut tomber sur une deuxième ligne, sous la ligne de flottaison : on la
+    // ramène à l'écran comme le ferait un lecteur.
     final heading = find.text('Explorer les régions').last;
+    await tester.ensureVisible(find.text('Explorer les régions').first);
+    await tester.pumpAndSettle();
     final before = tester.getTopLeft(heading).dy;
     expect(before, greaterThan(800));
 
