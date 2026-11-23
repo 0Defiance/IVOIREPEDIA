@@ -2050,6 +2050,36 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 77 — 23 novembre 2026 · Fiches sourcées et première tranche de sportifs
+
+**Demandé**
+- Corriger les fiches d’écrivains qui s’appuyaient sur des formules vagues plutôt que sur des faits vérifiés, dont la coquille « de observateur ».
+- Relancer les contrôles et re-semer la production.
+- Ouvrir une tranche de sportifs vérifiée vers 100 et la publier.
+
+**Fait**
+- **Neuf notices d’écrivains réécrites** à partir de faits documentés : Anne-Marie Adiaffi (scolarité, métier aux NEA, intrigue et portée d’Une vie hypothéquée), Bertin B. Doutéo (archives, écoles des douanes et de navigation, recueils), Gaston Ouassénan Koné (quatre romans datés), Kitia Touré (doctorat, INSAC, CIVCA, prix Noma, films primés), Innocent Naki (trois livres datés et préfacés), Michel Gbagbo (doctorat, criminologie, députation de Yopougon, recueils et essais), Yaya Diomandé (diplômes, journal, conditions du prix Voix d’Afriques), Sidney Karams (fondation du Romandroom en 2003, première bibliothèque sociale du pays) et Paul Koffi Koffi (six ouvrages, titres de 2024, fonctions ministérielles et de commissaire UEMOA).
+- La coquille « de observateur » est supprimée. Deux erreurs factuelles de la fiche Yaya Touré sont corrigées : le titre de Premier League n’est pas une Ligue des champions, et l’en-tête « silenzieux » devient « silencieux ».
+- **27 fiches de sportifs ajoutées** : Didier Zokora, Kader Keïta, Arouna Koné, Romaric, Cheik Tioté, Max-Alain Gradel, Wilfried Zaha, Sébastien Haller, Éric Bailly, Nicolas Pépé, Jean-Michaël Seri, Seko Fofana, Gabriel Tiacoh, Marie-Josée Ta Lou, Ben Youssef Méité, Arthur Cissé, Gaoussou Koné, Amadou Méité, Célestine N’Drin, Cheick Cissé, Ruth Gbagbi, Patrice Remarck, Mo Bamba, Ismaël Kamagate, Hervé Lamizana, Max Brito et Thierry Dusautoir.
+- Le groupe sportifs passe de **10 à 37 fiches** ; l’ensemble compte **142 biographies** (60 politiques, 37 écrivains, 37 sportifs, 8 artistes). La tranche couvre le football, l’athlétisme, le taekwondo, le basket-ball et le rugby, avec dates, clubs, palmarès et distinctions recoupés sur les notices Wikipédia citées.
+- Documentation du fichier de données mise à jour (séance 77).
+
+**Vérifié**
+- `php -l` : aucune erreur ; compteurs **60 / 37 / 37 / 8**, **142 slugs uniques**, aucun doublon ; recherche des chaînes fautives : **0 occurrence**.
+- Backend : `composer test` **159 tests verts (3 317 assertions)**, `composer format:check` **157 fichiers conformes**, `composer analyse` aucun problème.
+- App : `flutter analyze` aucun problème, `flutter test` **70 tests verts**.
+- Production : `git pull --ff-only` (`9021d25` → `eec6515`), seeder en **1 487 ms**. Le site passe de **200 à 227 articles**, la catégorie « personnalités » de **124 à 151 pages**, le tag `biographies-sportifs` de **10 à 37 articles**.
+- L’API sert le contenu réécrit : `innocent-naki` renvoie bien la section « Un regard sur la Suisse » et plus la phrase fautive ; `didier-zokora`, `cheick-cisse`, `ruth-gbagbi`, `gabriel-tiacoh`, `sebastien-haller`, `yaya-diomande` et `paul-koffi-koffi-ecrivain` répondent avec leur infobox et une référence.
+- Pages pré-rendues : `/articles/didier-zokora`, `/articles/cheick-cisse`, `/articles/ruth-gbagbi`, `/articles/gabriel-tiacoh`, `/articles/thierry-dusautoir` et `/articles/innocent-naki` → **200**, `<title>Nom — IVOIREPEDIA`.
+- Rendu réel à 390 × 844 sur `/articles/ruth-gbagbi` : en-tête « Personnalités · Biographie », titre, résumé, sommaire à deux entrées et début d’infobox visibles. Capture : `screenshot-prod-390-s77-gbagbi.png`.
+
+**Reste**
+- Les sportifs sont à **37/100** : la suite peut compléter le football, puis les sports de combat, le handball et les disciplines olympiques.
+- Les écrivains restent à 37/100 et les politiques à 60/100 ; les artistes sont à 8.
+- Les fiches non réécrites cette séance (Simone Kaya, Regina Yaou, Werewere-Liking, etc.) reposent déjà sur des faits datés et n’ont pas été modifiées.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
