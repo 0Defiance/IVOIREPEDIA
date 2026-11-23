@@ -2268,6 +2268,42 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 85 — 23 novembre 2026 · Relecture des 36 fiches d’écrivains
+
+**Demandé**
+- Relire les 36 nouvelles fiches d’écrivains pour les tournures fautives et les faits non sourcés, corriger, puis re-seeder la production.
+
+**Fait** — corrections de fond
+- **Marguerite Abouet** : le prix d’Angoulême 2006 est le **prix du premier album**, et non le « premier prix » ; parents décrits comme dans la source (mère secrétaire de direction chez Singer, père commercial chez Hitachi).
+- **Assita Sidibé** : titre rétabli en *Épopée d’une **haute** lignée* (vérifié sur la critique d’*Esprit Magazine*).
+- **Fodjo Kadjo Abo** : présidence du Conseil supérieur de la magistrature **datée du 23 septembre 2026** ; « deuxième laurier » remplacé par « deuxième prix d’excellence pour la littérature ».
+- **Fatou Bolli** : « écriture scolaire » corrigée en « écriture académique », et Madeleine Borgomano présentée comme universitaire.
+- **Alexis Allah** : *La Nuit des cauris* présentée comme un roman, plus comme « une autobiographie ».
+- **André Silver Konan** : phrase de révélation des déchets toxiques allégée ; superlatif non vérifié (« l’hebdomadaire le plus vendu du pays ») retiré ; énumération des diplômes reconstruite.
+- **Annick Assemian** : commentaire esthétique non sourcé retiré.
+- **Joachim Bohui Dali** : « deux œuvres poétiques d’une grande densité stylistique » remplacé par « deux recueils poétiques ».
+- **Jacob Bleu** : phrase de remplissage sur sa promotion de l’art retirée.
+- **Gilbert G. Groud** : état civil conservé tel que le donne la notice (« Gnangbei Gilbert, dit Groud G. Gilbert »), après vérification.
+
+**Fait** — grammaire et ponctuation
+- Edith Yah Brou : « co-crée avec… , le premier webzine » → « cofonde avec… le premier webzine ».
+- Boris Anselme Takoué : titre de l’essai sur Fabrice Sawegnon ponctué et présenté correctement.
+- Maboula Soumahoro : « retoqué » → « n’est pas validé » ; accord « causes antiracistes et afroféministes ».
+- François d’Assise N’Dah : « professeur certifié de lettres modernes au lycée » et incise « Passionné d’écriture » corrigés.
+- Irié Goli Bi : apposition « un recueil de nouvelles » retirée ; « il est inspecteur général » → « il occupe les fonctions d’inspecteur général ».
+- Gina Dick Boguifo : nom du collège anglais de Plymouth rétabli.
+
+**Vérifié**
+- `php -l` : aucune erreur ; les 12 formulations fautives recherchées ont disparu du fichier.
+- Backend : `composer test` **159 tests verts (4 451 assertions)**, `composer format:check` **157 fichiers conformes**, `composer analyse` aucun problème.
+- App : `flutter analyze` aucun problème, `flutter test` **70 tests verts**.
+- Production : `git pull --ff-only` (`1ec0c61` → `82a350a`), seeder en **2 561 ms** ; les corrections sont servies par l’API (titre d’Assita, prix du premier album, CSM 2026, « académique »).
+
+**Reste**
+- Écrivains **100/100**, sportifs **100/100**, politiques **60/100**, artistes **8/100**.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
