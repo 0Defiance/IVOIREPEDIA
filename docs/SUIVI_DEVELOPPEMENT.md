@@ -2304,6 +2304,35 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 86 — 23 novembre 2026 · Contrôle des 36 fiches contre leurs notices
+
+**Demandé**
+- Vérifier chaque affirmation des 36 fiches d’écrivains contre sa notice source, corriger ce qui n’est pas appuyé.
+- Proposer un plan pour la tranche des politiques (60 → 100).
+
+**Méthode**
+- Les **36 notices** citées en bibliographie ont été téléchargées depuis l’API Wikipédia (texte intégral), puis comparées phrase par phrase aux fiches : repérage automatique des années, noms propres et mots-clés absents, puis vérification ciblée de chaque terme douteux dans le texte source.
+- Deux notices se sont révélées incomplètes pour ce qu’affirmaient les fiches : *Irié Goli Bi* (934 caractères, ni lieu de naissance ni fonction de censeur) et *Hanny Tchelley* (aucune mention de Population Services International ni de Santa Cruz).
+- La page *Nin’wlou Ariel Ménélik* n’existait pas sous l’URL citée (apostrophe typographique) : URL corrigée vers la page réelle.
+
+**Corrigé**
+- **Détails sourcés rétablis** : genres et éditeur de Serge Grah (poésie 2009, chroniques 2010, trois titres chez Vallesse) ; « animatrice de télévision » pour Tata Nahomi ; superlatif d’Ivoir’Hebdo (« l’hebdomadaire le plus vendu ») ; passage sur la parabole et le conte chez Annick Assemian ; mémoire d’Alafé Wakili ; « écriture scolaire » chez Fatou Bolli (et non « académique ») ; « deux œuvres poétiques d’une grande densité stylistique » pour Bohui Dali ; parents de Marguerite Abouet tels que la notice les décrit.
+- **Formulations fautives corrigées** : prix de Cédric Marshall Kissy (prix Les Manuscrits d’or 2009, puis Bissa d’or du Grand Prix littéraire Bernard Zadi Zaourou 2014) ; titre de l’essai de Boris Anselme Takoué.
+- **Affirmations non appuyées retirées** : chez Hanny Tchelley, le passage PSI 1993-1998, le stage de Santa Cruz et « principalement en France » ; chez Irié Goli Bi, le lieu de naissance (Vrigrita, Bouaflé), la fonction de censeur au lycée de Grand-Bassam et « marié, père de cinq enfants ».
+- **Sources ajoutées** : liste des écrivains ivoiriens pour les années 1951 (Gina Dick Boguifo) et 1960 (Irié Goli Bi) ; Wikidata Q3126861 pour 1953 (Hanny Tchelley).
+
+**Vérifié**
+- `php -l` : aucune erreur ; compteurs **60 / 100 / 100 / 8**, **268 slugs uniques**.
+- Backend : `composer test` **159 tests verts (4 451 assertions)**, `composer format:check` **157 fichiers conformes**, `composer analyse` aucun problème.
+- App : `flutter analyze` aucun problème, `flutter test` **70 tests verts**.
+- Production : `git pull --ff-only` (`bc6d5db` → `7275d7b`), seeder en **2 272 ms** ; les corrections sont servies par l’API, et les fiches Hanny Tchelley et Irié Goli Bi portent désormais **deux références**.
+
+**Reste**
+- Écrivains **100/100**, sportifs **100/100**, politiques **60/100**, artistes **8/100**.
+- Plan de la tranche politiques (60 → 100) proposé à l’utilisateur, non encore engagé.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
