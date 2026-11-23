@@ -430,10 +430,10 @@ class HomeOpening extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          Flexible(
+                          Expanded(
                             child: Text(
                               'ÉDITION DU '
-                              '${formatDate(DateTime.now()).toUpperCase()}',
+                              '${(narrow ? formatDateShort(DateTime.now()) : formatDate(DateTime.now())).toUpperCase()}',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
@@ -445,7 +445,6 @@ class HomeOpening extends StatelessWidget {
                               ),
                             ),
                           ),
-                          const Spacer(),
                           const SizedBox(width: 12),
                           Container(
                             padding: const EdgeInsets.symmetric(
@@ -643,6 +642,16 @@ class _CoverBackdrop extends StatelessWidget {
   Widget build(BuildContext context) {
     final url = article?.coverImageUrl;
     final hasImage = url != null && url.isNotEmpty;
+    // La vignette servie par l'API (jamais plus grande que l'original)
+    // prime sur la réécriture côté client : le zaouli, en 681 px, reste
+    // en 500 px au lieu d'être agrandi en 960 px.
+    final thumb = article?.coverImageThumbUrl;
+    final originalWidth = article?.coverImageWidth;
+    final coverUrl = thumb != null && thumb.isNotEmpty
+        ? thumb
+        : (url == null
+              ? ''
+              : sizedCoverUrl(url, 960, originalWidth: originalWidth));
 
     return ColoredBox(
       color: IvoireColors.greenDeep,
@@ -654,9 +663,11 @@ class _CoverBackdrop extends StatelessWidget {
               // 960 px est le plus petit palier servi au-dessus de 800 :
               // Wikimedia répond 400 à 800, et la variante 1280 pèse
               // presque le double. Voir `sizedCoverUrl`.
-              sizedCoverUrl(url, 960),
+              coverUrl,
               fit: BoxFit.cover,
-              cacheWidth: 960,
+              cacheWidth: originalWidth != null && originalWidth < 960
+                  ? originalWidth
+                  : 960,
               filterQuality: FilterQuality.medium,
               semanticLabel: article?.coverImageAlt,
               errorBuilder: (_, _, _) => const SizedBox.shrink(),
@@ -1126,6 +1137,9 @@ class _SecondaryStoryState extends State<_SecondaryStory> {
   Widget build(BuildContext context) {
     final tone = ToneColors.from(context);
     final article = widget.article;
+    final cover = article.coverImageUrl;
+    final hasCover = cover != null && cover.isNotEmpty;
+    final accent = _domainLook(article.categorySlug ?? '').accent;
 
     return MouseRegion(
       cursor: SystemMouseCursors.click,
@@ -1147,16 +1161,29 @@ class _SecondaryStoryState extends State<_SecondaryStory> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                width: 112,
-                height: 128,
-                child: ArticleThumb(
-                  article: article,
+              if (hasCover)
+                SizedBox(
                   width: 112,
                   height: 128,
-                  radius: 0,
+                  child: ArticleThumb(
+                    article: article,
+                    width: 112,
+                    height: 128,
+                    radius: 0,
+                  ),
+                )
+              else
+                Container(
+                  width: 3,
+                  height: 128,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [accent, accent.withValues(alpha: 0.25)],
+                    ),
+                  ),
                 ),
-              ),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(12, 10, 12, 11),
@@ -1744,18 +1771,14 @@ class _RegionTileState extends State<_RegionTile> {
   }
 }
 
-/// Fil des publications : une grille de fiches illustrées, puis trois entrées
-/// « le saviez-vous » sur une seule ligne.
+/// Fil des publications : une grille de fiches illustrées.
 class HomeFeed extends StatelessWidget {
-  const HomeFeed({required this.articles, required this.facts, super.key});
+  const HomeFeed({required this.articles, super.key});
 
   final List<ArticleSummary> articles;
-  final List<ArticleSummary> facts;
 
   @override
   Widget build(BuildContext context) {
-    final tone = ToneColors.from(context);
-
     if (articles.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -1767,144 +1790,179 @@ class HomeFeed extends StatelessWidget {
         onTap: () => wikiGo(context, '/recherche'),
         style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
       ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final columns = constraints.maxWidth >= 700
+              ? 3
+              : (constraints.maxWidth >= 440 ? 2 : 1);
+          final width = (constraints.maxWidth - (columns - 1) * 14) / columns;
+
+          return Wrap(
+            spacing: 14,
+            runSpacing: 14,
+            children: [
+              for (final article in articles)
+                SizedBox(
+                  width: width,
+                  child: _FeedCard(article: article),
+                ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+/// Le saviez-vous ? : la rubrique curiosité de l'encyclopédie, en pleine
+/// page. Chaque carte porte un fait issu d'un article publié, avec sa
+/// source en bas de la fiche d'article.
+class HomeFactBand extends StatelessWidget {
+  const HomeFactBand({required this.facts, super.key});
+
+  final List<ArticleSummary> facts;
+
+  @override
+  Widget build(BuildContext context) {
+    if (facts.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return HomeSection(
+      title: 'Le saviez-vous ?',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const HomeIntro(
+            'Un fait curieux tiré des articles publiés — et sourcé, comme '
+            'tout le reste de cette encyclopédie.',
+          ),
           LayoutBuilder(
             builder: (context, constraints) {
-              final columns = constraints.maxWidth >= 700
-                  ? 3
-                  : (constraints.maxWidth >= 440 ? 2 : 1);
-              final width =
-                  (constraints.maxWidth - (columns - 1) * 14) / columns;
+              final columns = constraints.maxWidth >= 640 ? 3 : 1;
+              final width = columns == 1
+                  ? constraints.maxWidth
+                  : (constraints.maxWidth - 2 * 12) / 3;
 
               return Wrap(
-                spacing: 14,
-                runSpacing: 14,
+                spacing: 12,
+                runSpacing: 12,
                 children: [
-                  for (final article in articles)
+                  for (var i = 0; i < facts.length; i++)
                     SizedBox(
                       width: width,
-                      child: _FeedCard(article: article),
+                      child: _FactCard(article: facts[i], index: i + 1),
                     ),
                 ],
               );
             },
           ),
-          if (facts.isNotEmpty) ...[
-            const SizedBox(height: 16),
-            Container(
-              clipBehavior: Clip.antiAlias,
-              decoration: BoxDecoration(
-                color: tone.highlight,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: tone.lineSoft),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(height: 3, color: IvoireColors.orange),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(14, 11, 14, 12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'LE SAVIEZ-VOUS ?',
-                          style: TextStyle(
-                            fontSize: 9.5,
-                            letterSpacing: 1.1,
-                            fontWeight: FontWeight.w700,
-                            color: IvoireColors.orangeDeep,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        LayoutBuilder(
-                          builder: (context, constraints) {
-                            final wide = constraints.maxWidth >= 640;
-
-                            final items = [
-                              for (final fact in facts)
-                                _FactItem(article: fact),
-                            ];
-
-                            if (!wide) {
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  for (var i = 0; i < items.length; i++) ...[
-                                    if (i > 0) const SizedBox(height: 8),
-                                    items[i],
-                                  ],
-                                ],
-                              );
-                            }
-
-                            return Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                for (var i = 0; i < items.length; i++) ...[
-                                  if (i > 0) ...[
-                                    const SizedBox(width: 12),
-                                    Container(
-                                      width: 1,
-                                      height: 54,
-                                      color: tone.line,
-                                    ),
-                                    const SizedBox(width: 12),
-                                  ],
-                                  Expanded(child: items[i]),
-                                ],
-                              ],
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
         ],
       ),
     );
   }
 }
 
-class _FactItem extends StatelessWidget {
-  const _FactItem({required this.article});
+class _FactCard extends StatefulWidget {
+  const _FactCard({required this.article, required this.index});
 
   final ArticleSummary article;
+  final int index;
+
+  @override
+  State<_FactCard> createState() => _FactCardState();
+}
+
+class _FactCardState extends State<_FactCard> {
+  bool _hover = false;
 
   @override
   Widget build(BuildContext context) {
     final tone = ToneColors.from(context);
+    final article = widget.article;
 
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () => wikiGo(context, '/articles/${article.slug}'),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            article.title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              color: IvoireColors.link,
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hover = true),
+      onExit: (_) => setState(() => _hover = false),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => wikiGo(context, '/articles/${article.slug}'),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          padding: const EdgeInsets.fromLTRB(14, 13, 14, 14),
+          decoration: BoxDecoration(
+            color: tone.highlight,
+            borderRadius: BorderRadius.circular(_cardRadius),
+            border: Border.all(
+              color: _hover ? IvoireColors.orange : tone.lineSoft,
             ),
           ),
-          const SizedBox(height: 2),
-          Text(
-            article.summary,
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontSize: 12, height: 1.5, color: tone.body),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 30,
+                    height: 30,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: IvoireColors.orange.withValues(alpha: 0.14),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(
+                      Icons.lightbulb_outline,
+                      size: 16,
+                      color: IvoireColors.orangeDeep,
+                    ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    widget.index.toString().padLeft(2, '0'),
+                    style: const TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      color: IvoireColors.orangeDeep,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Text(
+                article.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: titleStyle(
+                  size: 15,
+                  weight: FontWeight.w700,
+                  color: tone.ink,
+                  height: 1.32,
+                ),
+              ),
+              const SizedBox(height: 5),
+              Text(
+                article.summary,
+                maxLines: 4,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 13, height: 1.55, color: tone.body),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                article.categoryName != null
+                    ? 'Dans ${article.categoryName} — lire l’article'
+                    : 'Lire l’article',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: IvoireColors.orangeDeep,
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -1926,6 +1984,9 @@ class _FeedCardState extends State<_FeedCard> {
   Widget build(BuildContext context) {
     final tone = ToneColors.from(context);
     final article = widget.article;
+    final cover = article.coverImageUrl;
+    final hasCover = cover != null && cover.isNotEmpty;
+    final accent = _domainLook(article.categorySlug ?? '').accent;
 
     return MouseRegion(
       cursor: SystemMouseCursors.click,
@@ -1947,12 +2008,25 @@ class _FeedCardState extends State<_FeedCard> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ArticleThumb(
-                article: article,
-                width: double.infinity,
-                height: 148,
-                radius: 0,
-              ),
+              // Une fiche sans photo (biographie sans portrait libre, par
+              // exemple) n'ouvre pas un cadre vide : elle garde son rythme
+              // avec un filet à la couleur de son domaine.
+              if (hasCover)
+                ArticleThumb(
+                  article: article,
+                  width: double.infinity,
+                  height: 148,
+                  radius: 0,
+                )
+              else
+                Container(
+                  height: 3,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [accent, accent.withValues(alpha: 0.25)],
+                    ),
+                  ),
+                ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
                 child: Column(
@@ -1966,7 +2040,7 @@ class _FeedCardState extends State<_FeedCard> {
                         fontSize: 9.5,
                         letterSpacing: 0.8,
                         fontWeight: FontWeight.w700,
-                        color: _domainLook(article.categorySlug ?? '').accent,
+                        color: accent,
                       ),
                     ),
                     const SizedBox(height: 4),

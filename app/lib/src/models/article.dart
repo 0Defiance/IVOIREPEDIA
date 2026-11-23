@@ -11,6 +11,8 @@ class ArticleSummary {
     this.publishedAt,
     this.readingMinutes = 1,
     this.coverImageUrl,
+    this.coverImageWidth,
+    this.coverImageThumbUrl,
     this.coverImageAlt,
     this.coverImageCredit,
     this.coverImageLicense,
@@ -27,6 +29,14 @@ class ArticleSummary {
   final DateTime? publishedAt;
   final int readingMinutes;
   final String? coverImageUrl;
+
+  /// Largeur d'origine de la photo, en pixels (API `cover_image_width`) :
+  /// elle évite de demander une variante plus grande que le fichier.
+  final int? coverImageWidth;
+
+  /// Vignette servie par l'API (`cover_image_thumb_url`), qui ne dépasse pas
+  /// la largeur d'origine. Nulle quand l'API ne la renseigne pas.
+  final String? coverImageThumbUrl;
   final String? coverImageAlt;
 
   /// Auteur de la photographie, sa licence et la page Commons qui la décrit.
@@ -57,6 +67,8 @@ class ArticleSummary {
       publishedAt: published == null ? null : DateTime.tryParse(published),
       readingMinutes: (json['reading_minutes'] as num?)?.toInt() ?? 1,
       coverImageUrl: json['cover_image_url'] as String?,
+      coverImageWidth: (json['cover_image_width'] as num?)?.toInt(),
+      coverImageThumbUrl: json['cover_image_thumb_url'] as String?,
       coverImageAlt: json['cover_image_alt'] as String?,
       coverImageCredit: json['cover_image_credit'] as String?,
       coverImageLicense: json['cover_image_license'] as String?,
@@ -119,6 +131,8 @@ class ArticleDetail extends ArticleSummary {
     super.publishedAt,
     super.readingMinutes,
     super.coverImageUrl,
+    super.coverImageWidth,
+    super.coverImageThumbUrl,
     super.coverImageAlt,
     super.coverImageCredit,
     super.coverImageLicense,
@@ -140,7 +154,8 @@ class ArticleDetail extends ArticleSummary {
     final content = json['content'] as Map<String, dynamic>?;
     final ops = (content?['ops'] as List<dynamic>?) ?? const <dynamic>[];
     final tags = (json['tags'] as List<dynamic>?) ?? const <dynamic>[];
-    final references = (json['references'] as List<dynamic>?) ?? const <dynamic>[];
+    final references =
+        (json['references'] as List<dynamic>?) ?? const <dynamic>[];
     final updated = json['updated_at'] as String?;
 
     return ArticleDetail(
@@ -154,13 +169,13 @@ class ArticleDetail extends ArticleSummary {
       publishedAt: base.publishedAt,
       readingMinutes: base.readingMinutes,
       coverImageUrl: base.coverImageUrl,
+      coverImageWidth: base.coverImageWidth,
+      coverImageThumbUrl: base.coverImageThumbUrl,
       coverImageAlt: base.coverImageAlt,
       coverImageCredit: base.coverImageCredit,
       coverImageLicense: base.coverImageLicense,
       coverImageSourceUrl: base.coverImageSourceUrl,
-      contentOps: ops
-          .whereType<Map<String, dynamic>>()
-          .toList(growable: false),
+      contentOps: ops.whereType<Map<String, dynamic>>().toList(growable: false),
       infobox: json['infobox'] as Map<String, dynamic>?,
       tags: tags
           .map((tag) => (tag as Map<String, dynamic>)['name'] as String)
@@ -190,7 +205,8 @@ class PagedArticles {
   bool get hasMore => page * limit < total;
 
   factory PagedArticles.fromJson(Map<String, dynamic> json) {
-    final meta = (json['meta'] as Map<String, dynamic>?) ?? const <String, dynamic>{};
+    final meta =
+        (json['meta'] as Map<String, dynamic>?) ?? const <String, dynamic>{};
     final data = (json['data'] as List<dynamic>?) ?? const <dynamic>[];
 
     return PagedArticles(

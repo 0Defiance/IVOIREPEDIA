@@ -33,12 +33,33 @@ int coverWidthFor(int pixels) {
 /// entière — parfois plusieurs mégaoctets — là où une variante de quelques
 /// centaines de ko suffirait. Wikimedia gère le reste : la variante
 /// demandée n'existe pas encore (400) et `_Cover` retombe sur l'original.
-String sizedCoverUrl(String url, int width) {
+String sizedCoverUrl(String url, int width, {int? originalWidth}) {
   if (url.isEmpty) {
     return url;
   }
 
   final target = coverWidthFor(width);
+
+  // L'API renseigne la largeur d'origine : jamais de variante plus grande
+  // que le fichier source. Le zaouli ne fait que 681 px — demander 960 px
+  // l'agrandissait (312 Ko contre 127 Ko). On revient à l'original.
+  if (originalWidth != null && originalWidth > 0 && target >= originalWidth) {
+    final variant = RegExp(
+      r'^(https?://thumb\.wikimedia\.org/wikipedia/)commons/thumb/'
+      r'([^/]+/[^/]+)/[^/]+/(\d+)px-([^/]+)$',
+    ).firstMatch(url);
+
+    if (variant == null) {
+      return url;
+    }
+
+    return Uri.parse(url)
+        .replace(
+          host: 'upload.wikimedia.org',
+          path: '/wikipedia/commons/${variant.group(2)}/${variant.group(4)}',
+        )
+        .toString();
+  }
   final match = RegExp(r'/(\d+)px-([^/]+)$').firstMatch(url);
 
   if (match != null) {
@@ -127,6 +148,8 @@ class ArticleFigure extends StatelessWidget {
             color: tone.subtle,
             child: _Cover(
               url: url,
+              thumbUrl: article.coverImageThumbUrl,
+              originalWidth: article.coverImageWidth,
               width: width,
               fit: BoxFit.cover,
               alignment: alignment,
@@ -179,6 +202,8 @@ class ArticleThumb extends StatelessWidget {
             ? const _MissingImage(compact: true)
             : _Cover(
                 url: url,
+                thumbUrl: article.coverImageThumbUrl,
+                originalWidth: article.coverImageWidth,
                 width: pixels,
                 fit: BoxFit.cover,
                 semanticLabel: article.coverImageAlt,
@@ -246,11 +271,17 @@ class _Cover extends StatefulWidget {
     required this.width,
     required this.fit,
     required this.semanticLabel,
+    this.thumbUrl,
+    this.originalWidth,
     this.alignment = Alignment.center,
     this.compact = false,
   });
 
   final String url;
+
+  /// Vignette servie par l'API, qui ne dépasse pas l'original.
+  final String? thumbUrl;
+  final int? originalWidth;
   final int width;
   final BoxFit fit;
   final String? semanticLabel;
@@ -268,7 +299,17 @@ class _CoverState extends State<_Cover> {
   Widget build(BuildContext context) {
     final src = _original
         ? widget.url
-        : sizedCoverUrl(widget.url, widget.width);
+        : (widget.thumbUrl != null && widget.thumbUrl!.isNotEmpty
+              ? sizedCoverUrl(
+                  widget.thumbUrl!,
+                  widget.width,
+                  originalWidth: widget.originalWidth,
+                )
+              : sizedCoverUrl(
+                  widget.url,
+                  widget.width,
+                  originalWidth: widget.originalWidth,
+                ));
 
     return Image.network(
       src,

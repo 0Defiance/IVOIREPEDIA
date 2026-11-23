@@ -22,6 +22,31 @@ String formatDate(DateTime? date) {
   return '${date.day} ${_months[date.month - 1]} ${date.year}';
 }
 
+const List<String> _monthsShort = [
+  'janv.',
+  'févr.',
+  'mars',
+  'avr.',
+  'mai',
+  'juin',
+  'juil.',
+  'août',
+  'sept.',
+  'oct.',
+  'nov.',
+  'déc.',
+];
+
+/// « 22 nov. 2026 » — même date en abrégé, pour les bandeaux étroits où le
+/// mois entier se couperait (couverture à 390 px).
+String formatDateShort(DateTime? date) {
+  if (date == null) {
+    return '';
+  }
+
+  return '${date.day} ${_monthsShort[date.month - 1]} ${date.year}';
+}
+
 /// « 6 321 017 » — séparateur de milliers insécable, sans dépendre d'une
 /// locale installée dans le navigateur.
 String formatNumber(int value) {
@@ -39,5 +64,4 @@ String formatNumber(int value) {
 }
 
 /// « 4 min de lecture ».
-String formatReadingTime(int minutes) =>
-    '$minutes min de lecture';
+String formatReadingTime(int minutes) => '$minutes min de lecture';

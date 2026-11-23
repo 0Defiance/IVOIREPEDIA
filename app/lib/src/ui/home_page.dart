@@ -353,6 +353,8 @@ class _HomeBodyState extends State<_HomeBody> {
         const HomeSectionEntry('regions', 'Explorer les régions'),
       if (feed.isNotEmpty)
         const HomeSectionEntry('articles', 'Le fil des publications'),
+      if (facts.isNotEmpty)
+        const HomeSectionEntry('saviez-vous', 'Le saviez-vous ?'),
       if (data.stories.isNotEmpty)
         const HomeSectionEntry('recits', 'Récits et mémoire'),
       const HomeSectionEntry('sources', 'Bibliothèque des sources'),
@@ -420,7 +422,14 @@ class _HomeBodyState extends State<_HomeBody> {
                     const SizedBox(height: 30),
                     Container(
                       key: _anchor('articles'),
-                      child: HomeFeed(articles: feed, facts: facts),
+                      child: HomeFeed(articles: feed),
+                    ),
+                  ],
+                  if (facts.isNotEmpty) ...[
+                    const SizedBox(height: 30),
+                    Container(
+                      key: _anchor('saviez-vous'),
+                      child: HomeFactBand(facts: facts),
                     ),
                   ],
                   if (data.stories.isNotEmpty) ...[

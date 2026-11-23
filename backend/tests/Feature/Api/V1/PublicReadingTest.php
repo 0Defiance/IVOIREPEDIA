@@ -111,6 +111,37 @@ it('filtre la liste par catégorie', function () {
     expect($response->json('data.*.slug'))->toBe(['dans-culture']);
 });
 
+it('sert la vignette qui ne dépasse pas la largeur d’origine (zaouli)', function () {
+    makeArticle([
+        'slug' => 'le-zaouli',
+        'cover_image_url' => 'https://upload.wikimedia.org/wikipedia/commons/d/d5/Cizaouli.jpg',
+        'cover_image_width' => 681,
+        'cover_image_alt' => 'Un danseur de zaouli.',
+    ]);
+
+    $response = $this->getJson('/api/v1/articles?slugs=le-zaouli')->assertOk();
+
+    expect($response->json('data.0.cover_image_width'))->toBe(681)
+        ->and($response->json('data.0.cover_image_thumb_url'))->toBe(
+            'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d5/Cizaouli.jpg/500px-Cizaouli.jpg'
+        );
+});
+
+it('réduit une variante 1280 px en 960 px quand l’original est large', function () {
+    makeArticle([
+        'slug' => 'korhogo',
+        'cover_image_url' => 'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/ff/Rue_de_Korhogo.jpg/1280px-Rue_de_Korhogo.jpg',
+        'cover_image_width' => 4624,
+        'cover_image_alt' => 'Une rue de Korhogo.',
+    ]);
+
+    $response = $this->getJson('/api/v1/articles?slugs=korhogo')->assertOk();
+
+    expect($response->json('data.0.cover_image_thumb_url'))->toBe(
+        'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/ff/Rue_de_Korhogo.jpg/960px-Rue_de_Korhogo.jpg'
+    );
+});
+
 it('renvoie un article publié avec son contenu, ses tags et ses références', function () {
     $article = makeArticle(['slug' => 'abidjan', 'title' => 'Abidjan']);
     $tag = Tag::query()->create(['name' => 'Capitale', 'slug' => 'capitale']);

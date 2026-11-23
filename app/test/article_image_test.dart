@@ -68,5 +68,37 @@ void main() {
     test('une chaîne vide reste vide', () {
       expect(sizedCoverUrl('', 960), '');
     });
+
+    test('la largeur d’origine empêche l’agrandissement (zaouli)', () {
+      const url =
+          'https://upload.wikimedia.org/wikipedia/commons/d/d5/Cizaouli.jpg';
+
+      // 681 px d'origine : demander 960 px rendrait l'original, pas la
+      // variante agrandie qui pesait 312 Ko contre 127 Ko.
+      expect(sizedCoverUrl(url, 960, originalWidth: 681), url);
+    });
+
+    test('une variante plus grande que l’original revient à l’original', () {
+      const url =
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d5/'
+          'Cizaouli.jpg/960px-Cizaouli.jpg';
+
+      expect(
+        sizedCoverUrl(url, 960, originalWidth: 681),
+        'https://upload.wikimedia.org/wikipedia/commons/d/d5/Cizaouli.jpg',
+      );
+    });
+
+    test('un grand original garde la variante 960 px', () {
+      const url =
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/ff/'
+          'Rue_de_Korhogo.jpg/1280px-Rue_de_Korhogo.jpg';
+
+      expect(
+        sizedCoverUrl(url, 960, originalWidth: 4624),
+        'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/ff/'
+        'Rue_de_Korhogo.jpg/960px-Rue_de_Korhogo.jpg',
+      );
+    });
   });
 }

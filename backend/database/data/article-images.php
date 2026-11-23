@@ -127,6 +127,7 @@ return [
     ],
 
     'grand-bassam' => [
+        'width' => 3840,
         'url' => 'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d3/Entr%C3%A9e_du_palais_royal_de_Grand-Bassam.jpg/1280px-Entr%C3%A9e_du_palais_royal_de_Grand-Bassam.jpg',
         'alt' => 'L\'entrée du palais royal de Grand-Bassam.',
         'credit' => 'Aristidek5maya',
@@ -151,6 +152,7 @@ return [
     ],
 
     'korhogo' => [
+        'width' => 4624,
         'url' => 'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/ff/Rue_de_Korhogo.jpg/1280px-Rue_de_Korhogo.jpg',
         'alt' => 'Une rue de Korhogo.',
         'credit' => 'KONE IF',
@@ -296,6 +298,7 @@ return [
 
     'le-zaouli' => [
         'url' => 'https://upload.wikimedia.org/wikipedia/commons/d/d5/Cizaouli.jpg',
+        'width' => 681,
         'alt' => 'Un danseur de zaouli.',
         'credit' => 'Zenman',
         'license' => 'CC BY-SA 3.0',
@@ -319,6 +322,7 @@ return [
     ],
 
     'man' => [
+        'width' => 4424,
         'url' => 'https://thumb.wikimedia.org/wikipedia/commons/thumb/8/84/Les_cascades_de_Man.jpg/1280px-Les_cascades_de_Man.jpg',
         'alt' => 'Les cascades de Man.',
         'credit' => 'Sahi Tia',

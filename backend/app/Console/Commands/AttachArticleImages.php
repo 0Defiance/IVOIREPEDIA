@@ -38,7 +38,7 @@ class AttachArticleImages extends Command
             return self::FAILURE;
         }
 
-        /** @var array<string, array<string, string>> $images */
+        /** @var array<string, array<string, string|int>> $images */
         $images = require $path;
         $dryRun = (bool) $this->option('dry-run');
         $force = (bool) $this->option('force');
@@ -71,6 +71,9 @@ class AttachArticleImages extends Command
             }
 
             $article->cover_image_url = $image['url'];
+            $article->cover_image_width = isset($image['width']) && is_numeric($image['width'])
+                ? (int) $image['width']
+                : null;
             $article->cover_image_alt = $image['alt'];
             $article->cover_image_credit = $image['credit'];
             $article->cover_image_license = $image['license'];
@@ -120,7 +123,7 @@ class AttachArticleImages extends Command
         return $incomplete === [] ? self::SUCCESS : self::FAILURE;
     }
 
-    /** @param  array<string, string>  $image */
+    /** @param  array<string, string|int>  $image */
     private function isComplete(array $image): bool
     {
         foreach (['url', 'alt', 'credit', 'license', 'page'] as $key) {

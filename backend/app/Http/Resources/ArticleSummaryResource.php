@@ -27,6 +27,8 @@ class ArticleSummaryResource extends JsonResource
             'type' => $this->type->value,
             'type_label' => $this->type->label(),
             'cover_image_url' => $this->cover_image_url,
+            'cover_image_width' => $this->cover_image_width,
+            'cover_image_thumb_url' => $this->coverImageThumbUrl(),
             'cover_image_alt' => $this->cover_image_alt,
             'cover_image_credit' => $this->cover_image_credit,
             'cover_image_license' => $this->cover_image_license,

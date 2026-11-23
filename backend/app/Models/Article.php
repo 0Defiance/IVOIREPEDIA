@@ -34,6 +34,7 @@ use Illuminate\Support\Facades\Cache;
  * @property string|null $series
  * @property array<string, string>|null $series_state
  * @property string|null $cover_image_url
+ * @property int|null $cover_image_width
  * @property string|null $cover_image_alt
  * @property string|null $cover_image_credit
  * @property string|null $cover_image_license
@@ -49,7 +50,7 @@ use Illuminate\Support\Facades\Cache;
  */
 #[Fillable([
     'title', 'slug', 'summary', 'content', 'infobox', 'type', 'series', 'series_state', 'status',
-    'cover_image_url', 'cover_image_alt', 'cover_image_credit',
+    'cover_image_url', 'cover_image_width', 'cover_image_alt', 'cover_image_credit',
     'cover_image_license', 'cover_image_source_url',
     'lock_version', 'current_version',
     'author_id', 'category_id', 'published_at',
@@ -70,6 +71,7 @@ class Article extends Model
             'type' => ArticleType::class,
             'status' => ArticleStatus::class,
             'published_at' => 'datetime',
+            'cover_image_width' => 'integer',
             'lock_version' => 'integer',
             'current_version' => 'integer',
         ];
@@ -177,6 +179,71 @@ class Article extends Model
     public function actions(): HasMany
     {
         return $this->hasMany(EditorialAction::class)->latest('created_at');
+    }
+
+    /**
+     * Paliers servis par Wikimedia Commons pour les vignettes.
+     * Une largeur arbitraire répond 400 (vérifié le 22 novembre 2026).
+     */
+    public const COVER_WIDTHS = [250, 500, 960, 1280];
+
+    /**
+     * URL de la vignette à servir : la plus grande variante qui ne dépasse
+     * pas le fichier d'origine. Quand l'original est déjà petit (zaouli,
+     * 681 px), c'est la variante 500 px — jamais un agrandissement.
+     * Retourne null quand la largeur d'origine est inconnue : l'appelant
+     * garde alors l'URL d'origine.
+     */
+    public function coverImageThumbUrl(): ?string
+    {
+        $url = $this->cover_image_url;
+
+        if ($url === null || $url === '' || $this->cover_image_width === null) {
+            return null;
+        }
+
+        $best = null;
+
+        // La couverture s’affiche en 960 px : on sert le plus grand palier
+        // qui ne dépasse ni la demande ni le fichier d’origine.
+        $limit = min(960, $this->cover_image_width);
+
+        foreach (self::COVER_WIDTHS as $width) {
+            if ($width <= $limit) {
+                $best = $width;
+            }
+        }
+
+        if ($best === null) {
+            return $url;
+        }
+
+        if (preg_match('#/(\d+)px-([^/]+)$#', $url, $match) === 1) {
+            $current = (int) $match[1];
+
+            return $current <= $best
+                ? $url
+                : substr($url, 0, -strlen($match[0])).'/'.$best.'px-'.$match[2];
+        }
+
+        // URL d'origine : on insère `/thumb` et on suffixe la largeur.
+        $origin = [];
+
+        if (preg_match('#^(https?://[^/]+/wikipedia/)commons/([^/]+/[^/]+)/([^/]+)$#', $url, $origin) !== 1) {
+            return $url;
+        }
+
+        $parts = parse_url($url);
+
+        return sprintf(
+            '%s://%s/wikipedia/commons/thumb/%s/%s/%dpx-%s',
+            $parts['scheme'] ?? 'https',
+            'thumb.wikimedia.org',
+            $origin[2],
+            $origin[3],
+            $best,
+            $origin[3],
+        );
     }
 
     /** Texte brut du contenu : aperçu dans le panneau, jamais publié tel quel. */

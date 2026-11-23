@@ -89,7 +89,9 @@ void main() {
     // Le sommaire reprend les libellés des rubriques : chacune apparaît deux
     // fois, une fois dans le plan et une fois comme titre.
     expect(find.text('La une'), findsNWidgets(2));
-    expect(find.text('LE SAVIEZ-VOUS ?'), findsOneWidget);
+    // « Le saviez-vous ? » est sa propre rubrique, au sommaire et en titre.
+    expect(find.text('Le saviez-vous ?'), findsNWidgets(2));
+    expect(find.byType(HomeFactBand), findsOneWidget);
     expect(find.text('Tous les portails'), findsOneWidget);
     expect(find.text('Histoire'), findsWidgets);
     expect(find.text('Abidjan'), findsWidgets);
