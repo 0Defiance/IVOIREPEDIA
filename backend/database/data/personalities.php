@@ -2689,7 +2689,7 @@ return [
             'blocks' => [
                 ['p', 'Alexis Allah, né en 1961 à Zengouanou, dans la région de Bouaké, est un écrivain ivoirien. Élevé dans le culte animiste par un père paysan et une mère ménagère, il fréquente l’école catholique des missionnaires, le collège Victor Hugo de Bouaké, puis le lycée moderne et classique de Dimbokro.'],
                 ['h2', 'La France et les romans'],
-                ['p', 'Il arrive en France en 1985, obtient son baccalauréat au lycée George Sand de La Châtre, dans l’Indre, puis une maîtrise de lettres modernes à l’université de Limoges. Lors de la saison 1999-2000, il commence sa carrière d’enseignant de français et publie son premier roman, La Nuit des cauris, une autobiographie parue dans la collection « Encres noires » chez L’Harmattan.'],
+                ['p', 'Il arrive en France en 1985, obtient son baccalauréat au lycée George Sand de La Châtre, dans l’Indre, puis une maîtrise de lettres modernes à l’université de Limoges. Lors de la saison 1999-2000, il commence sa carrière d’enseignant de français et publie son premier roman, La Nuit des cauris, paru dans la collection « Encres noires » chez L’Harmattan.'],
                 ['p', 'Il publie en 2002 L’Enfant palmier, puis L’Œil du marigot, qui lui vaut le prix de l’Académie internationale de Lutèce. Il est professeur de français en Auvergne.'],
             ],
             'bibliography' => [
@@ -2707,12 +2707,12 @@ return [
             'occupations' => ['Journaliste', 'Écrivain'],
             'summary' => 'Journaliste et écrivain ivoirien né en 1976, André Silver Konan a révélé le scandale des déchets toxiques en 2006 et fondé Ivoir’Hebdo.',
             'blocks' => [
-                ['p', 'André Silver Konan, né le 10 juin 1976 à Abengourou, est un journaliste et écrivain ivoirien, originaire de Bengassou. Diplômé en sciences économiques de l’université de Bouaké, il est titulaire de deux masters en ressources humaines et en communication de l’université de l’Atlantique à Abidjan, formé au Centre de formation et de perfectionnement des journalistes de Paris, et obtient en 2023 un MBA en sciences politiques à Tunis.'],
+                ['p', 'André Silver Konan, né le 10 juin 1976 à Abengourou, est un journaliste et écrivain ivoirien, originaire de Bengassou. Diplômé en sciences économiques de l’université de Bouaké, il est titulaire de deux masters en ressources humaines et en communication de l’université de l’Atlantique à Abidjan et a été formé au Centre de formation et de perfectionnement des journalistes de Paris ; en 2023, il obtient un MBA en sciences politiques à Tunis.'],
                 ['h2', 'Le journaliste d’enquête'],
-                ['p', 'Il se fait remarquer à partir de 2004 avec un billet d’humeur quotidien au ton sarcastique, « Et vlan ! », publié dans Le Nouveau Réveil depuis 2003. En 2006, c’est sous sa plume que le scandale des déchets toxiques est révélé au grand public. En novembre 2011, il rejoint Jeune Afrique comme spécialiste de plusieurs pays d’Afrique de l’Ouest.'],
+                ['p', 'Il se fait remarquer à partir de 2004 avec un billet d’humeur quotidien au ton sarcastique, « Et vlan ! », publié dans Le Nouveau Réveil depuis 2003. En 2006, il révèle le scandale des déchets toxiques. En novembre 2011, il rejoint Jeune Afrique comme spécialiste de plusieurs pays d’Afrique de l’Ouest.'],
                 ['p', 'Pendant la crise post-électorale de 2010-2011, il échappe à des tentatives d’enlèvement à Abidjan et s’exile au Ghana, puis à Paris. Le 5 septembre 2012, il entre au conseil d’administration de la SNPECI, entreprise éditrice de Fraternité Matin.'],
                 ['h2', 'Ivoir’Hebdo'],
-                ['p', 'Le 17 septembre 2020, il lance Ivoir’Hebdo, un hebdomadaire d’investigation indépendant qui, deux ans plus tard, devient l’hebdomadaire le plus vendu du pays. Il est aussi l’initiateur du premier championnat national d’awalé en Côte d’Ivoire.'],
+                ['p', 'Le 17 septembre 2020, il lance Ivoir’Hebdo, un hebdomadaire d’investigation indépendant. Il est aussi l’initiateur du premier championnat national d’awalé en Côte d’Ivoire.'],
             ],
             'bibliography' => [
                 ['title' => 'André Silver Konan', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Andr%C3%A9_Silver_Konan'],
@@ -2731,7 +2731,7 @@ return [
             'blocks' => [
                 ['p', 'Annick Laurence Assemian, née en 1952 à Écueillé, en France, est une écrivaine et artiste plasticienne ivoirienne. Formée à l’École des Beaux-Arts, elle a suivi des formations spécialisées en dessin animé, marionnette et sérigraphie.'],
                 ['h2', 'La littérature jeunesse'],
-                ['p', 'Elle est reconnue pour son travail dans la littérature jeunesse en Côte d’Ivoire, où elle a publié plusieurs ouvrages destinés aux enfants. Son œuvre s’inscrit souvent entre la parabole et le conte, offrant des histoires courtes qui invitent au voyage et à la découverte.'],
+                ['p', 'Elle est reconnue pour son travail dans la littérature jeunesse en Côte d’Ivoire, où elle a publié plusieurs ouvrages destinés aux enfants.'],
                 ['p', 'Elle enseigne le graphisme et la communication à l’Institut national supérieur des arts et de l’action culturelle (INSAAC) et coordonne la revue de l’institution. Elle a reçu plusieurs distinctions, dont le prix Unicef lors du Festival international de littérature pour enfants et de l’audiovisuel de Dakar en 1995, pour un ouvrage favorisant la découverte de la faune et de la flore.'],
             ],
             'bibliography' => [
@@ -2751,7 +2751,7 @@ return [
             'blocks' => [
                 ['p', 'Boris Anselme Takoué, né le 11 avril 1990 à Gagnoa, est un écrivain ivoirien de littérature de genre et journaliste. Il commence sa carrière par des chroniques dans les quotidiens de presse ivoiriens.'],
                 ['h2', 'Romans et essais'],
-                ['p', 'Il publie sa première œuvre, L’Amour dans la tête, puis le roman Sylvia, la fille aux yeux bleus en 2020. En 2022 paraît un essai littéraire consacré à une personnalité de la publicité, Fabrice Sawegnon : un bel esprit sorcier, et en 2023 son deuxième roman, La colère des avortés.'],
+                ['p', 'Il publie sa première œuvre, L’Amour dans la tête, puis le roman Sylvia, la fille aux yeux bleus en 2020. En 2022 paraît un essai consacré à Fabrice Sawegnon, intitulé Un bel esprit sorcier, et en 2023 son deuxième roman, La colère des avortés.'],
                 ['p', 'Il reçoit le prix de la troisième édition du Festival international du livre gabonais et des arts, à Libreville, en juin 2024, et célèbre ses dix ans de carrière en 2025. Il co-écrit avec Sylvain Takoué le roman Vies brûlées, paru aux Éditions Calebasse.'],
             ],
             'bibliography' => [
@@ -2832,7 +2832,7 @@ return [
                 ['p', 'Edith Yah Brou, née le 1er mars 1984 à Cocody, à Abidjan, est une entrepreneure, blogueuse, chroniqueuse télé et animatrice radio ivoirienne. Diplômée en sciences économiques et gestion de l’université Félix-Houphouët-Boigny, elle commence un stage en audiovisuel pendant ses études.'],
                 ['h2', 'Le web et les femmes'],
                 ['p', 'En 2009, elle découvre le blogging et ouvre L’Actu Web d’Edith, consacré aux innovations technologiques en Côte d’Ivoire et en Afrique. La même année, elle cofonde l’ONG Akendewa, qui mène des actions sociales grâce aux technologies, et reçoit le surnom de « Didi la geekette ».'],
-                ['p', 'En 2011, elle co-crée avec Amie Kouamé Ayana, le premier webzine féminin de Côte d’Ivoire, puis Kessiya, un média d’information en continu. Engagée pour le leadership féminin, elle est invitée en 2014 par l’Union internationale des télécommunications au programme Young ICT Policy Leaders en Corée du Sud, et classée en 2015 parmi les 50 personnalités d’influence ivoiriennes par Jeune Afrique. Elle est mariée à l’artiste Jacob Bleu.'],
+                ['p', 'En 2011, elle cofonde avec Amie Kouamé Ayana le premier webzine féminin de Côte d’Ivoire, puis Kessiya, un média d’information en continu. Engagée pour le leadership féminin, elle est invitée en 2014 par l’Union internationale des télécommunications au programme Young ICT Policy Leaders en Corée du Sud, et classée en 2015 parmi les 50 personnalités d’influence ivoiriennes par Jeune Afrique. Elle est mariée à l’artiste Jacob Bleu.'],
             ],
             'bibliography' => [
                 ['title' => 'Edith Yah Brou', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Edith_Yah_Brou'],
@@ -2851,7 +2851,7 @@ return [
             'blocks' => [
                 ['p', 'Fatou Bolli, née en 1952 à Abidjan, est une autrice ivoirienne. Pionnière de la littérature féminine africaine, elle fait partie des premières autrices ivoiriennes de langue française avec Simone Kaya. Elle a travaillé à l’Agence de coopération culturelle et technique, à Paris.'],
                 ['h2', 'Djigbô'],
-                ['p', 'Son premier roman, Djigbô, publié en 1976 par le Centre d’édition et de diffusion africaines, traite de la sorcellerie et de ses rapports avec les religions catholique et musulmane, un sujet alors peu abordé dans la littérature ivoirienne. Le livre rencontre le succès en librairie, même si la critique Madeleine Borgomano en souligne l’écriture scolaire tout en saluant la narration de la situation des intellectuels ivoiriens.'],
+                ['p', 'Son premier roman, Djigbô, publié en 1976 par le Centre d’édition et de diffusion africaines, traite de la sorcellerie et de ses rapports avec les religions catholique et musulmane, un sujet alors peu abordé dans la littérature ivoirienne. Le livre rencontre le succès en librairie, même si l’universitaire Madeleine Borgomano en souligne l’écriture académique tout en saluant la narration de la situation des intellectuels ivoiriens.'],
                 ['p', 'Fatou Bolli est l’une des deux seules femmes, avec Simone Kaya, citées dans l’Anthologie de la littérature ivoirienne publiée en 1983.'],
             ],
             'bibliography' => [
@@ -2886,12 +2886,12 @@ return [
             'death' => null,
             'deathPlace' => null,
             'occupations' => ['Écrivain', 'Magistrat'],
-            'summary' => 'Écrivain et magistrat ivoirien né en 1959, Fodjo Kadjo Abo a reçu en 2017 le deuxième laurier du prix d’excellence pour la littérature.',
+            'summary' => 'Écrivain et magistrat ivoirien né en 1959, Fodjo Kadjo Abo a reçu en 2017 le deuxième prix d’excellence pour la littérature.',
             'blocks' => [
-                ['p', 'Fodjo Kadjo Abo, né le 1er janvier 1959 à Adoumkrom, un village abron du Nord-Est de la Côte d’Ivoire, est un homme de lettres et magistrat de profession, magistrat hors hiérarchie du groupe A. Il préside le Conseil supérieur de la magistrature et a occupé diverses fonctions dans la haute administration, notamment comme directeur de cabinet chargé des Droits de l’homme et des libertés publiques.'],
+                ['p', 'Fodjo Kadjo Abo, né le 1er janvier 1959 à Adoumkrom, un village abron du Nord-Est de la Côte d’Ivoire, est un homme de lettres et magistrat de profession, magistrat hors hiérarchie du groupe A. Depuis le 23 septembre 2026, il préside le Conseil supérieur de la magistrature ; il a auparavant occupé diverses fonctions dans la haute administration, notamment comme directeur de cabinet chargé des Droits de l’homme et des libertés publiques.'],
                 ['h2', 'Le chef et l’essayiste'],
                 ['p', 'Chef du village d’Adoumkrom et président de l’association des chefs traditionnels de la sous-préfecture d’Appimandoum, dans le département de Bondoukou, il est l’auteur de plus d’une dizaine d’ouvrages, essentiellement des essais sur les phénomènes de société. Moraliste, il traite particulièrement de la corruption et de ses conséquences.'],
-                ['p', 'Sa production littéraire est récompensée en 2017 par le deuxième laurier du prix d’excellence pour la littérature, remis par le ministre de la Culture et de la Francophonie Maurice Bandaman.'],
+                ['p', 'Sa production littéraire est récompensée en 2017 par le deuxième prix d’excellence pour la littérature, remis par le ministre de la Culture et de la Francophonie Maurice Bandaman.'],
             ],
             'bibliography' => [
                 ['title' => 'Fodjo Kadjo Abo', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Fodjo_Kadjo_Abo'],
@@ -2908,7 +2908,7 @@ return [
             'occupations' => ['Écrivain', 'Enseignant'],
             'summary' => 'Écrivain ivoirien né en 1968, François d’Assise N’Dah est professeur de lettres modernes et publie romans et albums pour la jeunesse.',
             'blocks' => [
-                ['p', 'François d’Assise Konan N’Dah, né le 3 octobre 1968 à Bouaké, est un écrivain ivoirien, professeur certifié de lettres modernes au lycée. Passionné d’écriture, il a remporté des concours de littérature et publié des œuvres en Côte d’Ivoire et en France.'],
+                ['p', 'François d’Assise Konan N’Dah, né le 3 octobre 1968 à Bouaké, est un écrivain ivoirien, professeur certifié de lettres modernes. Il a remporté des concours de littérature et publié des œuvres en Côte d’Ivoire et en France.'],
                 ['h2', 'Albums et romans'],
                 ['p', 'Il publie en 2022 l’album jeunesse Le vélo de Moussa, illustré par Raymond Diby, puis en 2023 le roman L’amour contre vents et marées.'],
             ],
@@ -2947,7 +2947,7 @@ return [
             'occupations' => ['Poète', 'Philosophe'],
             'summary' => 'Poète et philosophe ivoirien (1953-1993), Joachim Bohui Dali fut l’un des disciples les plus doués de Bernard Zadi Zaourou.',
             'blocks' => [
-                ['p', 'Joachim Bohui Dali, né en 1953 à Lakota, dans le sud-ouest de la Côte d’Ivoire, et mort en 1993, est un poète et philosophe ivoirien. Considéré comme l’un des disciples les plus doués de Bernard Zadi Zaourou, mentor des poètes néo-oralistes ivoiriens, il laisse deux œuvres poétiques d’une grande densité stylistique.'],
+                ['p', 'Joachim Bohui Dali, né en 1953 à Lakota, dans le sud-ouest de la Côte d’Ivoire, et mort en 1993, est un poète et philosophe ivoirien. Considéré comme l’un des disciples les plus doués de Bernard Zadi Zaourou, mentor des poètes néo-oralistes ivoiriens, il laisse deux recueils poétiques.'],
                 ['h2', 'Deux recueils'],
                 ['p', 'Maiéto pour Zékia paraît aux Éditions Ceda, à Abidjan, en 1988, et reprend le mythe bété et dida de la Guerre des femmes. Kostas Georgiu ou la Chanson du péril mercenaire est publié aux Nouvelles Éditions du Sénégal en 1991.'],
             ],
@@ -2988,8 +2988,8 @@ return [
             'blocks' => [
                 ['p', 'Maboula Soumahoro, née le 3 février 1976 à Paris, est une angliciste franco-ivoirienne, maître de conférences en civilisation américaine à l’université de Tours. Née dans une famille dioula ivoirienne, elle grandit au Kremlin-Bicêtre et inscrit ses recherches dans le cadre des « French diaspora studies ».'],
                 ['h2', 'Les études et l’engagement'],
-                ['p', 'Après des études d’anglais à l’université de Créteil, où elle obtient une maîtrise en 1999, elle passe plusieurs séjours à l’université Columbia, à New York. Son premier DEA, consacré au nationalisme noir, est retoqué ; elle soutient finalement un travail intitulé La couleur de Dieu ? Regards croisés sur Nation of Islam et le rastafarisme, 1930-1950, et est reçue au CAPES d’anglais.'],
-                ['p', 'Ses travaux portent sur l’immigration, l’identité, la double culture, la race, la domination et la résistance. Membre du laboratoire Interactions culturelles et discursives et du Cercle d’études afro-américaines et de la diaspora, elle est engagée dans les causes antiraciste et afroféministe.'],
+                ['p', 'Après des études d’anglais à l’université de Créteil, où elle obtient une maîtrise en 1999, elle passe plusieurs séjours à l’université Columbia, à New York. Son premier DEA, consacré au nationalisme noir, n’est pas validé ; elle soutient finalement un travail intitulé La couleur de Dieu ? Regards croisés sur Nation of Islam et le rastafarisme, 1930-1950, et est reçue au CAPES d’anglais.'],
+                ['p', 'Ses travaux portent sur l’immigration, l’identité, la double culture, la race, la domination et la résistance. Membre du laboratoire Interactions culturelles et discursives et du Cercle d’études afro-américaines et de la diaspora, elle est engagée dans les causes antiracistes et afroféministes.'],
             ],
             'bibliography' => [
                 ['title' => 'Maboula Soumahoro', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Maboula_Soumahoro'],
@@ -3027,9 +3027,9 @@ return [
             'occupations' => ['Écrivaine', 'Scénariste'],
             'summary' => 'Écrivaine et scénariste franco-ivoirienne née en 1971, Marguerite Abouet est l’autrice de la bande dessinée Aya de Yopougon, primée à Angoulême en 2006.',
             'blocks' => [
-                ['p', 'Marguerite Abouet, nom de plume de Patricia N’gbandjui, née en 1971 à Abidjan, est une écrivaine, scénariste et réalisatrice franco-ivoirienne. Elle est la fille d’une mère directrice chez Singer et d’un père cadre chez Hitachi, et passe douze ans de sa vie à Yopougon, quartier populaire d’Abidjan dont elle s’inspirera pour ses scénarios.'],
+                ['p', 'Marguerite Abouet, nom de plume de Patricia N’gbandjui, née en 1971 à Abidjan, est une écrivaine, scénariste et réalisatrice franco-ivoirienne. Elle est la fille d’une mère secrétaire de direction chez Singer et d’un père commercial chez Hitachi, et passe douze ans de sa vie à Yopougon, quartier populaire d’Abidjan dont elle s’inspirera pour ses scénarios.'],
                 ['h2', 'Aya de Yopougon'],
-                ['p', 'Arrivée en France à l’âge de douze ans, elle s’intéresse à l’écriture de scénarios de bande dessinée après avoir lu les œuvres de Marjane Satrapi. Le premier tome d’Aya de Yopougon, dessiné par Clément Oubrerie, reçoit le premier prix au festival d’Angoulême en 2006 et devient un succès commercial.'],
+                ['p', 'Arrivée en France à l’âge de douze ans, elle s’intéresse à l’écriture de scénarios de bande dessinée après avoir lu les œuvres de Marjane Satrapi. Le premier tome d’Aya de Yopougon, dessiné par Clément Oubrerie, reçoit le prix du premier album au festival d’Angoulême en 2006 et devient un succès commercial.'],
                 ['p', 'Elle poursuit la série et crée Akissi, dont les bêtises de l’héroïne sont directement inspirées de sa propre enfance.'],
             ],
             'bibliography' => [
@@ -3149,7 +3149,7 @@ return [
                 ['p', 'Jacob Bleu, plus connu sous son nom d’artiste Jacobleu, né le 12 mars 1972, est un artiste multidisciplinaire, peintre, photographe, écrivain et entrepreneur culturel ivoirien, originaire de Danané, dans la région du Tonkpi. Il grandit dans un environnement où la culture du masque est prédominante, comme entité spirituelle animant la vie communautaire par les rites, la musique et les danses.'],
                 ['h2', 'Le peintre et le passeur'],
                 ['p', 'Son œuvre célèbre l’identité culturelle et la cohésion sociale à travers des compositions colorées, marquées par les influences de Jean-Michel Basquiat et de Francis Bacon, où il mêle peinture, pastel et collage sur toile, carton et bâches recyclées. Il enseigne à l’École d’architecture d’Abidjan et siège au conseil d’administration de l’INSAAC.'],
-                ['p', 'Il vit à Abidjan et poursuit la promotion de l’art par ses créations. Il est marié à l’entrepreneure et blogueuse Edith Yah Brou.'],
+                ['p', 'Il est marié à l’entrepreneure et blogueuse Edith Yah Brou.'],
             ],
             'bibliography' => [
                 ['title' => 'Jacob Bleu', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Jacob_Bleu'],
@@ -3266,11 +3266,11 @@ return [
             'death' => null,
             'deathPlace' => null,
             'occupations' => ['Écrivaine'],
-            'summary' => 'Écrivaine ivoirienne pluridisciplinaire, Assita Sidibé a publié 3 mensonges de la nuit en 2017 et Épopée d’une haut lignée en 2022.',
+            'summary' => 'Écrivaine ivoirienne pluridisciplinaire, Assita Sidibé a publié 3 mensonges de la nuit en 2017 et Épopée d’une haute lignée en 2022.',
             'blocks' => [
                 ['p', 'Assita Sidibé est une écrivaine ivoirienne pluridisciplinaire, également terrassière, traductrice et directrice d’une entreprise de construction, passionnée d’agriculture comme de littérature.'],
                 ['h2', 'Nouvelles et romans'],
-                ['p', 'Elle débute avec le recueil de nouvelles 3 mensonges de la nuit, publié en 2017, qui explore les relations amoureuses, le mariage, le divorce, l’homosexualité, le suicide et la mort. En 2022, Épopée d’une haut lignée raconte l’histoire de Syrah Koné, une femme déçue par son mariage, dans un style poétique qui rend hommage à la tradition des griots ; l’autrice y voit un message d’espoir pour les femmes sans enfant.'],
+                ['p', 'Elle débute avec le recueil de nouvelles 3 mensonges de la nuit, publié en 2017, qui explore les relations amoureuses, le mariage, le divorce, l’homosexualité, le suicide et la mort. En 2022, Épopée d’une haute lignée raconte l’histoire de Syrah Koné, une femme déçue par son mariage, dans un style poétique qui rend hommage à la tradition des griots ; l’autrice y voit un message d’espoir pour les femmes sans enfant.'],
                 ['p', 'Elle préside le jury du prix littéraire Miss Littérature Afrique et participe à la création du prix Ken Bugul du Livre. En 2024, elle est l’invitée du Salon du livre de Dakar, où elle préside le jury des prix des lycéens du premier livre féminin et Ken Bugul. En 2025, elle rédige la postface de L’aveu d’une condamnée et représente le président de l’Association des écrivains de Côte d’Ivoire lors d’une séance de dédicace.'],
             ],
             'bibliography' => [
@@ -3290,7 +3290,7 @@ return [
             'blocks' => [
                 ['p', 'Dick Georgette, dite Gina Dick Boguifo, née en 1951 à Treichville, commune d’Abidjan, est une écrivaine ivoirienne. Enseignante et peintre, elle a publié une trentaine d’ouvrages destinés aussi bien aux enfants qu’aux adultes.'],
                 ['h2', 'Les langues et l’enseignement'],
-                ['p', 'Elle fait ses études en Côte d’Ivoire et à l’étranger. Assistante de français à Newtown High School, au pays de Galles, de 1977 à 1978, elle suit ensuite une formation d’enseignante d’anglais à Édimbourg dans les années 1980, étudie à Saint Marc and Saint John de Plymouth et participe à des programmes de spécialisation aux États-Unis, notamment à la George Washington University et à l’University of Delaware, dans le cadre d’une bourse Fulbright.'],
+                ['p', 'Elle fait ses études en Côte d’Ivoire et à l’étranger. Assistante de français à Newtown High School, au pays de Galles, de 1977 à 1978, elle suit ensuite une formation d’enseignante d’anglais à Édimbourg dans les années 1980, étudie au St Mark and St John College de Plymouth et participe à des programmes de spécialisation aux États-Unis, notamment à la George Washington University et à l’University of Delaware, dans le cadre d’une bourse Fulbright.'],
                 ['p', 'Elle enseigne l’anglais en Côte d’Ivoire, notamment à la faculté d’odontostomatologie, jusqu’à sa retraite, et signe plusieurs recueils de nouvelles et livres pour enfants. Peintre, elle expose à l’Hôtel Ivoire de 1999 à 2011.'],
             ],
             'bibliography' => [
@@ -3369,10 +3369,10 @@ return [
             'occupations' => ['Écrivain', 'Poète', 'Dramaturge'],
             'summary' => 'Romancier, poète et dramaturge ivoirien né en 1960, Irié Goli Bi a publié une dizaine d’œuvres entre 2011 et 2025.',
             'blocks' => [
-                ['p', 'Mathurin Goli Bi Irié, dit Irié Goli Bi, né le 9 mai 1960 à Vrigrita, dans le département de Bouaflé, est un écrivain ivoirien, romancier, poète et dramaturge. Professeur de lettres modernes, il est censeur au lycée moderne 1 de Grand-Bassam. En 2022, il est inspecteur général du ministère de la Promotion de la bonne gouvernance, du Renforcement des capacités et de la Lutte contre la corruption.'],
+                ['p', 'Mathurin Goli Bi Irié, dit Irié Goli Bi, né le 9 mai 1960 à Vrigrita, dans le département de Bouaflé, est un écrivain ivoirien, romancier, poète et dramaturge. Professeur de lettres modernes, il est censeur au lycée moderne 1 de Grand-Bassam. En 2022, il occupe les fonctions d’inspecteur général du ministère de la Promotion de la bonne gouvernance, du Renforcement des capacités et de la Lutte contre la corruption.'],
                 ['p', 'Il est marié et père de cinq enfants.'],
                 ['h2', 'Romans, théâtre et poésie'],
-                ['p', 'Il publie en 2011 Le messager au sommet de l’art, puis en 2012 La Lycéenne et Mon adultère pour un enfant, un recueil de nouvelles. En 2015 paraissent Et l’Afrique se rebella, pièce de théâtre, et Hideur des tropiques, recueil de poèmes. Suivent Sous le voile de la mariée en 2016, Le Testament, recueil de poésie, en 2018, La récréation est terminée en 2019, puis Le sexe pour s’épanouir en 2025.'],
+                ['p', 'Il publie en 2011 Le messager au sommet de l’art, puis en 2012 La Lycéenne et Mon adultère pour un enfant. En 2015 paraissent Et l’Afrique se rebella, pièce de théâtre, et Hideur des tropiques, recueil de poèmes. Suivent Sous le voile de la mariée en 2016, Le Testament, recueil de poésie, en 2018, La récréation est terminée en 2019, puis Le sexe pour s’épanouir en 2025.'],
             ],
             'bibliography' => [
                 ['title' => 'Irié Goli Bi', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Iri%C3%A9_Goli_Bi'],
