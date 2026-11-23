@@ -2109,6 +2109,32 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 79 — 23 novembre 2026 · Grands noms, football féminin et handisport
+
+**Demandé**
+- Enchaîner la tranche suivante de sportifs (64 → 91) avec la même exigence de sources et la publier.
+
+**Fait**
+- **27 fiches de sportifs ajoutées** : Laurent Pokou, Donald-Olivier Sié, Basile Aka Kouamé, Gadji Celi, Serge Maguy, Rufin Lué, Lassina Dao, Oumar Ben Salah, Aruna Dindane, Ibrahima Bakayoko, François Zahoui, Cyril Domoraud et Tchiressoua Guel (football masculin) ; Josée Nahi, Ida Guehai, Nina Kpaho, Inès Konan, Rosemonde Kouassi et Christine Lohoues (football féminin) ; Seydou Gbané, Firmin Zokou et Aaron Kobenan (taekwondo) ; Avognan Nogboum, Franck Waota, Marius Loua et Paul Fernand Kra Koffi (athlétisme, dont un médaillé paralympique) ; Jean-Marc Kraidy (basket-ball).
+- Le groupe sportifs passe de **64 à 91 fiches** ; l’ensemble compte **196 biographies** (60 politiques, 37 écrivains, 91 sportifs, 8 artistes). La tranche couvre les générations 1960-2000, six championnes de football, les taekwondoïstes des Jeux africains et un médaillé de bronze des Jeux paralympiques de Sydney.
+- Les candidats ont été repérés dans les catégories Wikipédia (267 footballeurs internationaux, 38 footballeuses, 15 athlètes, 10 taekwondoïstes, 8 basketteurs), puis chaque fiche a été recoupée sur sa notice. Ont été écartés les noms dont la notice ne fournissait pas assez de faits datés, ainsi que Yves Bissouma et Cheick Doucouré, internationaux maliens.
+- Documentation du fichier de données mise à jour (séance 79).
+
+**Vérifié**
+- `php -l` : aucune erreur ; compteurs **60 / 37 / 91 / 8**, **196 slugs uniques**, aucun doublon.
+- Backend : `composer test` **159 tests verts (3 803 assertions)**, `composer format:check` **157 fichiers conformes**, `composer analyse` aucun problème.
+- App : `flutter analyze` aucun problème, `flutter test` **70 tests verts**.
+- Production : `git pull --ff-only` (`b2dd8b2` → `6d1f22b`), seeder en **1 727 ms**. Le site passe de **254 à 281 articles**, la catégorie « Personnalités » de **178 à 205 pages**, le tag `biographies-sportifs` de **64 à 91 articles**.
+- L’API sert les nouvelles fiches : `laurent-pokou`, `rosemonde-kouassi`, `paul-fernand-kra-koffi`, `firmin-zokou`, `aruna-dindane` et `gadji-celi` répondent avec slug, infobox, une référence et le texte attendu.
+- Pages pré-rendues : `/articles/laurent-pokou`, `/articles/rosemonde-kouassi` et `/articles/paul-fernand-kra-koffi` → **200**, `<title>Nom — IVOIREPEDIA`.
+
+**Reste**
+- Les sportifs sont à **91/100** : neuf fiches suffisent pour atteindre l’objectif, à choisir dans le football féminin, le taekwondo et l’athlétisme.
+- Les écrivains restent à 37/100 et les politiques à 60/100 ; les artistes sont à 8.
+- Le rendu visuel de cette tranche n’a pas été capturé en 390 × 844 ; seules les réponses HTML et API ont été contrôlées.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
