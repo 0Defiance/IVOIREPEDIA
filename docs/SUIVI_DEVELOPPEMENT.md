@@ -2244,6 +2244,30 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 84 — 23 novembre 2026 · Relecture des quatre fiches et captures des 36 pages
+
+**Demandé**
+- Relire les quatre fiches consolidées (Serge Grah, Alafé Wakili, Hanny Tchelley, Marie-Laure N’Goran) pour la grammaire et les faits non sourcés, corriger ce qui doit l’être.
+- Capturer en 390 × 844 les autres nouvelles pages d’écrivains.
+
+**Fait**
+- **Serge Grah** : retrait de l’éditeur non vérifié (« tous trois chez Vallesse Éditions ») et des genres supposés (recueil de poésie, chroniques) ; formulation allégée du prix Jeanne de Cavally.
+- **Alafé Wakili** : chronologie remise dans l’ordre (création de L’Intelligent d’Abidjan en 2003 avant le conseil au ministère en 2006) ; mémoire du master ramené à ce que dit la notice ; « animatrice de télévision » retiré devant Tata Nahomi ; titre du livre avec Laurent Gbagbo corrigé.
+- **Hanny Tchelley** : « conservatoire de danse et de musique » et « prévention du sida » retirés faute de source ; « se révèle… après avoir joué dans d’autres longs métrages » corrigé ; « organise » remplacé par « dirige » le FICA ; mention non sourcée sur son « entrée parmi les autrices ivoiriennes » retirée ; projets annoncés, non présentés comme faits accomplis.
+- **Marie-Laure N’Goran** : « depuis la création de l’Union en 1991 » retiré (non sourcé) ; journal de 23 heures puis de 20 heures au lieu d’une « matinée » erronée ; « sciences juridiques, administratives et de gestion » rétabli ; liste des distinctions réécrite sans ruptures de construction ; parrainage et lieu de présentation du roman retirés faute de source ; pasteur N’Goran Isidore nommé ; prix national d’excellence daté du 3 août 2026.
+- **Captures** : les **36** pages d’écrivains ajoutées à la séance 82 sont capturées en **390 × 844** et enregistrées dans `captures/` (les 8 premières dataient de la séance 83).
+
+**Vérifié**
+- `php -l` : aucune erreur ; re-seed de production en **2 820 ms** après `git pull --ff-only` (`92ed3df` → `9326c65`).
+- Backend : `composer test` **159 tests verts (4 451 assertions)**, `composer format:check` **157 fichiers conformes**, `composer analyse` aucun problème.
+- App : `flutter analyze` aucun problème, `flutter test` **70 tests verts**.
+- Les **28** nouvelles captures répondent et s’affichent au format mobile (titre, résumé, infobox) ; les quatre fiches relues montrent le texte corrigé.
+
+**Reste**
+- Écrivains **100/100**, sportifs **100/100**, politiques **60/100**, artistes **8/100**.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
