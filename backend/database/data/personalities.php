@@ -2712,7 +2712,7 @@ return [
                 ['p', 'Il se fait remarquer à partir de 2004 avec un billet d’humeur quotidien au ton sarcastique, « Et vlan ! », publié dans Le Nouveau Réveil depuis 2003. En 2006, il révèle le scandale des déchets toxiques. En novembre 2011, il rejoint Jeune Afrique comme spécialiste de plusieurs pays d’Afrique de l’Ouest.'],
                 ['p', 'Pendant la crise post-électorale de 2010-2011, il échappe à des tentatives d’enlèvement à Abidjan et s’exile au Ghana, puis à Paris. Le 5 septembre 2012, il entre au conseil d’administration de la SNPECI, entreprise éditrice de Fraternité Matin.'],
                 ['h2', 'Ivoir’Hebdo'],
-                ['p', 'Le 17 septembre 2020, il lance Ivoir’Hebdo, un hebdomadaire d’investigation indépendant. Il est aussi l’initiateur du premier championnat national d’awalé en Côte d’Ivoire.'],
+                ['p', 'Le 17 septembre 2020, il lance Ivoir’Hebdo, un hebdomadaire d’investigation indépendant qui, deux ans plus tard, devient l’hebdomadaire le plus vendu du pays. Il est aussi l’initiateur du premier championnat national d’awalé en Côte d’Ivoire.'],
             ],
             'bibliography' => [
                 ['title' => 'André Silver Konan', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Andr%C3%A9_Silver_Konan'],
@@ -2731,7 +2731,7 @@ return [
             'blocks' => [
                 ['p', 'Annick Laurence Assemian, née en 1952 à Écueillé, en France, est une écrivaine et artiste plasticienne ivoirienne. Formée à l’École des Beaux-Arts, elle a suivi des formations spécialisées en dessin animé, marionnette et sérigraphie.'],
                 ['h2', 'La littérature jeunesse'],
-                ['p', 'Elle est reconnue pour son travail dans la littérature jeunesse en Côte d’Ivoire, où elle a publié plusieurs ouvrages destinés aux enfants.'],
+                ['p', 'Elle est reconnue pour son travail dans la littérature jeunesse en Côte d’Ivoire, où elle a publié plusieurs ouvrages destinés aux enfants. Son œuvre s’inscrit souvent entre la parabole et le conte, avec des histoires courtes qui invitent au voyage et à la découverte.'],
                 ['p', 'Elle enseigne le graphisme et la communication à l’Institut national supérieur des arts et de l’action culturelle (INSAAC) et coordonne la revue de l’institution. Elle a reçu plusieurs distinctions, dont le prix Unicef lors du Festival international de littérature pour enfants et de l’audiovisuel de Dakar en 1995, pour un ouvrage favorisant la découverte de la faune et de la flore.'],
             ],
             'bibliography' => [
@@ -2751,7 +2751,7 @@ return [
             'blocks' => [
                 ['p', 'Boris Anselme Takoué, né le 11 avril 1990 à Gagnoa, est un écrivain ivoirien de littérature de genre et journaliste. Il commence sa carrière par des chroniques dans les quotidiens de presse ivoiriens.'],
                 ['h2', 'Romans et essais'],
-                ['p', 'Il publie sa première œuvre, L’Amour dans la tête, puis le roman Sylvia, la fille aux yeux bleus en 2020. En 2022 paraît un essai consacré à Fabrice Sawegnon, intitulé Un bel esprit sorcier, et en 2023 son deuxième roman, La colère des avortés.'],
+                ['p', 'Il publie sa première œuvre, L’Amour dans la tête, puis le roman Sylvia, la fille aux yeux bleus en 2020. En 2022 paraît un essai intitulé Fabrice Sawegnon : Un bel esprit sorcier, et en 2023 son deuxième roman, La colère des avortés.'],
                 ['p', 'Il reçoit le prix de la troisième édition du Festival international du livre gabonais et des arts, à Libreville, en juin 2024, et célèbre ses dix ans de carrière en 2025. Il co-écrit avec Sylvain Takoué le roman Vies brûlées, paru aux Éditions Calebasse.'],
             ],
             'bibliography' => [
@@ -2807,12 +2807,12 @@ return [
             'death' => null,
             'deathPlace' => null,
             'occupations' => ['Écrivain', 'Poète', 'Universitaire'],
-            'summary' => 'Poète et enseignant-chercheur ivoirien né en 1988, Cédric Marshall Kissy a reçu le Grand Prix Zadi Zaourou de poésie en 2014.',
+            'summary' => 'Poète et enseignant-chercheur ivoirien né en 1988, Cédric Marshall Kissy a reçu le Bissa d’or du Grand Prix littéraire Bernard Zadi Zaourou en 2014.',
             'blocks' => [
                 ['p', 'Cédric Marshall Kissy, né en 1988 à Grand-Bassam, est un poète ivoirien et enseignant-chercheur en lettres à l’université Félix-Houphouët-Boigny d’Abidjan. Ses parents sont originaires de Bonoua ; son père est instituteur et sa mère ménagère.'],
                 ['h2', 'Les études et les prix'],
                 ['p', 'Après ses études primaires à Ono-Salci et son baccalauréat au lycée moderne de Bonoua, il s’inscrit à l’université de Cocody en lettres modernes, où il obtient un doctorat ès lettres mention poésie africaine, ainsi qu’une maîtrise en sciences de la communication.'],
-                ['p', 'Lauréat de plusieurs concours littéraires, il remporte le premier prix de poésie des Manuscrits d’or en 2009 et le Grand Prix Zadi Zaourou de poésie de l’Association des écrivains de Côte d’Ivoire en 2014.'],
+                ['p', 'Lauréat de plusieurs concours littéraires, il remporte le prix Les Manuscrits d’or en 2009, puis le Bissa d’or en poésie du Grand Prix littéraire Bernard Zadi Zaourou en 2014.'],
             ],
             'bibliography' => [
                 ['title' => 'Cédric Marshall Kissy', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/C%C3%A9dric_Marshall_Kissy'],
@@ -2851,7 +2851,7 @@ return [
             'blocks' => [
                 ['p', 'Fatou Bolli, née en 1952 à Abidjan, est une autrice ivoirienne. Pionnière de la littérature féminine africaine, elle fait partie des premières autrices ivoiriennes de langue française avec Simone Kaya. Elle a travaillé à l’Agence de coopération culturelle et technique, à Paris.'],
                 ['h2', 'Djigbô'],
-                ['p', 'Son premier roman, Djigbô, publié en 1976 par le Centre d’édition et de diffusion africaines, traite de la sorcellerie et de ses rapports avec les religions catholique et musulmane, un sujet alors peu abordé dans la littérature ivoirienne. Le livre rencontre le succès en librairie, même si l’universitaire Madeleine Borgomano en souligne l’écriture académique tout en saluant la narration de la situation des intellectuels ivoiriens.'],
+                ['p', 'Son premier roman, Djigbô, publié en 1976 par le Centre d’édition et de diffusion africaines, traite de la sorcellerie et de ses rapports avec les religions catholique et musulmane, un sujet alors peu abordé dans la littérature ivoirienne. Le livre rencontre le succès en librairie, même si l’universitaire Madeleine Borgomano en souligne l’écriture scolaire tout en saluant la narration de la situation des intellectuels ivoiriens.'],
                 ['p', 'Fatou Bolli est l’une des deux seules femmes, avec Simone Kaya, citées dans l’Anthologie de la littérature ivoirienne publiée en 1983.'],
             ],
             'bibliography' => [
@@ -2947,7 +2947,7 @@ return [
             'occupations' => ['Poète', 'Philosophe'],
             'summary' => 'Poète et philosophe ivoirien (1953-1993), Joachim Bohui Dali fut l’un des disciples les plus doués de Bernard Zadi Zaourou.',
             'blocks' => [
-                ['p', 'Joachim Bohui Dali, né en 1953 à Lakota, dans le sud-ouest de la Côte d’Ivoire, et mort en 1993, est un poète et philosophe ivoirien. Considéré comme l’un des disciples les plus doués de Bernard Zadi Zaourou, mentor des poètes néo-oralistes ivoiriens, il laisse deux recueils poétiques.'],
+                ['p', 'Joachim Bohui Dali, né en 1953 à Lakota, dans le sud-ouest de la Côte d’Ivoire, et mort en 1993, est un poète et philosophe ivoirien. Considéré comme l’un des disciples les plus doués de Bernard Zadi Zaourou, mentor des poètes néo-oralistes ivoiriens, il laisse deux œuvres poétiques d’une grande densité stylistique.'],
                 ['h2', 'Deux recueils'],
                 ['p', 'Maiéto pour Zékia paraît aux Éditions Ceda, à Abidjan, en 1988, et reprend le mythe bété et dida de la Guerre des femmes. Kostas Georgiu ou la Chanson du péril mercenaire est publié aux Nouvelles Éditions du Sénégal en 1991.'],
             ],
@@ -3027,7 +3027,7 @@ return [
             'occupations' => ['Écrivaine', 'Scénariste'],
             'summary' => 'Écrivaine et scénariste franco-ivoirienne née en 1971, Marguerite Abouet est l’autrice de la bande dessinée Aya de Yopougon, primée à Angoulême en 2006.',
             'blocks' => [
-                ['p', 'Marguerite Abouet, nom de plume de Patricia N’gbandjui, née en 1971 à Abidjan, est une écrivaine, scénariste et réalisatrice franco-ivoirienne. Elle est la fille d’une mère secrétaire de direction chez Singer et d’un père commercial chez Hitachi, et passe douze ans de sa vie à Yopougon, quartier populaire d’Abidjan dont elle s’inspirera pour ses scénarios.'],
+                ['p', 'Marguerite Abouet, nom de plume de Patricia N’gbandjui, née en 1971 à Abidjan, est une écrivaine, scénariste et réalisatrice franco-ivoirienne. Elle est la fille d’une mère directrice chez Singer et d’un père cadre chez Hitachi, et passe douze ans de sa vie à Yopougon, quartier populaire d’Abidjan dont elle s’inspirera pour ses scénarios.'],
                 ['h2', 'Aya de Yopougon'],
                 ['p', 'Arrivée en France à l’âge de douze ans, elle s’intéresse à l’écriture de scénarios de bande dessinée après avoir lu les œuvres de Marjane Satrapi. Le premier tome d’Aya de Yopougon, dessiné par Clément Oubrerie, reçoit le prix du premier album au festival d’Angoulême en 2006 et devient un succès commercial.'],
                 ['p', 'Elle poursuit la série et crée Akissi, dont les bêtises de l’héroïne sont directement inspirées de sa propre enfance.'],
@@ -3088,7 +3088,7 @@ return [
             'blocks' => [
                 ['p', 'Serge Grah, né le 2 avril 1972 à Yamoussoukro, est un journaliste, poète et essayiste ivoirien.'],
                 ['h2', 'Une œuvre variée'],
-                ['p', 'Il publie en 2008 Kolou le chasseur, en 2009 Une saison au purgatoire, en 2010 La misère de nos comportements, puis en 2012 le roman Passion de soutane. Suivent Les grains de maïs d’Akatia (2016), Madeleine Tchicaya en questions (2017) et La veste de Grégoire (2018).'],
+                ['p', 'Il publie en 2008 Kolou le chasseur, en 2009 le recueil de poésie Une saison au purgatoire, en 2010 les chroniques La misère de nos comportements, puis en 2012 le roman Passion de soutane. Suivent Les grains de maïs d’Akatia (2016), Madeleine Tchicaya en questions (2017) et La veste de Grégoire (2018), tous trois chez Vallesse Éditions.'],
                 ['p', 'Il signe ensuite Serge Bilé – Ma parole pour le Noir aux lumières éteintes (2019) et participe en 2021 à un ouvrage collectif consacré à Jean-Marie Adiaffi. Pour la jeunesse, il publie La fête des mères et Les photos de Ricky en 2023, puis La princesse Lou Zaouli en 2024.'],
                 ['h2', 'La reconnaissance'],
                 ['p', 'En 2018, La veste de Grégoire lui vaut le prix Jeanne de Cavally de littérature enfantine.'],
@@ -3229,9 +3229,9 @@ return [
                 ['p', 'Assé Alafé Wakili, né le 9 juillet 1971 à Agboville, est un journaliste, écrivain et activiste ivoirien. Après ses études primaires et secondaires dans sa ville natale, il obtient un DEUG et une licence de philosophie à l’université Félix-Houphouët-Boigny d’Abidjan. Il adhère à la FESCI et fonde l’Union des jeunes journalistes de Côte d’Ivoire, dont il est vice-président.'],
                 ['h2', 'De la presse à L’Intelligent d’Abidjan'],
                 ['p', 'Sa carrière commence au milieu des années 1990 dans la presse écrite, au Réveil Hebdo, au Démocrate et à La Nouvelle République. En septembre 2003, alors que le pays est coupé en deux par la crise, il crée le quotidien L’Intelligent d’Abidjan, qu’il dirige et dont il est le directeur de publication ; il préside aussi le conseil d’administration de Totem Holding. En 2006, il devient conseiller technique au ministère de la Communication, fonction qu’il quitte en avril 2007.'],
-                ['p', 'En juillet 2026, il soutient à l’université Félix-Houphouët-Boigny un master en sciences de l’information et de la communication.'],
+                ['p', 'En juillet 2026, il soutient à l’université Félix-Houphouët-Boigny un master en sciences de l’information et de la communication, avec un mémoire intitulé La stratégie éditoriale comme outil de management de l’entreprise de presse.'],
                 ['h2', 'Livres et distinctions'],
-                ['p', 'Il est l’auteur d’Instant de vie (2009), de Notre histoire avec Laurent Gbagbo (L’Harmattan, 2013) et de Championne l’enjailleuse (2016). Il reçoit en 2007 le prix panafricain du meilleur patron de la presse privée d’Afrique de l’Ouest, en 2014 le prix du meilleur journaliste ouest-africain à Paris, puis en 2020 le trophée d’excellence de la compétitivité dans le secteur des médias. Père de quatre enfants, il a épousé Tata Nahomi en octobre 2010.'],
+                ['p', 'Il est l’auteur d’Instant de vie (2009), de Notre histoire avec Laurent Gbagbo (L’Harmattan, 2013) et de Championne l’enjailleuse (2016). Il reçoit en 2007 le prix panafricain du meilleur patron de la presse privée d’Afrique de l’Ouest, en 2014 le prix du meilleur journaliste ouest-africain à Paris, puis en 2020 le trophée d’excellence de la compétitivité dans le secteur des médias. Père de quatre enfants, il a épousé l’animatrice de télévision Tata Nahomi en octobre 2010.'],
             ],
             'bibliography' => [
                 ['title' => 'Alafé Wakili', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Alaf%C3%A9_Wakili'],
@@ -3295,6 +3295,7 @@ return [
             ],
             'bibliography' => [
                 ['title' => 'Gina Dick Boguifo', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Gina_Dick_Boguifo'],
+                ['title' => 'Liste d’écrivains ivoiriens', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Liste_d%27%C3%A9crivains_ivoiriens'],
             ],
         ],
         [
@@ -3349,13 +3350,14 @@ return [
             'blocks' => [
                 ['p', 'Hanny Tchelley, de son nom complet Hanny Tchelley Brigitte Etibou, née en 1953, est une actrice, productrice, réalisatrice et écrivaine ivoirienne. Elle se forme à l’Institut national des arts d’Abidjan de 1983 à 1985, obtient en 1985 un diplôme de chorégraphe du Margaret Morris Movement et suit des stages à Londres, Stourbridge et Kidderminster, en Grande-Bretagne.'],
                 ['h2', 'Le cinéma et le FICA'],
-                ['p', 'Elle se révèle au grand public grâce au film Bal poussière d’Henri Duparc et dirige depuis 1998 le Festival du court-métrage d’Abidjan. En 1993, elle devient responsable des programmes d’information, d’éducation et de communication de Population Services International, suit en 1995 un stage à Santa Cruz, en Californie, puis dirige de 1996 à 1998 le centre de production et de communication de PSI.'],
+                ['p', 'Elle se révèle au grand public grâce au film Bal poussière d’Henri Duparc et organise depuis 1998 le Festival du court-métrage d’Abidjan.'],
                 ['h2', 'L’exil et le livre'],
-                ['p', 'Engagée dans des campagnes contre le sida et pour les droits des femmes, elle quitte la Côte d’Ivoire après la crise post-électorale de 2010-2011 et vit près de dix ans en exil, principalement en France. Rentrée officiellement le 25 juillet 2022, elle publie en 2023 Et si c’était à refaire ?, un ouvrage autobiographique paru chez GAD Éditions.'],
+                ['p', 'Engagée dans des campagnes contre le sida et pour les droits des femmes, elle quitte la Côte d’Ivoire après la crise post-électorale de 2010-2011 et vit près de dix ans en exil. Rentrée officiellement le 25 juillet 2022, elle publie en 2023 Et si c’était à refaire ?, un ouvrage autobiographique paru chez GAD Éditions, qui la fait entrer dans la catégorie des autrices ivoiriennes.'],
                 ['p', 'Depuis son retour, elle annonce travailler à la relance du FICA, à un long métrage consacré aux femmes ivoiriennes, à une série documentaire sur les artistes africains ayant vécu l’exil et à des actions de formation pour la jeune génération du cinéma.'],
             ],
             'bibliography' => [
                 ['title' => 'Hanny Tchelley', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Hanny_Tchelley'],
+                ['title' => 'Hanny Tchelley', 'publisher' => 'Wikidata', 'year' => null, 'url' => 'https://www.wikidata.org/wiki/Q3126861'],
             ],
         ],
         [
@@ -3369,13 +3371,13 @@ return [
             'occupations' => ['Écrivain', 'Poète', 'Dramaturge'],
             'summary' => 'Romancier, poète et dramaturge ivoirien né en 1960, Irié Goli Bi a publié une dizaine d’œuvres entre 2011 et 2025.',
             'blocks' => [
-                ['p', 'Mathurin Goli Bi Irié, dit Irié Goli Bi, né le 9 mai 1960 à Vrigrita, dans le département de Bouaflé, est un écrivain ivoirien, romancier, poète et dramaturge. Professeur de lettres modernes, il est censeur au lycée moderne 1 de Grand-Bassam. En 2022, il occupe les fonctions d’inspecteur général du ministère de la Promotion de la bonne gouvernance, du Renforcement des capacités et de la Lutte contre la corruption.'],
-                ['p', 'Il est marié et père de cinq enfants.'],
+                ['p', 'Mathurin Goli Bi Irié, dit Irié Goli Bi, né en 1960, est un écrivain ivoirien, romancier, poète et dramaturge. En 2022, il occupe les fonctions d’inspecteur général du ministère de la Promotion de la bonne gouvernance, du Renforcement des capacités et de la Lutte contre la corruption.'],
                 ['h2', 'Romans, théâtre et poésie'],
                 ['p', 'Il publie en 2011 Le messager au sommet de l’art, puis en 2012 La Lycéenne et Mon adultère pour un enfant. En 2015 paraissent Et l’Afrique se rebella, pièce de théâtre, et Hideur des tropiques, recueil de poèmes. Suivent Sous le voile de la mariée en 2016, Le Testament, recueil de poésie, en 2018, La récréation est terminée en 2019, puis Le sexe pour s’épanouir en 2025.'],
             ],
             'bibliography' => [
                 ['title' => 'Irié Goli Bi', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Iri%C3%A9_Goli_Bi'],
+                ['title' => 'Liste d’écrivains ivoiriens', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Liste_d%27%C3%A9crivains_ivoiriens'],
             ],
         ],
     ],
