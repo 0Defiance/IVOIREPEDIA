@@ -2188,6 +2188,33 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 82 — 23 novembre 2026 · Écrivains : 64 → 100 fiches
+
+**Demandé**
+- Corriger le résumé de Michelle Lora (« une vingtaine-cinq livres » → « vingt-cinq livres »), relancer les contrôles et re-seeder la production.
+- Enchaîner la tranche 64 → 91, puis poursuivre jusqu’à 100/100 avant de s’arrêter.
+
+**Fait**
+- **Résumé corrigé** : Michelle Lora est désormais « l’autrice de vingt-cinq livres de contes africains pour la jeunesse ».
+- **36 fiches d’écrivains ajoutées** : Alexis, Alexis Allah, André Silver Konan, Annick Assemian, Boris Anselme Takoué, Camara Nangala, Célestin-Virgile Adiko, Cédric Marshall Kissy, Edith Yah Brou, Fatou Bolli, Fatou Fanny-Cissé, Fodjo Kadjo Abo, François d’Assise N’Dah, Gilbert G. Groud, Joachim Bohui Dali, Louis Akin, Maboula Soumahoro, Macaire Etty, Marguerite Abouet, Noël X. Ebony, Paul Ahizi, Serge Grah, Tidiane Dem, Joseph Anouma, Jacob Bleu, Nincemon Fallé, Célestin Koffi Yao, Nin’wlou Ariel Ménélik, Alafé Wakili, Marie-Laure N’Goran, Assita Sidibé, Gina Dick Boguifo, Pierrette Fauste, Adja Mariam Mahre Soro, Hanny Tchelley et Irié Goli Bi.
+- Le groupe écrivains passe de **64 à 100 fiches** ; l’ensemble compte **268 biographies** (60 politiques, 100 écrivains, 100 sportifs, 8 artistes).
+- **Sept fiches sans année de naissance** : Marie-Laure N’Goran, Assita Sidibé, Gina Dick Boguifo, Pierrette Fauste, Adja Mariam Mahre Soro, Hanny Tchelley et Irié Goli Bi. Leurs notices ne donnent pas de date ; aucune date n’a été inventée, et leurs résumés ne l’affirment pas.
+- **Candidats écartés** : Bob Kanza (auteur congolais), Edwige Neshama Sossah (autrice belge), Hermas Gbaguidi (poète béninois), Angénic Agnero (conteuse, notice hors littérature), Barthélemy Kotchy (aucun article Wikipédia accessible).
+- Documentation du fichier de données mise à jour (séance 82).
+
+**Vérifié**
+- `php -l` : aucune erreur ; compteurs **60 / 100 / 100 / 8**, **268 slugs uniques**, aucun doublon.
+- Backend : `composer test` **159 tests verts (4 451 assertions)**, `composer format:check` **157 fichiers conformes**, `composer analyse` aucun problème.
+- App : `flutter analyze` aucun problème, `flutter test` **70 tests verts**.
+- Production : `git pull --ff-only` (`caccc80` → `2893667`), seeder en **2 383 ms**. Les articles passent de **316 à 352**, la catégorie « Personnalités » de **240 à 276**, le tag `biographies-ecrivains` de **64 à 100**.
+- Les **36** fiches répondent sur l’API avec slug, infobox, une référence et le texte attendu ; les **36** pages pré-rendues `/articles/…` répondent en **200**. Le résumé de Michelle Lora est corrigé en production.
+
+**Reste**
+- Écrivains **100/100**, sportifs **100/100**, politiques **60/100**, artistes **8/100**.
+- Les captures visuelles des nouvelles pages restent à faire, à la demande de l’utilisateur (« on fera les captures visuelles plus tard »).
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
