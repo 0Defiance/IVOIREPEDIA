@@ -527,6 +527,7 @@ Ces tables sont en **lecture seule** pour l'API publique (`GET /api/v1/statistic
 - `editorial_actions` est **append-only** : jamais de `update` ni `delete` (hors purge programmée).
 - `articles.deleted_at` = suppression douce (trait Laravel `SoftDeletes`). Purge définitive après 90 jours (tâche V1).
 - Le `slug` est généré depuis le titre (`Str::slug`, sans accents, minuscules, tirets), suffixé en cas de doublon. Seul un `ADMIN` peut le modifier après publication (les URLs publiées doivent rester stables).
+- Quand un slug publié doit malgré tout changer (nom affiché fautif, fiche en doublon), le renommage est déclaré dans `backend/database/data/slug_redirects.php` : `PersonalitiesSeeder` renomme l'article et enregistre la paire dans `article_slug_redirects`, puis `/articles/{ancien}` et `/api/v1/articles/{ancien}` répondent **301** vers la nouvelle adresse (seulement si la cible est publiée). Une URL publiée ne tombe donc jamais en 404 du fait d'un renommage.
 - Le rendu se fait **depuis le JSON Delta côté Flutter** : aucun HTML n'est stocké ni injecté (l'ancienne colonne `contentHtml` disparaît avec le changement de stack — voir D9). Si un rendu serveur est ajouté en V1 (SEO), le HTML devra être généré **et sanitisé côté serveur**.
 - Recherche V1 : colonne générée ou champ aplatî en texte + index `FULLTEXT` MySQL (parseur `ngram` si la tokenisation française est insuffisante).
 
