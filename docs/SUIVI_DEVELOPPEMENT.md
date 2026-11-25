@@ -2685,6 +2685,21 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 101 — 25 novembre 2026 · Garde-fou de ponctuation étendu aux titres
+
+**Fait**
+- Le garde-fou de ponctuation couvre désormais aussi les **titres de section** (blocs `h2`) : `noticeCoverageHeadings()` extrait les `insert` porteurs de `attributes.header` et les passe aux trois mêmes motifs (double point, espace avant virgule ou point, espaces multiples). Un défaut est signalé avec sa localisation : `slug (titre 2) : double point`.
+- Aucun titre du corpus n’était défectueux : le test est passé au vert dès l’extension, sans correction de contenu. `personalities.php` n’a donc pas été modifié et la production n’a pas été re-seedée.
+
+**Vérifié**
+- Garde-fou éprouvé par mutation, puis restauré : `['h2', 'L’exil ..']` sur la fiche Tiken Jah Fakoly fait échouer le test avec `tiken-jah-fakoly (titre 2) : double point` et `tiken-jah-fakoly (titre 2) : espace avant virgule ou point` ; le titre restauré, le test repasse au vert.
+- `composer test` : **165 tests, 5 662 assertions** ; `composer format:check` : 163 fichiers ; `composer analyse` : aucun problème.
+
+**Reste**
+- Les titres ne sont contrôlés que sur la ponctuation, pas sur le recouvrement : ce sont des libellés de section, souvent absents de la notice.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

@@ -18,9 +18,10 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
  * jetons des 401 notices, sans les notices elles-mêmes (voir
  * build_notice_tokens.php).
  *
- * Le test surveille aussi la ponctuation des textes : les scripts de
- * réécriture ont déjà laissé des doubles points, des espaces avant
- * ponctuation ou des espaces multiples dans personalities.php.
+ * Le test surveille aussi la ponctuation du résumé, des paragraphes et des
+ * titres de section : les scripts de réécriture ont déjà laissé des doubles
+ * points, des espaces avant ponctuation ou des espaces multiples dans
+ * personalities.php.
  */
 uses(RefreshDatabase::class);
 
@@ -46,6 +47,29 @@ function noticeCoverageTokens(string $text): array
     }
 
     return array_values(array_unique($tokens));
+}
+
+/** @return array<int, string> Titres de section de la fiche (blocs h2). */
+function noticeCoverageHeadings(Article $article): array
+{
+    $headings = [];
+    $ops = $article->content['ops'] ?? [];
+
+    if (! is_array($ops)) {
+        return [];
+    }
+
+    foreach ($ops as $op) {
+        if (! is_array($op) || ! isset($op['insert']) || ! is_string($op['insert'])) {
+            continue;
+        }
+
+        if (isset($op['attributes']['header'])) {
+            $headings[] = trim($op['insert']);
+        }
+    }
+
+    return $headings;
 }
 
 /** Texte des paragraphes de la fiche, sans les titres de section. */
@@ -116,9 +140,17 @@ it('garde chaque phrase factuelle au-dessus du seuil de recouvrement de sa notic
 
         $checked++;
 
+        $punctuated = ['résumé' => $article->summary, 'paragraphes' => noticeCoverageBody($article)];
+
+        foreach (noticeCoverageHeadings($article) as $index => $heading) {
+            $punctuated['titre '.($index + 1)] = $heading;
+        }
+
         foreach (personalitiesPunctuationPatterns() as $pattern => $label) {
-            if (preg_match($pattern, $article->summary) === 1 || preg_match($pattern, noticeCoverageBody($article)) === 1) {
-                $formatting[] = $article->slug.' : '.$label;
+            foreach ($punctuated as $where => $chunk) {
+                if (preg_match($pattern, $chunk) === 1) {
+                    $formatting[] = $article->slug.' ('.$where.') : '.$label;
+                }
             }
         }
 
