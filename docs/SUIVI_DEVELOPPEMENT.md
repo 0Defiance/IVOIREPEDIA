@@ -2700,6 +2700,35 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 102 — 25 novembre 2026 · Angles morts : les faits que le score ne voit pas
+
+**Fait**
+- Audit des angles morts, en trois passes hors test (scripts dans `backend/.tmp-audit3/`) :
+  1. **Phrase contre phrase** : pour chaque phrase courte portant une ancre, comparaison avec la phrase de la notice qui contient cette ancre — 54 suspects sur 1 246 phrases, revus un par un.
+  2. **Lieux de naissance** cités et absents de la notice : 6.
+  3. **Années de naissance et de mort** des fiches absentes de la notice : 21.
+- Le score de recouvrement élevé ne prouve rien : il suffit que les mots existent quelque part dans la notice. Cas typiques corrigés :
+  - **DJ Arafat** : « animateur de soirées » et « phrases chocs » n'existent pas dans la notice ; remplacés par le producteur Roland le Binguiste, le début de carrière en 2003, « Hommage à Jonathan », Goudron Noir et les deux prix des Kora Awards 2012. Le résumé perd « animateur » et la formule « a marqué le pays par son énergie et ses phrases ».
+  - **Simone Gbagbo** : « à la tête de son propre parti » n'est dit nulle part — remplacé par sa demande d'amnistie du 11 août 2020 pour son époux.
+  - **Gervinho** : « Moyen-Orient » — la notice le mène en Chine, en Italie et en Turquie.
+  - **Tidjane Thiam** : il dirige le Crédit suisse depuis **juillet 2015**, pas 2009 (le résumé disait 2009-2020) ; il est ministre du Plan et du **Développement**, pas du Budget.
+  - **Decothey** : « originaire d'Abidjan » et « né à Abidjan » ne sont pas dans la notice.
+  - **Aboudia** : la notice donne le 21 octobre 1983, pas Abengourou.
+  - **Irié Goli Bi** et **Jean-Paul Mehansio** : la notice ne donne ni date ni lieu de naissance ; Babelio ne confirme que le département de Bouaflé pour le premier. Dates et lieux retirés, fiches rendues sans année.
+  - **Nayanka Bell** : la notice la dit **née en 1963 à Agboville** et ne la fait pas mourir — les métadonnées disaient 1967, Toulepleu, morte en 2020 à Paris. Métadonnées corrigées, décès supprimé (la fausse mort ne subsistait plus que là).
+  - **Aïcha Koné** : née en **1957** à Abidjan (métadonnées : 1959, Kayes au Mali).
+  - **Laurent Dona Fologo** : **Péguékaha**, orthographe de la notice.
+
+**Vérifié**
+- `composer test` : **165 tests, 5 662 assertions** ; `composer format:check` : 163 fichiers ; `composer analyse` : aucun problème ; test de recouvrement vert après correction. Les pages des fiches corrigées répondent en 200 et servent les nouveaux textes.
+
+**Reste**
+- Douze années de naissance restent absentes de la notice sans être contredites (Cédric Marshall Kissy, Gina Dick, Hanny Tchelley, Antoinette Konan, Chantal Taïba, Papa Ministre, Naky Sy Savane, Philippe Lacôte, Adama Dahico, Claudie Titty-Dimbeng, Soum Bill, Gbizié Troupa Bruno) : les extraits en texte brut perdent les infoboxes, donc l'absence ne prouve pas l'invention. À trancher fiche par fiche avec une source explicite.
+- **Tangara Speed Ghôda** : la notice (ébauche de 1,3 ko) ne dit pas son décès de 2002, gardé faute de contradiction mais sans source dans la notice citée.
+- Le contrôle reste lexical : il attrape les faits fabriqués quand leurs mots manquent, pas quand ils sont composés de mots présents (le « Il meurt en 2005 » construit avec des mots de la notice passe).
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
