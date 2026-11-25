@@ -117,9 +117,9 @@ return [
             'occupations' => ['Économiste', 'Homme d’État'],
             'summary' => "Économiste et homme d'État ivoirien (1942-2021), Charles Konan Banny a été Premier ministre de 2005 à 2007 et gouverneur de la BCEAO.",
             'blocks' => [
-                ['p', "Charles Konan Banny, né le 11 novembre 1942 à Divo, est un économiste ivoirien formé à l'université de Dijon. Il mène une carrière bancaire qui le conduit à la tête de la Banque centrale des États de l'Afrique de l'Ouest (BCEAO), dont il devient gouverneur."],
+                ['p', 'Charles Konan Banny, né le 11 novembre 1942 à Divo, est un économiste ivoirien formé à l\'université de Dijon. Il mène une carrière bancaire qui le conduit à la tête de la Banque centrale des États de l\'Afrique de l\'Ouest (BCEAO), dont il devient gouverneur.'],
                 ['h2', 'Premier ministre de transition'],
-                ['p', 'Il est nommé Premier ministre ivoirien le 4 décembre 2005, en pleine crise politico-militaire. Il conduit le gouvernement jusqu\'aux élections de 2007.'],
+                ['p', 'Il est nommé Premier ministre ivoirien le 4 décembre 2005, en pleine crise politico-militaire. Il quitte la tête du gouvernement le 29 mars 2007.'],
             ],
             'bibliography' => [
                 ['title' => 'Charles Konan Banny', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Charles_Konan_Banny'],
@@ -358,7 +358,7 @@ return [
             'occupations' => ['Juriste', 'Homme d’État'],
             'summary' => 'Juriste et homme d’État ivoirien né en 1951, Jeannot Ahoussou-Kouadio a été Premier ministre en 2012 et le premier président du Sénat (2018-2023).',
             'blocks' => [
-                ['p', 'Jeannot Ahoussou-Kouadio, né le 6 mars 1951 à Raviart, est un juriste et homme d’État ivoirien. Il commence sa carrière dans le droit avant d’entrer au gouvernement.'],
+                ['p', 'Jeannot Ahoussou-Kouadio, né le 6 mars 1951 à Raviart, est un juriste et homme d’État ivoirien. Avocat d\'affaires de profession, il est membre de longue date du PDCI-RDA.'],
                 ['h2', 'Premier ministre et garde des Sceaux'],
                 ['p', 'Ministre de la Justice à partir d’avril 2011, il est nommé Premier ministre en mars 2012 et conserve le portefeuille de la Justice. Il quitte la Primature en novembre de la même année.'],
                 ['h2', 'Le premier président du Sénat'],
@@ -511,7 +511,7 @@ return [
             'blocks' => [
                 ['p', 'Jean Konan Banny, né le 14 juillet 1928 à Divo et mort le 27 mai 2018 à Cocody, est un homme politique ivoirien membre du PDCI-RDA.'],
                 ['h2', 'Le ministre de la Défense'],
-                ['p', 'Il dirige le ministère de la Défense de 1961 à 1963, au lendemain de l’indépendance, puis retrouve ce portefeuille de 1981 à 1990 sous la présidence de Félix Houphouët-Boigny.'],
+                ['p', 'Nommé le 3 janvier 1961 ministre de la Défense du premier gouvernement Houphouët-Boigny, il occupe ce poste de 1961 à 1963 et de 1981 à 1990.'],
                 ['h2', 'Une figure du PDCI'],
                 ['p', 'Élu local et cadre du parti, il meurt à Abidjan en 2018.'],
             ],
@@ -637,9 +637,9 @@ return [
             'blocks' => [
                 ['p', 'Souleymane Diarrassouba, né le 27 juin 1971 à Yamoussoukro, est un homme politique ivoirien.'],
                 ['h2', 'Le Commerce et l’Industrie'],
-                ['p', 'Il est ministre du Commerce et de l’Industrie de janvier 2017 à janvier 2026, avant d’être nommé ministre du Plan et du Développement.'],
+                ['p', 'Il est ministre du Commerce et de l\'Industrie de janvier 2017 à janvier 2026.'],
                 ['h2', 'Le Plan et le développement'],
-                ['p', 'Son passage au gouvernement couvre ainsi près d’une décennie de politique industrielle et commerciale, puis la conduite des programmes de développement.'],
+                ['p', 'En janvier 2026, il est nommé ministre du Plan et du Développement dans le gouvernement Beugré Mambé II.'],
             ],
             'bibliography' => [
                 ['title' => 'Souleymane Diarrassouba', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Souleymane_Diarrassouba'],
@@ -786,7 +786,7 @@ return [
                 ['h2', 'L’élu de Toumodi'],
                 ['p', 'Il est député de Toumodi Commune et premier adjoint au maire de Toumodi. Son parcours associe l’expérience du secteur privé, des fonctions consultatives au Conseil économique, social, environnemental et culturel, l’engagement municipal et le mandat parlementaire.'],
                 ['h2', 'Entre conseil et Parlement'],
-                ['p', 'Au sein du PDCI-RDA, il occupe la fonction de conseiller spécial chargé du secteur privé auprès du président du parti. Il siège à l\'Assemblée nationale tout en participant à la vie municipale de sa commune.'],
+                ['p', 'Au sein du PDCI-RDA, il occupe la fonction de conseiller spécial chargé du secteur privé auprès du président du parti. Hervé Alliali est intégré à la Commission sécurité-défense de l\'Assemblée nationale de Côte d\'Ivoire.'],
             ],
             'bibliography' => [
                 ['title' => 'Hervé Alliali', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Herv%C3%A9_Alliali'],
@@ -992,7 +992,7 @@ return [
             'blocks' => [
                 ['p', 'Paul Antoine Bohoun Bouabré, né le 9 février 1957 non loin d’Issia, dans le Centre-Ouest, et mort le 10 janvier 2012 à Jérusalem, est un homme politique ivoirien et une personnalité du Front populaire ivoirien.'],
                 ['h2', 'Le ministre de l’Économie'],
-                ['p', 'Professeur agrégé d’économie, il est nommé ministre de l’Économie et des Finances le 24 janvier 2001. Le ministère devient un ministère d’État le 15 août 2002 et il le dirige jusqu’au 28 décembre 2005, pendant la crise politico-militaire.'],
+                ['p', 'Professeur agrégé d’économie, il est nommé ministre de l’Économie et des Finances le 24 janvier 2001. Le 15 août 2002, le ministère de l\'Économie et des Finances devient un ministère d\'État ; il demeure à ce poste jusqu\'au 28 décembre 2005.'],
                 ['h2', 'Le Plan et la crise'],
                 ['p', 'Il est ensuite ministre du Plan et du Développement dans les gouvernements Banny I et II, puis Soro I et II. Surnommé le « poulain intellectuel » de Laurent Gbagbo, il meurt à Jérusalem en 2012.'],
             ],
@@ -1135,7 +1135,7 @@ return [
             'blocks' => [
                 ['p', 'Vincent Toh Bi Irié, né le 17 novembre 1969 à Dabou, est un haut fonctionnaire et homme politique ivoirien.'],
                 ['h2', 'Le préfet d’Abidjan'],
-                ['p', 'Il est préfet d’Abidjan entre 2018 et 2020, avant de démissionner officiellement le 26 août 2020. Il quitte alors l’administration préfectorale pour se consacrer à la politique.'],
+                ['p', 'Il travaille comme sous-préfet de Tiémé, dans la région d\'Odienné, au nord de la Côte d\'Ivoire. Il est préfet d\'Abidjan entre 2018 et 2020, avant de démissionner officiellement le 26 août 2020.'],
                 ['h2', 'La candidature de 2025'],
                 ['p', 'Il se porte candidat à l’élection présidentielle de 2025, mais sa candidature n’est pas validée par le Conseil constitutionnel.'],
             ],
@@ -1156,7 +1156,7 @@ return [
             'blocks' => [
                 ['p', 'Louis Kouakou-Habonouan, né le 30 décembre 1975 à Brobo, dans le département de Bouaké, est un homme public et politique ivoirien.'],
                 ['h2', 'Le député'],
-                ['p', 'Il est député de 2011 à 2016, période durant laquelle il siège à l’Assemblée nationale pour une circonscription du centre du pays.'],
+                ['p', 'Il est député à l\'Assemblée nationale de Côte d\'Ivoire de décembre 2011 à décembre 2016, et membre de la Commission des Affaires générales et institutionnelles (CAGI).'],
                 ['h2', 'L’ONEP'],
                 ['p', 'Depuis septembre 2018, il occupe le poste de président du conseil d’administration de l’Office national de l’eau potable (ONEP).'],
             ],
@@ -2402,7 +2402,7 @@ return [
                 ['h2', 'Ministre puis ambassadeur'],
                 ['p', 'Il est nommé ministre de l\'Éducation nationale de Côte d\'Ivoire le 15 décembre 1993, en remplacement de Touré Saliou, et le reste jusqu\'au 10 août 1999. Il assure ensuite les fonctions d\'ambassadeur de la Côte d\'Ivoire en France, avec résidence à Paris, jusqu\'en 2010 et son remplacement par Ally Coulibaly.'],
                 ['h2', 'L\'historien de la Côte d\'Ivoire'],
-                ['p', 'Ses travaux portent sur les villes coloniales, le syndicalisme et la formation de la nation ivoirienne. Il a notamment publié Daloa, une cité dans l\'histoire (1985), Villes de Côte d\'Ivoire, 1893-1940 (1985-1986), Le congrès de Bamako ou La naissance du RDA (1989), Histoire de Côte d\'Ivoire (1991), Démocratie et société en Côte d\'Ivoire (2000) et Côte d\'Ivoire : la formation d\'un peuple (2005).'],
+                ['p', 'Ses travaux d\'historien portent sur les villes de Côte d\'Ivoire de 1893 à 1940 et sur la formation d\'un peuple. Il a notamment publié Daloa, une cité dans l\'histoire (1985), Villes de Côte d\'Ivoire, 1893-1940 (1985-1986), Le congrès de Bamako ou La naissance du RDA (1989), Histoire de Côte d\'Ivoire (1991), Démocratie et société en Côte d\'Ivoire (2000) et Côte d\'Ivoire : la formation d\'un peuple (2005).'],
             ],
             'bibliography' => [
                 ['title' => 'Pierre Kipré', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Pierre_Kipr%C3%A9'],
@@ -2610,7 +2610,7 @@ return [
                 ['h2', 'Le théâtre'],
                 ['p', 'Avec François-Joseph Amon d\'Aby, il fonde en 1938 le Théâtre indigène de Côte d\'Ivoire.'],
                 ['h2', 'L’homme politique'],
-                ['p', 'Il mène en parallèle une carrière politique.'],
+                ['p', 'Élu membre du bureau politique lors du congrès de 1947, il assume le rôle de Secrétaire général à l\'organisation jusqu\'au 28 août 1963.'],
             ],
             'bibliography' => [
                 ['title' => 'Germain Coffi Gadeau', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Germain_Coffi_Gadeau'],
@@ -2818,7 +2818,7 @@ return [
                 ['h2', 'Le militaire'],
                 ['p', 'Il commande les opérations durant la crise du Guébié, puis devient ministre dans plusieurs gouvernements. Il est candidat à l’élection présidentielle de 2000.'],
                 ['h2', 'L’écrivain et l’élu'],
-                ['p', 'Romancier, il publie L’homme qui vécut trois vies en 1976, Aller retour en 1977, L’empire du gouffre en 1990 et Pauvre petite orpheline en 2010. Député et président du groupe parlementaire du PDCI, il mène cette activité d’écriture en parallèle de ses mandats.'],
+                ['p', 'Romancier, il publie L’homme qui vécut trois vies en 1976, Aller retour en 1977, L’empire du gouffre en 1990 et Pauvre petite orpheline en 2010. Il est élu député, puis président du groupe parlementaire PDCI-RDA.'],
             ],
             'bibliography' => [
                 ['title' => 'Gaston Ouassénan Koné', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Gaston_Ouass%C3%A9nan_Kon%C3%A9'],
@@ -3226,7 +3226,7 @@ return [
             'blocks' => [
                 ['p', 'Tra-Bi Irié Micheline Coulibaly, née en 1950 à Xuân Lai, au Viêt Nam, et morte le 19 mars 2003 à Houston, est une écrivaine ivoirienne. Elle fait sa scolarité en Côte d’Ivoire, puis part pour le Mexique en 1990 et pour Dubaï en 2000.'],
                 ['h2', 'Nouvelles et livres pour enfants'],
-                ['p', 'Elle écrit des nouvelles et des livres pour enfants. Mère de trois enfants, elle mène son activité littéraire au fil de ses installations à l’étranger jusqu’à sa mort aux États-Unis.'],
+                ['p', 'Elle écrit des nouvelles et des livres pour enfants. Micheline Coulibaly est mère de trois enfants.'],
             ],
             'bibliography' => [
                 ['title' => 'Micheline Coulibaly', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Micheline_Coulibaly'],
@@ -3630,7 +3630,7 @@ return [
             'blocks' => [
                 ['p', 'Camara Nangala, né le 10 novembre 1955 à Katiola, dans la vallée du Bandama, et mort le 12 novembre 2023, est un écrivain ivoirien. Après des études en électronique et télécommunications, il devient professeur de mathématiques et de sciences physiques.'],
                 ['h2', 'Une œuvre multiple'],
-                ['p', 'Parallèlement à son métier d’enseignant, il écrit des recueils de poésie, des nouvelles, des romans et des ouvrages pour la jeunesse. Juste avant son décès, il enseignait encore dans le secondaire général à Abidjan.'],
+                ['p', 'Parallèlement à cet emploi salarié, Camara Nangala écrivait des livres de poésies, des nouvelles, des romans et des ouvrages pour la jeunesse. Juste avant son décès, il enseignait encore dans le secondaire général à Abidjan.'],
             ],
             'bibliography' => [
                 ['title' => 'Camara Nangala', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Camara_Nangala'],
@@ -3730,7 +3730,7 @@ return [
             'blocks' => [
                 ['p', 'Fatou Fanny-Cissé, née Fatoumata Touré-Cissé en 1971 en Côte d’Ivoire et morte le 22 décembre 2018, est une écrivaine, universitaire et éco-féministe ivoirienne. Elle effectue ses études à l’université Félix-Houphouët-Boigny, où elle obtient une maîtrise en sciences de la communication, puis un doctorat en lettres modernes.'],
                 ['h2', 'L’enseignante et l’autrice'],
-                ['p', 'Elle devient enseignante-chercheuse dans le même département de l’université. Son dernier livre, De mère en fille, est publié à titre posthume en 2019.'],
+                ['p', 'Elle devient enseignant-chercheur dans le même département de l\'université. Son dernier livre, De mère en fille, est publié à titre posthume en 2019.'],
             ],
             'bibliography' => [
                 ['title' => 'Fatou Fanny-Cissé', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Fatou_Fanny-Ciss%C3%A9'],
@@ -4466,7 +4466,7 @@ return [
             'occupations' => ['Footballeur'],
             'summary' => 'Milieu défensif international ivoirien né en 1980, Didier Zokora détient le record de sélections avec les Éléphants (123) et a été finaliste de la CAN en 2006 et 2012.',
             'blocks' => [
-                ['p', 'Didier Deguy Zokora, né le 14 décembre 1980 à Abidjan, est un ancien footballeur international ivoirien. Milieu défensif de formation, il pouvait aussi évoluer comme défenseur central, et son physique comme sa technique lui valent le surnom de « Maestro ».'],
+                ['p', 'Didier Deguy Zokora, né le 14 décembre 1980 à Abidjan, est un ancien footballeur international ivoirien. Son poste de prédilection était milieu défensif, mais il pouvait également jouer défenseur central ; il est surnommé le Maestro. ».'],
                 ['h2', 'De Genk à Séville'],
                 ['p', 'Formé à l’Académie Mimosifcom d’Abidjan, il signe à 20 ans au KRC Genk à l’été 2000 et s’y impose dès sa première saison. Champion de Belgique en 2002, il découvre la Ligue des champions avant de rejoindre l’AS Saint-Étienne, puis Tottenham et le Séville FC.'],
                 ['h2', 'Les Éléphants'],
@@ -5520,7 +5520,7 @@ return [
                 ['h2', 'Le record de CAN'],
                 ['p', 'Il détient le record de participations à la Coupe d’Afrique des nations avec la Côte d’Ivoire, avec sept éditions disputées entre 1988 et 2004. À son palmarès figurent la CAN 1992 et cinq championnats de Côte d’Ivoire.'],
                 ['h2', 'Entraîneur'],
-                ['p', 'Il obtient en mars 2002 le BEES 1er degré et entraîne la JS Cugnaux de 2002 à 2003, puis l\'ASEC Mimosas en 2014-2015. Il fait partie du staff de la sélection ivoirienne, sacrée championne d\'Afrique en 2023, en tant qu\'entraîneur des gardiens.'],
+                ['p', 'Il obtient en mars 2002 le BEES 1er degré et entraîne la JS Cugnaux de 2002 à 2003, puis l\'ASEC Mimosas en 2014-2015. Il est vainqueur de la coupe d\'Afrique 2023 en tant qu\'entraîneur des gardiens de la sélection ivoirienne.'],
             ],
             'bibliography' => [
                 ['title' => 'Alain Gouaméné', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Alain_Gouam%C3%A9n%C3%A9'],
@@ -5703,7 +5703,7 @@ return [
             'occupations' => ['Footballeur'],
             'summary' => 'Défenseur international ivoirien né en 1968, Rufin Lué a disputé 26 sélections et remporté la CAN 1992.',
             'blocks' => [
-                ['p', 'Rufin Biagné Lué, né le 5 janvier 1968, est un ancien footballeur international ivoirien qui évoluait au poste de défenseur. Il porte le maillot de la Côte d’Ivoire à 26 reprises entre 1987 et 1997, sans inscrire de but.'],
+                ['p', 'Rufin Biagné Lué, né le 5 janvier 1968, est un ancien footballeur international ivoirien qui évoluait au poste de défenseur. Avec l\'équipe de Côte d\'Ivoire, il joue 26 matchs, pour aucun but inscrit, entre 1987 et 1997.'],
                 ['h2', 'Les CAN et la Coupe des confédérations'],
                 ['p', 'Il figure dans le groupe des sélectionnés lors des Coupes d’Afrique des nations 1988, 1990 et 1996, et remporte l’édition 1992. Il participe également à la Coupe des confédérations 1992, où il joue un match contre les États-Unis.'],
             ],
@@ -5952,7 +5952,7 @@ return [
             'occupations' => ['Footballeuse'],
             'summary' => 'Milieu internationale ivoirienne née en 1992, Christine Lohoues a joué la Coupe du monde 2015 et terminé troisième de la CAN 2014.',
             'blocks' => [
-                ['p', 'Christine Lohoues, née le 18 octobre 1992, est une footballeuse internationale ivoirienne qui évolue au poste de milieu de terrain. Elle fait partie de la sélection qui termine troisième du championnat d’Afrique 2014.'],
+                ['p', 'Christine Lohoues, née le 18 octobre 1992, est une footballeuse internationale ivoirienne qui évolue au poste de milieu de terrain. Elle est troisième du championnat d\'Afrique féminin en 2014 avec l\'équipe de Côte d\'Ivoire.'],
                 ['h2', 'Le Mondial 2015'],
                 ['p', 'Elle participe avec la Côte d’Ivoire à la Coupe du monde 2015 organisée au Canada, où elle joue deux matchs, contre la Thaïlande et la Norvège.'],
             ],
@@ -6171,7 +6171,7 @@ return [
                 ['h2', 'Sion et Stuttgart'],
                 ['p', 'Il rejoint en 2008 le FC Sion, en Suisse, où il remporte deux Coupes de Suisse, en 2009 et 2011 ; il s’y illustre aussi par cinq expulsions en deux saisons. Soupçonné de trucage de matchs en mars 2010, il est très vite innocenté. Le 2 février 2015, il s’engage avec le VfB Stuttgart.'],
                 ['h2', 'La CAN 2015'],
-                ['p', 'La même année, il remporte la Coupe d’Afrique des nations avec les Éléphants, après une séance de tirs au but contre le Ghana, et figure dans l’équipe type du tournoi. Il s’engage au FC Bâle en 2016. En 2019, il manque le tir au but décisif face à l’Algérie, qui élimine la Côte d’Ivoire en quarts de finale.'],
+                ['p', 'La même année, il remporte la Coupe d’Afrique des nations avec les Éléphants, après une séance de tirs au but contre le Ghana, et figure dans l’équipe type du tournoi. Il s’engage au FC Bâle en 2016. En 2019, il rate le tir au but qui a permis à l\'Algérie de se qualifier pour les demi-finales de la Coupe d\'Afrique des Nations, éliminant ainsi la sélection ivoirienne.'],
             ],
             'bibliography' => [
                 ['title' => 'Serey Dié', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Serey_Di%C3%A9'],
@@ -6274,7 +6274,7 @@ return [
             'blocks' => [
                 ['p', 'Ousmane Diomande, né le 4 décembre 2003 à Abidjan, est un footballeur international ivoirien qui joue au poste de défenseur central. Produit de l’Olympic Sport Abobo FC, qu’il rejoint à l’âge de dix ans, il intègre en janvier 2020 l’académie des jeunes du FC Midtjylland, au Danemark. Le 5 août 2022, il est prêté au CD Mafra, en deuxième division portugaise, où ses performances convainquent le Sporting CP de le recruter.'],
                 ['h2', 'Le Sporting CP'],
-                ['p', 'Le 31 janvier 2023, il est transféré au Sporting CP pour 7,5 millions d’euros et signe un contrat jusqu’en 2027. Il y est champion du Portugal en 2024 et 2025, finaliste de la Supercoupe en 2024 et de la Coupe du Portugal en 2026. Il évolue aujourd’hui à Nottingham Forest.'],
+                ['p', 'Le 31 janvier 2023, il est transféré au Sporting CP pour 7,5 millions d’euros et signe un contrat jusqu’en 2027. Il y est champion du Portugal en 2024 et 2025, finaliste de la Supercoupe en 2024 et de la Coupe du Portugal en 2026. Il joue au poste de défenseur central à Nottingham Forest.'],
                 ['h2', 'Les Éléphants'],
                 ['p', 'Convoqué pour la première fois en septembre 2023, il honore sa première sélection le 9 septembre 2023, lors d’une victoire 1 à 0 contre le Lesotho en qualifications pour la CAN 2023. Il est retenu pour la CAN 2023 et marque son premier but le 6 janvier 2024, en match de préparation contre la Sierra Leone. Il figure dans la liste ivoirienne pour la Coupe du monde 2026.'],
             ],

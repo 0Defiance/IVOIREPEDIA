@@ -2584,6 +2584,30 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 96 — 25 novembre 2026 · Les vingt dernières phrases ramenées au seuil
+
+**Fait**
+- Les **20 phrases** restées sous le seuil de recouvrement (toutes leurs ancres présentes dans la notice) ont été reformulées dans les mots de la notice, sans changer le fait rapporté. **21 remplacements sur 20 fiches.**
+- Reformulations qui apportent une information au lieu d’un commentaire :
+  - **Charles Konan Banny** : « jusqu’aux élections de 2007 » (élection qui n’a pas eu lieu cette année-là) → « Il quitte la tête du gouvernement le 29 mars 2007. »
+  - **Jeannot Ahoussou-Kouadio** : « commence sa carrière dans le droit » → « Avocat d’affaires de profession, il est membre de longue date du PDCI-RDA. »
+  - **Jean Konan Banny** : mention du « lendemain de l’indépendance » et de la présidence Houphouët-Boigny → « Nommé le 3 janvier 1961 ministre de la Défense du premier gouvernement Houphouët-Boigny, il occupe ce poste de 1961 à 1963 et de 1981 à 1990. »
+  - **Souleymane Diarrassouba** : la phrase de synthèse sur « près d’une décennie de politique industrielle » cède la place à « En janvier 2026, il est nommé ministre du Plan et du Développement dans le gouvernement Beugré Mambé II. »
+  - **Hervé Alliali** : « siège à l’Assemblée tout en participant à la vie municipale » → « Hervé Alliali est intégré à la Commission sécurité-défense de l’Assemblée nationale de Côte d’Ivoire. »
+  - **Paul Antoine Bohoun Bouabré** : « pendant la crise politico-militaire » → « Le 15 août 2002, le ministère de l’Économie et des Finances devient un ministère d’État ; il demeure à ce poste jusqu’au 28 décembre 2005. »
+  - **Vincent Toh Bi Irié** : « se consacrer à la politique » → son passage de sous-préfet de Tiémé (région d’Odienné).
+  - **Louis Kouakou-Habonouan**, **Pierre Kipré**, **Germain Coffi Gadeau**, **Gaston Ouassénan Koné**, **Micheline Coulibaly**, **Camara Nangala**, **Fatou Fanny-Cissé**, **Didier Zokora**, **Alain Gouaméné**, **Rufin Lué**, **Christine Lohoues**, **Serey Dié**, **Ousmane Diomande** : formulations reprises de la notice (« député à l’Assemblée nationale de décembre 2011 à décembre 2016 », « travaux d’historien », « élu membre du bureau politique lors du congrès de 1947 », « Son poste de prédilection était milieu défensif », etc.).
+
+**Vérifié**
+- Nouveau scan après correction : **5 phrases** sous le seuil, **toutes à ancre absente** — FPI pour « Front populaire ivoirien » (Dacoury-Tabley), « CAN » (Ndicka, Krasso), « Formé » (Youssouf Bakayoko) et les noms du roman de Yaya Diomandé, qui viennent de sa propre référence et non de Wikipédia. **Aucune phrase à ancres présentes ne reste sous le seuil.**
+- `composer test` : **164 tests, 5 659 assertions** ; `composer format:check` : 160 fichiers ; `composer analyse` : aucun problème ; `php -l` sur le fichier de données.
+- Rentabilisé au passage : la phrase fautive de Charles Konan Banny (« élections de 2007 ») est corrigée.
+
+**Reste**
+- Les 5 phrases à ancre absente restent hors seuil : ce sont des écarts de notation (acronyme, dénomination officielle), pas des erreurs de contenu.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
