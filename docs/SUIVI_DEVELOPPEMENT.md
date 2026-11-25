@@ -2484,6 +2484,31 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 93 — 25 novembre 2026 · Les 302 fiches d’écrivains, de sportifs et de politiciens recoupées contre leur notice
+
+**Demandé**
+- Appliquer aux 100 écrivains, 100 sportifs et 102 politiques la relecture faite pour les artistes : supprimer ou sourcer les phrases générales absentes de la notice citée, corriger, puis réensemencer la production et revérifier les pages en 200 avec leurs références.
+
+**Fait**
+- Les **301 notices** des 302 fiches ont été téléchargées (API `prop=extracts`, texte intégral) puis comparées phrase par phrase : **208 phrases** signalées dans **105 fiches**, dont **72 formules nettement évaluatives**.
+- **12 fiches réécrites entièrement** à partir de leur notice, parce que la notice contredisait la fiche et non seulement une phrase : Bernard Binlin Dadié (1916-2019), Paul Yao Akoto (1938-2023), Séry Bailly (1948-2018), Isaïe Biton Koulibaly (1949-2021), Kitia Touré, Jean-Marie Kacou Gervais (1938-), Jean Delafosse (1906-1962), Jean-Marie Adiaffi (1941-1999, Bettié), Aké Loba (1927-2012, Abidjan et Aix-en-Provence), Frédéric Bruly Bouabré (1923-2014, Zéprégühé), Pierre Kipré (1945, Daloa) et Marcel Amondji (1934-2021, Anono et Perpignan).
+- **40 fiches retouchées** : les formules de commentaire autour du fait sourcé ont été supprimées ou remplacées par le fait correspondant de la notice — Tanella Boni, Germain Coffi Gadeau, François-Joseph Amon d’Aby, Denis Oussou-Essui, Yaya Diomandé, Sidney Karams, Gervinho, Kolo Touré, Salomon Kalou, Murielle Ahouré, Emmanuel Éboué, Serge Aurier, Wilfried Zaha, Jean-Michaël Seri, Bakari Koné, Lassina Dao, Amadou Gon Coulibaly, Tidjane Thiam, Charles Konan Banny, Henriette Diabaté, Siméon Aké, Seydou Diarra, Hamed Bakayoko, Jean Konan Banny, Vagondo Diomandé, Aboudramane Sangaré, Hervé Alliali, Roger Adom, Amadou Coulibaly, Pierre Dimba, Ahoua Don Mello, Mohamed Lamine Fadika, Amy Toungara, Germain Yanon Yapo, Amah Marie Tehoua, Zémogo Fofana, Célestine Olibé Trazéré, Anoma Gladys Rose, Pascal Affi N’Guessan.
+- Exemples de remplacements sourcés : Wilfried Zaha reprend le but du 7 août contre Leicester City ; Murielle Ahouré devient porte-drapeau aux Jeux de 2016 ; Jean-Michaël Seri évolue au NK Maribor ; Hervé Alliali devient conseiller spécial du président du PDCI-RDA ; Pascal Affi N’Guessan est candidat en 2015 et 2020 en tant que président du FPI ; Yaya Diomandé est lauréat du prix Voix d’Afriques avec *Abobo Marley*.
+- **`augustin-denise-djore` : référence morte assumée.** Aucune page « Augustin Denise Djoré » n’existe sur Wikipédia ; la fiche confondait plusieurs personnes (dates 1935-2021, Didiévi, « président de l’Assemblée nationale »). Elle est réécrite sur **Auguste Denise** (1906-1991, Tiassalé), seul « Denise » de l’histoire institutionnelle ivoirienne — premier président du conseil général en 1947 et chef du gouvernement de 1958 à 1959 —, avec la référence `https://fr.wikipedia.org/wiki/Auguste_Denise`. Le slug public est conservé ; le nom affiché et l’URL de référence sont corrigés.
+- Date de naissance de Jean-Marie Adiaffi corrigée (1941 et non 1951), lieu de naissance d’Aké Loba (Abidjan), de Bruly Bouabré (Zéprégühé) et de Pierre Kipré (Daloa) ; éditeur de *Kocoumbo, l’étudiant noir* corrigé (Flammarion et non Présence africaine).
+
+**Vérifié**
+- `vendor/bin/pint --test database/data/personalities.php` : conforme.
+- `composer test` : **159 tests, 5 657 assertions**, toutes vertes.
+- `composer format:check` : 157 fichiers conformes ; `composer analyse` : aucun problème.
+- Nouveau passage du contrôle (recouvrement lexical + marqueurs évaluatifs) sur les 402 fiches : **aucune phrase générale non documentée** restante. Une seule phrase reste sous le seuil, vérifiée et sourcée : Jean-Marc Kraidy à l’ALM Évreux Basket en Pro A « cinq saisons » (la notice liste le club de 1993 à 1998).
+- Les 402 fiches gardent au moins une référence bibliographique.
+
+**Reste**
+- Les quatre tranches restent à 100 fiches ; aucune fiche sans référence.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
