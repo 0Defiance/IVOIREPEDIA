@@ -2556,6 +2556,34 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 95 — 25 novembre 2026 · Référence Abobo Marley vérifiée, phrases factuelles relues une à une
+
+**Fait — la référence de *yaya-diomande***
+- La référence « Abobo Marley, roman, JC Lattès, 2020 » est **confirmée** : parution le **16 septembre 2020** aux éditions **JC Lattès**, ISBN **9782709667845** (pages du livre chez Hachette et chez JC Lattès, Page des Libraires, dépêche RFI du 16 septembre 2020).
+- L’URL générique `https://www.jclattes.fr` est remplacée par la page du livre : `https://www.editions-jclattes.fr/livre/abobo-marley-9782709667845/`.
+- Le synopsis de l’éditeur (« Moussa est “balanceur” sur un gbaka… entre Abobo et Adjamé ») justifie la phrase de la fiche, qui est conservée.
+
+**Fait — relecture phrase par phrase**
+- Les 299 notices ont été téléchargées de nouveau (les trois pages sans extrait récupérées avec leur titre exact). Après le scan : **51** phrases sous le seuil de recouvrement, dont **46** dont toutes les ancres figurent dans la notice — ce sont celles relues une à une, avec le passage de notice correspondant affiché à côté.
+- **21 fiches retouchées, dont une réécrite.** Les phrases qui déformaient la notice :
+  - **Guillaume Soro** : « prend ses distances avec la majorité et fonde son propre mouvement politique » n’est pas dans la notice — remplacé par sa démission de la présidence de l’Assemblée, le 8 février 2019.
+  - **Robert Beugré Mambé** : « conduit plusieurs grands chantiers d’infrastructures de la capitale économique » remplacé par son poste au BCET (1977-1985) ; la fin de phrase sur le gouvernement formé en 2023, absente de la notice, est retirée.
+  - **Bernard Dadié** : le résumé de *Climbié* (scolarité entre école villageoise et grands établissements) cède la place à la notice : premier roman qualifié d’autobiographique — ce que l’auteur refuse —, qui expose l’acculturation par la langue française imposée par la colonisation.
+  - **Bernard Zadi Zaourou** : fiche réécrite. Les trois phrases de commentaire littéraire (« à la fois élu et conteur », « une langue poétique qui parle au village comme à la ville », « la poésie et l’engagement public se répondent ») ne venaient pas de la notice ; elles sont remplacées par ses fonctions, sa maîtrise de stylistique (1970), son poste d’assistant à l’université d’Abidjan et *Les Sofas suivi de L’Œil* (1967).
+  - **Wilfried Bony** : « CAN 2015 victorieuse… en pivot et en point d’appui de l’attaque » remplacé par la notice (international depuis 2010, Coupe du monde 2014, quatre CAN).
+  - **Michel Gbagbo** : « élu député de Yopougon en mars 2021 » corrigé en candidature sur une liste de six sièges partagés entre l’EDS et le PDCI.
+  - **Youssouf Bakayoko** : la mention de la crise post-électorale, absente de la notice, est retirée ; **Seydou Diarra** : « décembre 2005 » ramené à 2005 ; **Simone Kaya** : le commentaire sur sa « place particulière » est retiré.
+  - Retouches plus courtes : Kandia Camara, Jean-Baptiste Mockey, Thomas Camara, Amah Marie Tehoua, Jean-Marc Yacé, Augustin Thiam (deux phrases), Josué Guébo, Sidney Karams, Franck Kessié, Laurent Pokou, Donald-Olivier Sié, Roger Assalé, Pierre Dimba.
+
+**Vérifié**
+- `composer test` : **164 tests, 5 659 assertions** ; `composer format:check` : 160 fichiers conformes ; `composer analyse` : aucun problème ; `php -l` sur `database/data/personalities.php`.
+- Après correction, **25 phrases** restent sous le seuil, dont **20** conservées après relecture (écart de formulation, contenu fidèle) et **5** à ancres absentes qui étaient déjà des écarts de notation (« élections de 2007 », « Front populaire ivoirien », « Coupe d’Afrique des nations », diplômes de Genève).
+
+**Reste**
+- Les phrases conservées restent au-dessous du seuil de recouvrement : un futur passage pourra les reformuler si le seuil de contrôle est abaissé.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

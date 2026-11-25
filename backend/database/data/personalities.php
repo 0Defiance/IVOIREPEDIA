@@ -296,7 +296,7 @@ return [
                 ['h2', 'De la rébellion au pouvoir'],
                 ['p', 'Chef des Forces nouvelles, il négocie au nom de la rébellion et signe en 2007 l’accord politique de Ouagadougou avec le président Laurent Gbagbo. Cet accord le conduit à la Primature, qu’il occupe de 2007 à 2012, y compris pendant la crise post-électorale de 2010-2011.'],
                 ['h2', 'L’Assemblée nationale'],
-                ['p', 'Il est élu président de l’Assemblée nationale en 2012 et conserve ce poste jusqu’en 2019. Il prend ensuite ses distances avec la majorité et fonde son propre mouvement politique.'],
+                ['p', 'Il est élu président de l’Assemblée nationale en 2012 et occupe ce poste de 2012 à 2019. Il annonce sa démission le 8 février 2019.'],
             ],
             'bibliography' => [
                 ['title' => 'Guillaume Soro', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Guillaume_Soro'],
@@ -340,7 +340,7 @@ return [
                 ['h2', 'Deux passages à la Primature'],
                 ['p', 'Il est nommé Premier ministre en mai 2000 sous la transition de Robert Guéï, puis revient à la tête du gouvernement en janvier 2003, après les accords de Linas-Marcoussis, pour conduire un exécutif de réconciliation nationale.'],
                 ['h2', 'L’homme du consensus'],
-                ['p', 'Son second mandat s\'achève en décembre 2005, sans que les élections prévues aient pu se tenir.'],
+                ['p', 'Son second mandat s\'achève en 2005.'],
             ],
             'bibliography' => [
                 ['title' => 'Seydou Diarra', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Seydou_Diarra'],
@@ -426,9 +426,9 @@ return [
             'blocks' => [
                 ['p', 'Robert Beugré Mambé, né le 1er janvier 1952 à Abiaté, dans la région de Dabou, est un ingénieur et homme d’État ivoirien.'],
                 ['h2', 'Le gouverneur du district d’Abidjan'],
-                ['p', 'Gouverneur du district autonome d’Abidjan de 2011 à 2023, il est également député de Songon. Il conduit plusieurs grands chantiers d’infrastructures de la capitale économique.'],
+                ['p', 'Gouverneur du district autonome d’Abidjan de 2011 à 2023, il est également député de Songon. De 1977 à 1985, il est chef de département grandes infrastructures du BCET, l\'actuel BNETD.'],
                 ['h2', 'Premier ministre'],
-                ['p', 'Il est nommé Premier ministre le 16 octobre 2023 et forme un gouvernement chargé de poursuivre les programmes de développement et de préparer les échéances politiques du pays.'],
+                ['p', 'Il est nommé Premier ministre le 16 octobre 2023.'],
             ],
             'bibliography' => [
                 ['title' => 'Robert Beugré Mambé', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Robert_Beugr%C3%A9_Mamb%C3%A9'],
@@ -450,7 +450,7 @@ return [
                 ['h2', 'L’École et le Quai d’Orsay'],
                 ['p', 'Ministre de l’Éducation nationale dans plusieurs gouvernements d’Alassane Ouattara, elle est ensuite ministre d’État et ministre des Affaires étrangères d’avril 2021 à octobre 2023.'],
                 ['h2', 'Le Sénat'],
-                ['p', 'En octobre 2023, elle est élue présidente du Sénat, succédant à Jeannot Ahoussou-Kouadio. Elle est l’une des personnalités les plus visibles de la majorité présidentielle.'],
+                ['p', 'En octobre 2023, elle est élue présidente du Sénat, succédant à Jeannot Ahoussou-Kouadio.'],
             ],
             'bibliography' => [
                 ['title' => 'Kandia Camara', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Kandia_Camara'],
@@ -534,7 +534,7 @@ return [
                 ['h2', 'Le militant du RDA'],
                 ['p', 'Secrétaire général du PDCI-RDA, il est vice-Premier ministre chargé de l’Intérieur du premier gouvernement de la République avant l’indépendance.'],
                 ['h2', 'Ministre et ambassadeur'],
-                ['p', 'Il est ensuite successivement ambassadeur en Israël, ministre de l’Agriculture et ministre d’État chargé de la Santé. Son parcours traverse les premières décennies de l’État ivoirien.'],
+                ['p', 'Il est ensuite successivement ambassadeur en Israël, ministre de l’Agriculture et ministre d’État chargé de la Santé.'],
             ],
             'bibliography' => [
                 ['title' => 'Jean-Baptiste Mockey', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Jean-Baptiste_Mockey'],
@@ -765,7 +765,7 @@ return [
                 ['h2', 'Le diplomate'],
                 ['p', 'Formé au droit et aux relations internationales, il sert notamment à Genève et à Vienne avant de devenir ambassadeur. Il est ministre des Affaires étrangères du 28 décembre 2005 au 23 février 2010.'],
                 ['h2', 'La CEI de 2010'],
-                ['p', 'Élu le 26 février 2010 à la tête de la nouvelle Commission électorale indépendante, il conduit l’institution lors de l’élection présidentielle de 2010, dont la proclamation des résultats ouvre la crise post-électorale.'],
+                ['p', 'Élu le 26 février 2010 à la tête de la nouvelle Commission électorale indépendante, il conduit l’institution lors de l’élection présidentielle de 2010,.'],
             ],
             'bibliography' => [
                 ['title' => 'Youssouf Bakayoko', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Youssouf_Bakayoko'],
@@ -846,8 +846,6 @@ return [
             'summary' => 'Homme politique ivoirien, Thomas Camara a été ministre des Mines, du Pétrole et de l’Énergie et est maire de Katiola depuis 2013.',
             'blocks' => [
                 ['p', 'Thomas Camara est un homme politique ivoirien. Il est maire de la commune de Katiola depuis 2013, dans la région du Hambol.'],
-                ['h2', 'Le maire de Katiola'],
-                ['p', 'Son mandat municipal le place au plus près des populations du centre-nord du pays, dans une circonscription marquée par l’agriculture et le commerce.'],
                 ['h2', 'Les Mines et l’Énergie'],
                 ['p', 'Il exerce ensuite les fonctions de ministre des Mines, du Pétrole et de l’Énergie de la République de Côte d’Ivoire, avant de retrouver son mandat local.'],
             ],
@@ -891,7 +889,7 @@ return [
                 ['h2', 'Le ministère de la Santé'],
                 ['p', 'Depuis le 6 avril 2021, il est ministre de la Santé, de l\'Hygiène publique et de la Couverture maladie universelle.'],
                 ['h2', 'La couverture maladie universelle'],
-                ['p', 'Son ministère porte la mise en œuvre de la couverture maladie universelle et l\'organisation du système sanitaire national.'],
+                ['p', 'Son ministère porte la mise en œuvre de la couverture maladie universelle.'],
             ],
             'bibliography' => [
                 ['title' => 'Pierre Dimba', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Pierre_Dimba'],
@@ -1057,7 +1055,7 @@ return [
             'blocks' => [
                 ['p', 'Jean-Marc Yacé, né le 28 mai 1961 à Abidjan, est un homme politique ivoirien et chef d’entreprise, membre du Parti démocratique de Côte d’Ivoire.'],
                 ['h2', 'Le maire de Cocody'],
-                ['p', 'Il est maire de la commune de Cocody depuis 2018 et a été réélu en 2023. Il conduit l’une des communes les plus peuplées et les plus centrales d’Abidjan.'],
+                ['p', 'Il est maire de la commune de Cocody depuis 2018 et a été réélu en 2023.'],
                 ['h2', 'Le député'],
                 ['p', 'Il est également député de Cocody depuis 2025.'],
             ],
@@ -1078,9 +1076,9 @@ return [
             'blocks' => [
                 ['p', 'Augustin Abdoulaye Thiam Houphouët, né le 14 août 1952 à Yamoussoukro, est un homme politique ivoirien.'],
                 ['h2', 'Le gouverneur de Yamoussoukro'],
-                ['p', 'Il est ministre-gouverneur du district autonome de Yamoussoukro depuis 2011. À ce titre, il coordonne l’administration et le développement de la capitale politique du pays.'],
+                ['p', 'Il est ministre-gouverneur du district autonome de Yamoussoukro depuis 2011.'],
                 ['h2', 'Le chef canton'],
-                ['p', 'Il est également chef canton des Akouès, ce qui le place à la charnière des institutions administratives et des autorités traditionnelles de la région.'],
+                ['p', 'Il est également chef canton des Akouès.'],
             ],
             'bibliography' => [
                 ['title' => 'Augustin Thiam', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Augustin_Thiam'],
@@ -1201,8 +1199,6 @@ return [
                 ['p', 'Amah Marie Tehoua, née le 12 mars 1950 à Bongouanou, est une femme politique ivoirienne.'],
                 ['h2', 'La ministre de l’Industrie'],
                 ['p', 'Elle est ministre de l’Industrie et de la Promotion du secteur privé dans les gouvernements Charles Konan Banny I et II, puis dans le gouvernement Soro I, du 28 décembre 2005 au 12 février 2010.'],
-                ['h2', 'Une trajectoire de la transition'],
-                ['p', 'Son mandat couvre les années de sortie de crise et de reconstruction économique.'],
             ],
             'bibliography' => [
                 ['title' => 'Amah Marie Tehoua', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Amah_Marie_Tehoua'],
@@ -2201,7 +2197,7 @@ return [
             'blocks' => [
                 ['p', 'Bernard Binlin Dadié, né le 10 janvier 1916 à Assinie et mort le 9 mars 2019 à Abidjan, est un écrivain, académicien et homme politique ivoirien. Fils de Gabriel Dadié, il est considéré comme le père de la littérature ivoirienne.'],
                 ['h2', 'Climbié, le roman de l\'école coloniale'],
-                ['p', 'Publié en 1956, Climbié suit la scolarité d\'un enfant entre l\'école villageoise et les grands établissements, et interroge la relation entre tradition et modernité. Dadié obtient en 1965 le Grand prix littéraire d\'Afrique noire pour Patron de New York.'],
+                ['p', 'Climbié (1956), premier roman de Dadié, qualifié d\'autobiographique — ce que l\'auteur refuse —, expose l\'acculturation par le biais de la langue française imposée par la colonisation. Dadié obtient en 1965 le Grand prix littéraire d\'Afrique noire pour Patron de New York.'],
                 ['h2', 'L\'homme public'],
                 ['p', 'À l\'indépendance, il est chef de cabinet du ministre de l\'Éducation nationale, directeur des Affaires culturelles, inspecteur général des Arts et Lettres, puis ministre de la Culture et de l\'Information en 1977. Il meurt à Abidjan en 2019.'],
             ],
@@ -2242,14 +2238,14 @@ return [
             'birthPlace' => 'Soubré',
             'death' => '2012',
             'deathPlace' => 'Abidjan',
-            'occupations' => ['Écrivain', 'Poète', 'Homme politique'],
-            'summary' => "Poète et homme politique ivoirien (1938-2012), Bernard Zadi Zaourou a porté en vers la parole du peuple bété et la mémoire de l'oralité.",
+            'occupations' => ['Écrivain', 'Universitaire', 'Homme politique'],
+            'summary' => 'Écrivain, universitaire et homme politique ivoirien (1938-2012), Bernard Zadi Zaourou a été ministre de la Culture en 1993 et l\'auteur des Sofas.',
             'blocks' => [
-                ['p', "Bernard Zadi Zaourou, né en 1938 à Soubré, est poète et homme politique ivoirien. À la fois élu et conteur, il a fait du vers et du théâtre les véhicules d'une réflexion sur l'identité bété et la dignité du peuple."],
-                ['h2', 'Le poète du peuple'],
-                ['p', 'Auteur de recueils et de pièces, il puise dans les traditions orales — danses, proverbes, récits de la forêt — une langue poétique qui parle au village comme à la ville.'],
-                ['h2', 'Élu et auteur'],
-                ['p', "Ministre et député, il poursuit son écriture tout au long de sa carrière politique. Il meurt à Abidjan en 2012, laissant une oeuvre où la poésie et l'engagement public se répondent."],
+                ['p', 'Bernard Zadi Zaourou, connu aussi sous le nom de Bottey Zadi Zaourou, est né en 1938 à Soubré et mort le 20 mars 2012 à Abidjan. Enseignant universitaire, homme politique, écrivain, metteur en scène, musicien et syndicaliste ivoirien, il a été ministre de la Culture dans le gouvernement de Daniel Kablan Duncan, formé en 1993 sous la présidence d\'Henri Konan Bédié.'],
+                ['h2', 'L\'universitaire'],
+                ['p', 'Diplômé d\'une maîtrise de stylistique et d\'histoire de la langue en 1970, il devient assistant au département de lettres modernes de l\'université d\'Abidjan.'],
+                ['h2', 'L\'auteur dramatique'],
+                ['p', 'Il publie en 1967 Les Sofas suivi de L\'Œil, à Paris, chez L\'Harmattan.'],
             ],
             'bibliography' => [
                 ['title' => 'Bernard Zadi Zaourou', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Bernard_Zadi_Zaourou'],
@@ -2467,7 +2463,7 @@ return [
                 ['h2', 'Les prix'],
                 ['p', 'Il est récipiendaire du Grand prix Bernard Dadié, du Prix Tchicaya U Tam’si pour la poésie africaine et du Prix Jeanne de Cavally pour la littérature enfantine. Il est le sixième président de l’Association des écrivains de Côte d’Ivoire.'],
                 ['h2', 'Chercheur et promoteur'],
-                ['p', 'Son travail d’universitaire accompagne une activité de promotion de la lecture et de la création littéraire. Il est initiateur et président de la Société ivoirienne de transhumanisme (Sivot).'],
+                ['p', 'Il est initiateur et président de la Société ivoirienne de transhumanisme (Sivot).'],
             ],
             'bibliography' => [
                 ['title' => 'Josué Guébo', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Josu%C3%A9_Gu%C3%A9bo'],
@@ -2551,7 +2547,7 @@ return [
                 ['h2', 'Les Danseuses d’Impé-eya'],
                 ['p', 'Elle publie en 1976 Les Danseuses d’Impé-eya. Jeunes filles à Abidjan, roman autobiographique préfacé par Cheikh Hamidou Kane, puis Le Prix d’une vie en 1984. Ses récits racontent une tranche de sa vie et l’histoire d’une génération d’Ivoiriennes.'],
                 ['h2', 'Une pionnière'],
-                ['p', 'Première femme à entrer dans la littérature ivoirienne, elle occupe une place particulière dans l’histoire littéraire du pays. Son œuvre se situe à la charnière de l’ère coloniale et des États indépendants.'],
+                ['p', 'Elle est la première femme à entrer dans la littérature ivoirienne. Son œuvre se situe à la charnière de l’ère coloniale et des États indépendants.'],
             ],
             'bibliography' => [
                 ['title' => 'Simone Kaya', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Simone_Kaya'],
@@ -2881,7 +2877,7 @@ return [
             'blocks' => [
                 ['p', 'Michel Koudou Gbagbo, né le 24 septembre 1969 à Lyon, en France, est un écrivain et universitaire ivoirien. Il est le fils de Laurent Gbagbo, président de la République de 2000 à 2011, et de Jacqueline Chamois, Française, ce qui lui vaut la nationalité française.'],
                 ['h2', 'L’universitaire'],
-                ['p', 'Docteur en psychopathologie de la vie sociale, il enseigne dans le programme de formation en criminologie de l’université Félix-Houphouët-Boigny de Cocody, à Abidjan. Il est élu député de la commune de Yopougon en mars 2021.'],
+                ['p', 'Docteur en psychopathologie de la vie sociale, il enseigne dans le programme de formation en criminologie de l’université Félix-Houphouët-Boigny de Cocody, à Abidjan. En 2021, il est candidat aux élections législatives dans la circonscription de Yopougon, sur une liste de six sièges partagés entre l\'EDS et le PDCI.'],
                 ['h2', 'L’écrivain'],
                 ['p', 'Il publie l’essai Côte d’Ivoire : un air de changement et le recueil Confidences en 2006, puis Les souillons en 2010. Ses travaux incluent aussi Réintégration sociale des personnes ayant souffert de maladie mentale (2009) et Quelle place pour les « fous guéris ? » (2015).'],
             ],
@@ -2906,7 +2902,7 @@ return [
             ],
             'bibliography' => [
                 ['title' => 'Yaya Diomandé', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Yaya_Diomand%C3%A9'],
-                ['title' => 'Abobo Marley, roman', 'publisher' => 'JC Lattès', 'year' => 2020, 'url' => 'https://www.jclattes.fr'],
+                ['title' => 'Abobo Marley, roman', 'publisher' => 'JC Lattès', 'year' => 2020, 'url' => 'https://www.editions-jclattes.fr/livre/abobo-marley-9782709667845/'],
             ],
         ],
         [
@@ -2945,7 +2941,7 @@ return [
                 ['h2', 'Le Romandroom'],
                 ['p', 'Il fonde en 2003 le Romandroom, bibliothèque sociale installée à Treichville, cité Arras 1, à Abidjan.'],
                 ['h2', 'Promouvoir la lecture'],
-                ['p', 'Le Romandroom organise aussi des rencontres avec des écrivains et des actions de sensibilisation des parents à la lecture. Sidney Karams y intervient comme animateur culturel et responsable de la structure.'],
+                ['p', 'Le Romandroom est un espace destiné à la lecture et aux échanges littéraires à Abidjan. Sidney Karams y intervient comme animateur culturel et responsable de la structure.'],
             ],
             'bibliography' => [
                 ['title' => 'Sidney Karams', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Sidney_Karams'],
@@ -4390,7 +4386,7 @@ return [
                 ['h2', 'Swansea puis Manchester City'],
                 ['p', 'Transféré à Swansea en 2012, il y devient buteur prolifique avant de rejoindre Manchester City en 2015 pour un montant record pour le club gallois.'],
                 ['h2', 'Le pivot des Éléphants'],
-                ['p', "International, il a participé à la CAN 2015 victorieuse avec la Côte d'Ivoire, en pivot et en point d'appui de l'attaque."],
+                ['p', 'International ivoirien depuis 2010, il a participé à la Coupe du monde 2014 ainsi qu\'à quatre Coupes d\'Afrique des nations avec les Éléphants.'],
             ],
             'bibliography' => [
                 ['title' => 'Wilfried Bony', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Wilfried_Bony'],
@@ -4428,11 +4424,11 @@ return [
             'occupations' => ['Footballeur'],
             'summary' => 'Footballeur international ivoirien né en 1996, Franck Kessié, milieu, a joué à l’Atalanta Bergame et au FC Barcelone.',
             'blocks' => [
-                ['p', "Franck Kessié, né le 24 décembre 1996 à Ouragahio, est un milieu ivoirien au jeu percutant. Il perce en Italie, à l'Atalanta Bergame."],
+                ['p', 'Franck Kessié, né le 24 décembre 1996 à Ouragahio, est un milieu ivoirien au jeu percutant. Il perce en Italie, à l\'Atalanta Bergame.'],
                 ['h2', 'L’Italie puis la Catalogne'],
-                ['p', "Élément clé de l'Atalanta, il rejoint ensuite le FC Barcelone en 2022. Son volume de jeu et son tir lui permettent d'évoluer milieu ou meneur."],
+                ['p', 'Élément clé de l\'Atalanta, il rejoint ensuite le FC Barcelone en 2022.'],
                 ['h2', 'Le moteur des Éléphants'],
-                ['p', "International, il remporte la CAN 2023 avec les Éléphants, marque lors de la finale face au Nigeria et figure dans l'équipe type du tournoi."],
+                ['p', 'International, il remporte la CAN 2023 avec les Éléphants, marque lors de la finale face au Nigeria et figure dans l\'équipe type du tournoi.'],
             ],
             'bibliography' => [
                 ['title' => 'Franck Kessié', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Franck_Kessi%C3%A9'],
@@ -5608,7 +5604,7 @@ return [
                 ['h2', 'Les CAN de 1968 et 1970'],
                 ['p', 'Il participe à quatre Coupes d’Afrique des nations, en 1968, 1970, 1974 et 1980. Meilleur buteur des éditions 1968 et 1970, avec six puis huit buts, il marque cinq fois lors d’une seule rencontre face à l’Éthiopie, le 10 février 1970, pour une victoire 6 à 1. Son total de quatorze buts sur plusieurs éditions reste le record de la compétition jusqu’en 2008, année où Samuel Eto’o le dépasse. Il termine deuxième du Ballon d’or africain en 1970 et troisième en 1973.'],
                 ['h2', 'Rennes, Nancy et la fin de carrière'],
-                ['p', 'Encouragé par Pelé à devenir professionnel, il rejoint la France fin décembre 1973, au Stade rennais, puis l’AS Nancy-Lorraine en 1977, où il côtoie Michel Platini. Son passage européen est freiné par les blessures. Avec l’ASEC, il remporte quatre championnats, en 1970, 1972, 1973 et 1980, et six Coupes de Côte d’Ivoire. Il compte soixante-dix sélections et devient entraîneur jusqu’en 1988. En 2023, le stade de San-Pédro est baptisé à son nom et le ballon officiel de la CAN 2023 est appelé « Pokou ».'],
+                ['p', 'Encouragé par Pelé à devenir professionnel, il rejoint la France fin décembre 1973, au Stade rennais, puis l’AS Nancy-Lorraine en 1977, où il côtoie Michel Platini. Son parcours à Rennes puis à Nancy est ponctué de nombreuses blessures. Avec l’ASEC, il remporte quatre championnats, en 1970, 1972, 1973 et 1980, et six Coupes de Côte d’Ivoire. Il compte soixante-dix sélections et devient entraîneur jusqu’en 1988. En 2023, le stade de San-Pédro est baptisé à son nom et le ballon officiel de la CAN 2023 est appelé « Pokou ».'],
             ],
             'bibliography' => [
                 ['title' => 'Laurent Pokou', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Laurent_Pokou'],
@@ -5629,7 +5625,7 @@ return [
                 ['h2', 'Toulouse et la fin de carrière'],
                 ['p', 'Il évolue ensuite en France, notamment au Toulouse FC en 1998-1999, où il joue onze matchs et marque son seul but de la saison contre le Paris SG. Il poursuit en National au Racing Club de France, puis au Stade de Reims en 2000-2001, avant de mettre fin à sa carrière professionnelle. Il joue ensuite à Tinqueux puis au JS Cugnaux, où il participe à la montée en CFA2 en 2005 et reste jusqu’en 2010.'],
                 ['h2', 'Six CAN et le banc'],
-                ['p', 'Avec la Côte d’Ivoire, il participe à six Coupes d’Afrique des nations et remporte l’édition 1992, marquant un but contre la Zambie. Sa dernière participation, en 2000, s’achève dès le premier tour. Devenu entraîneur, il est l’adjoint de William Prunier en 2010, le suit à Colomiers en 2011, puis dirige l’équipe réserve du club à partir de 2012.'],
+                ['p', 'Avec la Côte d’Ivoire, il participe à six Coupes d’Afrique des nations et remporte l’édition 1992, marquant un but contre la Zambie. Lors de sa dernière participation à la CAN, en 2000, la Côte d\'Ivoire ne se qualifie pas pour les quarts de finale. Devenu entraîneur, il est l’adjoint de William Prunier en 2010, le suit à Colomiers en 2011, puis dirige l’équipe réserve du club à partir de 2012.'],
             ],
             'bibliography' => [
                 ['title' => 'Donald-Olivier Sié', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Donald-Olivier_Si%C3%A9'],
@@ -6236,7 +6232,7 @@ return [
             'blocks' => [
                 ['p', 'Roger Assalé, né le 13 novembre 1993 à Abengourou, est un footballeur international ivoirien qui évolue au poste d’attaquant. Il commence sa carrière au Séwé Sports en 2012, où il remporte le championnat national lors de ses deux saisons, avant de rejoindre le TP Mazembe. Avec le club congolais, il gagne la Ligue des champions de la CAF en 2015.'],
                 ['h2', 'Les Young Boys'],
-                ['p', 'Le 10 février 2017, il est prêté au BSC Young Boys. Huit jours plus tard, pour ses débuts en Super League, il entre en jeu contre le FC Saint-Gall et marque le but du nul 2 à 2 ; la semaine suivante, il signe un doublé face à Grasshopper. En juillet, le club l’achète définitivement. Il forme un duo efficace avec Guillaume Hoarau et marque douze buts lors de la saison 2017-2018, qui voit les Young Boys remporter le championnat pour la première fois depuis plus de trente ans. Il est de nouveau champion en 2018-2019, avec neuf buts et neuf passes décisives.'],
+                ['p', 'Le 10 février 2017, il est prêté au BSC Young Boys. Huit jours plus tard, pour ses débuts en Super League, il entre en jeu contre le FC Saint-Gall et marque le but du nul 2 à 2 ; la semaine suivante, il signe un doublé face à Grasshopper. En juillet 2017, il est acheté par les Young Boys. Il forme un duo efficace avec Guillaume Hoarau et marque douze buts lors de la saison 2017-2018, qui voit les Young Boys remporter le championnat pour la première fois depuis plus de trente ans. Il est de nouveau champion en 2018-2019, avec neuf buts et neuf passes décisives.'],
                 ['h2', 'Les Éléphants'],
                 ['p', 'Convoqué pour les CAN 2015 et 2019, il reste à chaque fois remplaçant et ne prend part à aucune rencontre. Il évolue aujourd’hui au Stade d’Abidjan.'],
             ],
