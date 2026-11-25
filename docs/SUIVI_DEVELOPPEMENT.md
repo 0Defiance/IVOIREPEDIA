@@ -2608,6 +2608,22 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 97 — 25 novembre 2026 · Le seuil de recouvrement passe en test
+
+**Fait**
+- Nouveau test `backend/tests/Feature/PersonalitiesNoticeCoverageTest.php` : il **rejoue le seeder** puis parcourt les biographies, en mesurant pour chaque phrase la part de ses mots présents dans la notice. Il échoue dès qu’une phrase descend sous **0,55** alors que toutes ses ancres (années, nombres, noms propres) figurent dans la notice. Les formules évaluatives déjà écartées par l’audit restent hors champ, comme dans le scan des séances 94 à 96.
+- Les notices ne sont pas versionnées : la fixture `backend/tests/Fixtures/notice_tokens.php` (0,76 Mo) ne contient que les **jetons distincts** des 301 notices relevées le 25 novembre 2026. Elle se régénère avec `php tests/Fixtures/build_notice_tokens.php <dossier des notices>` (`build_notice_tokens.php`, versionné).
+- Deux détails corrigés en écrivant le test : les **titres de section** du Delta Quill (`attributes.header`) sont exclus du texte comparé, sinon ils se collent à la phrase suivante ; et l’extraction des ancres numériques ne découpe plus « 2007 » en « 200 ».
+
+**Vérifié**
+- Garde-fou éprouvé par mutation : une phrase de remplacement à **0,25** fait échouer le test en nommant la fiche, le ratio et la phrase ; le rétablissement de la phrase d’origine le rend vert.
+- `composer test` : **165 tests, 5 662 assertions** ; `composer format:check` : 163 fichiers ; `composer analyse` : aucun problème. La fixture se régénère à l’identique (aucun diff).
+
+**Reste**
+- Le test ne couvre que les fiches dont la notice figure dans la fixture ; une fiche ajoutée sans notice n’est pas contrôlée avant la prochaine régénération.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
