@@ -2792,6 +2792,23 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 106 — 25 novembre 2026 · Le garde-fou des années de naissance et de mort
+
+**Fait**
+- Le test de recouvrement porte une **cinquième vérification** : pour chaque fiche, les années de `birthDate` et `deathDate` de l'infobox sont comparées aux jetons de la notice ; si une année manque à la notice, la fiche doit citer **au moins une référence qui n'est pas Wikipédia** (les éditeurs contenant « wiki », donc Wikidata, sont exclus au même titre). Sinon le test échoue avec `slug (naissance 1953) : année absente de la notice et sans référence hors Wikipédia`.
+- La liste des références est chargée avec `with('references')` : une requête de plus, pas une par fiche.
+- Aucun contenu n'a changé : le corpus est déjà conforme (les onze années hors notice de la séance 104 ont toutes leur référence propre, et les vingt-six fiches sans année ont un champ vide).
+
+**Vérifié**
+- Garde-fou éprouvé par mutation, puis restauré : donner `1953` comme année de naissance à **Josiane Yapo** (référence Wikipédia seule, notice sans 1953) fait échouer le test en citant exactement `josiane-yapo (naissance 1953)` ; la valeur remise à vide, le test repasse au vert.
+- Contre-épreuve sans mutation : les années de la séance 104 absentes de la notice (Irié Goli Bi 1960, Mehansio 1986, Papa Ministre 1979…) passent bien grâce à leur référence propre.
+- `composer test` : **165 tests, 5 663 assertions** ; `composer format:check` : 163 fichiers ; `composer analyse` : aucun problème.
+
+**Reste**
+- Le garde-fou contrôle la présence de l'année dans la notice et l'existence d'une référence hors Wikipédia, pas la qualité de cette référence : c'est la leçon des séances 104-105, où deux d'entre elles ont été retirées à la main.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

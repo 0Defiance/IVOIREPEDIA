@@ -22,6 +22,9 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
  * titres de section : les scripts de réécriture ont déjà laissé des doubles
  * points, des espaces avant ponctuation ou des espaces multiples dans
  * personalities.php.
+ *
+ * Enfin, une année de naissance ou de mort absente de la notice doit venir
+ * d'une référence propre à la fiche : une source qui n'est pas Wikipédia.
  */
 uses(RefreshDatabase::class);
 
@@ -97,6 +100,21 @@ function noticeCoverageBody(Article $article): string
     return trim(implode(' ', $parts));
 }
 
+/** La fiche cite-t-elle une source qui n'est pas Wikipédia ? */
+function noticeCoverageHasOwnSource(Article $article): bool
+{
+    foreach ($article->references as $reference) {
+        $publisher = (string) $reference->publisher;
+        $url = (string) $reference->url;
+
+        if (preg_match('/wiki/i', $publisher) !== 1 && preg_match('/wikipedia\.org/i', $url) !== 1) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 /** Défauts de ponctuation laissés par les scripts de réécriture, motif => libellé. */
 function personalitiesPunctuationPatterns(): array
 {
@@ -129,9 +147,10 @@ it('garde chaque phrase factuelle au-dessus du seuil de recouvrement de sa notic
 
     $violations = [];
     $formatting = [];
+    $unsourcedYears = [];
     $checked = 0;
 
-    Article::query()->each(function (Article $article) use ($notices, &$violations, &$formatting, &$checked): void {
+    Article::query()->with('references')->each(function (Article $article) use ($notices, &$violations, &$formatting, &$unsourcedYears, &$checked): void {
         $noticeText = $notices[$article->slug] ?? null;
 
         if ($noticeText === null) {
@@ -139,6 +158,26 @@ it('garde chaque phrase factuelle au-dessus du seuil de recouvrement de sa notic
         }
 
         $checked++;
+
+        $notice = array_flip(explode(' ', $noticeText));
+
+        foreach (['birthDate' => 'naissance', 'deathDate' => 'mort'] as $field => $label) {
+            $value = $article->infobox[$field] ?? null;
+
+            if (! is_string($value) || $value === '') {
+                continue;
+            }
+
+            preg_match_all('/\b(1[6-9]\d{2}|20[0-2]\d)\b/u', $value, $years);
+
+            foreach ($years[1] as $year) {
+                if (isset($notice[$year]) || noticeCoverageHasOwnSource($article)) {
+                    continue;
+                }
+
+                $unsourcedYears[] = $article->slug.' ('.$label.' '.$year.') : année absente de la notice et sans référence hors Wikipédia';
+            }
+        }
 
         $punctuated = ['résumé' => $article->summary, 'paragraphes' => noticeCoverageBody($article)];
 
@@ -154,7 +193,6 @@ it('garde chaque phrase factuelle au-dessus du seuil de recouvrement de sa notic
             }
         }
 
-        $notice = array_flip(explode(' ', $noticeText));
         $text = trim($article->summary.' '.noticeCoverageBody($article));
 
         foreach (preg_split('/(?<=[.!?])\s+/u', $text) ?: [] as $sentence) {
@@ -203,4 +241,5 @@ it('garde chaque phrase factuelle au-dessus du seuil de recouvrement de sa notic
     expect($checked)->toBe(401);
     expect($violations)->toBe([]);
     expect($formatting)->toBe([]);
+    expect($unsourcedYears)->toBe([]);
 });
