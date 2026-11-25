@@ -12,8 +12,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
  * propres — figurent toutes dans la notice doit dépasser le seuil.
  *
  * Le seuil, les mots-outils et les formules évaluatives écartées sont ceux de
- * l'audit de recouvrement des séances 94 à 96. La fixture notice_tokens.php
- * contient les jetons des notices, sans les notices elles-mêmes (voir
+ * l'audit de recouvrement des séances 94 à 97. La fixture notice_tokens.php
+ * contient les jetons des 401 notices, sans les notices elles-mêmes (voir
  * build_notice_tokens.php).
  */
 uses(RefreshDatabase::class);
@@ -161,6 +161,6 @@ it('garde chaque phrase factuelle au-dessus du seuil de recouvrement de sa notic
         }
     });
 
-    expect($checked)->toBeGreaterThanOrEqual(290);
+    expect($checked)->toBe(401);
     expect($violations)->toBe([]);
 });

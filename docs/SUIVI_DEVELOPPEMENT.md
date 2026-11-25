@@ -2624,6 +2624,30 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 98 — 25 novembre 2026 · Les cent fiches d’artistes entrent dans le contrôle
+
+**Fait — les notices manquantes**
+- Les **100 fiches d’artistes** n’avaient pas de notice : elles sont toutes récupérées (téléchargement séquentiel, 0,6 s entre requêtes). Deux ont demandé une reprise : **Alpha Blondy** après un délai d’attente, et **A’Salfo** dont le titre exact est « A'salfo » — la requête sur « Salif Traoré » renvoyait une page d’homonymie.
+- Fixture régénérée : **401 notices, 0,99 Mo**. Le test vérifie désormais **exactement 401 fiches** couvertes (`expect($checked)->toBe(401)`), et non plus un plancher à 290.
+
+**Fait — les phrases signalées**
+- Le contrôle étendu a signalé **12 phrases sur 6 fiches** (Ernesto Djédjé, Meiway, Magic System, Nayanka Bell, Aïcha Koné, Paco Séry). Toutes ont été réécrites dans les mots de la notice, et le scan repasse à **0**.
+- La lecture des notices a révélé des **erreurs de fond** dans ces fiches, corrigées au passage :
+  - **Nayanka Bell** était donnée **née en 1967 à Toulepleu et morte à Paris en 2020** : la notice la fait naître en **1963 à Agboville** (Aka Louise de Marillac), et la presse ivoirienne la suit encore en activité en 2020. La fiche reprend sa carrière réelle (choriste à la RTI en 1981, deuxième album à Paris en 1984, Lions d’Or et Africa Music Award en 1994).
+  - **Aïcha Koné** était donnée **née en 1959 à Kayes, de naissance malienne** : la notice la fait naître le **21 mai 1957 à Abidjan**, originaire de Gbon (département de Boundiali), chantant en sénoufo et en dioula. Sa carrière est reprise depuis la notice (choriste à l’ORTI sous Boncana Maïga, premier 45-tours *Denikeleni* en 1979, Kundé d’honneur en 2008).
+  - **Paco Séry** était donné **né à Treichville** et accompagnant « Youssou N’Dour, Fela Kuti » : la notice le fait naître le **1er mai 1956 à Divo** et cite Eddy Louiss, Monty Alexander, Jaco Pastorius, le groupe Sixun, Dee Dee Bridgewater et Manu Dibango.
+  - **Meiway** était donné **né à Grand-Bassam** et surnommé « le Champignon » : la notice donne le **17 mars 1962 à Abidjan**, le vrai nom Frédéric Désiré Patrice Ehui et les surnoms « le professeur Awôlôwôh » et « le génie de Kpalèzo » ; Grand-Bassam est sa ville de citoyenneté d’honneur.
+  - **Ernesto Djédjé** : la phrase sur les chansons « mêlant langues du pays, guitare et humour » cède la place au « Tohourou », rythme bété à l’origine du ziglibithy, et à sa descendance (zouglou en 1990, coupé-décalé en 2003).
+  - **Magic System** : les succès sont listés depuis la notice (Un gaou à Oran, Bouger bouger, Magic in the Air).
+
+**Vérifié**
+- `composer test` : **165 tests, 5 661 assertions** ; `composer format:check` : 163 fichiers ; `composer analyse` : aucun problème ; scan de recouvrement : **0 phrase** sous le seuil avec toutes ses ancres dans la notice.
+
+**Reste**
+- Les notices des artistes restent des ébauches Wikipédia pour certaines : le contrôle porte sur le recouvrement, pas sur la complétude biographique.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
