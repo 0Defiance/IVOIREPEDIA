@@ -2745,6 +2745,31 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 104 — 25 novembre 2026 · Années de naissance rétablies avec leur source
+
+**Fait**
+- Recherche de source explicite pour chaque année retirée en séance 103, puis vérification de la page elle-même (citation lue, pas de reprise d'un résumé). **Onze années rétablies**, chacune avec sa propre référence ajoutée à la bibliographie de la fiche :
+  - **Irié Goli Bi, 1960** — facilitateur didactique de *Le Testament* (FP Éditions, 2023) : « est né en 1960 à Vrigrita ».
+  - **Jean-Paul Mehansio, 11 décembre 1986 à Bangolo** — *Jeune Afrique*, 4 novembre 2016.
+  - **Cédric Marshall Kissy, 1988 à Grand-Bassam** — notice Takam Tikou / BnF, 25 juillet 2019.
+  - **Antoinette Konan, 1961 à Béoumi** — Qobuz (Music Story) : la source donne **1961**, et non 1960 comme la fiche l'affirmait avant le retrait.
+  - **Papa Ministre, 26 juin 1979** — Qobuz (Music Story).
+  - **Adama Dahico, 10 mai 1968 à Adjamé** — Africultures.
+  - **Claudie Titty Dimbeng, 1968 à Abidjan** — galerie LouiSimone Guirandou (et son CV PDF).
+  - **Soum Bill, 2 novembre 1972 à Aboisso** — Universal Music France : le texte ne dit plus « au début des années 1970 ».
+  - **Angéline Nadié, 1968** — 24 News Agency, 19 juillet 2021 (« Née en 1968, morte le 17 juillet 2021 »).
+  - **Naky Sy Savané, 1970** — Wikipédia anglophone (l'article s'appuie sur Wikidata).
+  - **Philippe Lacôte, 1969** — IFFR ; **réserve** : l'African Film Festival indique 1971. L'année 1969 est celle de deux sources (IFFR, Africultures), la contradiction est signalée ici.
+- **Six fiches restent sans année**, faute de source explicite : Gina Dick Boguifo, Hanny Tchelley, Chantal Taïba (Jeune Afrique ne donne que « 17 ans en 1982 »), Gbizié Troupa Bruno, Victor Guéi, Josiane Yapo.
+
+**Vérifié**
+- Chaque source a été ouverte et sa phrase relue avant rétablissement. `composer test` : **165 tests, 5 662 assertions** ; `composer format:check` : 163 fichiers ; `composer analyse` : aucun problème ; test de recouvrement vert (les phrases citant ces années ont des ancres absentes de la notice, elles ne déclenchent donc pas de faux positif). Production re-seedée.
+
+**Reste**
+- Trois références sont de qualité inégale et signalées comme telles : Naky Sy Savané (Wikipédia anglophone), Angéline Nadié (petit média en ligne), Philippe Lacôte (deux sources contre une). À remplacer si une source institutionnelle apparaît.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
