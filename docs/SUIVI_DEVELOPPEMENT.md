@@ -2472,8 +2472,15 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 - `composer analyse` : aucun problème.
 - Les **92 fiches** restent présentes (100 artistes avec les 8 fiches antérieures) et chacune garde sa référence Wikipédia.
 
+**Vérifié en production**
+- Serveur : `git pull --ff-only` (`4dc64e2` → `1f94702`), puis `php artisan db:seed --class=PersonalitiesSeeder --force` en **4 372 ms**.
+- **92 pages** `/articles/<slug>` : **200** pour chacune.
+- **92 appels** `/api/v1/articles/<slug>` : **200** et au moins une référence par fiche.
+- Base de production : étiquette `biographies-artistes` → **100 fiches** ; articles publiés → **480** (inchangé).
+- Contrôle de contenu : `michel-gohou` affiche les Guignols d’Abidjan, `tangara-speed-ghoda` ne contient plus « 2 juin 2002 », `fadika-kramo-lancine` affiche « sorti en 1993 » et les prix du FESPACO.
+
 **Reste**
-- Réensemencement de la production et contrôle HTTP : consignés à la suite de cette séance.
+- Aucun : les quatre tranches restent à 100 fiches et les textes sont désormais alignés sur leurs notices.
 
 ---
 
