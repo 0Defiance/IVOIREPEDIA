@@ -2516,6 +2516,46 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 94 — 25 novembre 2026 · Slug renommé avec redirection permanente, phrases factuelles recoupées
+
+**Demandé**
+- Renommer le slug `augustin-denise-djore` en `auguste-denise` avec une redirection permanente, réensemencer la production et vérifier les deux URLs.
+- Vérifier ensuite contre leur notice les phrases factuelles à faible recouvrement qui n’avaient pas été contrôlées à la séance 93.
+
+**Fait — le slug**
+- Le renommage a révélé un **doublon** : une fiche `auguste-denise` existait déjà dans les politiques, sous un autre texte. Les deux ont été fusionnées (carrière médicale, Syndicat agricole africain et PDCI, présidence du conseil général, plus le paragraphe sur le gouvernement de 1958 et la Constitution de 1959) et le doublon supprimé : le corpus passe à **401 fiches** (politiciens 101, écrivains 100, sportifs 100, artistes 100).
+- **Redirection permanente** : table `article_slug_redirects` (migration `2026_11_25_000001`), modèle `ArticleSlugRedirect`, fichier de données `database/data/slug_redirects.php`, appliqué par `PersonalitiesSeeder::applyRenames()` — l’article publié sous l’ancien slug est renommé s’il est seul, sinon le doublon est supprimé, et la paire est conservée.
+- La page publique `/articles/{slug}` et l’API `/api/v1/articles/{slug}` répondent **301** vers l’adresse actuelle, et seulement si la cible est publiée ; sinon la 404 habituelle.
+- **5 tests ajoutés** (page publique, API, cible dépubliée dans les deux cas, enregistrement par le seeder) : la suite passe à **164 tests**.
+
+**Fait — les phrases factuelles**
+- **299 notices** téléchargées une par une (le 429 de Wikipédia impose une cadence lente) ; les trois pages sans extrait de la séance 93 ont été récupérées : Nin’wlou Ariel Ménélik, Lacina Traoré, Oumar Diakité.
+- **50 phrases factuelles** sous le seuil de recouvrement, hors formules déjà traitées ; **28** portaient une ancre absente de la notice (date, nombre, nom propre).
+- **20 fiches corrigées.** Erreurs de fond trouvées :
+  - **Daniel Kablan Duncan** : « Premier ministre de 1993 jusqu’à la mort d’Houphouët-Boigny » et « vice-président de 2012 à 2017 » étaient faux — il est Premier ministre du 11 décembre 1993 à 1999 sous Henri Konan Bédié, de nouveau Premier ministre de 2012 à 2017, puis vice-président de 2017 à 2020 ; il est formé à Bordeaux, Lille et Nancy, non à Toulouse. Fiche réécrite.
+  - **Lacina Traoré** : né le 20 mai 1990 et non le 20 août ; carrière réécrite (Mimosifcom, Stade d’Abidjan, CFR Cluj, Kouban Krasnodar, Anji, Monaco, prêts à Everton, au CSKA, à Gijón et à Amiens, Újpest ; CAN 2015).
+  - **Hanny Tchelley** : « reçue par le ministre de la Réconciliation » (la notice dit la ministre de la Culture) ; carrière PSI, IEC et Santa Cruz retirée.
+  - **Irié Goli Bi** : « professeur de lettres modernes, censeur au lycée moderne 1 de Grand-Bassam » retiré.
+  - **Yaya Diomandé** : diplômes et journal en ligne retirés ; le roman est décrit depuis sa propre référence bibliographique.
+  - **Anne-Marie Adiaffi** : détails du roman (55 ans, 15 ans, famille agni, fuite à Abidjan) ramenés à la notice.
+  - **Siméon Aké** : dates corrigées (ambassadeur auprès des Nations unies de 1966 à 1977, ministre des Affaires étrangères de 1977 à 1990).
+  - Treize autres retouches : Charles Konan Banny, Pascal Affi N’Guessan, Adama Bictogo, Pierre Dimba, Jean-Marc Yacé, Yanon Yapo, Alphonse Douati, Paul Koffi Koffi, Germain Coffi Gadeau, Emmanuel Éboué, Alain Gouaméné, Wilfried Kanon, Yannick Sagbo.
+
+**Vérifié**
+- `vendor/bin/pint` : conforme ; `composer test` : **164 tests, 5 659 assertions** ; `composer format:check` : 160 fichiers ; `composer analyse` : aucun problème.
+- Après correction, **4 phrases** restent sous le seuil : écarts de notation vérifiés un à un — FPI pour « Front populaire ivoirien » (Dacoury-Tabley), CAN pour « Coupe d’Afrique des nations » (Ndicka, Krasso), « formé » pour les diplômes de Genève (Youssouf Bakayoko).
+
+**Vérifié en production**
+- Serveur : `git pull --ff-only` (`ae3d44a` → `b845e22`), `php artisan migrate --force` (table des redirections créée en 21 ms), seeder en **3 878 ms**, caches `config`, `route` et `view` reconstruits.
+- `/articles/augustin-denise-djore` → **301** vers `/articles/auguste-denise` ; `/articles/auguste-denise` → **200**. API : `/api/v1/articles/augustin-denise-djore` → **301**, `/api/v1/articles/auguste-denise` → **200** avec sa référence.
+- **301 pages** et **301 appels API** en 200, avec au moins une référence par fiche.
+- Base de production : **100** écrivains, **100** sportifs, **101** politiques, **479** articles, **1** redirection.
+
+**Reste**
+- Toute fusion de fiche ultérieure devra être déclarée dans `database/data/slug_redirects.php` pour conserver l’ancienne adresse.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
