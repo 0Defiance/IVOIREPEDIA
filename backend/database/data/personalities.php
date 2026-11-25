@@ -119,7 +119,7 @@ return [
             'blocks' => [
                 ['p', "Charles Konan Banny, né le 11 novembre 1942 à Divo, est un économiste ivoirien formé à l'université de Dijon. Il mène une carrière bancaire qui le conduit à la tête de la Banque centrale des États de l'Afrique de l'Ouest (BCEAO), dont il devient gouverneur."],
                 ['h2', 'Premier ministre de transition'],
-                ['p', "Après la crise de 2002 et le blocage du processus de sortie de crise, il est désigné en décembre 2005 Premier ministre de transition à la place de Seydou Élimane Diarra. Il conduit le gouvernement jusqu'aux élections de 2007 et à la signature des accords de Ouagadougou."],
+                ['p', 'Il est nommé Premier ministre ivoirien le 4 décembre 2005, en pleine crise politico-militaire. Il conduit le gouvernement jusqu\'aux élections de 2007.'],
             ],
             'bibliography' => [
                 ['title' => 'Charles Konan Banny', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Charles_Konan_Banny'],
@@ -134,14 +134,18 @@ return [
             'birthPlace' => 'Ouellé',
             'death' => null,
             'deathPlace' => null,
-            'occupations' => ['Économiste', 'Homme d’État'],
-            'summary' => "Économiste et homme d'État ivoirien né en 1943, Daniel Kablan Duncan a été Premier ministre de 1993 à 1999 et vice-président de 2012 à 2017.",
+            'occupations' => ['Économiste', 'Homme d\'État'],
+            'summary' => 'Économiste et homme d\'État ivoirien né en 1943 à Ouellé, Daniel Kablan Duncan a été Premier ministre de 1993 à 1999, puis de 2012 à 2017, et vice-président de la République de 2017 à 2020.',
             'blocks' => [
-                ['p', "Daniel Kablan Duncan, né le 30 juin 1943 à Ouellé, est l'un des artisans économiques de la Côte d'Ivoire indépendante. Formé à l'université de Toulouse, il intègre l'administration et la diplomatie avant de rejoindre la BCEAO."],
-                ['h2', 'Le technicien de Houphouët-Boigny'],
-                ['p', "Premier ministre de Félix Houphouët-Boigny de 1993 jusqu'à la mort du président, il est l'un des collaborateurs les plus proches du fondateur du pays. Il gère les dossiers économiques délicats, dont la dévaluation du franc CFA de janvier 1994."],
-                ['h2', 'Vice-président puis retraité'],
-                ['p', "Il revient aux affaires sous Alassane Ouattara : vice-président de la République de 2012 à 2017, il accompagne la reconstruction d'après la crise de 2010-2011. Retiré ensuite de la vie politique active, il conserve un rôle de conseil auprès des institutions."],
+                ['p', 'Daniel Kablan Duncan est un homme politique ivoirien né le 30 juin 1943 à Ouellé. Membre du Parti démocratique de Côte d\'Ivoire (PDCI), il est ministre des Finances, Premier ministre, ministre des Affaires étrangères puis vice-président de la République.'],
+                ['h2', 'Le haut fonctionnaire'],
+                ['p', 'Après son baccalauréat en série mathématiques au lycée classique d\'Abidjan en 1963, il passe par les classes préparatoires du lycée Michel-Montaigne à Bordeaux, l\'école des hautes études commerciales du Nord à Lille, l\'école supérieure de commerce de Bordeaux et l\'Institut commercial de Nancy, dont il sort diplômé ingénieur de commerce international en 1967. De 1970 à 1973, il est sous-directeur des interventions et des relations économiques extérieures au ministère de l\'Économie et des Finances, entre au FMI l\'année suivante, puis rejoint en 1974 la Banque centrale des États de l\'Afrique de l\'Ouest (BCEAO), où il est chef de service puis adjoint au directeur national jusqu\'en 1986. De 1989 à 1990, il est directeur central du patrimoine et de l\'informatique au siège de la BCEAO.'],
+                ['h2', 'Premier ministre de Bédié'],
+                ['p', 'Il est ministre des Finances de juillet à novembre 1990, puis ministre délégué auprès du Premier ministre chargé de l\'économie, des finances, du budget, du plan, du commerce et de l\'industrie de novembre 1990 à décembre 1993. Le 11 décembre 1993, il est nommé Premier ministre après l\'avènement d\'Henri Konan Bédié et le demeure jusqu\'au coup d\'État du général Robert Guéï en décembre 1999.'],
+                ['h2', 'Ministre puis Premier ministre de Ouattara'],
+                ['p', 'En juin 2011, il est nommé ministre des Affaires étrangères, reconduit le 13 mars 2012 dans le gouvernement de Jeannot Kouadio-Ahoussou. Le 21 novembre 2012, il est de nouveau nommé Premier ministre et forme un gouvernement le lendemain ; il démissionne le 9 janvier 2017.'],
+                ['h2', 'Vice-président de la République'],
+                ['p', 'Le 10 janvier 2017, il est nommé premier vice-président de la République, poste créé par la Constitution de 2016, et prête serment le 16 janvier 2017. Il lance le PDCI-Renaissance le 24 décembre 2018 ; sa démission, remise le 27 février 2020, devient effective le 8 juillet 2020.'],
             ],
             'bibliography' => [
                 ['title' => 'Daniel Kablan Duncan', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Daniel_Kablan_Duncan'],
@@ -270,7 +274,7 @@ return [
             'blocks' => [
                 ['p', 'Siméon Aké (1932-2003) est un juriste ivoirien formé en France.'],
                 ['h2', 'Le diplomate médiateur'],
-                ['p', "Ministre des Affaires étrangères dans les années 1980 et 1990, il conduit les négociations ivoiriennes dans les crises de la région et représente le pays à l'ONU et dans les organisations africaines."],
+                ['p', 'Ambassadeur, représentant permanent de la Côte d\'Ivoire auprès des Nations unies de 1966 à 1977, il est ensuite ministre des Affaires étrangères de 1977 à 1990, au sein de six gouvernements consécutifs.'],
                 ['p', 'Il s\'éteint à Abidjan en 2003.'],
             ],
             'bibliography' => [
@@ -312,7 +316,7 @@ return [
             'blocks' => [
                 ['p', 'Pascal Affi N\'Guessan, né le 1er janvier 1953 à Bouadikro, est un homme d\'État ivoirien, président du Front populaire ivoirien (FPI).'],
                 ['h2', 'Premier ministre de Laurent Gbagbo'],
-                ['p', 'Il dirige le gouvernement de 2000 à 2003, dans les premières années du mandat de Laurent Gbagbo, marquées par la tentative de coup d’État de septembre 2002 et la partition du pays.'],
+                ['p', 'Il dirige le gouvernement de 2000 à 2003, sous la présidence de Laurent Gbagbo.'],
                 ['h2', 'Le chef du FPI'],
                 ['p', 'Président du Front populaire ivoirien (FPI), il est candidat aux élections présidentielles de 2015 et 2020.'],
             ],
@@ -572,7 +576,7 @@ return [
                 ['h2', 'L’entrepreneur et le parti'],
                 ['p', 'Secrétaire exécutif du Rassemblement des houphouëtistes pour la démocratie et la paix (RHDP), il joue un rôle central dans l’organisation du parti au pouvoir.'],
                 ['h2', 'L’Assemblée nationale'],
-                ['p', 'Il préside l’Assemblée nationale du 7 juin 2022 au 17 janvier 2026, avant de céder la place à Patrick Achi.'],
+                ['p', 'Il préside l\'Assemblée nationale du 7 juin 2022 au 17 janvier 2026.'],
             ],
             'bibliography' => [
                 ['title' => 'Adama Bictogo', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Adama_Bictogo'],
@@ -885,7 +889,7 @@ return [
             'blocks' => [
                 ['p', 'Pierre N’Gou Dimba, né le 27 avril 1965 à Agboville, est un homme politique ivoirien.'],
                 ['h2', 'Le ministère de la Santé'],
-                ['p', 'Depuis le 6 avril 2021, il est ministre de la Santé, de l’Hygiène publique et de la Couverture maladie universelle. Il conduit ce portefeuille dans les gouvernements Achi puis Beugré Mambé.'],
+                ['p', 'Depuis le 6 avril 2021, il est ministre de la Santé, de l\'Hygiène publique et de la Couverture maladie universelle.'],
                 ['h2', 'La couverture maladie universelle'],
                 ['p', 'Son ministère porte la mise en œuvre de la couverture maladie universelle et l\'organisation du système sanitaire national.'],
             ],
@@ -929,7 +933,7 @@ return [
                 ['h2', 'L’engagement dans le Nord'],
                 ['p', 'Dans les années 1980, il est un acteur clé de la lutte contre la trypanosomiase animale à Korhogo et de la campagne antiglossines menée dans la région.'],
                 ['h2', 'Les responsabilités ministérielles'],
-                ['p', 'Il occupe des postes de ministre dans plusieurs ministères différents. Son parcours témoigne de la place des cadres techniques du Nord dans l’appareil d’État ivoirien.'],
+                ['p', 'Il occupe des postes de ministre dans plusieurs ministères différents.'],
             ],
             'bibliography' => [
                 ['title' => 'Alphonse Douati', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Alphonse_Douati'],
@@ -1055,7 +1059,7 @@ return [
                 ['h2', 'Le maire de Cocody'],
                 ['p', 'Il est maire de la commune de Cocody depuis 2018 et a été réélu en 2023. Il conduit l’une des communes les plus peuplées et les plus centrales d’Abidjan.'],
                 ['h2', 'Le député'],
-                ['p', 'Il est également député de Cocody depuis 2025, ce qui lui permet de siéger à l’Assemblée nationale tout en conservant son mandat municipal.'],
+                ['p', 'Il est également député de Cocody depuis 2025.'],
             ],
             'bibliography' => [
                 ['title' => 'Jean-Marc Yacé', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Jean-Marc_Yac%C3%A9'],
@@ -1115,8 +1119,6 @@ return [
                 ['p', 'Yanon Yapo Germain, né en 1942, est un juriste et magistrat ivoirien. Il est nommé président du Conseil constitutionnel de Côte d’Ivoire en 2003.'],
                 ['h2', 'Le Conseil constitutionnel de 2005'],
                 ['p', 'Il préside le 28 octobre 2005 la séance du Conseil qui juge que l’atteinte à l’intégrité territoriale est établie et que le déroulement normal des élections est compromis. Le Conseil ordonne l’arrêt des opérations électorales et décide que le président de la République demeure en fonction.'],
-                ['h2', 'Une décision décisive'],
-                ['p', 'Cette décision prolonge de fait le mandat de Laurent Gbagbo et pèse sur la sortie de crise.'],
             ],
             'bibliography' => [
                 ['title' => 'Germain Yanon Yapo', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Germain_Yanon_Yapo'],
@@ -1789,7 +1791,7 @@ return [
             'occupations' => ['Femme politique'],
             'summary' => 'Militante du RHDP, Fatim Bamba est maire de la commune d’Anyama depuis septembre 2023.',
             'blocks' => [
-                ['p', 'Fatim Bamba, née en 1983, est une femme politique ivoirienne membre du Rassemblement des houphouëtistes pour la démocratie et la paix (RHDP). Elle est l’une des épouses d’Amadou Gon Coulibaly, ancien Premier ministre.'],
+                ['p', 'Fatim Bamba, née en 1983, est une femme politique ivoirienne membre du Rassemblement des houphouëtistes pour la démocratie et la paix (RHDP). Elle est l’une des épouses d’Amadou Gon Coulibaly.'],
                 ['h2', 'La mairie d’Anyama'],
                 ['p', 'Avant de devenir maire, elle est conseillère municipale à Anyama. Elle est élue maire de cette commune du nord d’Abidjan en septembre 2023.'],
                 ['p', 'En 2025, elle reçoit le prix du meilleur leadership féminin politique des Bâtisseurs de la Côte d’Ivoire moderne (BACIM).'],
@@ -2589,9 +2591,9 @@ return [
             'blocks' => [
                 ['p', 'Anne-Marie Adiaffi, née le 21 mars 1951 à Abengourou et morte en 1994 à Abidjan, est une écrivaine ivoirienne. Elle suit sa scolarité primaire et secondaire en Côte d’Ivoire puis à Marseille, obtient un diplôme de secrétaire bilingue à Dakar et travaille comme secrétaire dans une banque avant de rejoindre les Nouvelles Éditions Africaines d’Abidjan en 1983.'],
                 ['h2', 'Une vie hypothéquée'],
-                ['p', 'Elle publie en 1983 Une vie hypothéquée aux Nouvelles Éditions Africaines d’Abidjan, où elle travaille depuis la même année. Le roman est une satire de la famille traditionnelle agni : Yah, promise avant sa naissance à Béhira, un homme de 55 ans déjà marié et père de famille, découvre la vérité à 15 ans et s’enfuit à Abidjan avant d’être ramenée vers ce mariage.'],
+                ['p', 'Elle publie en 1983 Une vie hypothéquée aux Nouvelles Éditions Africaines d\'Abidjan, où elle travaille depuis la même année. Le roman est une satire : il dénonce les contraintes imposées aux femmes par la tradition patriarcale à travers le récit d\'une jeune femme, Béhira, promise dès sa naissance à un homme âgé « bienfaiteur », qui finit par s\'enfuir après avoir subi ses menaces.'],
                 ['h2', 'Une parole pionnière'],
-                ['p', 'L’ouvrage est salué pour sa satire et sa dimension féministe : il compte parmi les premiers textes d’autrices ivoiriennes à critiquer aussi explicitement les contraintes imposées aux femmes par la tradition. Anne-Marie Adiaffi meurt à Abidjan en 1994 en laissant ce roman, étudié comme un jalon de la littérature ivoirienne.'],
+                ['p', 'L\'ouvrage est salué pour sa satire et sa dimension féministe : il compte parmi les premiers textes d\'autrices ivoiriennes à critiquer aussi explicitement les contraintes imposées aux femmes par la tradition. Anne-Marie Adiaffi meurt à Abidjan en 1994.'],
             ],
             'bibliography' => [
                 ['title' => 'Anne-Marie Adiaffi', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Anne-Marie_Adiaffi'],
@@ -2612,7 +2614,7 @@ return [
                 ['h2', 'Le théâtre'],
                 ['p', 'Avec François-Joseph Amon d\'Aby, il fonde en 1938 le Théâtre indigène de Côte d\'Ivoire.'],
                 ['h2', 'L’homme politique'],
-                ['p', 'Il mène en parallèle une carrière politique et occupe notamment le ministère de la Justice au début des années 1960.'],
+                ['p', 'Il mène en parallèle une carrière politique.'],
             ],
             'bibliography' => [
                 ['title' => 'Germain Coffi Gadeau', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Germain_Coffi_Gadeau'],
@@ -2898,12 +2900,13 @@ return [
             'occupations' => ['Écrivain'],
             'summary' => 'Écrivain ivoirien né en 1990, Yaya Diomandé a été lauréat du prix Voix d’Afriques avec son premier roman Abobo Marley.',
             'blocks' => [
-                ['p', 'Yaya Diomandé, né en 1990, vit à Abidjan. Il est diplômé en transport-logistique, en finance-comptabilité et en droit privé, et a travaillé comme traducteur-interprète avant de créer le journal en ligne Investissements+.'],
+                ['p', 'Yaya Diomandé est un écrivain ivoirien né le 18 décembre 1990 à Man.'],
                 ['h2', 'Abobo Marley'],
-                ['p', 'Avec son premier roman Abobo Marley, il est lauréat du prix Voix d\'Afriques. Le roman suit Moussa, « balanceur » sur un gbaka entre Abobo et Adjamé, qui rêve de rejoindre l\'Europe.'],
+                ['p', 'Avec son premier roman Abobo Marley, paru en 2020 aux éditions JC Lattès, il est lauréat du prix Voix d\'Afriques. Le roman suit Moussa, « balanceur » sur un gbaka entre Abobo et Adjamé, qui rêve de rejoindre l\'Europe.'],
             ],
             'bibliography' => [
                 ['title' => 'Yaya Diomandé', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Yaya_Diomand%C3%A9'],
+                ['title' => 'Abobo Marley, roman', 'publisher' => 'JC Lattès', 'year' => 2020, 'url' => 'https://www.jclattes.fr'],
             ],
         ],
         [
@@ -2961,7 +2964,7 @@ return [
             'blocks' => [
                 ['p', 'Paul Koffi Koffi, né le 26 janvier 1957 à M’Bahiakro, est un écrivain et homme politique ivoirien.'],
                 ['h2', 'L’écrivain'],
-                ['p', 'Il mène une activité d’écriture parallèle à sa carrière publique et compte six ouvrages en treize ans au début des années 2020. En 2024, il présente UEMOA, bilan de 30 ans d’intégration économique, Théories du management et théories politiques au service de la gouvernance publique et Situation et politique de l’emploi en Côte d’Ivoire 1980-1990.'],
+                ['p', 'En 2024, il présente UEMOA, bilan de 30 ans d\'intégration économique, Théories du management et théories politiques au service de la gouvernance publique et Situation et politique de l\'emploi en Côte d\'Ivoire 1980-1990. En parallèle, il enseigne l\'économie dans plusieurs universités et établissements d\'enseignement supérieur en Côte d\'Ivoire, comme l\'École nationale d\'administration (ENA) et l\'ENSEA.'],
                 ['h2', 'Le ministre et le commissaire'],
                 ['p', 'Il occupe plusieurs postes ministériels entre 2011 et 2017, notamment celui de ministre de l’Enseignement technique et de la Formation professionnelle. Il devient ensuite commissaire de l’UEMOA chargé du Développement de l’entreprise, des mines, de l’énergie et de l’économie.'],
             ],
@@ -4211,9 +4214,8 @@ return [
                 ['p', 'Hanny Tchelley, de son nom complet Hanny Tchelley Brigitte Etibou, née en 1953, est une actrice, productrice, réalisatrice et écrivaine ivoirienne. Elle se forme à l’Institut national des arts d’Abidjan de 1983 à 1985, au conservatoire de danse et de musique, obtient en 1985 un diplôme de chorégraphe du Margaret Morris Movement et suit des stages à Londres, Stourbridge et Kidderminster, en Grande-Bretagne.'],
                 ['h2', 'Le cinéma et le FICA'],
                 ['p', 'Elle se révèle au grand public grâce au film Bal poussière d’Henri Duparc et organise depuis 1998 le Festival du court-métrage d’Abidjan.'],
-                ['p', 'En 1993, elle devient responsable Information, Éducation, Communication (IEC) de Population Services International ; en 1995, elle suit un stage sur la prévention du sida à l’université de Santa Cruz, en Californie, puis dirige de 1996 à 1998 le centre de production et de communication de PSI.'],
                 ['h2', 'L’exil et le livre'],
-                ['p', 'Engagée dans des campagnes contre le sida et pour les droits des femmes, elle quitte la Côte d’Ivoire après la crise post-électorale de 2010-2011 et vit près de dix ans en exil. Rentrée officiellement le 25 juillet 2022, reçue par le ministre de la Réconciliation Kouadio Konan Bertin, elle publie en 2023 Et si c’était à refaire ?, un ouvrage autobiographique paru chez GAD Éditions, qui la fait entrer dans la catégorie des autrices ivoiriennes.'],
+                ['p', 'Engagée dans des campagnes contre le sida et pour les droits des femmes, elle quitte la Côte d\'Ivoire après la crise post-électorale de 2010-2011 et vit près de dix ans en exil. Rentrée officiellement le 25 juillet 2022, où elle est reçue par la ministre de la Culture, elle publie en 2023 Et si c\'était à refaire ?, un ouvrage autobiographique paru chez GAD Éditions.'],
                 ['p', 'Depuis son retour, elle annonce travailler à la relance du FICA, à un long métrage consacré aux femmes ivoiriennes, à une série documentaire sur les artistes africains ayant vécu l’exil et à des actions de formation pour la jeune génération du cinéma.'],
             ],
             'bibliography' => [
@@ -4234,9 +4236,8 @@ return [
             'occupations' => ['Écrivain', 'Poète', 'Dramaturge'],
             'summary' => 'Romancier, poète et dramaturge ivoirien né en 1960, Irié Goli Bi a publié une dizaine d’œuvres entre 2011 et 2025.',
             'blocks' => [
-                ['p', 'Mathurin Goli Bi Irié, dit Irié Goli Bi, né le 9 mai 1960 à Vrigrita, dans le département de Bouaflé, est un écrivain ivoirien, romancier, poète et dramaturge. Professeur de lettres modernes, il est censeur au lycée moderne 1 de Grand-Bassam. En 2022, il occupe les fonctions d’inspecteur général du ministère de la Promotion de la bonne gouvernance, du Renforcement des capacités et de la Lutte contre la corruption.'],
+                ['p', 'Mathurin Goli Bi Irié, dit Irié Goli Bi, né le 9 mai 1960 à Vrigrita, dans le département de Bouaflé, est un écrivain ivoirien, romancier, poète et dramaturge. En 2022, il occupe les fonctions d\'inspecteur général du ministère de la Promotion de la bonne gouvernance, du Renforcement des capacités et de la Lutte contre la corruption.'],
                 ['h2', 'Romans, théâtre et poésie'],
-                ['p', 'Il est marié et père de cinq enfants.'],
                 ['p', 'Il publie en 2011 Le messager au sommet de l’art, puis en 2012 La Lycéenne et Mon adultère pour un enfant. En 2015 paraissent Et l’Afrique se rebella, pièce de théâtre, et Hideur des tropiques, recueil de poèmes. Suivent Sous le voile de la mariée en 2016, Le Testament, recueil de poésie, en 2018, La récréation est terminée en 2019, puis Le sexe pour s’épanouir en 2025.'],
             ],
             'bibliography' => [
@@ -4364,7 +4365,7 @@ return [
             'occupations' => ['Footballeur'],
             'summary' => 'Footballeur international ivoirien né en 1983, Emmanuel Eboué, latéral et milieu, a joué à Arsenal et Galatasaray.',
             'blocks' => [
-                ['p', "Emmanuel Eboué, né en 1983, est un joueur ivoirien polyvalent, capable de jouer latéral droit ou milieu. Il se révèle à l'Académie Guillou puis en Belgique."],
+                ['p', 'Emmanuel Eboué, né en 1983, est un joueur ivoirien polyvalent, capable de jouer latéral droit ou milieu. Il est formé au centre de l\'ASEC Mimosas, l\'Académie de Sol béni, avant de rejoindre Beveren.'],
                 ['h2', 'Arsenal et l’Europe'],
                 ['p', 'Recruté par Arsenal en 2005, il devient un titulaire régulier, notamment en Ligue des champions. Il finit sa carrière européenne à Galatasaray, en Turquie.'],
                 ['h2', 'Un joueur au service du collectif'],
@@ -4448,11 +4449,11 @@ return [
             'occupations' => ['Footballeur'],
             'summary' => 'Footballeur international ivoirien né en 1990, Lacina Traoré, attaquant surnommé « Big » pour son gabarit, a joué à Claix, Monaco et CSKA Moscou.',
             'blocks' => [
-                ['p', 'Lacina Traoré, né le 20 août 1990 à Abidjan, surnommé « Big » en raison de son gabarit (1,88 m), est un attaquant ivoirien.'],
-                ['h2', 'Le gabarit prometteur'],
-                ['p', "Formé en France, il signe à Monaco puis au CSKA Moscou, avec des passages remarqués en Roumanie et en Grèce. Son jeu de tête et sa puissance font de lui un point d'appui redouté."],
-                ['h2', 'L’international ivoirien'],
-                ['p', 'Il a porté le maillot des Éléphants, avec lesquels il a disputé de grandes compétitions continentales.'],
+                ['p', 'Lacina Traoré, né le 20 mai 1990 à Abidjan, est un footballeur international ivoirien qui évolue au poste d\'attaquant.'],
+                ['h2', 'De l\'Académie Mimosifcom à Monaco'],
+                ['p', 'Formé à l\'Académie Mimosifcom, il rejoint le Stade d\'Abidjan dès son jeune âge et intègre l\'équipe A du club en 2006. En 2008, il rejoint le club roumain du CFR Cluj, puis s\'engage en 2010 avec le Kouban Krasnodar, en Russie, où il marque 18 buts en une saison. En 2012, il signe à l\'Anji Makhatchkala le contrat le plus important de sa carrière, 19 millions d\'euros, aux côtés de Samuel Eto\'o. Le 4 janvier 2014, il rejoint l\'AS Monaco, qui le prête aussitôt à Everton avant de le réintégrer en juillet 2014 ; il est ensuite prêté au CSKA Moscou en 2016, au Sporting Gijón en 2017 et à l\'Amiens SC pour la saison 2017-2018. Le 23 février 2019, il retrouve un club en Hongrie, à l\'Újpest FC.'],
+                ['h2', 'Champion d\'Afrique 2015'],
+                ['p', 'Présélectionné pour la Coupe du monde 2014, il ne figure pas dans la liste définitive des 23. Pour la Coupe d\'Afrique des nations 2015, Hervé Renard le retient en attaque : il reste sur le banc et n\'entre que quelques minutes en demi-finale contre le Congo-Kinshasa, avant la victoire contre le Ghana qui fait de la Côte d\'Ivoire le champion d\'Afrique 2015. En 2018, le président de l\'Étoile Sportive d\'Abobo l\'accuse d\'avoir menti sur son identité ; Lacina Traoré qualifie ces propos de « mensongers » dans L\'Équipe.'],
             ],
             'bibliography' => [
                 ['title' => 'Lacina Traoré', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Lacina_Traor%C3%A9_(football, 1990)'],
@@ -5519,11 +5520,11 @@ return [
             'occupations' => ['Footballeur', 'Entraîneur'],
             'summary' => 'Gardien international ivoirien né en 1966, Alain Gouaméné a remporté la CAN 1992 et détient le record de participations à la compétition avec la Côte d’Ivoire, avec sept éditions.',
             'blocks' => [
-                ['p', 'Alain Gouaméné, né le 15 juin 1966 à Gagnoa, est un ancien gardien de but international ivoirien, naturalisé français en 1990, devenu entraîneur. Formé en Côte d’Ivoire, il est transféré à l’Olympique lyonnais, puis rejoint en 1991 le Raja de Casablanca, où il est considéré comme l’un des plus grands gardiens de l’histoire du club. Il évolue ensuite à l’ASEC Mimosas, à Trouville-Deauville et au Toulouse FC.'],
+                ['p', 'Alain Gouaméné, né le 15 juin 1966 à Gagnoa, est un ancien gardien de but international ivoirien, naturalisé français en 1990, devenu entraîneur. Formé en Côte d\'Ivoire, il est transféré à l\'Olympique lyonnais, puis rejoint en 1991 le Raja de Casablanca. Il évolue ensuite à l\'ASEC Mimosas, à Trouville-Deauville et au Toulouse FC.'],
                 ['h2', 'Le record de CAN'],
                 ['p', 'Il détient le record de participations à la Coupe d’Afrique des nations avec la Côte d’Ivoire, avec sept éditions disputées entre 1988 et 2004. À son palmarès figurent la CAN 1992 et cinq championnats de Côte d’Ivoire.'],
                 ['h2', 'Entraîneur'],
-                ['p', 'Il obtient en mars 2002 le BEES 1er degré et entraîne la JS Cugnaux de 2002 à 2003, puis l’ASEC Mimosas en 2014-2015. Il fait partie du staff des Éléphants sacrés champions d’Afrique en 2023 en tant qu’entraîneur des gardiens.'],
+                ['p', 'Il obtient en mars 2002 le BEES 1er degré et entraîne la JS Cugnaux de 2002 à 2003, puis l\'ASEC Mimosas en 2014-2015. Il fait partie du staff de la sélection ivoirienne, sacrée championne d\'Afrique en 2023, en tant qu\'entraîneur des gardiens.'],
             ],
             'bibliography' => [
                 ['title' => 'Alain Gouaméné', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Alain_Gouam%C3%A9n%C3%A9'],
@@ -5584,9 +5585,9 @@ return [
             'blocks' => [
                 ['p', 'Wilfried Kanon, né le 6 juillet 1993 à Taabo, est un footballeur international ivoirien qui évolue au poste de défenseur. Il achève sa formation en Italie, à Empoli, avant de faire ses débuts professionnels en Roumanie, puis de se révéler aux Pays-Bas.'],
                 ['h2', 'Un transfert avorté à Lille'],
-                ['p', 'Le 1er juillet 2015, il s’engage pour quatre ans avec le LOSC Lille, où il retrouve Hervé Renard, le sélectionneur qui l’a lancé. Le 9 juillet 2015, le club annonce toutefois que le transfert ne peut se conclure, la visite médicale n’ayant pas donné satisfaction.'],
+                ['p', 'Le 1er juillet 2015, il s\'engage pour quatre ans avec le LOSC Lille, où il retrouve Hervé Renard, ancien sélectionneur de la Côte d\'Ivoire. Le 9 juillet 2015, le club annonce toutefois que le transfert ne peut se conclure, la visite médicale n\'ayant pas donné satisfaction.'],
                 ['h2', 'La CAN 2015'],
-                ['p', 'Il joue son premier match avec la Côte d’Ivoire le 11 janvier 2015 contre le Nigeria. Hervé Renard le titularise durant la CAN 2015, que les Éléphants remportent face au Ghana.'],
+                ['p', 'Il joue son premier match avec la Côte d\'Ivoire le 11 janvier 2015 contre le Nigeria. Il est vainqueur de la Coupe d\'Afrique des nations 2015 avec la Côte d\'Ivoire.'],
             ],
             'bibliography' => [
                 ['title' => 'Wilfried Kanon', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Wilfried_Kanon'],
@@ -6300,7 +6301,7 @@ return [
                 ['h2', 'Évian et Hull City'],
                 ['p', 'En mai 2010, il remporte le Tournoi de Toulon avec la sélection olympique ivoirienne, avec cinq matchs et deux buts. À la fin du mois d’août 2010, il s’engage avec Évian Thonon Gaillard, en Ligue 2, où il est promu en Ligue 1 et remporte le titre de champion de Ligue 2 ; il est le meilleur buteur du club cette saison-là, avec onze buts toutes compétitions confondues. Le 26 juillet 2013, il rejoint Hull City, tout juste promu en Premier League. En juillet 2015, il signe à Umm Salal SC, au Qatar, où il inscrit treize buts en 22 matchs de Qatar Star League.'],
                 ['h2', 'Les Éléphants'],
-                ['p', 'En août 2010, il est appelé pour la première fois en équipe A de Côte d’Ivoire et honore sa première cape en entrant à l’heure de jeu lors de la victoire 1 à 0 contre l’Italie. Il est le demi-frère du défenseur Guy Demel.'],
+                ['p', 'En août 2010, il est appelé pour la première fois en équipe A de Côte d\'Ivoire et honore sa première cape en entrant à l\'heure de jeu lors de la victoire 1 à 0 contre l\'Italie.'],
             ],
             'bibliography' => [
                 ['title' => 'Yannick Sagbo', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Yannick_Sagbo'],
