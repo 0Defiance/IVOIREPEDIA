@@ -340,7 +340,7 @@ return [
                 ['h2', 'Deux passages à la Primature'],
                 ['p', 'Il est nommé Premier ministre en mai 2000 sous la transition de Robert Guéï, puis revient à la tête du gouvernement en janvier 2003, après les accords de Linas-Marcoussis, pour conduire un exécutif de réconciliation nationale.'],
                 ['h2', 'L’homme du consensus'],
-                ['p', 'Son second mandat s\'achève en 2005.'],
+                ['p', 'En 2005, il est remplacé par Charles Konan Banny.'],
             ],
             'bibliography' => [
                 ['title' => 'Seydou Diarra', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Seydou_Diarra'],
@@ -6335,11 +6335,11 @@ return [
             'death' => null,
             'deathPlace' => null,
             'occupations' => ['Chanteur', 'Auteur-compositeur'],
-            'summary' => 'Chanteur de reggae ivoirien né en 1968, Tiken Jah Fakoly chante la justice et la panafricanisme, et vit en exil depuis 2003.',
+            'summary' => 'Chanteur de reggae ivoirien né en 1968, Tiken Jah Fakoly évoque les injustices que subit la population africaine et vit en exil depuis 2003.',
             'blocks' => [
                 ['p', 'Tiken Jah Fakoly, de son vrai nom Doumbia Moussa Fakoly, né le 23 juin 1968 à Odienné, est l\'un des chanteurs de reggae africains les plus connus. Il chante en français et en dioula.'],
                 ['h2', 'Le reggae engagé'],
-                ['p', 'Ses chansons — « Plus jamais ça », « Où aller » — dénoncent l\'injustice, la corruption et appellent à la dignité africaine. Il se réclame du panafricanisme.'],
+                ['p', 'Ses chansons — « Plus jamais ça », « Où aller » — dénoncent l\'injustice, la corruption et appellent à la dignité africaine. D\'autres chansons évoquent la corruption et l\'exploitation de la population par les hommes politiques.'],
                 ['h2', 'L’exil'],
                 ['p', 'Il quitte la Côte d\'Ivoire en 2003 et vit exilé au Mali, à la suite de menaces de mort. En 2006, il ouvre un studio à Bamako.'],
             ],

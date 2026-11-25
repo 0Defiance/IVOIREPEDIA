@@ -12,10 +12,15 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
  * propres — figurent toutes dans la notice doit dépasser le seuil.
  *
  * Toutes les phrases sont contrôlées, y compris les formules évaluatives
- * (« reste », « figure », « considéré »…) : aucune exemption. Le seuil et les
- * mots-outils sont ceux de l'audit des séances 94 à 97. La fixture
- * notice_tokens.php contient les jetons des 401 notices, sans les notices
- * elles-mêmes (voir build_notice_tokens.php).
+ * (« reste », « figure », « considéré »…) et les phrases courtes : ni
+ * exemption, ni plancher de longueur. Le seuil et les mots-outils sont ceux
+ * de l'audit des séances 94 à 97. La fixture notice_tokens.php contient les
+ * jetons des 401 notices, sans les notices elles-mêmes (voir
+ * build_notice_tokens.php).
+ *
+ * Le test surveille aussi la ponctuation des textes : les scripts de
+ * réécriture ont déjà laissé des doubles points, des espaces avant
+ * ponctuation ou des espaces multiples dans personalities.php.
  */
 uses(RefreshDatabase::class);
 
@@ -68,6 +73,16 @@ function noticeCoverageBody(Article $article): string
     return trim(implode(' ', $parts));
 }
 
+/** Défauts de ponctuation laissés par les scripts de réécriture, motif => libellé. */
+function personalitiesPunctuationPatterns(): array
+{
+    return [
+        '/\.\./u' => 'double point',
+        '/\s[.,]/u' => 'espace avant virgule ou point',
+        '/ {2,}/u' => 'espaces multiples',
+    ];
+}
+
 /** @return array<int, string> */
 function noticeCoverageAnchors(string $sentence): array
 {
@@ -89,9 +104,10 @@ it('garde chaque phrase factuelle au-dessus du seuil de recouvrement de sa notic
     $this->seed(PersonalitiesSeeder::class);
 
     $violations = [];
+    $formatting = [];
     $checked = 0;
 
-    Article::query()->each(function (Article $article) use ($notices, &$violations, &$checked): void {
+    Article::query()->each(function (Article $article) use ($notices, &$violations, &$formatting, &$checked): void {
         $noticeText = $notices[$article->slug] ?? null;
 
         if ($noticeText === null) {
@@ -99,13 +115,20 @@ it('garde chaque phrase factuelle au-dessus du seuil de recouvrement de sa notic
         }
 
         $checked++;
+
+        foreach (personalitiesPunctuationPatterns() as $pattern => $label) {
+            if (preg_match($pattern, $article->summary) === 1 || preg_match($pattern, noticeCoverageBody($article)) === 1) {
+                $formatting[] = $article->slug.' : '.$label;
+            }
+        }
+
         $notice = array_flip(explode(' ', $noticeText));
         $text = trim($article->summary.' '.noticeCoverageBody($article));
 
         foreach (preg_split('/(?<=[.!?])\s+/u', $text) ?: [] as $sentence) {
             $sentence = trim($sentence);
 
-            if (mb_strlen($sentence) < 40) {
+            if ($sentence === '') {
                 continue;
             }
 
@@ -147,4 +170,5 @@ it('garde chaque phrase factuelle au-dessus du seuil de recouvrement de sa notic
 
     expect($checked)->toBe(401);
     expect($violations)->toBe([]);
+    expect($formatting)->toBe([]);
 });

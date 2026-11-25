@@ -2666,6 +2666,25 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 100 — 25 novembre 2026 · Phrases courtes contrôlées et ponctuation surveillée
+
+**Fait**
+- Le **plancher de 40 caractères** est supprimé : toute phrase est comparée à sa notice, y compris les plus courtes — c’est là que passait une affirmation brève comme « Elle est morte en 2020 » sur la fiche Nayanka Bell, réécrite en séance 98.
+- Deux phrases courtes étaient encore dessous et sont corrigées, avec la notice à l’appui :
+  - **Seydou Diarra** (0,25) : « Son second mandat s’achève en 2005. » → « En 2005, il est remplacé par Charles Konan Banny. » (titre et phrase de la notice : « De nouveau Premier ministre (2003-2005) », « en 2005, Seydou Diarra est remplacé par Charles Konan Banny »).
+  - **Tiken Jah Fakoly** (0,00) : « Il se réclame du panafricanisme. » — la notice ne prononce pas une fois le mot — remplacé par « D’autres chansons évoquent la corruption et l’exploitation de la population par les hommes politiques. » Le résumé perd aussi la formule fautive « chante la justice et la panafricanisme » au profit de « évoque les injustices que subit la population africaine ».
+- **Garde-fou de ponctuation** dans le même test : `personalitiesPunctuationPatterns()` vérifie le résumé et chaque paragraphe et fait échouer le test sur un **double point**, un **espace avant une virgule ou un point**, ou des **espaces multiples** — les trois défauts que laissaient mes scripts de réécriture. L’espace avant `;`, `:` ou `?` reste autorisé : c’est la typographie française.
+- Les deux `..` laissés par les passes de cette séance ont été corrigés avant commit.
+
+**Vérifié**
+- Garde-fous éprouvés par mutation, puis restaurés : une phrase de 31 caractères (« Il orchestre un putsch en 2005. ») fait échouer le test à 0,33 ; un `..` ajouté à Seydou Diarra fait échouer le test avec `seydou-diarra : double point`.
+- `composer test` : **165 tests, 5 662 assertions** ; `composer format:check` : 163 fichiers ; `composer analyse` : aucun problème. Environ **2 570 phrases** contrôlées, courtes comprises.
+
+**Reste**
+- Une phrase courte faite uniquement de mots présents dans la notice peut encore passer sous le seuil (mesure lexicale) : la relecture humaine reste le dernier filet.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
