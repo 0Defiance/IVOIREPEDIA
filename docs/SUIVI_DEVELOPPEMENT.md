@@ -2410,6 +2410,27 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 90 — 25 novembre 2026 · Tranche des artistes (8 → 100)
+
+**Demandé**
+- Mener la tranche des artistes de 8 à 100 fiches avec la même exigence de sources, puis réensemencer la production et vérifier les nouvelles pages.
+
+**Fait**
+- **92 fiches d’artistes** ajoutées au groupe `artistes` : musique (40), cinéma et jeu (25), humour (9), arts visuels (13), danse et chorégraphie (5).
+- **Méthode de sélection** : requête SPARQL sur Wikidata (nationalité ivoirienne + professions artistiques + lien vers un article francophone) pour arrêter une liste de candidats, puis **notice Wikipédia téléchargée pour chaque fiche** — extrait d’introduction pour toutes, texte complet pour les 35 notices les plus courtes. Chaque fiche cite sa notice en bibliographie, et les dates, lieux, œuvres et distinctions qu’elle avance s’y trouvent.
+- **Dédoublonnage** : dix-huit candidats avaient déjà une fiche dans un autre groupe (dont Frédéric Bruly Bouabré, Marguerite Abouet, Kitia Touré, Gadji Celi, Fargass Assandé, Timité Bassori, Isabelle Boni-Claverie, Alphonse Tiérou, Muriel Diallo, Gilbert G. Groud) ; ils ont été écartés et remplacés par d’autres artistes, afin qu’aucun slug ne soit réécrit par le seeder.
+- Le seeder reste inchangé : les 92 fiches sont lues depuis `database/data/personalities.php` et publiées comme articles `BIOGRAPHY` avec une référence.
+
+**Vérifié**
+- `php -l` : aucune erreur ; compteurs **102 / 100 / 100 / 100**, **402 fiches** et **402 slugs uniques** (aucun doublon).
+- Backend : `composer test` **159 tests verts (5 657 assertions)**, `composer format:check` **157 fichiers conformes** après passage de Pint, `composer analyse` aucun problème.
+
+**Reste**
+- Écrivains **100/100**, sportifs **100/100**, politiques **102/100**, artistes **100/100** : les quatre tranches sont complètes.
+- Réensemencement et vérification des pages en production consignés dans la séance 91.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
