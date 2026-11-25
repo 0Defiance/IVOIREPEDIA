@@ -2450,6 +2450,33 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 92 — 25 novembre 2026 · Les 92 fiches d’artistes recoupées contre leur notice
+
+**Demandé**
+- Relire les 92 fiches d’artistes contre leur notice, supprimer ou sourcer les phrases générales que la notice ne dit pas, corriger, puis réensemencer la production et revérifier les pages en 200 avec leurs références.
+
+**Fait**
+- Les 92 notices Wikipédia citées ont été téléchargées (API `prop=extracts`, texte intégral) et chaque phrase des fiches comparée à sa notice : repérage des phrases à faible recouvrement lexical, puis lecture des passages correspondants.
+- **46 fiches corrigées.** Les formules de commentaire ajoutées autour du fait sourcé ont été supprimées ou remplacées par un fait de la notice :
+  - François Lougah, Amédée Pierre, Bailly Spinto, Kéké Kassiry, Seigneur Ekissi Pierre, Joelle Séka, Marcellin Yacé, Eba Aka Jerome : carrière résumée par des faits datés (Trio Midiloms, Los Cocoblicos, hommage de l’INSAAC en 2021, N’né Ménika, Sanwi Star, album Ayela, groupe Woya) au lieu de formules sur leur « place » dans la chanson nationale.
+  - Michel Gohou, Akissi Delta, Léonard Groguhet, Désiré Écaré, Michel Bohiri, Kadhy Touré, Bienvenu Neba, Isaach de Bankolé, Fortune Akakpo, Claudia Tagbo : louanges non documentées remplacées par les faits de la notice (Guignols d’Abidjan en 1993, RTI et « Comment ça va ? », Films de la Lagune, Obsession extrême, Brown Angel Entertainment, Black Mic-Mac, maîtrise à Paris-VIII…).
+  - Marie Rose Guiraud, Nadia Beugré, Béatrice Kombe Gnapa, Jean-Paul Mehansio, Pierre Fakhoury, Paul Kodjo : syntagmes évaluatifs supprimés, faits vérifiables ajoutés (compagnie Les Guirivoires en 1974, ballet national en 1975, compagnie Tchétché en 1997, portrait du *Monde* en mars 2007, basilique de Yamoussoukro).
+  - Fadika Kramo-Lanciné : date de sortie de « Wariko, le gros lot » corrigée (1993 et non 1994), avec les prix du FESPACO 1994 et 1995.
+  - Trois affirmations absentes de la notice citée ont été retirées : le décès de Tangara Speed Ghôda (la notice ne le date pas), le rôle du Fira dans la révélation d’humoristes (Adama Dahico) et les chansons rendant hommage à l’équipe nationale (DJ Congélateur).
+  - La notice de Michel Gohou ne mentionne ni « Ma famille » ni les Folies Bergère : ces passages ont été remplacés par les Guignols d’Abidjan et les distinctions qu’elle documente.
+- Les quatre phrases restées sous le seuil de recouvrement après correction ont été vérifiées une à une et sont sourcées (parents d’Ismaël Isaac à Treichville, « Les Oiseaux du ciel » en 2006, retour de Paul Kodjo en 1970, portrait du *Monde* en 2007).
+
+**Vérifié**
+- `vendor/bin/pint --test database/data/personalities.php` : conforme.
+- `composer test` : **159 tests, 5 657 assertions**, toutes vertes.
+- `composer analyse` : aucun problème.
+- Les **92 fiches** restent présentes (100 artistes avec les 8 fiches antérieures) et chacune garde sa référence Wikipédia.
+
+**Reste**
+- Réensemencement de la production et contrôle HTTP : consignés à la suite de cette séance.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

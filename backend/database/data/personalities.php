@@ -6504,13 +6504,13 @@ return [
             'death' => null,
             'deathPlace' => null,
             'occupations' => ['Chanteur', 'Auteur-compositeur', 'Musicien'],
-            'summary' => 'Chanteur de reggae ivoirien né le 1er janvier 1953 à Dimbokro, Alpha Blondy est l’un des artistes africains les plus connus au monde.',
+            'summary' => 'Chanteur de reggae ivoirien né le 1er janvier 1953 à Dimbokro, Alpha Blondy est considéré comme l’un des artistes les plus emblématiques et influents d’Afrique.',
             'blocks' => [
                 ['p', 'Alpha Blondy, de son vrai nom Seydou Koné, est un chanteur, auteur-compositeur et musicien reggae ivoirien né le 1er janvier 1953 à Dimbokro. Il est considéré comme l’un des artistes les plus emblématiques et influents d’Afrique.'],
                 ['h2', 'Un reggae polyglotte'],
-                ['p', 'Il chante en français, en dioula et en baoulé, langues véhiculaires de l’Afrique de l’Ouest, mais aussi en anglais. Artiste de scène, il se produit dans le monde entier.'],
+                ['p', 'Il chante en français, en dioula et en baoulé, mais aussi en anglais. Artiste de scène, il se produit dans le monde entier.'],
                 ['h2', 'Une voix pour la paix'],
-                ['p', 'Il a été nommé ambassadeur des Nations unies pour la paix en Côte d’Ivoire en 2005, une reconnaissance de son engagement public au-delà de la musique.'],
+                ['p', 'Il a été nommé ambassadeur des Nations unies pour la paix en Côte d’Ivoire en 2005.'],
             ],
             'bibliography' => [
                 ['title' => 'Alpha Blondy', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Alpha_Blondy'],
@@ -6573,7 +6573,7 @@ return [
                 ['h2', 'Un patron du coupé-décalé'],
                 ['p', 'Il s’est bâti une réputation de patron en investissant également dans l’immobilier et en s’engageant pour les jeunes à travers sa fondation.'],
                 ['h2', 'Arrangeur avant tout'],
-                ['p', 'Son parcours l’a d’abord fait connaître comme arrangeur, activité qu’il continue d’exercer pour la scène ivoirienne tout en menant sa carrière de chanteur.'],
+                ['p', 'Il commence sa carrière comme arrangeur pour plusieurs artistes ivoiriens et devient, dès 2006, l’un des arrangeurs incontournables de la musique urbaine ivoirienne.'],
             ],
             'bibliography' => [
                 ['title' => 'Serge Beynaud', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Serge_Beynaud'],
@@ -6592,7 +6592,7 @@ return [
             'blocks' => [
                 ['p', 'Debordo Leekunfa, de son vrai nom Patrick Tanguy Séry Digbeu, est né le 20 décembre 1984 à Abidjan, dans la région des Lagunes. Il est chanteur, auteur-compositeur-interprète et vidéoman ivoirien.'],
                 ['h2', 'Le coupé-décalé en héritage'],
-                ['p', 'Son style s’inscrit dans le coupé-décalé, la musique de fête née à Abidjan dans les années 2000 et portée par la Jet Set. Il en est l’un des interprètes les plus suivis sur les scènes ivoiriennes et de la diaspora.'],
+                ['p', 'Son style s’inscrit dans le coupé-décalé, genre apparu à Paris au début des années 2000. Il est aujourd’hui l’un des chanteurs les plus sollicités du mouvement.'],
             ],
             'bibliography' => [
                 ['title' => 'Debordo Leekunfa', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Debordo_Leekunfa'],
@@ -6611,7 +6611,7 @@ return [
             'blocks' => [
                 ['p', 'DJ Kedjevara, de son vrai nom Toflodin Yao Parfait, est un artiste chanteur ivoirien né le 18 avril 1986 à la maternité de Marcory, à Abidjan. Il est le fils de la chanteuse ivoirienne Antoinette Allany.'],
                 ['h2', 'Le coupé-décalé'],
-                ['p', 'Il a pour style musical le coupé-décalé, qu’il pratique en animateur de soirées autant qu’en chanteur, dans la tradition des DJ ivoiriens devenus interprètes.'],
+                ['p', 'Il a pour style musical le coupé-décalé ; il tire son nom d’artiste de Che Guevara et se fait d’abord connaître comme disc-jockey dans un maquis de Marcory, avant de chanter.'],
             ],
             'bibliography' => [
                 ['title' => 'DJ Kedjevara', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/DJ_Kedjevara'],
@@ -6626,7 +6626,7 @@ return [
             'death' => null,
             'deathPlace' => null,
             'occupations' => ['Chanteur', 'Auteur-compositeur'],
-            'summary' => 'Chanteur et auteur-compositeur ivoirien né le 2 mai 1986 à Yopougon, Kerozen DJ est l’un des visages du coupé-décalé moderne.',
+            'summary' => 'Chanteur et auteur-compositeur ivoirien né le 2 mai 1986 à Yopougon, Kerozen DJ s’est fait connaître par le coupé-décalé.',
             'blocks' => [
                 ['p', 'Kerozen DJ, de son vrai nom Yobo Constant Joël, est né le 2 mai 1986 à Yopougon Siporex, à Abidjan. Chanteur, auteur-compositeur et interprète, il a pour style musical le coupé-décalé.'],
                 ['h2', 'Du DJ de maquis à la scène'],
@@ -6647,7 +6647,7 @@ return [
             'death' => null,
             'deathPlace' => null,
             'occupations' => ['Chanteur', 'Auteur-compositeur'],
-            'summary' => 'Chanteur ivoirien né au début des années 1970 à Aboisso, Soum Bill est l’une des voix du zouglou, des Salopards à sa carrière solo.',
+            'summary' => 'Chanteur ivoirien né au début des années 1970 à Aboisso, Soum Bill est passé du groupe les Salopards à une carrière solo.',
             'blocks' => [
                 ['p', 'Soum Bill, à l’état civil Mamadou Soumahoro, est un chanteur ivoirien né au début des années 1970 à Aboisso, d’un père Koyaka de Séguéla et d’une mère Agni d’Aboisso.'],
                 ['h2', 'Des Garagistes aux Salopards'],
@@ -6672,7 +6672,7 @@ return [
             'blocks' => [
                 ['p', 'Petit Denis, né Denis Koulaté le 22 avril 1976 à Tabou, dans le Bas-Sassandra, est un chanteur, parolier et compositeur ivoirien.'],
                 ['h2', 'Pionnier du zouglou'],
-                ['p', 'Il est l’un des pionniers du zouglou, qu’il contribue à populariser à travers l’Afrique. Il est considéré comme un ambassadeur de la culture ivoirienne sur le continent.'],
+                ['p', 'Il est l’un des pionniers du zouglou, qu’il contribue à populariser à travers l’Afrique. Il est considéré comme un ambassadeur de la culture ivoirienne en Afrique.'],
                 ['h2', 'Une reconnaissance continentale'],
                 ['p', 'Petit Denis a notamment remporté le Kora Awards en 2004.'],
             ],
@@ -6689,11 +6689,11 @@ return [
             'death' => null,
             'deathPlace' => null,
             'occupations' => ['Chanteuse'],
-            'summary' => 'Chanteuse afro-zouk ivoirienne née le 22 novembre 1965 à Abidjan, Monique Séka est une voix majeure de la variété ivoirienne.',
+            'summary' => 'Chanteuse afro-zouk ivoirienne née le 22 novembre 1965 à Abidjan, Monique Séka est surnommée la reine de la musique afro-zouk.',
             'blocks' => [
                 ['p', 'Monique Séka, née le 22 novembre 1965 à Abidjan, est une chanteuse afro-zouk ivoirienne.'],
                 ['h2', 'L’afro-zouk'],
-                ['p', 'Son répertoire s’inscrit dans l’afro-zouk, un courant qui mêle le zouk antillais aux rythmes et aux langues de l’Afrique de l’Ouest, et qui a dominé les scènes ivoiriennes dans les années 1980 et 1990.'],
+                ['p', 'Elle a l’idée de créer l’afro-zouk, un mélange de zouk et de rythmes africains, et sort son premier album, Tantie Affoué, en 1985.'],
             ],
             'bibliography' => [
                 ['title' => 'Monique Séka', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Monique_S%C3%A9ka'],
@@ -6712,7 +6712,7 @@ return [
             'blocks' => [
                 ['p', 'Antoinette Konan est une chanteuse ivoirienne d’origine baoulé qui s’inscrit dans la musique de son ethnie. Elle est couramment surnommée la reine de l’Ahoco.'],
                 ['h2', 'Une carrière depuis 1984'],
-                ['p', 'Née à Béoumi, ville au bord du Bandama, de parents musiciens, elle commence sa carrière artistique en 1984 après des études au conservatoire de musique d’Abidjan. Son premier album, Djouman, paraît la même année.'],
+                ['p', 'Née à Béoumi, ville au bord du fleuve Bandama, de parents musiciens, elle commence sa carrière artistique en 1984 après des études au conservatoire de musique d’Abidjan.'],
                 ['h2', 'Distinctions'],
                 ['p', 'Lauréate du prix de la meilleure chanson française du concours Découvertes de RFI en 1986 et du Kora All Africa Music Awards en 1998, elle est nommée en 2006 membre du Conseil consultatif scientifique de la Culture, puis élevée commandeur de l’ordre du Mérite ivoirien en 2022.'],
             ],
@@ -6750,11 +6750,11 @@ return [
             'death' => '1997',
             'deathPlace' => 'Abidjan',
             'occupations' => ['Chanteur', 'Acteur'],
-            'summary' => 'Chanteur et acteur ivoirien (1942-1997), François Lougah, « le Papa National », reste une voix fondatrice de la chanson ivoirienne.',
+            'summary' => 'Chanteur et acteur ivoirien (1942-1997), François Lougah est surnommé « le Papa National ».',
             'blocks' => [
                 ['p', 'François Lougah, de son vrai nom Dago Lougah, est né le 22 juin 1942 à Lakota et mort le 22 décembre 1997 à Abidjan. Chanteur et acteur, il est surnommé « le Papa National ».'],
-                ['h2', 'Une figure de la chanson nationale'],
-                ['p', 'Son surnom dit sa place dans la musique ivoirienne post-indépendance : celle d’un aîné dont le répertoire a accompagné la construction d’une chanson nationale, entre langues du pays et orchestres modernes.'],
+                ['h2', 'Du Trio Midiloms au solo'],
+                ['p', 'Après avoir tenté une carrière de footballeur à Aubervilliers, il rencontre en 1962 le promoteur Philippe Brunet et constitue, avec Joseph Miézan-Bognini et Michel Parayso, le Trio Midiloms. Après la séparation du groupe, il rejoint l’orchestre d’Yves Beugré, Los Cocoblicos, où se trouvait déjà Viera Koré.'],
             ],
             'bibliography' => [
                 ['title' => 'François Lougah', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Fran%C3%A7ois_Lougah'],
@@ -6769,11 +6769,11 @@ return [
             'death' => '2011',
             'deathPlace' => 'Treichville (Abidjan)',
             'occupations' => ['Chanteur', 'Musicien', 'Homme de théâtre'],
-            'summary' => 'Musicien-chanteur et homme de théâtre ivoirien (1937-2011), Amédée Pierre est une figure du pays krou et de la scène nationale.',
+            'summary' => 'Musicien-chanteur et homme de théâtre ivoirien (1937-2011) né en pays krou, Amédée Pierre est surnommé le « doyen de la musique ivoirienne ».',
             'blocks' => [
                 ['p', 'Amédée Pierre, de son nom à l’état civil Nahounou Digbeu Amédée, est né le 30 mars 1937 à Pataïdé, en pays krou, au sud-ouest de la Côte d’Ivoire, et mort le 30 octobre 2011 à Treichville. Il est homme de théâtre et musicien-chanteur.'],
                 ['h2', 'Un enfant du pays krou'],
-                ['p', 'Fils de Vassa Nahounou, fonctionnaire subalterne des Douanes, il reçoit le prénom Pierre lors de son baptême catholique. Sa carrière mêle la scène théâtrale et le chant, dans un pays où les deux métiers se confondaient souvent.'],
+                ['p', 'Fils de Vassa Nahounou, fonctionnaire subalterne des Douanes, il reçoit le prénom Pierre lors de son baptême catholique. Il commence sa carrière musicale à une époque où les musiques congolaise, cubaine, nigériane et ghanéenne dominent la Côte d’Ivoire, et se lance en chantant dans sa langue maternelle, le bété.'],
             ],
             'bibliography' => [
                 ['title' => 'Amédée Pierre', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Am%C3%A9d%C3%A9e_Pierre'],
@@ -6811,7 +6811,7 @@ return [
             'blocks' => [
                 ['p', 'Bailly Spinto, nom d’artiste de Bailly Silvestre Gallet, est un chanteur ivoirien né le 31 décembre 1951 à Treichville, à Abidjan.'],
                 ['h2', 'Un monument de la chanson'],
-                ['p', 'Il est considéré comme un monument de la chanson ivoirienne, une formule qui dit la durée de sa présence sur les scènes et dans les foyers du pays.'],
+                ['p', 'Il est considéré comme un monument de la chanson ivoirienne et surnommé « l’homme à la voix d’or ». En 2021, l’INSAAC rend hommage à ses cinquante ans de carrière.'],
             ],
             'bibliography' => [
                 ['title' => 'Bailly Spinto', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Bailly_Spinto'],
@@ -6826,11 +6826,11 @@ return [
             'death' => null,
             'deathPlace' => null,
             'occupations' => ['Auteur-compositeur', 'Chanteur', 'Guitariste', 'Danseur'],
-            'summary' => 'Auteur, compositeur, chanteur, danseur et guitariste ivoirien né le 11 mars 1954 à Treichville, Kéké Kassiry a marqué les années 1980.',
+            'summary' => 'Auteur, compositeur, chanteur, danseur et guitariste ivoirien né le 11 mars 1954 à Treichville, Kéké Kassiry est l’un des artistes en vogue de la musique ivoirienne des années 1980.',
             'blocks' => [
                 ['p', 'Kéké Kassiry est né le 11 mars 1954 dans la commune de Treichville, à Abidjan. Il est auteur, compositeur, chanteur, danseur et guitariste ivoirien.'],
                 ['h2', 'Une star des années 1980'],
-                ['p', 'Il est l’un des artistes en vogue de la musique ivoirienne des années 1980, à une époque où la scène nationale mêlait orchestres, variété et danses de quartier.'],
+                ['p', 'Installé en France depuis 1980, il sort en 1982 N’né Ménika, un album réalisé par le batteur Paco Séry et produit par le styliste Paco Rabanne.'],
             ],
             'bibliography' => [
                 ['title' => 'Kéké Kassiry', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/K%C3%A9k%C3%A9_Kassiry'],
@@ -6870,7 +6870,7 @@ return [
             'blocks' => [
                 ['p', 'Pierre-Michel Pango, né le 17 septembre 1928 à Dabou et mort le 20 octobre 1993 à Abidjan, est un prêtre catholique et compositeur de musique lyrique ivoirien.'],
                 ['h2', 'L’auteur de l’hymne national'],
-                ['p', 'Il est le compositeur de la musique de L’Abidjanaise, l’hymne national de la Côte d’Ivoire, ce qui fait de son nom l’un des plus durablement inscrits dans la vie publique du pays.'],
+                ['p', 'Il est le compositeur de la musique de L’Abidjanaise, l’hymne national de la Côte d’Ivoire.'],
             ],
             'bibliography' => [
                 ['title' => 'Pierre-Michel Pango', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Pierre-Michel_Pango'],
@@ -6885,11 +6885,11 @@ return [
             'death' => '2011',
             'deathPlace' => 'Agboville',
             'occupations' => ['Musicien', 'Chanteur'],
-            'summary' => 'Musicien ivoirien né vers 1925 et mort le 5 juin 2011, Seigneur Ekissi Pierre est une figure de la chanson traditionnelle.',
+            'summary' => 'Musicien ivoirien né vers 1925 et mort le 5 juin 2011, Seigneur Ekissi Pierre a commencé à chanter à 15 ans et sa carrière professionnelle débute en 1956.',
             'blocks' => [
                 ['p', 'Kouassi Ekissi Pierre, surnommé Seigneur Ekissi Pierre, né en 1925 ou 1926 et mort le 5 juin 2011 à Agboville, est un musicien ivoirien.'],
-                ['h2', 'Une mémoire de la chanson ivoirienne'],
-                ['p', 'Son parcours traverse plusieurs décennies de la musique nationale, entre répertoires traditionnels et scènes modernes, et son surnom de « Seigneur » dit la place que le public lui reconnaissait.'],
+                ['h2', 'Une carrière depuis 1956'],
+                ['p', 'Il commence à chanter dès l’âge de 15 ans ; sa carrière professionnelle démarre en 1956.'],
             ],
             'bibliography' => [
                 ['title' => 'Seigneur Ekissi Pierre', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Seigneur_Ekissi_Pierre'],
@@ -6923,9 +6923,9 @@ return [
             'death' => '2002',
             'deathPlace' => 'Abidjan',
             'occupations' => ['Chanteur', 'Musicien'],
-            'summary' => 'Chanteur de reggae ivoirien (1962-2002), Tangara Speed Ghôda a marqué la scène par ses textes en nouchi, baoulé, dioula et français.',
+            'summary' => 'Chanteur de reggae ivoirien (1962-2002), Tangara Speed Ghôda s’est fait connaître par ses textes en nouchi, baoulé, dioula et français.',
             'blocks' => [
-                ['p', 'Tangara Speed Ghôda, de son vrai nom Oumar Tangara, est né le 12 avril 1962 à Bouaké, dans le quartier de Kôkô, d’un père malien et d’une mère baoulé. Il est mort le 2 juin 2002 à Abidjan.'],
+                ['p', 'Tangara Speed Ghôda, de son vrai nom Oumar Tangara, est né le 12 avril 1962 à Bouaké, dans le quartier de Kôkô, d’un père malien et d’une mère baoulé. '],
                 ['h2', 'Un reggae métissé'],
                 ['p', 'Après avoir côtoyé le monde des arts martiaux, il se lance dans la musique, précisément dans le reggae, avec des textes mêlant nouchi, baoulé, dioula et français.'],
                 ['h2', 'Hakili-so'],
@@ -6967,9 +6967,9 @@ return [
             'blocks' => [
                 ['p', 'DJ Congélateur, de son vrai nom Koffi Kouakou Elias, est né dans le village d’Akabinou, dans la région du Gbêkê, et mort le 21 mai 2026 à Abidjan. Il est chanteur et artiste ivoirien de coupé-décalé.'],
                 ['h2', 'Les réseaux sociaux comme tremplin'],
-                ['p', 'Il se fait connaître au début des années 2020 grâce à des vidéos virales diffusées sur les réseaux sociaux, mêlant humour et musique. Une vidéo humoristique où il échange avec un gendarme lui ouvre les plateaux de la RTI, de NCI et de La 3.'],
+                ['p', 'Il se fait connaître au début des années 2020 grâce à des vidéos virales diffusées sur les réseaux sociaux, mêlant humour et musique. Après la diffusion d’une vidéo humoristique où il échange avec un gendarme, sa visibilité sur internet lui permet d’être invité dans plusieurs émissions télévisées ivoiriennes, notamment sur la RTI, NCI et La 3.'],
                 ['h2', 'Une carrière musicale'],
-                ['p', 'Il publie ensuite des titres de coupé-décalé tels que Cailloux dans ton Zoreille, La Paix, Hommage à DJ Arafat, Merci Seigneur et Grâce à Dieu, je vais avancer. Certaines de ses chansons rendent hommage à des personnalités de la musique ivoirienne ou à l’équipe nationale de football.'],
+                ['p', 'Il publie ensuite des titres de coupé-décalé tels que Cailloux dans ton Zoreille, La Paix, Hommage à DJ Arafat, Merci Seigneur et Grâce à Dieu, je vais avancer.'],
             ],
             'bibliography' => [
                 ['title' => 'DJ Congélateur', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/DJ_Cong%C3%A9lateur'],
@@ -7022,11 +7022,11 @@ return [
             'death' => '2025',
             'deathPlace' => 'Aboisso',
             'occupations' => ['Chanteur'],
-            'summary' => 'Chanteur ivoirien (1947-2025) né et mort à Aboisso, Eba Aka Jerome est une figure emblématique de la musique nationale.',
+            'summary' => 'Chanteur ivoirien (1947-2025) né et mort à Aboisso, Eba Aka Jerome est considéré comme une figure emblématique de la musique ivoirienne.',
             'blocks' => [
                 ['p', 'Eba Aka Jerome est un artiste chanteur ivoirien né le 30 octobre 1947 à Aboisso et mort le 21 mars 2025 dans la même ville.'],
-                ['h2', 'Une figure emblématique'],
-                ['p', 'Il est considéré comme une figure emblématique de la musique ivoirienne, par la durée de sa carrière et son ancrage dans le sud-est du pays.'],
+                ['h2', 'Du Sanwi Star à « Trahison »'],
+                ['p', 'Dans les années 1960, il apprend la guitare sur l’instrument de son père et intègre l’orchestre Sanwi Star comme guitariste et directeur musical. En 1978, sa chanson « Trahison », chantée en agni puis en français, devient un succès.'],
             ],
             'bibliography' => [
                 ['title' => 'Eba Aka Jerome', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Eba_Aka_Jerome'],
@@ -7041,11 +7041,11 @@ return [
             'death' => '1996',
             'deathPlace' => null,
             'occupations' => ['Musicien', 'Chanteur'],
-            'summary' => 'Musicien et chanteur ivoirien (1958-1996), Gnahoré Jimmy, surnommé Doblé, a laissé une trace durable dans la chanson ivoirienne.',
+            'summary' => 'Musicien et chanteur ivoirien (1958-1996), Gnahoré Jimmy, surnommé Doblé, s’est réapproprié le Polihet, une danse du pays Nyabwa.',
             'blocks' => [
                 ['p', 'Gnahoré Jimmy, surnommé Doblé, est le nom de scène de Gnaoré Tety Guy Arsène, musicien et chanteur ivoirien né le 10 février 1958 à Labazubia, dans le département d’Issia, et mort le 19 août 1996.'],
-                ['h2', 'Une voix de l’Ouest'],
-                ['p', 'Sa carrière se déploie dans la chanson ivoirienne des années 1980 et 1990, entre langues de l’Ouest et arrangements modernes.'],
+                ['h2', 'Le Polihet'],
+                ['p', 'En 1988, au cours d’une tournée au pays Nyabwa, il découvre le Polihet, une danse traditionnelle qu’il réapproprie ; le genre naît en 1989 au Bomanin.'],
             ],
             'bibliography' => [
                 ['title' => 'Gnahoré Jimmy', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Gnahor%C3%A9_Jimmy'],
@@ -7060,11 +7060,11 @@ return [
             'death' => '2002',
             'deathPlace' => null,
             'occupations' => ['Producteur', 'Musicien', 'Arrangeur'],
-            'summary' => 'Producteur, musicien et arrangeur ivoirien (1963-2002) né à Treichville, Marcellin Yacé a lancé plusieurs artistes de la scène nationale.',
+            'summary' => 'Producteur, musicien et arrangeur ivoirien (1963-2002) né à Treichville, Marcellin Yacé a encadré le groupe Woya.',
             'blocks' => [
                 ['p', 'Marcellin Yacé est né le 5 juin 1963 à Treichville, quartier populaire d’Abidjan, et mort le 19 septembre 2002. Il est producteur, musicien et arrangeur ivoirien.'],
-                ['h2', 'Un découvreur de talents'],
-                ['p', 'Il a notamment porté les débuts du groupe Woya, formé en 1984 avec des enfants de Divo, et pris sous son aile la jeune bassiste Manou Gallo, à qui il offre sa première basse et qu’il initie aux prises de son.'],
+                ['h2', 'Le groupe Woya'],
+                ['p', 'À l’initiative du maire de Divo, il met en place et encadre un groupe de jeunes talents locaux, dont David Tayorault et Manou Gallo ; renforcé en 1984 par des musiciens plus expérimentés, ce groupe devient Woya, qui tourne dans toute l’Afrique de l’Ouest pendant une décennie.'],
             ],
             'bibliography' => [
                 ['title' => 'Marcellin Yacé', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Marcellin_Yac%C3%A9'],
@@ -7083,7 +7083,7 @@ return [
             'blocks' => [
                 ['p', 'Joelle Séka, aussi appelée Joelle C, est une chanteuse originaire de Côte d’Ivoire née le 13 juillet 1970 et morte le 14 février 2008 d’une insuffisance rénale.'],
                 ['h2', 'Une voix partie tôt'],
-                ['p', 'Sa disparition à 37 ans a marqué la scène ivoirienne, où elle était suivie pour ses chansons de variété et de zouk.'],
+                ['p', 'En 1996, elle sort son premier album, Ayela, sous le nom de Joëlle Séka ; cet album lui vaut le Top d’or de la meilleure artiste ivoirienne, dans la catégorie variété.'],
             ],
             'bibliography' => [
                 ['title' => 'Joelle Séka', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Joelle_S%C3%A9ka'],
@@ -7123,7 +7123,7 @@ return [
             'blocks' => [
                 ['p', 'Deza XXL, de son vrai nom René Louis-Philippe Ezoua Ehui, est né le 12 novembre 1965 à Grand-Bassam et mort le 3 août 2005 à Treichville. Il était un artiste chanteur et compositeur ivoirien.'],
                 ['h2', 'Frère de Meiway'],
-                ['p', 'Il est également le frère cadet du maître du zoblazo, Meiway, un voisinage familial qui l’a placé au cœur de la scène musicale de Grand-Bassam et d’Abidjan.'],
+                ['p', 'Il est également le frère cadet du maître du zoblazo, Meiway. Auteur, compositeur, guitariste, chanteur et bassiste, il s’illustre dès 1994 avec son premier album, Adéba danger, avant de s’orienter vers l’afro-jazz teinté de rock, le highlife ghanéen et le zoblazo.'],
             ],
             'bibliography' => [
                 ['title' => 'Deza XXL', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Deza_XXL'],
@@ -7266,7 +7266,7 @@ return [
             'blocks' => [
                 ['p', 'Mix Premier, aussi appelé DJ Mix, de son vrai nom Emile Joël Sofonnou, est né le 19 septembre 1985 à Cotonou. Il est chanteur et auteur-compositeur-interprète béninois et ivoirien.'],
                 ['h2', 'Entre Cotonou et Abidjan'],
-                ['p', 'Sa double nationalité dit son parcours : formé à la culture des DJ et des soirées, il s’impose dans le coupé-décalé, genre né à Abidjan et largement diffusé dans toute l’Afrique de l’Ouest.'],
+                ['p', 'Né d’un père béninois et d’une mère ivoirienne, il s’installe avec sa famille à Port-Bouët en 1992.'],
             ],
             'bibliography' => [
                 ['title' => 'Mix Premier', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Mix_Premier'],
@@ -7302,13 +7302,13 @@ return [
             'death' => null,
             'deathPlace' => null,
             'occupations' => ['Acteur', 'Réalisateur', 'Producteur', 'Scénariste'],
-            'summary' => 'Acteur, réalisateur et producteur ivoirien né le 10 décembre 1963 près de Gagnoa, Michel Gohou est une figure de la série « Ma famille ».',
+            'summary' => 'Acteur, réalisateur et producteur ivoirien né le 10 décembre 1963 près de Gagnoa, Michel Gohou a intégré en 1993 la troupe des Guignols d’Abidjan.',
             'blocks' => [
                 ['p', 'Michel Gohou Doukrou, né le 10 décembre 1963 à Djatégnoa, dans la périphérie de Gagnoa, est un acteur, réalisateur, producteur de cinéma et scénariste ivoirien.'],
-                ['h2', 'Le visage de « Ma famille »'],
-                ['p', 'Il est l’un des comédiens les plus populaires du pays, notamment pour son rôle dans la série télévisée Ma famille, suivie dans toute l’Afrique francophone.'],
-                ['h2', 'Derrière la caméra'],
-                ['p', 'Au-delà du jeu, il réalise et produit des films ivoiriens, et participe aux tournées de la troupe de Ma famille, jusqu’aux Folies Bergère à Paris.'],
+                ['h2', 'Les Guignols d’Abidjan'],
+                ['p', 'En 1993, il rencontre Daniel Cuxac et intègre la troupe des Guignols d’Abidjan.'],
+                ['h2', 'Distinctions'],
+                ['p', 'Il est fait chevalier de l’ordre du Mérite culturel de Côte d’Ivoire en 2019, remporte le prix du meilleur comédien de l’année aux African Talent Awards en 2020 et le prix d’excellence pour le cinéma et les arts visuels en 2021.'],
             ],
             'bibliography' => [
                 ['title' => 'Michel Gohou', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Michel_Gohou'],
@@ -7323,11 +7323,11 @@ return [
             'death' => null,
             'deathPlace' => null,
             'occupations' => ['Actrice', 'Réalisatrice', 'Productrice'],
-            'summary' => 'Actrice, réalisatrice et productrice ivoirienne née le 5 mars 1960 à Dimbokro, Akissi Delta est une figure du cinéma et de la télévision.',
+            'summary' => 'Actrice, réalisatrice et productrice ivoirienne née le 5 mars 1960 à Dimbokro, Akissi Delta est considérée comme une icône du cinéma ivoirien.',
             'blocks' => [
                 ['p', 'Akissi Delta, née Akissi Delphine Loukou, est une actrice, réalisatrice et productrice ivoirienne d’ethnie baoulé, née à Dimbokro le 5 mars 1960.'],
                 ['h2', 'Une carrière de bâtisseuse'],
-                ['p', 'Elle mène de front le jeu, la réalisation et la production, et son nom reste associé aux grandes séries ivoiriennes qui ont formé plusieurs générations de comédiens.'],
+                ['p', 'Elle a permis de révéler ou de propulser de nombreux acteurs ivoiriens et africains, et a contribué à populariser la production locale de séries télévisées dans toute l’Afrique francophone.'],
             ],
             'bibliography' => [
                 ['title' => 'Akissi Delta', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Akissi_Delta'],
@@ -7369,7 +7369,7 @@ return [
                 ['h2', 'Quarante ans de carrière'],
                 ['p', 'Né en 1948, il est reconnu pour ses talents d’animateur et d’acteur. À 72 ans, le comédien a célébré ses 40 ans de carrière au Palais de la culture de Treichville, à Abidjan, dans une démarche axée sur la réconciliation.'],
                 ['h2', 'Une icône populaire'],
-                ['p', 'Célèbre pour son style et son sens de l’humour, il a participé à de nombreuses émissions de télévision, spectacles en direct et productions cinématographiques qui ont établi sa réputation d’icône de l’humour ivoirien.'],
+                ['p', 'Il a participé à de nombreuses émissions de télévision, spectacles en direct et productions cinématographiques qui ont renforcé sa popularité et établi sa réputation d’icône de l’humour en Côte d’Ivoire.'],
             ],
             'bibliography' => [
                 ['title' => 'Bamba Bakary', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Bamba_Bakary'],
@@ -7384,11 +7384,11 @@ return [
             'death' => '2021',
             'deathPlace' => null,
             'occupations' => ['Acteur'],
-            'summary' => 'Acteur ivoirien (1939-2021) né à Daloa, Léonard Groguhet est l’une des grandes figures du cinéma et de la télévision du pays.',
+            'summary' => 'Acteur ivoirien (1939-2021) né à Daloa, Léonard Groguhet a travaillé à la Radiodiffusion Télévision Ivoirienne, où il a produit l’émission satirique « Comment ça va ? ».',
             'blocks' => [
                 ['p', 'Léonard Groguhet, né le 20 août 1939 à Daloa et mort le 3 septembre 2021, est un acteur ivoirien.'],
-                ['h2', 'Une mémoire du jeu ivoirien'],
-                ['p', 'Sa carrière traverse le cinéma et la télévision nationales, où il a formé et accompagné plusieurs générations de comédiens.'],
+                ['h2', 'À la RTI'],
+                ['p', 'En 1969, il travaille à la Radiodiffusion Télévision Ivoirienne comme responsable d’émissions telles que Le Stop dans le vent, Télé-week-end et Pour ou contre, devenue plus tard Comment ça va ? ; cette émission satirique est arrêtée en 1994.'],
             ],
             'bibliography' => [
                 ['title' => 'Léonard Groguhet', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/L%C3%A9onard_Groguhet'],
@@ -7403,11 +7403,11 @@ return [
             'death' => '2009',
             'deathPlace' => 'Abidjan',
             'occupations' => ['Réalisateur'],
-            'summary' => 'Réalisateur ivoirien (1939-2009) né à Treichville, Désiré Écaré est l’un des grands noms du cinéma africain.',
+            'summary' => 'Réalisateur ivoirien (1939-2009) né à Treichville, Désiré Écaré a réalisé « Concerto pour un exil ».',
             'blocks' => [
                 ['p', 'Désiré Écaré, de son vrai nom Niamkey Désiré Écaré, est né le 15 avril 1939 à Treichville et mort le 16 février 2009 à Abidjan. Il est un réalisateur ivoirien.'],
-                ['h2', 'Un cinéaste de la première génération'],
-                ['p', 'Son œuvre appartient à la première génération du cinéma africain indépendant, celle qui, après les indépendances, a cherché à filmer les sociétés du continent avec leurs propres regards.'],
+                ['h2', 'Les Films de la Lagune'],
+                ['p', 'Il crée sa propre maison de production, Les Films de la Lagune, pour réaliser son premier film, Concerto pour un exil, sur l’aliénation sociale et psychologique des Africains vivant à Paris.'],
             ],
             'bibliography' => [
                 ['title' => 'Désiré Écaré', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/D%C3%A9sir%C3%A9_%C3%89car%C3%A9'],
@@ -7426,7 +7426,7 @@ return [
             'blocks' => [
                 ['p', 'Roger Gnoan M’Bala, né en 1943 à Grand-Bassam et mort le 10 juillet 2023 à Abidjan, est un réalisateur de cinéma ivoirien.'],
                 ['h2', '« Au nom du Christ »'],
-                ['p', 'Son film Au nom du Christ, sorti en 1993, vaut à son interprète Naky Sy Savané deux prix d’interprétation féminine en 1994, à Montréal et au Maroc.'],
+                ['p', 'Son film Au nom du Christ, avec Pierre Gondo et Naky Sy Savané, sort en 1993 ; il réalise ensuite Adanggaman en 2001.'],
             ],
             'bibliography' => [
                 ['title' => 'Roger Gnoan M’Bala', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Roger_Gnoan_M%27Bala'],
@@ -7445,7 +7445,7 @@ return [
             'blocks' => [
                 ['p', 'Fadika Kramo-Lanciné, né en 1948 à Danané et décédé le 5 juin 2022, est un réalisateur de cinéma ivoirien.'],
                 ['h2', '« Wariko, le gros lot »'],
-                ['p', 'Son film Wariko, le gros lot, sorti en 1994, réunit notamment Adrienne Koutouan et reste l’une des comédies les plus connues du cinéma ivoirien.'],
+                ['p', 'Son film Wariko, le gros lot, sorti en 1993, réunit notamment Adrienne Koutouan et Adama Dahico ; il remporte le prix du public au FESPACO 1994 et le prix de la meilleure comédie au FESPACO 1995.'],
             ],
             'bibliography' => [
                 ['title' => 'Fadika Kramo-Lanciné', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Fadika_Kramo-Lancin%C3%A9'],
@@ -7485,7 +7485,7 @@ return [
             'blocks' => [
                 ['p', 'Marie-Louise Asseu, aussi appelée Malou, de son nom à l’état civil Cho Françoise Kouassi, est une comédienne et réalisatrice ivoirienne, défenseure de la culture attié, née le 21 novembre 1966 et morte le 7 décembre 2016 à Abidjan.'],
                 ['h2', '« Faut pas fâcher »'],
-                ['p', 'Elle a joué comme actrice dans Faut pas fâcher, Bal poussière et bien d’autres films et séries, et elle est passée derrière la caméra en réalisant ses propres productions.'],
+                ['p', 'Elle a joué comme actrice dans Faut pas fâcher, Bal poussière et bien d’autres films et séries. Elle est aussi réalisatrice, notamment de Un homme pour deux sœurs.'],
             ],
             'bibliography' => [
                 ['title' => 'Marie-Louise Asseu', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Marie-Louise_Asseu'],
@@ -7500,11 +7500,11 @@ return [
             'death' => null,
             'deathPlace' => null,
             'occupations' => ['Acteur', 'Metteur en scène', 'Réalisateur', 'Auteur'],
-            'summary' => 'Acteur, auteur, metteur en scène et réalisateur ivoirien né le 1er janvier 1964, Michel Bohiri est un pilier de « Ma famille ».',
+            'summary' => 'Acteur, auteur, metteur en scène et réalisateur ivoirien né le 1er janvier 1964, Michel Bohiri joue le mari d’Akissi Delta dans « Ma famille ».',
             'blocks' => [
                 ['p', 'Gohoré Michel Bohiri, né le 1er janvier 1964, est un professeur d’art dramatique, auteur, metteur en scène, réalisateur et acteur ivoirien.'],
                 ['h2', 'Un comédien de troupe'],
-                ['p', 'Son parcours de professeur d’art dramatique nourrit son jeu à la télévision et au cinéma, où il est l’un des visages familiers de la série Ma famille.'],
+                ['p', 'Il a travaillé au sein des activités culturelles de l’université avec Mory Traoré, professeur d’art dramatique, auteur et metteur en scène. Dans Ma famille, il joue le rôle du mari frivole d’Akissi Delta et l’un des meilleurs amis de Michel Gohou.'],
             ],
             'bibliography' => [
                 ['title' => 'Michel Bohiri', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Michel_Bohiri'],
@@ -7607,7 +7607,7 @@ return [
             'blocks' => [
                 ['p', 'Kadhy Touré, de son vrai nom Touré Kadidjata, est née le 13 septembre 1988 à Bouaké. Elle est actrice, productrice, présentatrice de télévision et entrepreneuse ivoirienne.'],
                 ['h2', 'Écran et production'],
-                ['p', 'Elle mène de front le jeu, la présentation et la production, un profil complet qui en fait l’une des figures médiatiques ivoiriennes des années 2010 et 2020.'],
+                ['p', 'En 2010, elle est choisie pour la série Obsession extrême ; en 2016, elle crée sa maison de production Brown Angel Entertainment.'],
             ],
             'bibliography' => [
                 ['title' => 'Kadhy Touré', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Kadhy_Tour%C3%A9'],
@@ -7643,11 +7643,11 @@ return [
             'death' => null,
             'deathPlace' => null,
             'occupations' => ['Homme de théâtre', 'Metteur en scène', 'Réalisateur', 'Professeur de diction'],
-            'summary' => 'Homme de théâtre, metteur en scène et réalisateur ivoirien né le 20 juillet 1945 à Abidjan, Bienvenu Neba a formé des générations de comédiens.',
+            'summary' => 'Homme de théâtre, metteur en scène et réalisateur ivoirien né le 20 juillet 1945 à Abidjan, Bienvenu Neba a enseigné l’art dramatique à l’École nationale de théâtre d’Abidjan.',
             'blocks' => [
                 ['p', 'Bienvenu Neba, ou Robert Bienvenu Neba à l’état civil, est né le 20 juillet 1945 à Abidjan. Il est un homme de théâtre ivoirien, également professeur de diction, directeur artistique, metteur en scène et réalisateur de cinéma.'],
                 ['h2', 'Fils de commis des finances'],
-                ['p', 'Il est le fils de Martin Néba, un commis des finances. Son parcours de pédagogue du théâtre l’a conduit à travailler la diction et la direction d’acteurs avec de nombreux comédiens ivoiriens.'],
+                ['p', 'Il est le fils de Martin Néba, un commis des finances. Professeur de diction, directeur artistique, metteur en scène et réalisateur, il a enseigné l’art dramatique à l’École nationale de théâtre d’Abidjan.'],
             ],
             'bibliography' => [
                 ['title' => 'Bienvenu Neba', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Bienvenu_Neba'],
@@ -7666,7 +7666,7 @@ return [
             'blocks' => [
                 ['p', 'Zachari Bankolé, dit Isaach de Bankolé ou Isaac de Bankolé, est un acteur ivoirien né le 12 août 1957 à Abidjan.'],
                 ['h2', 'Une carrière internationale'],
-                ['p', 'Installé en France puis aux États-Unis, il est l’un des acteurs ivoiriens les plus présents dans le cinéma international, entre films d’auteur européens et productions américaines.'],
+                ['p', 'En 1986, il décroche son premier grand rôle dans Black Mic-Mac de Thomas Gilou ; en 1988, Jim Jarmusch le réclame pour Night on Earth. Il s’installe à New York en 1997.'],
             ],
             'bibliography' => [
                 ['title' => 'Isaach de Bankolé', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Isaach_de_Bankol%C3%A9'],
@@ -7684,8 +7684,8 @@ return [
             'summary' => 'Acteur et humoriste ivoirien né en 1968, Adama Dahico est candidat à l’élection présidentielle de 2010.',
             'blocks' => [
                 ['p', 'Adama Dolo, plus connu sous son nom d’artiste Adama Dahico, est un acteur, humoriste et homme de théâtre de Côte d’Ivoire né en 1968.'],
-                ['h2', '« Ma famille » et le Fira'],
-                ['p', 'Il joue notamment dans Ma famille, série télévisée ivoirienne, et il est le fondateur du Festival international du rire d’Abidjan, le Fira, qui a révélé plusieurs humoristes.'],
+                ['h2', '« Ma famille »'],
+                ['p', 'Il joue notamment dans Ma famille, série télévisée ivoirienne.'],
                 ['h2', 'La politique'],
                 ['p', 'Il est candidat à l’élection présidentielle ivoirienne de 2010, où il obtient un score de 5 972 voix, soit 0,9 %.'],
             ],
@@ -7702,7 +7702,7 @@ return [
             'death' => null,
             'deathPlace' => null,
             'occupations' => ['Acteur', 'Humoriste'],
-            'summary' => 'Acteur et humoriste ivoirien né le 7 janvier 1969, Digbeu Cravate est l’un des comédiens les plus populaires du pays.',
+            'summary' => 'Acteur et humoriste ivoirien né le 7 janvier 1969, Digbeu Cravate est reconnu comme l’un des meilleurs comédiens humoristes ivoiriens.',
             'blocks' => [
                 ['p', 'Digbeu Cravate, de son vrai nom Zouho Bla Michel, est un acteur ivoirien né le 7 janvier 1969 dans l’ouest de la Côte d’Ivoire et éduqué dans le pays abbey, à Agboville. Il est reconnu comme l’un des meilleurs comédiens humoristes ivoiriens.'],
                 ['h2', 'Le théâtre avant tout'],
@@ -7765,7 +7765,7 @@ return [
             'blocks' => [
                 ['p', 'Fortuné Akakpo, de son vrai nom Akakpo Massé Fortuné, est né en 1962 en Côte d’Ivoire. Il est acteur, réalisateur et comédien-humoriste ivoirien.'],
                 ['h2', 'Théâtre et cinéma'],
-                ['p', 'Son travail se partage entre la scène, où il pratique l’humour et le théâtre, et le cinéma ivoirien, pour lequel il passe aussi à la réalisation.'],
+                ['p', 'Considéré comme un pionnier du cinéma ivoirien, il intervient dans des téléfilms et des séries, notamment « Qui fait ça ? » et « Quoi de neuf ? ».'],
             ],
             'bibliography' => [
                 ['title' => 'Fortuné Akakpo', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Fortun%C3%A9_Akakpo'],
@@ -7784,7 +7784,7 @@ return [
             'blocks' => [
                 ['p', 'Claudia Tagbo, née le 14 juin 1973 à Abidjan, est une actrice et humoriste ivoirienne.'],
                 ['h2', 'Une humoriste de scène'],
-                ['p', 'Installée en France, elle s’est fait connaître par ses spectacles d’humour avant de tourner pour le cinéma et la télévision, sans cesser de se produire sur scène.'],
+                ['p', 'Elle monte à Paris suivre des études d’arts du spectacle et décroche une maîtrise à l’université Paris-VIII. Au cinéma, elle joue dans Mama Aloko et La Valse des gros derrières de Jean Odoutan.'],
             ],
             'bibliography' => [
                 ['title' => 'Claudia Tagbo', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Claudia_Tagbo'],
@@ -7862,7 +7862,7 @@ return [
             'death' => null,
             'deathPlace' => null,
             'occupations' => ['Artiste peintre'],
-            'summary' => 'Artiste peintre ivoirien né le 21 octobre 1983, Aboudia vit entre Brooklyn et Abidjan et expose dans le monde entier.',
+            'summary' => 'Artiste peintre ivoirien né le 21 octobre 1983, Aboudia vit entre Brooklyn et Abidjan et bénéficie d’une visibilité internationale à partir de 2011.',
             'blocks' => [
                 ['p', 'Aboudia, de son vrai nom Abdoulaye Diarrassouba, est un artiste peintre ivoirien né le 21 octobre 1983 à Abengourou. Il vit et travaille entre Brooklyn et Abidjan.'],
                 ['h2', 'La guerre comme matière'],
@@ -7904,11 +7904,11 @@ return [
             'death' => null,
             'deathPlace' => null,
             'occupations' => ['Architecte', 'Sculpteur', 'Entrepreneur'],
-            'summary' => 'Architecte, sculpteur et entrepreneur libano-ivoirien né le 21 août 1943 à Dabou, Pierre Fakhoury est une figure de la construction nationale.',
+            'summary' => 'Architecte, sculpteur et entrepreneur libano-ivoirien né le 21 août 1943 à Dabou, Pierre Fakhoury est considéré comme « le bâtisseur du président Houphouët-Boigny ».',
             'blocks' => [
                 ['p', 'Pierre Fakhoury est un sculpteur, architecte et entrepreneur en BTP libano-ivoirien né le 21 août 1943 à Dabou, dans le sud de la Côte d’Ivoire.'],
                 ['h2', 'Bâtir et sculpter'],
-                ['p', 'Son parcours réunit l’architecture, la sculpture et l’entreprise de construction, trois métiers qu’il a pratiqués ensemble sur les grands chantiers ivoiriens.'],
+                ['p', 'Il a été l’architecte concepteur de la basilique Notre-Dame-de-la-Paix de Yamoussoukro, du mémorial Félix-Houphouët-Boigny et du musée des arts et traditions d’Afrique.'],
             ],
             'bibliography' => [
                 ['title' => 'Pierre Fakhoury', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Pierre_Fakhoury'],
@@ -7990,7 +7990,7 @@ return [
             'blocks' => [
                 ['p', 'Paul Kodjo, né le 4 juillet 1939 à Abidjan et mort le 7 août 2021 au Ghana, est un photographe ivoirien.'],
                 ['h2', 'L’Abidjan des années 1970'],
-                ['p', 'Il est connu pour ses photographies prises à Abidjan dans les années 1970, après l’indépendance de la Côte d’Ivoire, qui documentent la vie urbaine et les transformations de la capitale économique.'],
+                ['p', 'Il est connu pour ses photographies prises à Abidjan dans les années 1970, après l’indépendance de la Côte d’Ivoire. En 1970, il rentre au pays et travaille comme photojournaliste.'],
             ],
             'bibliography' => [
                 ['title' => 'Paul Kodjo', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Paul_Kodjo'],
@@ -8110,11 +8110,11 @@ return [
             'death' => '2020',
             'deathPlace' => 'Abidjan',
             'occupations' => ['Chorégraphe', 'Danseuse', 'Actrice', 'Chanteuse'],
-            'summary' => 'Chorégraphe et danseuse ivoirienne (1944-2020), Marie Rose Guiraud a marqué la danse et la scène ivoiriennes.',
+            'summary' => 'Chorégraphe et danseuse ivoirienne (1944-2020), Marie Rose Guiraud a dirigé le département des danses de l’INSAAC et fondé la compagnie Les Guirivoires.',
             'blocks' => [
                 ['p', 'Marie Rose Guiraud est une chorégraphe et danseuse ivoirienne, née le 10 septembre 1944 à Oyably, dans la préfecture de Kouibly, et morte le 20 avril 2020 à Abidjan, à la polyclinique Farah de Marcory.'],
                 ['h2', 'Danse, théâtre et chant'],
-                ['p', 'Son parcours réunit la chorégraphie, la danse, le jeu et le chant : elle est l’une des artistes ivoiriennes qui ont fait de la danse un métier de scène reconnu, en puisant dans les répertoires traditionnels.'],
+                ['p', 'Devenue directrice du département des danses, des arts et des traditions africaines de l’INSAAC, elle y enseigne la danse traditionnelle. En 1974, elle crée sa compagnie, Les Guirivoires, et participe dès 1975 à la création du ballet national.'],
             ],
             'bibliography' => [
                 ['title' => 'Marie Rose Guiraud', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Marie_Rose_Guiraud'],
@@ -8133,7 +8133,7 @@ return [
             'blocks' => [
                 ['p', 'Béatrice Kombe Gnapa, née le 6 avril 1972 à Touba Diegonefla et morte le 21 février 2007 à Abidjan des suites d’une insuffisance rénale, est une danseuse et chorégraphe ivoirienne.'],
                 ['h2', 'Une chorégraphe reconnue'],
-                ['p', 'Sa disparition à 34 ans a été saluée par la presse française : Le Monde lui consacre un portrait en mars 2007 et la cite, en 2017, parmi les monuments de l’art chorégraphique africain.'],
+                ['p', 'Le Monde lui consacre un portrait signé Rosita Boisseau en mars 2007.'],
             ],
             'bibliography' => [
                 ['title' => 'Béatrice Kombe Gnapa', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/B%C3%A9atrice_Kombe_Gnapa'],
@@ -8152,7 +8152,7 @@ return [
             'blocks' => [
                 ['p', 'Nadia Beugré, née le 5 mars 1981 à Abidjan, est une danseuse et chorégraphe ivoirienne.'],
                 ['h2', 'La danse contemporaine'],
-                ['p', 'Formée aux traditions chorégraphiques du pays et à la création contemporaine, elle présente ses pièces sur les scènes africaines et européennes, où son travail est régulièrement invité.'],
+                ['p', 'En 1997, elle participe avec Béatrice Kombe à la création de la compagnie Tchétché, composée uniquement de femmes sur scène. En 2020, elle crée L’Homme rare, un quintet entièrement masculin.'],
             ],
             'bibliography' => [
                 ['title' => 'Nadia Beugré', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Nadia_Beugr%C3%A9'],
@@ -8167,7 +8167,7 @@ return [
             'death' => null,
             'deathPlace' => null,
             'occupations' => ['Danseur', 'Chorégraphe', 'Professeur de danse'],
-            'summary' => 'Danseur et chorégraphe ivoirien né le 11 décembre 1986 à Bangolo, Jean-Paul Mehansio dirige la Compagnie Mehansio.',
+            'summary' => 'Danseur et chorégraphe ivoirien né le 11 décembre 1986 à Bangolo, Jean-Paul Mehansio a fondé la Compagnie Mehansio.',
             'blocks' => [
                 ['p', 'Jean-Paul Mehansio, né le 11 décembre 1986 à Bangolo, est un danseur, chorégraphe et professeur de danse ivoirien, reconnu pour son travail dans la danse contemporaine et la valorisation des traditions chorégraphiques africaines.'],
                 ['h2', 'La Compagnie Mehansio'],
