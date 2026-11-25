@@ -2504,6 +2504,13 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 - Nouveau passage du contrôle (recouvrement lexical + marqueurs évaluatifs) sur les 402 fiches : **aucune phrase générale non documentée** restante. Une seule phrase reste sous le seuil, vérifiée et sourcée : Jean-Marc Kraidy à l’ALM Évreux Basket en Pro A « cinq saisons » (la notice liste le club de 1993 à 1998).
 - Les 402 fiches gardent au moins une référence bibliographique.
 
+**Vérifié en production**
+- Serveur : `git pull --ff-only` (`1f94702` → `9a04504`), puis `php artisan db:seed --class=PersonalitiesSeeder --force` en **4 636 ms**.
+- **302 pages** `/articles/<slug>` : **200** pour chacune.
+- **302 appels** `/api/v1/articles/<slug>` : **200** et au moins une référence par fiche.
+- Base de production : étiquettes `biographies-ecrivains` → **100**, `biographies-sportifs` → **100**, `biographies-politiciens` → **102** ; **480** articles au total.
+- Contrôle de contenu : `augustin-denise-djore` sert « Auguste Denise » (1906-1991), `jean-marie-adiaffi` (1941-1999), `marcel-amondji` (1934-2021), `ake-loba` (1927-2012) et `pierre-kipre` (1945, Daloa).
+
 **Reste**
 - Les quatre tranches restent à 100 fiches ; aucune fiche sans référence.
 
