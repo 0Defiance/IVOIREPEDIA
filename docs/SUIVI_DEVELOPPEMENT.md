@@ -2389,6 +2389,27 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 89 — 25 novembre 2026 · Production réensemencée et pages vérifiées
+
+**Demandé**
+- Relancer le seeder en production et vérifier que les nouvelles pages de femmes politiques répondent en 200 avec leurs références.
+- Mettre à jour les compteurs d’`IVOIREPEDIA_CONTEXT.md` s’ils annoncent encore 70 politiques ou 278 fiches.
+
+**Fait**
+- Serveur : `git pull --ff-only` (`a0b2598` → `99bae10`), puis `php artisan db:seed --class=PersonalitiesSeeder --force` en **2 621 ms**. Le seeder reste idempotent (clé `slug`, références recréées) : aucune fiche dupliquée.
+
+**Vérifié**
+- **32 pages** `/articles/<slug>` des femmes politiques du lot 2 : **200** pour chacune.
+- **32 appels** `/api/v1/articles/<slug>` : **200** et **1 à 2 références** par fiche (aucune sans référence).
+- Base de production : étiquette `biographies-politiciens` → **102 fiches** ; ensemble des articles publiés → **389**.
+- `IVOIREPEDIA_CONTEXT.md` ne contient **aucun compteur de contenu** : les valeurs « 70 / 278 » n’existent que dans le journal de la séance 87, déjà rectifié par la séance 88. Aucune modification du CONTEXT n’était donc nécessaire.
+
+**Reste**
+- Artistes **8/100** : tranche suivante.
+- Politiques **102/100**, écrivains **100/100**, sportifs **100/100**.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
