@@ -7320,7 +7320,7 @@ return [
             'slug' => 'naky-sy-savane',
             'name' => 'Naky Sy Savané',
             'fullName' => 'Naky Sy Savané',
-            'birth' => '1970',
+            'birth' => null,
             'birthPlace' => null,
             'death' => null,
             'deathPlace' => null,
@@ -7335,7 +7335,6 @@ return [
             ],
             'bibliography' => [
                 ['title' => 'Naky Sy Savané', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Naky_Sy_Savan%C3%A9'],
-                ['title' => 'Naky Sy Savané', 'publisher' => 'Wikipédia en anglais', 'year' => 2024, 'url' => 'https://en.wikipedia.org/wiki/Naky_Sy_Savan%C3%A9'],
             ],
         ],
         [
@@ -7439,12 +7438,12 @@ return [
             'slug' => 'philippe-lacote',
             'name' => 'Philippe Lacôte',
             'fullName' => 'Philippe Lacôte',
-            'birth' => '1969',
+            'birth' => null,
             'birthPlace' => 'Abidjan',
             'death' => null,
             'deathPlace' => null,
             'occupations' => ['Réalisateur', 'Producteur', 'Scénariste'],
-            'summary' => 'Réalisateur et producteur franco-ivoirien né à Abidjan en 1969, Philippe Lacôte est l’auteur de « La Nuit des rois ».',
+            'summary' => 'Réalisateur et producteur franco-ivoirien né à Abidjan, Philippe Lacôte est l’auteur de « La Nuit des rois ».',
             'blocks' => [
                 ['p', 'Philippe Lacôte est un réalisateur et producteur de films documentaires et de fiction franco-ivoirien, né et grandi à Abidjan.'],
                 ['h2', 'De la radio au cinéma'],
@@ -7454,7 +7453,6 @@ return [
             ],
             'bibliography' => [
                 ['title' => 'Philippe Lacôte', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Philippe_Lac%C3%B4te'],
-                ['title' => 'Philippe Lacôte', 'publisher' => 'International Film Festival Rotterdam', 'year' => 2026, 'url' => 'https://iffr.com/en/person/philippe-lac%C3%B4te'],
             ],
         ],
         [
@@ -7535,7 +7533,7 @@ return [
             ],
             'bibliography' => [
                 ['title' => 'Angéline Nadié', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Ang%C3%A9line_Nadi%C3%A9'],
-                ['title' => 'Côte-d’Ivoire : Angeline Nadié de la série « Ma famille » s’est éteinte', 'publisher' => '24 News Agency', 'year' => 2021, 'url' => 'https://24newsagency.com/cote-divoire-angeline-nadie-de-la-serie-ma-famille-sest-eteinte'],
+                ['title' => 'Décès d’Angéline Nadié : Akissi Delta raconte les derniers instants de l’actrice', 'publisher' => 'Linfodrome', 'year' => 2021, 'url' => 'https://www.linfodrome.com/cinema/68785-deces-d-angeline-nadie-akissi-delta-raconte-les-derniers-instants-de-l-actrice'],
             ],
         ],
         [

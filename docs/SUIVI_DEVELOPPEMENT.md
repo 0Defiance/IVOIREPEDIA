@@ -2770,6 +2770,28 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 105 — 25 novembre 2026 · Les références faibles tranchées
+
+**Fait**
+- **Angéline Nadié** : la référence est remplacée par **Linfodrome** (23 juillet 2021, Philip Kla), qui écrit noir sur blanc « née le 1er janvier 1968 et morte le 17 juillet 2021 ». Année 1968 conservée, petit média remplacé par un quotidien ivoirien.
+- **Naky Sy Savané** : aucune source institutionnelle ni de presse de référence ne donne l'année. Le seul document qui l'affirme (1970) est une **fiche d'agence de casting** (Séquence Sud / Filmmakers), pas une source. Année **retirée**, ainsi que la référence Wikipédia anglophone ajoutée en séance 104.
+- **Philippe Lacôte** : contradiction non arbitrée. Le **dossier de presse officiel du Festival de Cannes** (*Run*, 2014) écrit « Né en 1971 à Abidjan » ; l'IFFR et Africultures disaient 1969. Faute de source qui tranche, l'année est **retirée** et la référence IFFR supprimée.
+- **Les six fiches sans année** ont été recherchées à nouveau, sans succès :
+  - **Gina Dick Boguifo** : BnF/Takam Tikou et Éditions Éburnie ne donnent que « née et vit en Côte d'Ivoire » ; l'annuaire *A Celebration of Women Writers* la date par « fl. 1993 ».
+  - **Hanny Tchelley** : sa notice Wikipédia porte « Date de naissance non renseignée » ; Africultures et le SPLA ne donnent que la formation 1983-1985.
+  - **Chantal Taïba** : *Jeune Afrique* (2006) dit seulement « En 1982, elle a 17 ans » — une année se déduit, elle n'est pas écrite.
+  - **Gbizié Troupa Bruno** : le communiqué du ministère de la Culture (22 août 2026) donne le décès, pas la naissance.
+  - **Victor Guéi** : Music In Africa et Afrisson donnent le décès du 12 juin 2006, pas la naissance.
+  - **Josiane Yapo** : AllAfrica parle d'une actrice « à 30 ans » en 2004 ; le document n'a pas pu être rouvert pour vérification, donc rien n'est ajouté.
+
+**Vérifié**
+- `composer test` : **165 tests, 5 662 assertions** ; `composer format:check` : 163 fichiers ; `composer analyse` : aucun problème. Production re-seedée : `naky-sy-savane` et `philippe-lacote` s'affichent sans année, `angeline-nadie` garde 1968 avec Linfodrome en référence.
+
+**Reste**
+- 26 fiches n'ont pas d'année de naissance : c'est désormais un état assumé, pas un oubli. Toute année rétablie devra venir avec sa référence, comme les onze de la séance 104.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
