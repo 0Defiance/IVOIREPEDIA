@@ -2360,6 +2360,35 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 88 — 25 novembre 2026 · Homonymies tranchées, Boka corrigé, lot 2 des politiques
+
+**Demandé**
+- Vérifier que Mamadou Sanogo et Sékou Touré sont bien des personnalités ivoiriennes de la liste des 55, corriger la date du doctorat d’Ernest Boka, puis écrire le lot 2 (femmes en politique) avec vérification de chaque notice.
+
+**Fait — contrôle des deux noms**
+- **Sékou Touré retiré de la liste** : la seule notice portant ce nom est celle d’Ahmed Sékou Touré (Faranah, 1922 – Cleveland, 1984), député de la Guinée à l’Assemblée nationale française de 1956 à 1958 puis président de la Guinée de 1958 à 1984, de nationalité guinéenne (base Sycomore, Maitron, Britannica). Aucune personnalité ivoirienne homonyme n’exerce de fonction politique.
+- **Mamadou Sanogo conservé** : l’homonymie est tranchée en faveur de l’Ivoirien né le 14 juin 1963 à Guiglo — ministre de l’Urbanisme de 2011 à 2017, ministre de l’Économie numérique en 2019, député de Ouaninou, ministre-conseiller à la présidence depuis le 3 mai 2024 — et non du Malien Amadou Haya Sanogo, chef de la junte de 2012. L’URL de la liste doit rester `/wiki/Mamadou_Sanogo`, distincte de `/wiki/Amadou_Sanogo`.
+
+**Corrigé — Ernest Boka**
+- Le doctorat est daté **1954** et non 1956 : la notice Wikipédia rattache 1954 au diplôme d’avocat tout en donnant « 27 ans » pour le doctorat, et les deux récits ivoiriens (Afrik Soir, Houphouetology) placent le doctorat à Grenoble en 1954, sous la direction de Georges Lavau. La mention « à 27 ans » est retirée, incompatible avec 1954 pour un homme né le 7 décembre 1928. La fiche porte désormais deux références.
+
+**Fait — lot 2 (70 → 102)**
+- **32 fiches de femmes en politique**, toutes adossées à leur notice téléchargée : 22 rédigées lors de la tentative interrompue du 25 novembre (Mariatou Koné, Anne Désirée Ouloto, Belmonde Dogo, Massandjé Touré-Litsé, Christine Adjobi, Hortense Aka-Anghui, Agnès Monnet, Yasmina Ouégnin, Mariam Dao Gabala, Pulchérie Gbalet, Aya Virginie Touré, Chantal Fanny, Fatim Bamba, Véronique Aka, Affoussiata Bamba-Lamine, Jeanne Gervais, Célestine Olibé Trazéré, Marthe Solange Achy Brou, Elisabeth Badjo Djékouri, Anoma Gladys Rose, Thérèse Aya N’Dri Yoman, Boni Noëlle Ekponon), revérifiées ici, et 10 nouvelles : Marie Koré, Léopoldine Tiézan Coffie, Nialé Kaba, Raymonde Goudou Coffie, Ramata Ly-Bakayoko, Euphrasie Kouassi Yao, Nasseneba Touré Diané, Masséré Touré, Adjaratou Traoré, Naya Jarvis Zamblé.
+- **Méthode de contrôle** : notices téléchargées par l’API Wikipédia, repérage automatique des années, dates et noms propres absents du texte source, puis vérification ciblée des passages douteux. Aucune année des 32 fiches n’est absente de sa notice. Une notice incohérente a été relevée — Mariatou Koné, née « le 25 septembre 1965 » dans le chapô et « le 25 septembre 1969 » dans le corps —, la fiche retenant le chapô. Un qualificatif non sourcé (« ONG » pour Alternative citoyenne ivoirienne) a été retiré.
+- **Dédoublonnage** : Jeanne Gervais, Hortense Aka-Anghui, Kandia Camara, Anne Désirée Ouloto, Mariatou Koné et Simone Gbagbo figuraient déjà dans les fiches ; les notices sans article (Jacqueline Lohouès-Oblé, Odette Kouamé N’Guessan) ont été écartées du lot.
+
+**Vérifié**
+- `php -l` : aucune erreur ; compteurs **102 / 100 / 100 / 8**, **310 slugs uniques**.
+- Backend : `composer test` **159 tests verts (4 829 assertions)**, `composer format:check` **157 fichiers conformes**, `composer analyse` aucun problème.
+- App : `flutter analyze` aucun problème, `flutter test` **70 tests verts**.
+
+**Reste**
+- Politiques **102** pour une cible de **100** : l’objectif est atteint ; la tranche à mener ensuite est celle des artistes (8/100).
+- Écrivains **100/100**, sportifs **100/100**, artistes **8/100**.
+- Le journal de la séance 87 annonçait 70 politiques alors que le fichier en contenait déjà 92 : les 22 fiches écrites lors de la tentative interrompue n’avaient été ni vérifiées ni commitées.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
