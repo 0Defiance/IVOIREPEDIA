@@ -3,6 +3,7 @@
 use App\Enums\ArticleStatus;
 use App\Enums\ArticleType;
 use App\Models\Article;
+use App\Models\ArticleSlugRedirect;
 use Database\Seeders\CategorySeeder;
 use Database\Seeders\PersonalitiesSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -83,4 +84,16 @@ it('sert une biographie et sa bibliographie sur l’API publique', function () {
         ->assertJsonPath('data.type_label', 'Biographie')
         ->assertJsonPath('data.infobox.fullName', 'Yaya Touré')
         ->assertJsonPath('data.references.0.url', 'https://fr.wikipedia.org/wiki/Yaya_Tour%C3%A9');
+});
+
+it('renomme le slug legacy et conserve sa redirection permanente', function () {
+    $this->seed(CategorySeeder::class);
+    $this->seed(PersonalitiesSeeder::class);
+
+    expect(Article::query()->where('slug', 'augustin-denise-djore')->exists())->toBeFalse()
+        ->and(Article::query()->where('slug', 'auguste-denise')->exists())->toBeTrue();
+
+    $redirect = ArticleSlugRedirect::query()->where('old_slug', 'augustin-denise-djore')->first();
+
+    expect($redirect?->new_slug)->toBe('auguste-denise');
 });

@@ -3,6 +3,7 @@
 use App\Enums\ArticleStatus;
 use App\Enums\ArticleType;
 use App\Models\Article;
+use App\Models\ArticleSlugRedirect;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
@@ -250,4 +251,29 @@ it('renvoie la coquille Flutter sur un article inconnu pour un visiteur', functi
     )->get('/articles/inconnu')
         ->assertNotFound()
         ->assertSee('flutter_bootstrap.js', false);
+});
+
+it('redirige en 301 un ancien slug vers l’article renommé', function () {
+    siteArticle(['title' => 'Auguste Denise', 'slug' => 'auguste-denise']);
+    ArticleSlugRedirect::query()->create([
+        'old_slug' => 'augustin-denise-djore',
+        'new_slug' => 'auguste-denise',
+    ]);
+
+    $response = $this->get('/articles/augustin-denise-djore');
+
+    $response->assertStatus(301);
+    expect($response->headers->get('Location'))->toEndWith('/articles/auguste-denise');
+
+    $this->get('/articles/auguste-denise')->assertOk();
+});
+
+it('ne redirige pas un ancien slug quand la cible n’est plus publiée', function () {
+    siteArticle(['slug' => 'auguste-denise', 'status' => ArticleStatus::DRAFT]);
+    ArticleSlugRedirect::query()->create([
+        'old_slug' => 'augustin-denise-djore',
+        'new_slug' => 'auguste-denise',
+    ]);
+
+    $this->get('/articles/augustin-denise-djore')->assertNotFound();
 });

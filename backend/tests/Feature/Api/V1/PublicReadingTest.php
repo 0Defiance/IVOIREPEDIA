@@ -3,6 +3,7 @@
 use App\Enums\ArticleStatus;
 use App\Enums\ArticleType;
 use App\Models\Article;
+use App\Models\ArticleSlugRedirect;
 use App\Models\Category;
 use App\Models\Tag;
 use App\Models\User;
@@ -189,4 +190,29 @@ it('renvoie une liste vide quand la recherche est vide', function () {
         ->assertOk()
         ->assertJsonPath('meta.total', 0)
         ->assertJsonCount(0, 'data');
+});
+
+it('redirige en 301 un ancien slug d’article vers son slug actuel', function () {
+    makeArticle(['slug' => 'auguste-denise']);
+    ArticleSlugRedirect::query()->create([
+        'old_slug' => 'augustin-denise-djore',
+        'new_slug' => 'auguste-denise',
+    ]);
+
+    $response = $this->getJson('/api/v1/articles/augustin-denise-djore');
+
+    $response->assertStatus(301);
+    expect($response->headers->get('Location'))->toEndWith('/api/v1/articles/auguste-denise');
+
+    $this->getJson('/api/v1/articles/auguste-denise')->assertOk();
+});
+
+it('ne redirige pas l’API quand la cible n’est plus publiée', function () {
+    makeArticle(['slug' => 'auguste-denise', 'status' => ArticleStatus::DRAFT]);
+    ArticleSlugRedirect::query()->create([
+        'old_slug' => 'augustin-denise-djore',
+        'new_slug' => 'auguste-denise',
+    ]);
+
+    $this->getJson('/api/v1/articles/augustin-denise-djore')->assertNotFound();
 });

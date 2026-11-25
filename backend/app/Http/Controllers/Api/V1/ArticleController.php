@@ -7,8 +7,10 @@ use App\Http\Requests\ArticleIndexRequest;
 use App\Http\Resources\ArticleResource;
 use App\Http\Resources\ArticleSummaryResource;
 use App\Models\Article;
+use App\Models\ArticleSlugRedirect;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Cache;
 
@@ -92,7 +94,7 @@ class ArticleController extends Controller
     }
 
     /** `GET /api/v1/articles/{slug}` — 404 si l'article n'est pas publié. */
-    public function show(string $slug): ArticleResource|JsonResponse
+    public function show(string $slug): ArticleResource|JsonResponse|RedirectResponse
     {
         $article = Article::query()
             ->published()
@@ -101,6 +103,14 @@ class ArticleController extends Controller
             ->first();
 
         if ($article === null) {
+            $target = ArticleSlugRedirect::query()
+                ->where('old_slug', $slug)
+                ->value('new_slug');
+
+            if ($target !== null && Article::query()->published()->where('slug', $target)->exists()) {
+                return redirect()->to(url('/api/v1/articles/'.$target), 301);
+            }
+
             return response()->json([
                 'error' => [
                     'code' => 'NOT_FOUND',

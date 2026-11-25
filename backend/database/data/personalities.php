@@ -212,7 +212,7 @@ return [
             ],
         ],
         [
-            'slug' => 'augustin-denise-djore',
+            'slug' => 'auguste-denise',
             'name' => 'Auguste Denise',
             'fullName' => 'Auguste Denise',
             'birth' => '1906',
@@ -229,6 +229,8 @@ return [
                 ['p', 'En septembre 1944, il fonde avec Félix Houphouët-Boigny et plusieurs grands planteurs le Syndicat agricole africain (SAA). Lorsque le SAA est transformé en Parti démocratique de Côte d\'Ivoire (PDCI), le 9 avril 1946 à Abidjan, Auguste Denise en devient le premier secrétaire général, fonction qu\'il exerce jusqu\'en 1959.'],
                 ['h2', 'Le premier président du conseil général'],
                 ['p', 'Le 29 décembre 1946 ont lieu les élections des conseillers généraux ; en 1947, Auguste Denise est élu premier président du Conseil général de la Côte d\'Ivoire. Après les élections partielles de mai 1948, le PDCI perd momentanément sa majorité et il est battu à la présidence par Victor Capri Djédjé.'],
+                ['h2', 'Le chef du gouvernement'],
+                ['p', 'Le 26 juillet 1958, il est nommé président du Conseil de gouvernement de Côte d\'Ivoire, fonction qu\'il occupe jusqu\'en 1959. Son gouvernement comprend notamment Jean-Baptiste Mockey à l\'Intérieur et Ernest Boka à l\'Enseignement ; il promulgue la Constitution ivoirienne de 1959.'],
             ],
             'bibliography' => [
                 ['title' => 'Auguste Denise', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Auguste_Denise'],
@@ -1438,27 +1440,6 @@ return [
             'bibliography' => [
                 ['title' => 'Alassane Ouattara', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Alassane_Ouattara'],
                 ['title' => 'Présidence de la République de Côte d’Ivoire', 'publisher' => 'Présidence de la République', 'year' => null, 'url' => 'https://www.presidence.ci'],
-            ],
-        ],
-        [
-            'slug' => 'auguste-denise',
-            'name' => 'Auguste Denise',
-            'fullName' => 'Auguste Denise',
-            'birth' => '1906',
-            'birthPlace' => 'Tiassalé',
-            'death' => '1991',
-            'deathPlace' => null,
-            'occupations' => ['Médecin', 'Homme d’État'],
-            'summary' => 'Médecin et homme d’État, Auguste Denise a dirigé le premier gouvernement de la Côte d’Ivoire, de 1958 à 1959.',
-            'blocks' => [
-                ['p', 'Auguste Denise, né le 3 février 1906 à Tiassalé et mort en 1991, est un médecin, planteur et homme d’État ivoirien. Diplômé major de l’École de médecine de l’Afrique-Occidentale française à Dakar en 1927, il dirige ensuite plusieurs services de santé du pays.'],
-                ['h2', 'Le fondateur du PDCI'],
-                ['p', 'En septembre 1944, il fonde avec Félix Houphouët-Boigny et plusieurs grands planteurs le Syndicat agricole africain, qui précède la création du Parti démocratique de Côte d’Ivoire. Il est élu premier président du Conseil général de la Côte d’Ivoire.'],
-                ['h2', 'Le chef du gouvernement'],
-                ['p', 'Le 26 juillet 1958, il est nommé président du Conseil de gouvernement de Côte d’Ivoire, fonction qu’il occupe jusqu’en 1959. Son gouvernement comprend notamment Jean-Baptiste Mockey à l’Intérieur et Ernest Boka à l’Enseignement ; il promulgue la Constitution ivoirienne de 1959.'],
-            ],
-            'bibliography' => [
-                ['title' => 'Auguste Denise', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Auguste_Denise'],
             ],
         ],
         [

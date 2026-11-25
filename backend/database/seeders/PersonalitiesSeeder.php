@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Enums\ArticleStatus;
 use App\Enums\ArticleType;
 use App\Models\Article;
+use App\Models\ArticleSlugRedirect;
 use App\Models\Category;
 use App\Models\Tag;
 use App\Models\User;
@@ -36,6 +37,8 @@ class PersonalitiesSeeder extends Seeder
 
     public function run(): void
     {
+        $this->applyRenames();
+
         $author = $this->author();
         $category = Category::query()->where('slug', 'personnalites')->first();
 
@@ -88,6 +91,37 @@ class PersonalitiesSeeder extends Seeder
                     ]);
                 }
             }
+        }
+    }
+
+    /**
+     * Applique les renommages déclarés dans `database/data/slug_redirects.php`.
+     *
+     * L'article publié sous l'ancien slug est renommé — le contenu éditorial
+     * n'est pas perdu — et la paire est conservée pour la redirection 301 :
+     * l'ancienne adresse reste donc joignable indéfiniment.
+     */
+    private function applyRenames(): void
+    {
+        /** @var array<string, string> $renames */
+        $renames = require database_path('data/slug_redirects.php');
+
+        foreach ($renames as $oldSlug => $newSlug) {
+            $legacy = Article::query()->where('slug', $oldSlug)->first();
+            $current = Article::query()->where('slug', $newSlug)->first();
+
+            if ($legacy !== null) {
+                if ($current === null) {
+                    $legacy->update(['slug' => $newSlug]);
+                } else {
+                    $legacy->delete();
+                }
+            }
+
+            ArticleSlugRedirect::query()->updateOrCreate(
+                ['old_slug' => $oldSlug],
+                ['new_slug' => $newSlug],
+            );
         }
     }
 

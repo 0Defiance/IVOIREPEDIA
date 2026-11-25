@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Site;
 
 use App\Http\Controllers\Controller;
 use App\Models\Article;
+use App\Models\ArticleSlugRedirect;
 use App\Support\DeltaHtml;
 use App\Support\FlutterShell;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Str;
@@ -33,7 +35,7 @@ class ArticlePageController extends Controller
     /** Robots, aperçus de partage et clients qui n'exécutent pas JavaScript. */
     private const RENDERED_HTML_PATTERN = '/bot|crawl|spider|slurp|preview|facebookexternalhit|whatsapp|telegram|discord|linkedin|pinterest|embedly|quora/i';
 
-    public function __invoke(Request $request, string $slug): View|Response
+    public function __invoke(Request $request, string $slug): View|Response|RedirectResponse
     {
         $article = Article::query()
             ->published()
@@ -44,6 +46,12 @@ class ArticlePageController extends Controller
         $siteUrl = rtrim((string) config('ivoirepedia.site_url'), '/');
 
         if ($article === null) {
+            $target = $this->redirectTarget($slug);
+
+            if ($target !== null) {
+                return redirect()->to($siteUrl.'/articles/'.$target, 301);
+            }
+
             return $this->missing($request, $slug, $siteUrl);
         }
 
@@ -69,6 +77,27 @@ class ArticlePageController extends Controller
         }
 
         return response((new FlutterShell)->render($data));
+    }
+
+    /**
+     * Ancien slug renommé : redirection permanente vers l'adresse actuelle.
+     *
+     * La cible doit être publiée : une redirection ne doit jamais envoyer vers
+     * un article retiré du site.
+     */
+    private function redirectTarget(string $slug): ?string
+    {
+        $target = ArticleSlugRedirect::query()
+            ->where('old_slug', $slug)
+            ->value('new_slug');
+
+        if ($target === null) {
+            return null;
+        }
+
+        $published = Article::query()->published()->where('slug', $target)->exists();
+
+        return $published ? $target : null;
     }
 
     /** Article inconnu : page 404 dans le rendu attendu par le client. */
