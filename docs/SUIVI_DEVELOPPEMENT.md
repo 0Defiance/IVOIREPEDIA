@@ -2648,6 +2648,24 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 99 — 25 novembre 2026 · Plus aucune exemption pour les formules évaluatives
+
+**Fait**
+- L’exemption des phrases à **marqueur évaluatif** (« reste », « figure », « considéré », « légende »…) est **supprimée** du test : toutes les phrases de plus de 40 caractères sont désormais comparées à leur notice, y compris celles qui ne portent aucune ancre (dates, nombres, noms propres).
+- Effet mesuré : **3 phrases** seulement restaient sous le seuil — la liste d’exemptions masquait donc peu de choses, mais elle masquait précisément les affirmations non sourcées :
+  - **Jean-Marc Kraidy** (0,50) : « où il reste cinq saisons » remplacé par « De 1993 à 1998, il joue à l’ALM Évreux Basket, en Pro A. »
+  - **Tiken Jah Fakoly** (0,17) : « Il reste une voix écoutée dans toute l’Afrique francophone » supprimé. La notice contredit aussi l’exil : il est **exilé au Mali** en 2003 à la suite de menaces de mort (et non « d’abord au Burkina Faso puis en France ») ; la fiche ajoute l’ouverture de son studio à Bamako en 2006.
+  - **DJ Arafat** (0,43) : le commentaire sur les « deuils nationaux de la décennie » cède la place aux faits de la notice (scènes d’hystérie à l’annonce de la mort, funérailles du 30 au 31 août 2019). Au passage, le vrai nom (**Ange Didier Houon**, et non Ange Huessan Kouadio) et le lieu de naissance (**Cocody**, et non Yopougon) sont corrigés.
+- Garde-fou revérifié : réintroduire « Il reste une voix écoutée dans toute l’Afrique francophone » fait échouer le test en la citant à 0,17.
+
+**Vérifié**
+- `composer test` : **165 tests, 5 661 assertions** ; `composer format:check` : 163 fichiers ; `composer analyse` : aucun problème ; environ **2 570 phrases** passent désormais au contrôle, sans exemption.
+
+**Reste**
+- Le seuil de 0,55 reste une mesure lexicale : une phrase peut le dépasser tout en ajoutant une nuance que la notice ne porte pas. La relecture humaine garde sa place.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

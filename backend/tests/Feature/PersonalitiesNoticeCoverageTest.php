@@ -11,10 +11,11 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
  * dans la notice, et toute phrase dont les ancres — dates, nombres, noms
  * propres — figurent toutes dans la notice doit dépasser le seuil.
  *
- * Le seuil, les mots-outils et les formules évaluatives écartées sont ceux de
- * l'audit de recouvrement des séances 94 à 97. La fixture notice_tokens.php
- * contient les jetons des 401 notices, sans les notices elles-mêmes (voir
- * build_notice_tokens.php).
+ * Toutes les phrases sont contrôlées, y compris les formules évaluatives
+ * (« reste », « figure », « considéré »…) : aucune exemption. Le seuil et les
+ * mots-outils sont ceux de l'audit des séances 94 à 97. La fixture
+ * notice_tokens.php contient les jetons des 401 notices, sans les notices
+ * elles-mêmes (voir build_notice_tokens.php).
  */
 uses(RefreshDatabase::class);
 
@@ -87,12 +88,10 @@ it('garde chaque phrase factuelle au-dessus du seuil de recouvrement de sa notic
     $this->seed(CategorySeeder::class);
     $this->seed(PersonalitiesSeeder::class);
 
-    $markers = ['reste', 'restent', 'figure', 'figurent', 'incarne', 'illustre', 'symbole', 'référence', 'compte parmi', 'comptent parmi', 'emblématique', 'réputation', 'considéré', 'considérée', 'témoin', 'pionnier', 'doyen', 'majeur', 'majeure', 'légende', 'prestigieux', 'prestigieuse', 'incontournable', 'rayonnement', 'héritage', 'mémoire collective', 'élite', 'au service de', 'au-delà', 'reconnu', 'reconnue'];
-
     $violations = [];
     $checked = 0;
 
-    Article::query()->each(function (Article $article) use ($notices, $markers, &$violations, &$checked): void {
+    Article::query()->each(function (Article $article) use ($notices, &$violations, &$checked): void {
         $noticeText = $notices[$article->slug] ?? null;
 
         if ($noticeText === null) {
@@ -120,21 +119,6 @@ it('garde chaque phrase factuelle au-dessus du seuil de recouvrement de sa notic
             $ratio = $known / count($tokens);
 
             if ($ratio >= NOTICE_OVERLAP_THRESHOLD) {
-                continue;
-            }
-
-            $lower = mb_strtolower($sentence);
-            $isEvaluation = false;
-
-            foreach ($markers as $marker) {
-                if (mb_strpos($lower, $marker) !== false) {
-                    $isEvaluation = true;
-
-                    break;
-                }
-            }
-
-            if ($isEvaluation) {
                 continue;
             }
 

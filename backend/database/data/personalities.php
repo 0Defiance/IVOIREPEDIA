@@ -6087,7 +6087,7 @@ return [
             'occupations' => ['Basketteur'],
             'summary' => 'Basketteur franco-ivoirien né en 1976, Jean-Marc Kraidy a joué en Pro A à Évreux, au Paris Racing et au Havre.',
             'blocks' => [
-                ['p', 'Jean-Marc Kraidy, né le 16 septembre 1976 au Plateau, en Côte d’Ivoire, est un basketteur franco-ivoirien qui évolue au poste d’ailier. Il commence à l’Africa Sport Abidjan de 1989 à 1991, puis à l’ASEC Mimosas Basket jusqu’en 1993. Il rejoint ensuite la France et l’ALM Évreux Basket, en Pro A, où il reste cinq saisons.'],
+                ['p', 'Jean-Marc Kraidy, né le 16 septembre 1976 au Plateau, en Côte d’Ivoire, est un basketteur franco-ivoirien qui évolue au poste d’ailier. Il commence à l’Africa Sport Abidjan de 1989 à 1991, puis à l’ASEC Mimosas Basket jusqu’en 1993. De 1993 à 1998, il joue à l\'ALM Évreux Basket, en Pro A.'],
                 ['h2', 'Paris, Le Havre et l’étranger'],
                 ['p', 'Il joue au Paris Basket Racing de 1998 à 1999, puis à Montpellier Paillade Basket en prêt, avant de revenir à Paris jusqu’en 2002. Il passe ensuite par Évreux en Pro B, Le Havre en Pro A, puis par des clubs grecs, suisses, hongrois et italiens, dont le Viola Reggio de Calabre, Fabriano et le Club Bàsquet Prat, en Liga ACB, lors de la saison 2006-2007. Il termine sa carrière dans les divisions amateurs françaises, à Toulouges, Trappes, Dax, Aixe, Limoges Saint-Antoine et Panazol.'],
             ],
@@ -6337,11 +6337,11 @@ return [
             'occupations' => ['Chanteur', 'Auteur-compositeur'],
             'summary' => 'Chanteur de reggae ivoirien né en 1968, Tiken Jah Fakoly chante la justice et la panafricanisme, et vit en exil depuis 2003.',
             'blocks' => [
-                ['p', "Tiken Jah Fakoly, de son vrai nom Doumbia Moussa Fakoly, né le 23 juin 1968 à Odienné, est l'un des chanteurs de reggae africains les plus connus. Il chante en français et en dioula."],
+                ['p', 'Tiken Jah Fakoly, de son vrai nom Doumbia Moussa Fakoly, né le 23 juin 1968 à Odienné, est l\'un des chanteurs de reggae africains les plus connus. Il chante en français et en dioula.'],
                 ['h2', 'Le reggae engagé'],
-                ['p', "Ses chansons — « Plus jamais ça », « Où aller » — dénoncent l'injustice, la corruption et appellent à la dignité africaine. Il se réclame du panafricanisme."],
+                ['p', 'Ses chansons — « Plus jamais ça », « Où aller » — dénoncent l\'injustice, la corruption et appellent à la dignité africaine. Il se réclame du panafricanisme.'],
                 ['h2', 'L’exil'],
-                ['p', "Il quitte la Côte d'Ivoire en 2003 et vit depuis en exil, d'abord au Burkina Faso puis en France, tout en poursuivant les tournées et les albums. Il reste une voix écoutée dans toute l'Afrique francophone."],
+                ['p', 'Il quitte la Côte d\'Ivoire en 2003 et vit exilé au Mali, à la suite de menaces de mort. En 2006, il ouvre un studio à Bamako.'],
             ],
             'bibliography' => [
                 ['title' => 'Tiken Jah Fakoly', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Tiken_Jah_Fakoly'],
@@ -6379,11 +6379,11 @@ return [
             'occupations' => ['Chanteur', 'Animateur'],
             'summary' => 'Chanteur et animateur ivoirien (1986-2019), DJ Arafat, « le Yorobo », star du coupé-décalé, a marqué le pays par son énergie et ses phrases.',
             'blocks' => [
-                ['p', 'DJ Arafat, de son vrai nom Ange Huessan Kouadio, dit « le Yorobo », né en 1986 à Yopougon, est la star du coupé-décalé. Animateur de soirées devenu chanteur, il a fait du micro et des phrases chocs une signature.'],
+                ['p', 'DJ Arafat, de son vrai nom Ange Didier Houon, dit « le Yorobo », né le 26 janvier 1986 à Cocody et mort le 12 août 2019, est un chanteur, parolier et arrangeur ivoirien. Animateur de soirées devenu chanteur, il a fait du micro et des phrases chocs une signature.'],
                 ['h2', 'Le Yorobo et le coupé-décalé'],
-                ['p', "Dès les années 2000, il anime les ambiances d'Abidjan et impose un style provocateur et festif. Ses albums et ses concerts font de lui l'artiste de rue le plus populaire du pays."],
+                ['p', 'Dès les années 2000, il anime les ambiances d\'Abidjan et impose un style provocateur et festif. Ses albums et ses concerts font de lui l\'artiste de rue le plus populaire du pays.'],
                 ['h2', 'Une mort qui bouleverse le pays'],
-                ['p', "Il meurt dans un accident de moto à Abidjan le 12 août 2019, à 33 ans. Des centaines de milliers de fans lui rendent hommage en Côte d'Ivoire et dans la diaspora ; l'événement reste l'un des deuls nationaux de la décennie."],
+                ['p', 'Il meurt dans un accident de moto à Abidjan le 12 août 2019, à 33 ans. L\'annonce de sa mort donne lieu à des scènes d\'hystérie parmi ses fans, et ses funérailles réunissent sa famille et ses fans du 30 au 31 août 2019.'],
             ],
             'bibliography' => [
                 ['title' => 'DJ Arafat', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Arafat_DJ'],
