@@ -2431,6 +2431,25 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 91 — 25 novembre 2026 · Production réensemencée avec la tranche des artistes
+
+**Demandé**
+- Réensemencer la production après la tranche des artistes et vérifier que toutes les nouvelles pages répondent en 200 avec leurs références.
+
+**Fait**
+- Serveur : `git pull --ff-only` (`f1740ff` → `4dc64e2`), puis `php artisan db:seed --class=PersonalitiesSeeder --force` en **5 281 ms**.
+
+**Vérifié**
+- **92 pages** `/articles/<slug>` : **200** pour chacune.
+- **92 appels** `/api/v1/articles/<slug>` : **200** et **au moins une référence** par fiche.
+- Base de production : étiquette `biographies-artistes` → **100 fiches** ; ensemble des articles publiés → **480**.
+- **Écart de comptage expliqué** : `alpha-blondy` existait déjà comme article de démonstration du `PublicContentSeeder` (51 articles de 2026). Le seeder l’a mis à jour en biographie sourcée — une seule ligne, type `BIOGRAPHY`, étiquette `biographies-artistes` — d’où **480** articles et non 481. Aucun doublon créé.
+
+**Reste**
+- Les quatre tranches sont complètes : politiques **102**, écrivains **100**, sportifs **100**, artistes **100**.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
