@@ -2723,9 +2723,25 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 - `composer test` : **165 tests, 5 662 assertions** ; `composer format:check` : 163 fichiers ; `composer analyse` : aucun problème ; test de recouvrement vert après correction. Les pages des fiches corrigées répondent en 200 et servent les nouveaux textes.
 
 **Reste**
-- Douze années de naissance restent absentes de la notice sans être contredites (Cédric Marshall Kissy, Gina Dick, Hanny Tchelley, Antoinette Konan, Chantal Taïba, Papa Ministre, Naky Sy Savane, Philippe Lacôte, Adama Dahico, Claudie Titty-Dimbeng, Soum Bill, Gbizié Troupa Bruno) : les extraits en texte brut perdent les infoboxes, donc l'absence ne prouve pas l'invention. À trancher fiche par fiche avec une source explicite.
-- **Tangara Speed Ghôda** : la notice (ébauche de 1,3 ko) ne dit pas son décès de 2002, gardé faute de contradiction mais sans source dans la notice citée.
 - Le contrôle reste lexical : il attrape les faits fabriqués quand leurs mots manquent, pas quand ils sont composés de mots présents (le « Il meurt en 2005 » construit avec des mots de la notice passe).
+
+---
+
+## Séance 103 — 25 novembre 2026 · Dates de naissance tranchées sur l'article complet
+
+**Fait**
+- Vérification sur l'**article Wikipédia complet** (API `prop=extracts`, texte intégral) des dix-huit fiches dont une date avait été retirée ou restait douteuse. Comparaison des tailles : les notices locales et les extraits complets sont **identiques** — les fichiers n'étaient pas tronqués, seulement dépourvus d'infobox.
+- Aucun article ne donne d'année de naissance pour : **Irié Goli Bi** (seul le département de Bouaflé, via Babelio), **Jean-Paul Mehansio**, **Cédric Marshall Kissy**, **Gina Dick Boguifo**, **Hanny Tchelley**, **Antoinette Konan**, **Chantal Taïba**, **Papa Ministre**, **Naky Sy Savane**, **Philippe Lacôte**, **Adama Dahico**, **Claudie Titty-Dimbeng**, **Gbizié Troupa Bruno**, **Victor Guéi**, **Angéline Nadié**, **Josiane Yapo**. Les retraits d'Irié Goli Bi et Mehansio sont donc **confirmés** ; la même règle a été appliquée aux seize autres (année retirée du texte et des métadonnées, lieu conservé quand l'article le donne).
+- **Soum Bill** : l'article dit « au début des années 1970 », pas 1972 ; le texte garde la formulation prudente, la métadonnée passe à vide.
+- **Tangara Speed Ghôda** : l'article complet ne dit **nulle part** qu'il est mort — la seule mention funêbre concerne son père — et n'emploie pas 2002. Le décès de 2002 est donc **retiré** (métadonnées et résumé « (1962-2002) » → « né en 1962 »), faute de source.
+- Bilan des trois contrôles automatiques : plus **aucune année de naissance ou de mort** de fiche absente de sa notice, et un seul lieu signalé — **Tiburce Koffi**, où la notice écrit « bouake » sans accent face au « Bouaké » exact de la fiche (faux positif).
+
+**Vérifié**
+- `composer test` : **165 tests, 5 662 assertions** ; `composer format:check` : 163 fichiers ; `composer analyse` : aucun problème ; test de recouvrement vert. Production re-seedée, les fiches corrigées répondent en 200 et servent les textes sans année.
+
+**Reste**
+- Les fiches sans année de naissance s'affichent sans année : si une source tierce (Babelio, Africultures, presse) documente une date, elle peut être rétablie avec sa référence propre, conformément à la règle de fidélité.
+- Le contrôle automatique des années compare la métadonnée au texte de la notice ; il ne peut pas détecter une année juste lexicalement mais mal associée à un événement (cas Thiam, corrigé à la main).
 
 ---
 
