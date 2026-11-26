@@ -509,7 +509,7 @@ return [
             'occupations' => ['Homme politique'],
             'summary' => 'Homme politique ivoirien (1928-2018), Jean Konan Banny a été ministre de la Défense de 1961 à 1963 puis de 1981 à 1990.',
             'blocks' => [
-                ['p', 'Jean Konan Banny, né le 14 juillet 1928 à Divo et mort le 27 mai 2018 à Cocody, est un homme politique ivoirien membre du PDCI-RDA.'],
+                ['p', 'Jean Konan Banny, né le 14 juillet 1928 à Divo et mort le 27 mai 2018 à Cocody, est un homme politique ivoirien membre du PDCI.'],
                 ['h2', 'Le ministre de la Défense'],
                 ['p', 'Nommé le 3 janvier 1961 ministre de la Défense du premier gouvernement Houphouët-Boigny, il occupe ce poste de 1961 à 1963 et de 1981 à 1990.'],
                 ['h2', 'Une figure du PDCI'],
@@ -721,7 +721,7 @@ return [
             'blocks' => [
                 ['p', 'Laurent Dona Fologo, né le 12 décembre 1939 à Péguékaha, dans le département de Sinématiali, et mort le 5 février 2021 à Abidjan, est un journaliste et homme politique ivoirien.'],
                 ['h2', 'Le journaliste et l’homme de parti'],
-                ['p', 'Premier rédacteur en chef du quotidien Fraternité Matin, dont il devient ensuite directeur, il est ministre dans plusieurs gouvernements de Félix Houphouët-Boigny et secrétaire général du PDCI-RDA.'],
+                ['p', 'Premier rédacteur en chef du quotidien Fraternité Matin, dont il devient ensuite directeur, il est ministre dans plusieurs gouvernements de Félix Houphouët-Boigny et secrétaire général du PDCI.'],
                 ['h2', 'Le Conseil économique et social'],
                 ['p', 'Il préside le Conseil économique et social de 2000 au 19 mai 2011. En 2002 et 2003, il participe aux négociations de Lomé puis de Linas-Marcoussis au titre du PDCI.'],
             ],
@@ -5625,7 +5625,7 @@ return [
             'blocks' => [
                 ['p', 'Donald-Olivier Sié, né le 3 avril 1970, est un footballeur international ivoirien qui évoluait au poste d’ailier, devenu entraîneur. Il débute au Sabé Sport de Bouna avant de signer à l’ASEC Mimosas en 1991. Il est élu meilleur joueur ivoirien en 1995, passe une saison dans le championnat japonais en 1996, puis remporte la Ligue des champions de la CAF avec l’ASEC en 1998.'],
                 ['h2', 'Toulouse et la fin de carrière'],
-                ['p', 'Il évolue ensuite en France, notamment au Toulouse FC en 1998-1999, où il joue onze matchs et marque son seul but de la saison contre le Paris SG. Il poursuit en National au Racing Club de France, puis au Stade de Reims en 2000-2001, avant de mettre fin à sa carrière professionnelle. Il joue ensuite à Tinqueux puis au JS Cugnaux, où il participe à la montée en CFA2 en 2005 et reste jusqu’en 2010.'],
+                ['p', 'Il évolue ensuite en France, notamment au Toulouse FC en 1998-1999, où il joue onze matchs et marque son seul but de la saison. Il poursuit en National au Racing Club de France, puis au Stade de Reims en 2000-2001, avant de mettre fin à sa carrière professionnelle. Il joue ensuite à Tinqueux puis au JS Cugnaux, où il participe à la montée en CFA2 en 2005 et reste jusqu’en 2010.'],
                 ['h2', 'Six CAN et le banc'],
                 ['p', 'Avec la Côte d’Ivoire, il participe à six Coupes d’Afrique des nations et remporte l’édition 1992, marquant un but contre la Zambie. Lors de sa dernière participation à la CAN, en 2000, la Côte d\'Ivoire ne se qualifie pas pour les quarts de finale. Devenu entraîneur, il est l’adjoint de William Prunier en 2010, le suit à Colomiers en 2011, puis dirige l’équipe réserve du club à partir de 2012.'],
             ],
@@ -5840,7 +5840,7 @@ return [
             'occupations' => ['Footballeur'],
             'summary' => 'Milieu international ivoirien né en 1975, Tchiressoua Guel a remporté la Ligue des champions africaine 1998 avec l’ASEC et la Coupe de France 2002 avec Lorient.',
             'blocks' => [
-                ['p', 'Tchiressoua Guel, né le 27 décembre 1975 à Sikensi, est un ancien footballeur international ivoirien. Formé à l’ASEC Mimosas, il est élu meilleur joueur du championnat national en 1997 et remporte la Ligue des champions de la CAF en 1998 avec son club formateur. Il dispute son premier match de Ligue 1 le 6 février 1999, au Stade Vélodrome, sous les couleurs de l’Olympique de Marseille, contre Bastia.'],
+                ['p', 'Tchiressoua Guel, né le 27 décembre 1975 à Sikensi, est un ancien footballeur international ivoirien. Formé à l’ASEC Mimosas, il est élu meilleur joueur du championnat national en 1997 et remporte la Ligue des champions africaine en 1998 avec son club formateur. Il dispute son premier match de Ligue 1 le 6 février 1999, au Stade Vélodrome, sous les couleurs de l’Olympique de Marseille, contre Bastia.'],
                 ['h2', 'Lorient et la suite'],
                 ['p', 'Il joue ensuite à l’AS Saint-Étienne de 1999 à 2001, puis au FC Lorient de 2001 à 2004, où il gagne la Coupe de France en 2002 face à Bastia. Il passe ensuite par Ankaragücü, l’AS Nancy-Lorraine, un retour à Lorient et l’Ironi Kiryat Shmona, en Israël.'],
             ],

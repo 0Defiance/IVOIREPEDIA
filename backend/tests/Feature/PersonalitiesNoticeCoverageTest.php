@@ -29,7 +29,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
  * doit figurer dans la notice.
  *
  * La même règle vaut pour les ancres d'une phrase et d'un titre de section :
- * une année, un nombre ou un nom propre que la notice ne porte pas doit venir
+ * une année, un nombre, un sigle ou un nom propre que la notice ne porte pas doit venir
  * d'une référence propre. Ni une phrase ni un titre n'échappent donc au
  * contrôle parce qu'ils nomment une personne, un lieu ou un chiffre inconnu de
  * la notice.
@@ -178,10 +178,10 @@ function noticeCoverageCommonCapitals(): array
  *
  * Ne sont pas des ancres : la majuscule de début de phrase, un mot capitalisé
  * précédé d'un déterminant ou d'un numéral (« les Éléphants », « du Front »,
- * « deux Coupes »), un sobriquet entre guillemets (« Big »), un sigle (CAN,
- * PDCI-RDA) — il abrège un nom que la notice porte en clair —, les noms
- * communs listés par noticeCoverageCommonCapitals() et les âges (ils découlent
- * des dates, déjà contrôlées).
+ * « deux Coupes »), un sobriquet entre guillemets (« Big »), les noms communs
+ * listés par noticeCoverageCommonCapitals() et les âges (ils découlent des
+ * dates, déjà contrôlées). Un sigle (CAN, PDCI-RDA) reste une ancre : il ne
+ * passe que si la notice le porte tel quel ou en donne le nom en clair.
  *
  * @return array<int, array{0: string, 1: string}> ancre et nature
  */
@@ -209,7 +209,7 @@ function noticeCoverageSentenceAnchors(string $sentence): array
         $anchors[] = [$number, 'chiffre'];
     }
 
-    preg_match_all('/\b\p{Lu}[\p{L}\-’\']{2,}/u', $sentence, $names, PREG_OFFSET_CAPTURE);
+    preg_match_all('/\b\p{Lu}[\p{L}\p{N}\-’\']{2,}/u', $sentence, $names, PREG_OFFSET_CAPTURE);
 
     $runs = [];
     $previousEnd = -2;
@@ -233,6 +233,31 @@ function noticeCoverageSentenceAnchors(string $sentence): array
         $words = $run['words'];
         $position = $run['position'];
 
+        $isCapitalOfSpeech = true;
+
+        foreach ($words as $word) {
+            if (! in_array($word, noticeCoverageCommonCapitals(), true)) {
+                $isCapitalOfSpeech = false;
+            }
+        }
+
+        // Tout mot en capitales est un sigle, même collé à un nom propre
+        // (« Paris SG »). Il est contrôlé avant l'exemption de début de phrase
+        // et celle du déterminant : c'est un nom, pas une majuscule de langue.
+        // « CFA2 » en est un : le chiffre fait partie du nom.
+        $sigles = array_values(array_filter(
+            $words,
+            fn (string $word): bool => preg_match('/^[\p{Lu}\p{N}\-]{2,}$/u', $word) === 1
+        ));
+
+        foreach ($sigles as $sigle) {
+            $anchors[] = [$sigle, 'sigle'];
+        }
+
+        if (count($sigles) === count($words)) {
+            continue;
+        }
+
         if ($position === 0) {
             continue;
         }
@@ -251,20 +276,7 @@ function noticeCoverageSentenceAnchors(string $sentence): array
             continue;
         }
 
-        $isSigle = true;
-        $isCapitalOfSpeech = true;
-
-        foreach ($words as $word) {
-            if (preg_match('/^[\p{Lu}\-]{2,}$/u', $word) !== 1) {
-                $isSigle = false;
-            }
-
-            if (! in_array($word, noticeCoverageCommonCapitals(), true)) {
-                $isCapitalOfSpeech = false;
-            }
-        }
-
-        if ($isSigle || $isCapitalOfSpeech) {
+        if ($isCapitalOfSpeech) {
             continue;
         }
 
@@ -272,6 +284,74 @@ function noticeCoverageSentenceAnchors(string $sentence): array
     }
 
     return $anchors;
+}
+
+/**
+ * Sigles et leur nom en clair, tel que la notice doit le porter pour couvrir
+ * l'abréviation. Plusieurs variantes sont admises quand la notice en donne
+ * une formulation plus courte (« Coupe d'Afrique » pour la CAN).
+ *
+ * @return array<string, array<int, array<int, string>>>
+ */
+function noticeCoverageAcronymExpansions(): array
+{
+    return [
+        'ANC' => [['alliance', 'nouvelle', 'côte', 'ivoire']],
+        'BCEAO' => [['banque', 'centrale', 'états', 'afrique', 'ouest']],
+        'BTS' => [['brevet', 'technicien', 'supérieur']],
+        'CAF' => [['confédération', 'africaine', 'football']],
+        'CAN' => [['coupe', 'afrique', 'nations'], ['coupe', 'afrique']],
+        'FCO' => [['football', 'club', 'olympique']],
+        'IAAF' => [
+            ['association', 'internationale', 'fédérations', 'athlétisme'],
+            ['international', 'association', 'athletics', 'federations'],
+        ],
+        'INSAAC' => [['institut', 'national', 'supérieur', 'arts', 'action', 'culturelle']],
+        'ONG' => [['organisation', 'non', 'gouvernementale']],
+        'PDCI' => [['parti', 'démocratique', 'côte', 'ivoire']],
+        'PDCI-RDA' => [['parti', 'démocratique', 'côte', 'ivoire', 'rassemblement', 'africain']],
+        'RTI' => [['radiodiffusion', 'télévision', 'ivoirienne']],
+        'SG' => [['saint', 'germain'], ['secrétaire', 'général']],
+    ];
+}
+
+/**
+ * Un sigle est couvert quand la notice le porte tel quel (tous ses segments)
+ * ou qu'elle en donne le nom en clair. Sinon, la fiche l'invente.
+ *
+ * @param  array<string, int>  $noticeWords
+ */
+function noticeCoverageAcronymKnown(string $acronym, array $noticeWords): bool
+{
+    $segments = preg_split('/[^\p{L}\p{N}]+/u', noticeCoveragePlain($acronym), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+
+    if ($segments === []) {
+        return true;
+    }
+
+    $literal = true;
+
+    foreach ($segments as $segment) {
+        if (! isset($noticeWords[$segment])) {
+            $literal = false;
+        }
+    }
+
+    if ($literal) {
+        return true;
+    }
+
+    foreach (noticeCoverageAcronymExpansions()[mb_strtoupper($acronym)] ?? [] as $expansion) {
+        foreach ($expansion as $word) {
+            if (! isset($noticeWords[noticeCoveragePlain($word)])) {
+                continue 2;
+            }
+        }
+
+        return true;
+    }
+
+    return false;
 }
 
 /**
@@ -319,6 +399,14 @@ function noticeCoverageUnsourcedAnchors(Article $article, string $noticeText): a
 
                 // Le nom du sujet est garanti par le titre de l'article, pas par une phrase.
                 if ($parts !== [] && array_diff($parts, $titleWords) === []) {
+                    continue;
+                }
+
+                if ($label === 'sigle') {
+                    if (! noticeCoverageAcronymKnown($anchor, $noticeWords)) {
+                        $unsourced[] = $article->slug.' ('.$label.' '.$anchor.') : absent de la notice et sans référence hors Wikipédia';
+                    }
+
                     continue;
                 }
 
@@ -552,4 +640,12 @@ it('échoue sur une ancre inventée, absente de la notice et sans référence pr
 
     expect($found)->toContain('magic-system (nom propre Zépherin Kacou) : absent de la notice et sans référence hors Wikipédia');
     expect($found)->toContain('magic-system (année 1834) : absent de la notice et sans référence hors Wikipédia');
+
+    // Un sigle que la notice ne porte ni tel quel ni en clair est une ancre inventée.
+    $article->summary .= ' Il adhère ensuite à la CTP.';
+    $article->save();
+
+    $found = noticeCoverageUnsourcedAnchors($article->fresh(['references']), $noticeText);
+
+    expect($found)->toContain('magic-system (sigle CTP) : absent de la notice et sans référence hors Wikipédia');
 });

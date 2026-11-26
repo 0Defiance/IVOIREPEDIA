@@ -2912,6 +2912,28 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 112 — 26 novembre 2026 · Les sigles
+
+**Motif** : dernier angle mort du garde-fou. Un sigle (CAN, PDCI-RDA) sortait du contrôle au motif qu'il abrégeait « un nom que la notice porte en clair » ; une fiche pouvait donc écrire une abréviation que sa notice ignore.
+
+**Fait**
+- Un sigle est désormais une ancre (`sigle`) : il ne passe que si la notice le porte tel quel, tous ses segments (`CFA2` compris), ou si elle en donne le nom en clair.
+- `noticeCoverageAcronymExpansions()` fixe ce nom en clair, avec des variantes quand la notice écrit plus court : CAN (Coupe d'Afrique des nations, ou Coupe d'Afrique), PDCI-RDA, IAAF (forme française et forme anglaise de la notice), SG (Saint-Germain ou secrétaire général), etc. Un sigle absent de la table ne passe que s'il figure littéralement dans la notice.
+- Le contrôle passe avant l'exemption de début de phrase et celle du déterminant : « la CAN » est vérifiée comme « CAN ». Un mot en capitales est vérifié même collé à un nom propre (« Paris SG » donne le sigle SG), et un sigle à chiffre reste un tout (« CFA2 »).
+- Quatre fiches corrigées : Jean Konan Banny et Laurent Dona Fologo disaient PDCI-RDA là où leur notice ne dit que PDCI ; Tchiressoua Guel disait « Ligue des champions de la CAF » là où la notice dit « Ligue des champions africaine » ; Donald-Olivier Sié opposait le Paris SG, que sa notice ne nomme pas.
+- Le cas permanent de la séance 110 ajoute « Il adhère ensuite à la CTP. » et exige `magic-system (sigle CTP)`.
+
+**Vérifié**
+- Corpus des 401 fiches vert avec les sigles sous contrôle ; les quatre écarts étaient ces quatre fiches, toutes alignées sur leur notice.
+- `composer test` : **166 tests, 5 673 assertions** ; `composer format:check` : 163 fichiers ; `composer analyse` : aucun problème.
+- Production re-seedée et caches reconstruits ; les fiches corrigées répondent en 200 et ne portent plus les sigles retirés.
+
+**Reste**
+- Un sigle absent de `noticeCoverageAcronymExpansions()` et absent littéralement de la notice échoue : la table devra grandir avec le corpus, comme `noticeCoverageCommonCapitals()`.
+- Les fiches qui possèdent une référence propre hors Wikipédia restent hors de ces contrôles d'ancres, sigles compris.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
