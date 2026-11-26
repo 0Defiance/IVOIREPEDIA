@@ -3022,6 +3022,14 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 117 — 26 novembre 2026 · Garde-fou contre les pages d'accueil
+
+**Ajout** : `noticeCoverageHomePageReferences()` et un troisième test dans `PersonalitiesNoticeCoverageTest`. Une référence dont l'URL n'a ni chemin (ou seulement « / ») ni requête est refusée : les 22 cas corrigés en séance 115 ne peuvent pas revenir. Une URL à requête, comme `assnat.ci/?page`, reste acceptée car elle mène à une page réelle.
+
+**Vérifié** : le corpus des 401 fiches passe ; le test injecte `https://africultures.com` et vérifie qu'elle est signalée, puis qu'une page précise ne l'est pas. `composer test` : 167 tests, 5 678 assertions ; format 163 fichiers ; analyse 75 fichiers sans erreur.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

@@ -558,6 +558,40 @@ function noticeCoverageAnchors(string $sentence): array
     return array_values(array_unique(array_filter($anchors, fn (string $anchor): bool => ! in_array($anchor, $ignored, true))));
 }
 
+/**
+ * Références de bibliographie qui pointent vers l'accueil d'un site : ni chemin
+ * (ou seulement « / ») ni requête. Une URL à requête, comme assnat.ci/?page, est
+ * une page réelle et reste acceptée.
+ *
+ * @return array<int, string>
+ */
+function noticeCoverageHomePageReferences(Article $article): array
+{
+    $offenders = [];
+
+    foreach ($article->references as $reference) {
+        $url = (string) $reference->url;
+
+        if ($url === '') {
+            continue;
+        }
+
+        $parts = parse_url($url);
+
+        if ($parts === false || ! isset($parts['host'])) {
+            continue;
+        }
+
+        $path = $parts['path'] ?? '';
+
+        if (($path === '' || $path === '/') && ! isset($parts['query'])) {
+            $offenders[] = $url;
+        }
+    }
+
+    return $offenders;
+}
+
 it('garde chaque phrase factuelle au-dessus du seuil de recouvrement de sa notice', function () {
     /** @var array<string, string> $notices */
     $notices = require __DIR__.'/../Fixtures/notice_tokens.php';
@@ -751,4 +785,45 @@ it('échoue sur une ancre inventée, absente de la notice et sans référence pr
     expect(noticeCoverageHasOwnSource($withOwnSource))->toBeTrue();
     expect(noticeCoverageUnsourcedAnchors($withOwnSource, $noticeText))
         ->toContain('magic-system (sigle CTP) : absent de la notice et sans référence hors Wikipédia');
+});
+
+it('refuse toute référence de bibliographie qui pointe vers une page d’accueil', function () {
+    $this->seed(CategorySeeder::class);
+    $this->seed(PersonalitiesSeeder::class);
+
+    $offenders = [];
+
+    foreach (Article::query()->with('references')->get() as $article) {
+        foreach (noticeCoverageHomePageReferences($article) as $url) {
+            $offenders[] = $article->slug.' : '.$url;
+        }
+    }
+
+    expect($offenders)->toBe([]);
+
+    // Une régression — remettre une page d'accueil — doit échouer clairement.
+    $article = Article::query()->with('references')->where('slug', 'magic-system')->firstOrFail();
+
+    $article->references()->create([
+        'position' => 2,
+        'kind' => 'OTHER',
+        'title' => 'Magic System',
+        'publisher' => 'Africultures',
+        'url' => 'https://africultures.com',
+    ]);
+
+    expect(noticeCoverageHomePageReferences($article->fresh(['references'])))
+        ->toBe(['https://africultures.com']);
+
+    // Une page précise, ou une page à requête, reste acceptée.
+    $article->references()->create([
+        'position' => 3,
+        'kind' => 'OTHER',
+        'title' => 'Magic System',
+        'publisher' => 'Africultures',
+        'url' => 'https://africultures.com/personnes/?no=20587',
+    ]);
+
+    expect(noticeCoverageHomePageReferences($article->fresh(['references'])))
+        ->toBe(['https://africultures.com']);
 });
