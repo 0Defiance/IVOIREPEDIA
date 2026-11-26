@@ -2858,7 +2858,7 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 - Un nombre se compare chiffre à chiffre : `1 500` et `1500` sont le même nombre, et `1 000` se lit aussi quand la notice écrit les milliers séparément.
 - Comparaison insensible aux accents, aux traits d'union et aux apostrophes, comme pour les lieux : `Tiérou` et `Tierou`, `Houphouët-Boigny`, `N’Goran`.
 
-**Corrigé — 28 phrases dans 25 fiches**
+**Corrigé — 27 phrases dans 24 fiches (26 passages)**
 - *Détails que la notice ne porte pas* : « succédant à Jeannot Ahoussou-Kouadio » (Kandia Camara), la date de 2020 et le mois de nomination (Vagondo Diomandé), « depuis le 23 septembre 2026 » (Fodjo Kadjo Abo), le mari de Marie Laure N'Goran, le collège de Plymouth et les années 1980 (Gina Dick Boguifo), « cité Arras 1 » (Sidney Karams), « à Claix » (Lacina Traoré), « à Johannesburg », « au Qatar » requalifié en `Al-Gjarafa`, la date de prêt 2012 et 2014 (Jonathan Kodjia), le nombre de rencontres de 2014-2015 (Jean-Philippe Gbamin), le quartier de Marcory (Magic System), le prix de 1995 (Fadika Kramo Lanciné), la date de 1964 remplacée par Tokyo (Gaoussou Koné), la clause Saint-Étienne de 2005 (Siaka Tiéné), « à Paris » (Decothey), le nom du pasteur, la précision « Yambo Ouologuem ».
 - *Formes alignées sur la notice* : « Johannesbourg », « Saint Marc and Saint John », « Al-Gjarafa », « Bamba Kakary » écarté au profit des seuls noms portés par la notice, « Isaïe Biton » sans le patronyme, « Barry Copa », « le président Ouattara », « Puissance des lettres » (le titre que donne la notice), « championnat belge » au lieu de « champion de Belgique », « à Nice » au lieu de « en France », « à l'Udinese » au lieu de « en Italie ».
 
