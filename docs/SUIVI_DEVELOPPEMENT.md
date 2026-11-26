@@ -2874,6 +2874,24 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 110 — 26 novembre 2026 · Les ancres en production et un cas permanent
+
+**Motif** : la séance 109 avait éprouvé le garde-fou par une mutation manuelle, puis restaurée — rien dans la suite ne prouvait qu'il échouerait encore. Les phrases corrigées n'étaient pas non plus en production.
+
+**Fait**
+- Le contrôle des ancres sort de la boucle du test dans `noticeCoverageUnsourcedAnchors(Article $article, string $noticeText)` : pour une fiche sans référence propre, il rend la liste de ses ancres absentes de la notice. Le balayage des 401 fiches et le nouveau cas permanent passent par la même fonction, donc le cas éprouve exactement le chemin du corpus.
+- Nouveau test permanent « échoue sur une ancre inventée, absente de la notice et sans référence propre » : il constate d'abord que la fiche Magic System, couverte par la notice seule, ne signale aucune ancre ; il lui ajoute ensuite « Le groupe se produit en 1723 par Kwamé Zongo. » et exige les deux signalements, le nom propre et l'année.
+- Production re-seedée sur le commit `4152bc3` (`db:seed --class=PersonalitiesSeeder --force`, 4 209 ms), puis `config:cache`, `route:cache` et `view:cache` reconstruits.
+
+**Vérifié**
+- `composer test` : **166 tests, 5 670 assertions** ; `composer format:check` : 163 fichiers ; `composer analyse` : 75 fichiers, aucun problème.
+- Les fiches corrigées sont servies : `kandia-camara` (sans « Ahoussou »), `seko-fofana` (« Udinese ») et `gaoussou-kone` (section « Tokyo 1964 ») répondent en **200** sur `/api/v1/articles/{slug}`.
+
+**Reste**
+- Les titres de section échappent au contrôle des ancres : « Tokyo 1964 » (Gaoussou Koné) porte une année que la notice ne donne pas — elle ne dit que Tokyo — alors que le corps de la fiche a été aligné en séance 109.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

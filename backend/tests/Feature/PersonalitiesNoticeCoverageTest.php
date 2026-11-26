@@ -273,6 +273,79 @@ function noticeCoverageSentenceAnchors(string $sentence): array
     return $anchors;
 }
 
+/**
+ * Ancres d'une fiche que sa notice ne porte pas, quand la fiche n'a aucune
+ * référence propre hors Wikipédia : un message par ancre, avec sa nature.
+ *
+ * @return array<int, string>
+ */
+function noticeCoverageUnsourcedAnchors(Article $article, string $noticeText): array
+{
+    if (noticeCoverageHasOwnSource($article)) {
+        return [];
+    }
+
+    $noticeWords = array_flip(
+        preg_split('/[^\p{L}\p{N}]+/u', noticeCoveragePlain($noticeText), -1, PREG_SPLIT_NO_EMPTY) ?: []
+    );
+
+    $noticeNumbers = [];
+
+    foreach (explode(' ', $noticeText) as $noticeToken) {
+        if (preg_match('/\d/u', $noticeToken) === 1) {
+            $noticeNumbers[preg_replace('/\D/', '', $noticeToken) ?? ''] = true;
+        }
+    }
+
+    $titleWords = preg_split('/[^\p{L}\p{N}]+/u', noticeCoveragePlain($article->title), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+
+    $unsourced = [];
+    $text = trim($article->summary.' '.noticeCoverageBody($article));
+
+    foreach (preg_split('/(?<=[.!?])\s+/u', $text) ?: [] as $sentence) {
+        foreach (noticeCoverageSentenceAnchors(trim($sentence)) as [$anchor, $label]) {
+            $parts = preg_split('/[^\p{L}\p{N}]+/u', noticeCoveragePlain($anchor), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+
+            // Le nom du sujet est garanti par le titre de l'article, pas par une phrase.
+            if ($parts !== [] && array_diff($parts, $titleWords) === []) {
+                continue;
+            }
+
+            // Un nombre se compare chiffre à chiffre : « 1 500 » et « 1500 » sont le même.
+            if ($label === 'chiffre') {
+                $known = isset($noticeNumbers[preg_replace('/\D/', '', $anchor) ?? '']);
+                $groups = preg_split('/\s+/u', trim($anchor)) ?: [];
+
+                if (! $known && count($groups) > 1) {
+                    $known = true;
+
+                    foreach ($groups as $group) {
+                        if (! isset($noticeNumbers[preg_replace('/\D/', '', $group) ?? ''])) {
+                            $known = false;
+                        }
+                    }
+                }
+
+                if (! $known) {
+                    $unsourced[] = $article->slug.' ('.$label.' '.$anchor.') : absent de la notice et sans référence hors Wikipédia';
+                }
+
+                continue;
+            }
+
+            foreach ($parts as $part) {
+                if (! isset($noticeWords[$part])) {
+                    $unsourced[] = $article->slug.' ('.$label.' '.$anchor.') : absent de la notice et sans référence hors Wikipédia';
+
+                    break;
+                }
+            }
+        }
+    }
+
+    return $unsourced;
+}
+
 /** Défauts de ponctuation laissés par les scripts de réécriture, motif => libellé. */
 function personalitiesPunctuationPatterns(): array
 {
@@ -326,22 +399,7 @@ it('garde chaque phrase factuelle au-dessus du seuil de recouvrement de sa notic
             $plainNotice[noticeCoveragePlain($token)] = true;
         }
 
-        $noticeWords = array_flip(
-            preg_split('/[^\p{L}\p{N}]+/u', noticeCoveragePlain($noticeText), -1, PREG_SPLIT_NO_EMPTY) ?: []
-        );
-
-        $noticeNumbers = [];
-        $noticeTokens = explode(' ', $noticeText);
-
-        foreach ($noticeTokens as $noticeToken) {
-            if (preg_match('/\d/u', $noticeToken) === 1) {
-                $noticeNumbers[preg_replace('/\D/', '', $noticeToken) ?? ''] = true;
-            }
-        }
-
         $hasOwnSource = noticeCoverageHasOwnSource($article);
-
-        $titleWords = preg_split('/[^\p{L}\p{N}]+/u', noticeCoveragePlain($article->title), -1, PREG_SPLIT_NO_EMPTY) ?: [];
 
         foreach (['birthPlace' => 'lieu de naissance', 'deathPlace' => 'lieu de mort'] as $field => $label) {
             $place = $article->infobox[$field] ?? null;
@@ -404,46 +462,7 @@ it('garde chaque phrase factuelle au-dessus du seuil de recouvrement de sa notic
                 continue;
             }
 
-            if (! $hasOwnSource) {
-                foreach (noticeCoverageSentenceAnchors($sentence) as [$anchor, $label]) {
-                    $parts = preg_split('/[^\p{L}\p{N}]+/u', noticeCoveragePlain($anchor), -1, PREG_SPLIT_NO_EMPTY) ?: [];
-
-                    // Le nom du sujet est garanti par le titre de l'article, pas par une phrase.
-                    if ($parts !== [] && array_diff($parts, $titleWords) === []) {
-                        continue;
-                    }
-
-                    // Un nombre se compare chiffre à chiffre : « 1 500 » et « 1500 » sont le même.
-                    if ($label === 'chiffre') {
-                        $known = isset($noticeNumbers[preg_replace('/\D/', '', $anchor) ?? '']);
-                        $groups = preg_split('/\s+/u', trim($anchor)) ?: [];
-
-                        if (! $known && count($groups) > 1) {
-                            $known = true;
-
-                            foreach ($groups as $group) {
-                                if (! isset($noticeNumbers[preg_replace('/\D/', '', $group) ?? ''])) {
-                                    $known = false;
-                                }
-                            }
-                        }
-
-                        if (! $known) {
-                            $unsourcedAnchors[] = $article->slug.' ('.$label.' '.$anchor.') : absent de la notice et sans référence hors Wikipédia';
-                        }
-
-                        continue;
-                    }
-
-                    foreach ($parts as $part) {
-                        if (! isset($noticeWords[$part])) {
-                            $unsourcedAnchors[] = $article->slug.' ('.$label.' '.$anchor.') : absent de la notice et sans référence hors Wikipédia';
-
-                            break;
-                        }
-                    }
-                }
-            }
+            $unsourcedAnchors = array_merge($unsourcedAnchors, noticeCoverageUnsourcedAnchors($article, $noticeText));
 
             $known = count(array_filter($tokens, fn (string $token): bool => isset($notice[$token])));
             $ratio = $known / count($tokens);
@@ -481,4 +500,31 @@ it('garde chaque phrase factuelle au-dessus du seuil de recouvrement de sa notic
     expect($unsourcedYears)->toBe([]);
     expect($unsourcedPlaces)->toBe([]);
     expect($unsourcedAnchors)->toBe([]);
+});
+
+it('échoue sur une ancre inventée, absente de la notice et sans référence propre', function () {
+    /** @var array<string, string> $notices */
+    $notices = require __DIR__.'/../Fixtures/notice_tokens.php';
+
+    $this->seed(CategorySeeder::class);
+    $this->seed(PersonalitiesSeeder::class);
+
+    $article = Article::query()->with('references')->where('slug', 'magic-system')->firstOrFail();
+    $noticeText = $notices[$article->slug] ?? '';
+
+    expect($noticeText)->not->toBe('');
+    expect(noticeCoverageHasOwnSource($article))->toBeFalse();
+
+    // La fiche réelle est alignée : le garde-fou ne signale rien.
+    expect(noticeCoverageUnsourcedAnchors($article, $noticeText))->toBe([]);
+
+    // Une ancre inventée — un nom propre et une année que la notice ignore —
+    // doit faire échouer le contrôle, même sans référence propre.
+    $article->summary .= ' Le groupe se produit en 1723 par Kwamé Zongo.';
+    $article->save();
+
+    $found = noticeCoverageUnsourcedAnchors($article->fresh(['references']), $noticeText);
+
+    expect($found)->toContain('magic-system (nom propre Kwamé Zongo) : absent de la notice et sans référence hors Wikipédia');
+    expect($found)->toContain('magic-system (année 1723) : absent de la notice et sans référence hors Wikipédia');
 });
