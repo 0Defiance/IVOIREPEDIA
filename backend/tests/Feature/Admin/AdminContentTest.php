@@ -139,6 +139,48 @@ it('enregistre plusieurs sources, une infobox et des étiquettes', function () {
         ->and($article->tags->pluck('name')->all())->toBe(['Pêche']);
 });
 
+it('refuse une source qui pointe vers une page d’accueil', function () {
+    $contributor = User::factory()->contributor()->create();
+    $category = Category::factory()->create();
+
+    $this->actingAs($contributor)
+        ->from('/admin/articles/create')
+        ->post('/admin/articles', [
+            'title' => 'Une source en page d’accueil',
+            'summary' => 'Un article dont la source ne mène pas à une page précise.',
+            'body' => 'Un corps suffisamment long pour passer la validation.',
+            'type' => 'TOPIC',
+            'category_id' => $category->getKey(),
+            'references' => [
+                ['title' => 'Site officiel', 'url' => 'https://example.test'],
+            ],
+        ])
+        ->assertRedirect('/admin/articles/create')
+        ->assertSessionHasErrors([
+            'references.0.url' => 'L’adresse de la source doit pointer vers une page précise, pas vers l’accueil d’un site.',
+        ]);
+
+    expect(Article::query()->where('title', 'Une source en page d’accueil')->exists())->toBeFalse();
+
+    // Une page précise reste acceptée.
+    $this->actingAs($contributor)
+        ->post('/admin/articles', [
+            'title' => 'Une source précise',
+            'summary' => 'Un article dont la source mène à une page précise.',
+            'body' => 'Un corps suffisamment long pour passer la validation.',
+            'type' => 'TOPIC',
+            'category_id' => $category->getKey(),
+            'references' => [
+                ['title' => 'Site officiel', 'url' => 'https://example.test/page'],
+            ],
+        ])
+        ->assertRedirect();
+
+    $article = Article::query()->where('title', 'Une source précise')->firstOrFail();
+
+    expect($article->references()->value('url'))->toBe('https://example.test/page');
+});
+
 it('remplace les sources à l’enregistrement, dans l’ordre saisi', function () {
     $editor = User::factory()->editor()->create();
     $article = Article::factory()->create();

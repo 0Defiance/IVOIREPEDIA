@@ -3,6 +3,8 @@
 namespace App\Http\Requests\Admin;
 
 use App\Enums\ArticleType;
+use App\Support\ReferenceUrl;
+use Closure;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -41,7 +43,16 @@ class ArticleRequest extends FormRequest
             'references.*.authors' => ['nullable', 'string', 'max:255'],
             'references.*.publisher' => ['nullable', 'string', 'max:255'],
             'references.*.year' => ['nullable', 'integer', 'min:1800', 'max:2100'],
-            'references.*.url' => ['nullable', 'url', 'max:500'],
+            'references.*.url' => [
+                'nullable',
+                'url',
+                'max:500',
+                function (string $attribute, mixed $value, Closure $fail): void {
+                    if (is_string($value) && ReferenceUrl::isHomePage($value)) {
+                        $fail('L’adresse de la source doit pointer vers une page précise, pas vers l’accueil d’un site.');
+                    }
+                },
+            ],
             'infobox' => ['nullable', 'array', 'max:20'],
             'infobox.*.label' => ['nullable', 'string', 'max:60'],
             'infobox.*.value' => ['nullable', 'string', 'max:255'],

@@ -3030,6 +3030,16 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 118 — 26 novembre 2026 · Refus des pages d'accueil à la saisie
+
+**Ajout** : `App\Support\ReferenceUrl::isHomePage()` et une règle de validation sur `references.*.url` dans `ArticleRequest`. Une URL sans chemin (ou seulement « / ») et sans requête est refusée avec le message « L’adresse de la source doit pointer vers une page précise, pas vers l’accueil d’un site. » Une URL à requête, comme `assnat.ci/?page`, reste acceptée.
+
+**Test** : dans `AdminContentTest`, un contributeur soumet une source `https://example.test` : redirection vers le formulaire, erreur sur `references.0.url`, aucun article créé. La même soumission avec `https://example.test/page` aboutit et enregistre l’URL.
+
+**Vérifié** : `composer test` : 168 tests, 5 685 assertions ; format 164 fichiers ; analyse 76 fichiers sans erreur.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
