@@ -2892,6 +2892,26 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 111 — 26 novembre 2026 · Les ancres des titres de section
+
+**Motif** : le garde-fou des ancres ne lisait que le résumé et les paragraphes. La fiche Gaoussou Koné gardait donc un titre « Tokyo 1964 » alors que sa notice ne donne que Tokyo — le reste signalé en séance 110.
+
+**Fait**
+- `noticeCoverageUnsourcedAnchors()` contrôle désormais chaque titre de section comme une phrase ; chaque titre est traité seul, pour ne pas hériter du contexte de la phrase suivante.
+- Le titre de Gaoussou Koné revient à « Tokyo », la seule forme que porte la notice ; le corps de la fiche avait été aligné en séance 109.
+- Le titre de Mix Premier « Entre Cotonou et Abidjan » devient « Entre Cotonou et Port-Bouët » : la notice écrit que la famille s'installe à Port-Bouët en 1992 et ne nomme jamais Abidjan.
+- Le cas permanent de la séance 110 ajoute un titre de section inventé (« Chapitre de 1834 par Zépherin Kacou ») et exige les deux signalements, en plus de ceux du corps.
+
+**Vérifié**
+- Le corpus des 401 fiches passe avec les titres sous contrôle : les seuls écarts étaient ces deux titres, tous deux corrigés.
+- `composer test` : **166 tests, 5 672 assertions** ; `composer format:check` : 163 fichiers ; `composer analyse` : aucun problème.
+- Production re-seedée et caches reconstruits ; `gaoussou-kone` répond en 200 et sert la section « Tokyo », sans « 1964 ».
+
+**Reste**
+- Un titre sans ancre vérifiable (« Débuts », « Carrière ») n'est pas contrôlé, et les sigles restent hors du garde-fou.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

@@ -4805,7 +4805,7 @@ return [
             'summary' => 'Sprinteur ivoirien né en 1944, Gaoussou Koné a été le premier Africain finaliste du 100 m aux Jeux olympiques de Tokyo, où il se classe sixième.',
             'blocks' => [
                 ['p', 'Gaoussou Koné, né le 28 avril 1944, est un athlète ivoirien. Il a été le meilleur sprinter d’Afrique francophone dans les années 1960.'],
-                ['h2', 'Tokyo 1964'],
+                ['h2', 'Tokyo'],
                 ['p', 'Il se révèle en 1963 aux Jeux de l’Amitié de Dakar, où il se qualifie pour la finale à 17 ans et remporte l’or du 100 m. L’année suivante, il devient le premier Africain finaliste du 100 m des Jeux olympiques, à Tokyo, où il se classe sixième.'],
                 ['h2', 'Jeux africains et Universiade'],
                 ['p', 'Aux premiers Jeux africains de Brazzaville, en 1965, il est double lauréat du 100 et du 200 mètres. Il remporte encore l’or du 100 m à l’Universiade de Tokyo en 1967 et le bronze du relais 4 × 100 m aux Jeux africains de Lagos en 1973. Il entraîne ensuite des athlètes à Abidjan.'],
@@ -7248,7 +7248,7 @@ return [
             'summary' => 'Chanteur et auteur-compositeur-interprète béninois et ivoirien né le 19 septembre 1985 à Cotonou, Mix Premier est un nom du coupé-décalé.',
             'blocks' => [
                 ['p', 'Mix Premier, aussi appelé DJ Mix, de son vrai nom Emile Joël Sofonnou, est né le 19 septembre 1985 à Cotonou. Il est chanteur et auteur-compositeur-interprète béninois et ivoirien.'],
-                ['h2', 'Entre Cotonou et Abidjan'],
+                ['h2', 'Entre Cotonou et Port-Bouët'],
                 ['p', 'Né d’un père béninois et d’une mère ivoirienne, il s’installe avec sa famille à Port-Bouët en 1992.'],
             ],
             'bibliography' => [
