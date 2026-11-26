@@ -2838,9 +2838,11 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 **Vérifié**
 - Le trou de la séance 107 est refermé, éprouvé par mutation puis restauré : `Treichville (Ouagadougou)` comme lieu de mort de Josiane Yapo échoue maintenant avec `josiane-yapo (lieu de mort Treichville (Ouagadougou))`, alors que l'ancienne règle l'acceptait grâce à Ouagadougou.
 - `composer test` : **165 tests, 5 664 assertions** ; `composer format:check` : 163 fichiers ; `composer analyse` : aucun problème. Production re-seedée, les trois fiches corrigées en séance 107 répondent en 200.
+- Caches de production reconstruits après la coupure SSH de la séance précédente : `config:cache`, `route:cache` et `view:cache` réussissent sur le commit `0d7f1d9` (Laravel 13.39.0, PHP 8.4.28, `APP_ENV=production`). Le site répond en **200** sur `/`, `/api/v1/health` et `/api/v1/categories`, et les trois fiches corrigées servent bien `Bingerville` (Siméon Aké), `Abidjan` (Emmanuel Éboué) et `Divo` (Paco Séry).
 
 **Reste**
 - Un lieu dont la ville est citée mais dont le pays ou la région entre parenthèses est faux passe encore : le garde-fou compare des mots, il ne valide pas la hiérarchie administrative.
+- Le test tolère une phrase dont une ancre (nom propre, chiffre) est absente de la notice : l'ancre inconnue fait sortir la phrase du contrôle au lieu de la signaler. Une phrase qui invente un nom échappe donc au seuil de recouvrement.
 
 ---
 
