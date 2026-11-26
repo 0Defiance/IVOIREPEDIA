@@ -155,7 +155,8 @@
         .form-row { display: grid; gap: 6px; margin-bottom: 16px; }
         .form-row.two { grid-template-columns: 1fr 1fr; gap: 16px; }
         .form-row label { font-size: 12.5px; font-weight: 600; color: var(--ink-soft); }
-        .form-row .hint { font-size: 12px; color: var(--muted); }
+        .form-row .hint, .ref-url .hint { font-size: 12px; color: var(--muted); }
+        .ref-url { display: grid; gap: 4px; align-content: start; }
         input[type=text], input[type=email], input[type=password], input[type=url], input[type=number], select, textarea {
             width: 100%; font: inherit; color: var(--ink); background: #FFF;
             border: 1px solid var(--line); border-radius: 9px; padding: 10px 12px;

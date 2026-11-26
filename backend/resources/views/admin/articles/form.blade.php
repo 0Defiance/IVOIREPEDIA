@@ -145,8 +145,11 @@
                                value="{{ $row['publisher'] ?? '' }}" placeholder="Éditeur ou institution" aria-label="Éditeur">
                         <input type="number" name="references[{{ $index }}][year]" min="1800" max="2100"
                                value="{{ $row['year'] ?? '' }}" placeholder="Année" aria-label="Année">
-                        <input type="url" name="references[{{ $index }}][url]" maxlength="500"
-                               value="{{ $row['url'] ?? '' }}" placeholder="https://…" aria-label="Adresse en ligne">
+                        <div class="ref-url">
+                            <input type="url" name="references[{{ $index }}][url]" maxlength="500"
+                                   value="{{ $row['url'] ?? '' }}" placeholder="https://…" aria-label="Adresse en ligne">
+                            <span class="hint">Une page précise, pas l’accueil d’un site.</span>
+                        </div>
                         <button type="button" class="btn ghost small" data-remove-row>Retirer</button>
                     </div>
                 @endforeach
@@ -188,6 +191,7 @@
                     <input id="cover_image_source_url" name="cover_image_source_url" type="url"
                            value="{{ old('cover_image_source_url', $article->cover_image_source_url) }}"
                            placeholder="https://commons.wikimedia.org/wiki/File:…">
+                    <span class="hint">Une page précise, pas l’accueil d’un site.</span>
                 </div>
             </div>
         </div>
@@ -230,7 +234,10 @@
             <input type="text" name="references[__INDEX__][authors]" maxlength="255" placeholder="Auteurs" aria-label="Auteurs">
             <input type="text" name="references[__INDEX__][publisher]" maxlength="255" placeholder="Éditeur ou institution" aria-label="Éditeur">
             <input type="number" name="references[__INDEX__][year]" min="1800" max="2100" placeholder="Année" aria-label="Année">
-            <input type="url" name="references[__INDEX__][url]" maxlength="500" placeholder="https://…" aria-label="Adresse en ligne">
+            <div class="ref-url">
+                <input type="url" name="references[__INDEX__][url]" maxlength="500" placeholder="https://…" aria-label="Adresse en ligne">
+                <span class="hint">Une page précise, pas l’accueil d’un site.</span>
+            </div>
             <button type="button" class="btn ghost small" data-remove-row>Retirer</button>
         </div>
     </template>

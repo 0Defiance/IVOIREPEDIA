@@ -3050,6 +3050,16 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 120 — 26 novembre 2026 · Aide visible sous les champs d'adresse
+
+**Ajout** : le formulaire d'article affiche « Une page précise, pas l’accueil d’un site. » sous l'adresse de chaque source et sous la page source de l'image. La ligne de source enveloppe son champ d'adresse dans `.ref-url` (grille d'une colonne) pour que l'aide reste sous le champ dans la grille à six colonnes, et le gabarit de ligne ajoutée par le bouton « Ajouter une source » porte la même aide.
+
+**Vérifié** : `composer test` : 169 tests, 5 692 assertions ; format 164 fichiers ; analyse 76 fichiers sans erreur.
+
+**Reste** : rien — la règle et son rappel sont désormais au même endroit.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
