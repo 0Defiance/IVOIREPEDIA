@@ -25,6 +25,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
  *
  * Enfin, une année ou un lieu de naissance ou de mort absent de la notice doit
  * venir d'une référence propre à la fiche : une source qui n'est pas Wikipédia.
+ * Pour un lieu, c'est la ville — le mot principal, avant la parenthèse — qui
+ * doit figurer dans la notice.
  */
 uses(RefreshDatabase::class);
 
@@ -111,21 +113,31 @@ function noticeCoveragePlain(string $value): string
     ]);
 }
 
-/** Un des mots du lieu figure-t-il dans la notice (accentué ou non) ? */
+/**
+ * Le mot principal du lieu (la ville, avant la parenthèse) figure-t-il dans la
+ * notice (accentué ou non) ? Une précision entre parenthèses ne suffit pas :
+ * sinon un lieu inventé passerait grâce à la région citée par la notice.
+ */
 function noticeCoveragePlaceKnown(string $place, array $plainNotice): bool
 {
+    $head = preg_split('/\s*[\(\[]/u', $place)[0];
+
     $words = array_filter(
-        preg_split('/\s+/u', trim(preg_replace('/[^\p{L}\p{N}]+/u', ' ', noticeCoveragePlain($place)) ?? '')) ?: [],
+        preg_split('/\s+/u', trim(preg_replace('/[^\p{L}\p{N}]+/u', ' ', noticeCoveragePlain($head)) ?? '')) ?: [],
         fn (string $word): bool => mb_strlen($word) > 2
     );
 
+    if ($words === []) {
+        return true;
+    }
+
     foreach ($words as $word) {
-        if (isset($plainNotice[$word])) {
-            return true;
+        if (! isset($plainNotice[$word])) {
+            return false;
         }
     }
 
-    return false;
+    return true;
 }
 
 /** La fiche cite-t-elle une source qui n'est pas Wikipédia ? */

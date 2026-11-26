@@ -2828,6 +2828,22 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 108 — 26 novembre 2026 · Le mot principal du lieu
+
+**Fait**
+- Le contrôle des lieux exige désormais **tous les mots de la ville**, c'est-à-dire la partie avant la parenthèse : `Treichville (Abidjan)` n'est accepté que si la notice parle de Treichville, pas parce qu'elle parle d'Abidjan. Une précision inventée entre parenthèses ne peut donc plus sauver un lieu faux.
+- La règle reste insensible aux accents et tolère les villes composées (`Grand-Bassam` exige les deux mots). Un lieu sans mot utile (moins de trois lettres) est accepté par défaut.
+- Aucune donnée à corriger : la simulation sur les 423 lieux du corpus donne **0 écart** sous la règle resserrée. Les écarts de la séance 107 venaient tous de la partie entre parenthèses.
+
+**Vérifié**
+- Le trou de la séance 107 est refermé, éprouvé par mutation puis restauré : `Treichville (Ouagadougou)` comme lieu de mort de Josiane Yapo échoue maintenant avec `josiane-yapo (lieu de mort Treichville (Ouagadougou))`, alors que l'ancienne règle l'acceptait grâce à Ouagadougou.
+- `composer test` : **165 tests, 5 664 assertions** ; `composer format:check` : 163 fichiers ; `composer analyse` : aucun problème. Production re-seedée, les trois fiches corrigées en séance 107 répondent en 200.
+
+**Reste**
+- Un lieu dont la ville est citée mais dont le pays ou la région entre parenthèses est faux passe encore : le garde-fou compare des mots, il ne valide pas la hiérarchie administrative.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
