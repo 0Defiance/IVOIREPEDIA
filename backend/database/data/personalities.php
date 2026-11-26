@@ -81,7 +81,7 @@ return [
             ],
             'bibliography' => [
                 ['title' => 'Tidjane Thiam', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Tidjane_Thiam'],
-                ['title' => 'Proclamation des résultats définitifs de l’élection présidentielle du 25 octobre 2025', 'publisher' => 'Conseil constitutionnel', 'year' => 2025, 'url' => 'https://www.conseil-constitutionnel.ci'],
+                ['title' => 'Décision n° CI-2025-EP-006/08-09/CC/SG du 08 septembre 2025 portant publication de la liste définitive des candidats', 'publisher' => 'Conseil constitutionnel', 'year' => 2025, 'url' => 'https://www.conseil-constitutionnel.ci/sites/default/files/documents/decision_ci-2025-ep-006_du_08.09.2025.pdf'],
             ],
         ],
         [
@@ -123,7 +123,7 @@ return [
             ],
             'bibliography' => [
                 ['title' => 'Charles Konan Banny', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Charles_Konan_Banny'],
-                ['title' => 'Banque centrale des États de l’Afrique de l’Ouest', 'publisher' => 'BCEAO', 'year' => null, 'url' => 'https://www.bceao.int'],
+                ['title' => 'Les dates qui ont marqué la vie de la BCEAO', 'publisher' => 'BCEAO', 'year' => null, 'url' => 'https://www.bceao.int/fr/content/dates-cles'],
             ],
         ],
         [
@@ -191,7 +191,7 @@ return [
             ],
             'bibliography' => [
                 ['title' => 'Henriette Diabaté', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Henriette_Diabat%C3%A9'],
-                ['title' => 'Le Sanvi : un royaume Akan, 1701-1901 (thèse)', 'publisher' => 'CERAP-IRD-Karthala', 'year' => 2013, 'url' => 'https://www.karthala.com'],
+                ['title' => 'Le Sanvi. Un Royaume Akan (1701-1901)', 'publisher' => 'Karthala', 'year' => 2013, 'url' => 'https://www.karthala.com/accueil/2697-5468-le-sanvi-un-royaume-akan-1701-1901-9782811109035.html'],
             ],
         ],
         [
@@ -1350,7 +1350,7 @@ return [
             ],
             'bibliography' => [
                 ['title' => 'Félix Houphouët-Boigny', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/F%C3%A9lix_Houphou%C3%ABt-Boigny'],
-                ['title' => 'Présidence de la République de Côte d’Ivoire', 'publisher' => 'Présidence de la République', 'year' => null, 'url' => 'https://www.presidence.ci'],
+                ['title' => 'Les anciens présidents', 'publisher' => 'Présidence de la République', 'year' => null, 'url' => 'https://www.presidence.ci/presidence/anciens-presidents'],
             ],
         ],
         [
@@ -1372,7 +1372,7 @@ return [
             ],
             'bibliography' => [
                 ['title' => 'Henri Konan Bédié', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Henri_Konan_B%C3%A9di%C3%A9'],
-                ['title' => 'Présidence de la République de Côte d’Ivoire', 'publisher' => 'Présidence de la République', 'year' => null, 'url' => 'https://www.presidence.ci'],
+                ['title' => 'Les anciens présidents', 'publisher' => 'Présidence de la République', 'year' => null, 'url' => 'https://www.presidence.ci/presidence/anciens-presidents'],
             ],
         ],
         [
@@ -1437,7 +1437,7 @@ return [
             ],
             'bibliography' => [
                 ['title' => 'Alassane Ouattara', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Alassane_Ouattara'],
-                ['title' => 'Présidence de la République de Côte d’Ivoire', 'publisher' => 'Présidence de la République', 'year' => null, 'url' => 'https://www.presidence.ci'],
+                ['title' => 'Le Président', 'publisher' => 'Présidence de la République', 'year' => null, 'url' => 'https://www.presidence.ci/presidence/le-president'],
             ],
         ],
         [
@@ -1479,7 +1479,6 @@ return [
             ],
             'bibliography' => [
                 ['title' => 'Mamadou Koulibaly', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Mamadou_Koulibaly'],
-                ['title' => 'Assemblée nationale de Côte d’Ivoire', 'publisher' => 'Assemblée nationale', 'year' => null, 'url' => 'https://www.assemblee-nationale.ci'],
             ],
         ],
         [
@@ -1501,7 +1500,7 @@ return [
             ],
             'bibliography' => [
                 ['title' => 'Francis Wodié', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Francis_Wodi%C3%A9'],
-                ['title' => 'Conseil constitutionnel de Côte d’Ivoire', 'publisher' => 'Conseil constitutionnel', 'year' => null, 'url' => 'https://www.conseil-constitutionnel.ci'],
+                ['title' => 'Membres du Conseil constitutionnel (2011-2015)', 'publisher' => 'Conseil constitutionnel', 'year' => null, 'url' => 'https://www.conseil-constitutionnel.ci/periode-membre/2011-2015'],
             ],
         ],
         [
@@ -1523,7 +1522,7 @@ return [
             ],
             'bibliography' => [
                 ['title' => 'Tiémoko Meyliet Koné', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Ti%C3%A9moko_Meyliet_Kon%C3%A9'],
-                ['title' => 'Présidence de la République de Côte d’Ivoire', 'publisher' => 'Présidence de la République', 'year' => null, 'url' => 'https://www.presidence.ci'],
+                ['title' => 'Le Vice-Président', 'publisher' => 'Présidence de la République', 'year' => null, 'url' => 'https://www.presidence.ci/presidence/le-vice-president'],
             ],
         ],
         [
@@ -1544,7 +1543,7 @@ return [
             ],
             'bibliography' => [
                 ['title' => 'Mariatou Koné', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Mariatou_Kon%C3%A9'],
-                ['title' => 'Présidence de la République de Côte d’Ivoire', 'publisher' => 'Présidence de la République', 'year' => null, 'url' => 'https://www.presidence.ci'],
+                ['title' => 'Anciens ministres de l\'éducation', 'publisher' => 'Ministère de l\'Éducation nationale', 'year' => null, 'url' => 'https://www.education.gouv.ci/index.php/Ministere/oldministre'],
             ],
         ],
         [
@@ -1566,7 +1565,7 @@ return [
             ],
             'bibliography' => [
                 ['title' => 'Anne Désirée Ouloto', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Anne_D%C3%A9sir%C3%A9e_Ouloto'],
-                ['title' => 'Présidence de la République de Côte d’Ivoire', 'publisher' => 'Présidence de la République', 'year' => null, 'url' => 'https://www.presidence.ci'],
+                ['title' => 'Anne Désirée Ouloto', 'publisher' => 'Ministère de la Femme, de la Famille et de l’Enfant', 'year' => null, 'url' => 'https://efemmes.gouv.ci/femmes_refences/7'],
             ],
         ],
         [
@@ -1587,7 +1586,7 @@ return [
             ],
             'bibliography' => [
                 ['title' => 'Belmonde Dogo', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Belmonde_Dogo'],
-                ['title' => 'Assemblée nationale de Côte d’Ivoire', 'publisher' => 'Assemblée nationale', 'year' => null, 'url' => 'https://www.assemblee-nationale.ci'],
+                ['title' => 'Biographie de la ministre', 'publisher' => 'Ministère de la Solidarité et de la Lutte contre la Pauvreté', 'year' => null, 'url' => 'https://solidarite.gouv.ci/ministere/ministre/biographie-du-ministre'],
             ],
         ],
         [
@@ -1648,7 +1647,7 @@ return [
             ],
             'bibliography' => [
                 ['title' => 'Hortense Aka-Anghui', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Hortense_Aka-Anghui'],
-                ['title' => 'Assemblée nationale de Côte d’Ivoire', 'publisher' => 'Assemblée nationale', 'year' => null, 'url' => 'https://www.assemblee-nationale.ci'],
+                ['title' => 'Anciens ministres', 'publisher' => 'Ministère de la Femme, de la Famille et de l’Enfant', 'year' => null, 'url' => 'https://famille.gouv.ci/anciens-ministres'],
             ],
         ],
         [
@@ -1690,7 +1689,7 @@ return [
             ],
             'bibliography' => [
                 ['title' => 'Yasmina Ouégnin', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Yasmina_Ouegnin'],
-                ['title' => 'Assemblée nationale de Côte d’Ivoire', 'publisher' => 'Assemblée nationale', 'year' => null, 'url' => 'https://www.assemblee-nationale.ci'],
+                ['title' => 'Résultats définitifs des élections législatives de 2011', 'publisher' => 'Commission électorale indépendante', 'year' => null, 'url' => 'https://cei.ci/wp-content/uploads/2020/03/Resultats-definitifs-2.pdf'],
             ],
         ],
         [
@@ -1815,7 +1814,7 @@ return [
             ],
             'bibliography' => [
                 ['title' => 'Véronique Aka', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/V%C3%A9ronique_Aka'],
-                ['title' => 'Assemblée nationale de Côte d’Ivoire', 'publisher' => 'Assemblée nationale', 'year' => null, 'url' => 'https://www.assemblee-nationale.ci'],
+                ['title' => 'Composition du Bureau de l\'Assemblée nationale (2017)', 'publisher' => 'Assemblée nationale de Côte d\'Ivoire', 'year' => null, 'url' => 'https://assnat.ci/?voici-le-bureau-de-l-assemblee-nationale'],
             ],
         ],
         [
@@ -1856,7 +1855,7 @@ return [
             ],
             'bibliography' => [
                 ['title' => 'Jeanne Gervais', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Jeanne_Gervais'],
-                ['title' => 'Assemblée nationale de Côte d’Ivoire', 'publisher' => 'Assemblée nationale', 'year' => null, 'url' => 'https://www.assemblee-nationale.ci'],
+                ['title' => 'Anciens ministres', 'publisher' => 'Ministère de la Femme, de la Famille et de l’Enfant', 'year' => null, 'url' => 'https://famille.gouv.ci/anciens-ministres'],
             ],
         ],
         [
@@ -1877,7 +1876,7 @@ return [
             ],
             'bibliography' => [
                 ['title' => 'Célestine Olibé Trazéré', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/C%C3%A9lestine_Olib%C3%A9_Traz%C3%A9r%C3%A9'],
-                ['title' => 'Assemblée nationale de Côte d’Ivoire', 'publisher' => 'Assemblée nationale', 'year' => null, 'url' => 'https://www.assemblee-nationale.ci'],
+                ['title' => 'Composition du Bureau de l\'Assemblée nationale (2017)', 'publisher' => 'Assemblée nationale de Côte d\'Ivoire', 'year' => null, 'url' => 'https://assnat.ci/?voici-le-bureau-de-l-assemblee-nationale'],
             ],
         ],
         [
@@ -1937,7 +1936,6 @@ return [
             ],
             'bibliography' => [
                 ['title' => 'Anoma Gladys Rose', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Anoma_Gladys_Rose'],
-                ['title' => 'Assemblée nationale de Côte d’Ivoire', 'publisher' => 'Assemblée nationale', 'year' => null, 'url' => 'https://www.assemblee-nationale.ci'],
             ],
         ],
         [
@@ -2203,7 +2201,6 @@ return [
             ],
             'bibliography' => [
                 ['title' => 'Bernard Binlin Dadié', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Bernard_Dadi%C3%A9'],
-                ['title' => 'Climbié, roman', 'publisher' => 'Présence africaine', 'year' => 1956, 'url' => 'https://www.presenceafricaine.com'],
             ],
         ],
         [
@@ -2227,7 +2224,6 @@ return [
             ],
             'bibliography' => [
                 ['title' => 'Jean-Marie Adiaffi', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Jean-Marie_Adiaffi'],
-                ['title' => 'La Carte d\'identité, roman', 'publisher' => 'Hatier', 'year' => 1980, 'url' => 'https://www.hatier-clic.fr'],
             ],
         ],
         [
@@ -2272,7 +2268,7 @@ return [
             ],
             'bibliography' => [
                 ['title' => 'Aké Loba', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Ak%C3%A9_Loba'],
-                ['title' => 'Kocoumbo, l\'étudiant noir, roman', 'publisher' => 'Flammarion', 'year' => 1960, 'url' => 'https://www.flammarion.com'],
+                ['title' => 'Kocoumbo, l\'étudiant noir', 'publisher' => 'Flammarion', 'year' => 1960, 'url' => 'https://editions.flammarion.com/kocumbo-letudiant-noir/9782080500045'],
             ],
         ],
         [
@@ -2317,7 +2313,7 @@ return [
             ],
             'bibliography' => [
                 ['title' => 'Marcel Amondji', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Marcel_Amondji'],
-                ['title' => 'Félix Houphouët et la Côte-d\'Ivoire. L\'envers d\'une légende', 'publisher' => 'Karthala', 'year' => 1984, 'url' => 'https://www.karthala.com'],
+                ['title' => 'Félix Houphouët et la Côte-d\'Ivoire', 'publisher' => 'Karthala', 'year' => 1984, 'url' => 'https://www.karthala.com/accueil/17-felix-houphouet-et-la-cote-divoire-9782865371044.html'],
             ],
         ],
         [

@@ -2977,6 +2977,33 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 115 — 26 novembre 2026 · Les pages d'accueil remplacées
+
+**Motif** : l'audit des références propres avait relevé 22 références qui pointaient vers l'accueil d'un site, sans page portant l'information.
+
+**Résultat** : 18 remplacées par la page précise, 4 retirées quand la notice suffit et qu'aucune page ne porte le fait. Il reste **40 références propres sur 38 fiches**, et plus aucune page d'accueil.
+
+**Remplacées**
+- **Conseil constitutionnel** : décision du 8 septembre 2025 (PDF) pour Tidjane Thiam, page 2011-2015 pour Francis Wodié.
+- **BCEAO** : « Les dates qui ont marqué la vie de la BCEAO » pour Charles Konan Banny (nomination en 1993, prise de fonction en 1994, départ pour Matignon en 2005).
+- **Présidence** : « Les anciens présidents » pour Houphouët-Boigny et Bédié, « Le Président » pour Ouattara, « Le Vice-Président » pour Tiémoko Meyliet Koné.
+- **Ministères** : « Anciens ministres de l'éducation » pour Mariatou Koné ; RENACAFCI pour Anne Désirée Ouloto ; biographie du ministère de la Solidarité pour Belmonde Dogo ; « Anciens ministres » de la Femme pour Hortense Aka-Anghui et Jeanne Gervais.
+- **Assemblée nationale** (assnat.ci) : composition du Bureau de 2017 pour Véronique Aka et Célestine Olibé Trazéré ; résultats définitifs de la CEI (Cocody 2011) pour Yasmina Ouégnin.
+- **Éditeurs** : fiches Karthala du Sanvi (Henriette Diabaté) et de L'envers d'une légende (Marcel Amondji) ; fiche Flammarion de Kocoumbo (Aké Loba).
+
+**Retirées**
+- **Mamadou Koulibaly** : la page de l'Assemblée dit qu'il quitte la présidence en 2010 (remplacé en 2012), quand la fiche dit 2001-2012. La référence ne porte donc pas la fiche ; le point reste à arbitrer.
+- **Anoma Gladys Rose** : aucune page officielle ne documente son mandat de 1966 à 1980.
+- **Bernard Dadié** : la fiche citait Présence africaine pour *Climbié*, mais les sources (RFI, bibliographies) donnent Seghers en 1956. Référence fausse, retirée ; la notice porte le roman et l'année.
+- **Jean-Marie Adiaffi** : aucune fiche produit Hatier pour *La Carte d'identité*.
+
+**Vérifié**
+- Aucune référence en page d'accueil ; le test de recouvrement reste vert.
+- `composer test` : **166 tests, 5 675 assertions** ; `composer format:check` : 163 fichiers ; `composer analyse` : 75 fichiers, aucun problème.
+- Production re-seedée et caches reconstruits ; l'API renvoie les nouvelles URL et les fiches concernées répondent en 200.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
