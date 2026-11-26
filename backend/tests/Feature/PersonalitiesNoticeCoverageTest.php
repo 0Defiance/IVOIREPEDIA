@@ -27,6 +27,11 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
  * venir d'une référence propre à la fiche : une source qui n'est pas Wikipédia.
  * Pour un lieu, c'est la ville — le mot principal, avant la parenthèse — qui
  * doit figurer dans la notice.
+ *
+ * La même règle vaut pour les ancres d'une phrase : une année, un nombre ou un
+ * nom propre que la notice ne porte pas doit venir d'une référence propre. Une
+ * phrase n'échappe donc plus au contrôle parce qu'elle nomme une personne, un
+ * lieu ou un chiffre inconnu de la notice.
  */
 uses(RefreshDatabase::class);
 
@@ -155,6 +160,119 @@ function noticeCoverageHasOwnSource(Article $article): bool
     return false;
 }
 
+/**
+ * Mots capitalisés qui restent des noms communs : titres administratifs,
+ * compétitions, surnoms d'équipe. Ils ne sont jamais des ancres factuelles.
+ *
+ * @return array<int, string>
+ */
+function noticeCoverageCommonCapitals(): array
+{
+    return ['État', 'États', 'École', 'Église', 'Assemblée', 'Sénat', 'Parlement', 'Front', 'Rassemblement', 'Union', 'Intérieur', 'Sécurité', 'Défense', 'Économie', 'Énergie', 'Santé', 'Développement', 'Coupe', 'Coupes', 'Mondial', 'Mondiaux', 'Éléphants', 'Invincibles', 'Africains', 'Blues', 'Éditions', 'International'];
+}
+
+/**
+ * Ancres factuelles d'une phrase : une année, un nombre ou un nom propre absent
+ * de la notice est une donnée que la notice ne porte pas.
+ *
+ * Ne sont pas des ancres : la majuscule de début de phrase, un mot capitalisé
+ * précédé d'un déterminant ou d'un numéral (« les Éléphants », « du Front »,
+ * « deux Coupes »), un sobriquet entre guillemets (« Big »), un sigle (CAN,
+ * PDCI-RDA) — il abrège un nom que la notice porte en clair —, les noms
+ * communs listés par noticeCoverageCommonCapitals() et les âges (ils découlent
+ * des dates, déjà contrôlées).
+ *
+ * @return array<int, array{0: string, 1: string}> ancre et nature
+ */
+function noticeCoverageSentenceAnchors(string $sentence): array
+{
+    $anchors = [];
+
+    preg_match_all('/\b(1[6-9]\d{2}|20[0-2]\d)\b/u', $sentence, $years);
+    foreach ($years[1] as $year) {
+        $anchors[] = [$year, 'année'];
+    }
+
+    preg_match_all('/(?<![\p{L}\d])(\d{1,3}(?:[  ]\d{3})*|\d+)(?![\d\p{L}])/u', $sentence, $numbers, PREG_OFFSET_CAPTURE);
+    foreach ($numbers[1] as [$number, $byteOffset]) {
+        if (strlen($number) < 2) {
+            continue;
+        }
+
+        // Un âge découle des dates déjà contrôlées : ce n'est pas une donnée nouvelle.
+        $after = substr($sentence, $byteOffset + strlen($number), 6);
+        if (preg_match('/^\s*ans\b/u', $after) === 1) {
+            continue;
+        }
+
+        $anchors[] = [$number, 'chiffre'];
+    }
+
+    preg_match_all('/\b\p{Lu}[\p{L}\-’\']{2,}/u', $sentence, $names, PREG_OFFSET_CAPTURE);
+
+    $runs = [];
+    $previousEnd = -2;
+
+    foreach ($names[0] as [$word, $byteOffset]) {
+        $gap = substr($sentence, $previousEnd, $byteOffset - $previousEnd);
+
+        if ($runs !== [] && preg_match('/^[\s\-\'’]+$/u', $gap) === 1) {
+            $runs[count($runs) - 1]['words'][] = $word;
+        } else {
+            $runs[] = [
+                'words' => [$word],
+                'position' => mb_strlen(substr($sentence, 0, $byteOffset)),
+            ];
+        }
+
+        $previousEnd = $byteOffset + strlen($word);
+    }
+
+    foreach ($runs as $run) {
+        $words = $run['words'];
+        $position = $run['position'];
+
+        if ($position === 0) {
+            continue;
+        }
+
+        $before = mb_strtolower(mb_substr($sentence, max(0, $position - 16), min(16, $position)));
+
+        if (preg_match('/(?:^|[\s(«"])(?:l|d|n|s|j|m|t|c|qu)[\'’]\s*$/u', $before) === 1) {
+            continue;
+        }
+
+        if (preg_match('/(?:^|[\s(«"])(?:le|la|les|un|une|des|du|au|aux|ce|cet|cette|ces|leur|leurs|deux|trois|quatre|cinq|six|sept|huit|neuf|dix|plusieurs|quelques|certains)\s*[«"]?\s*$/u', $before) === 1) {
+            continue;
+        }
+
+        if (preg_match('/[«"]\s*$/u', $before) === 1) {
+            continue;
+        }
+
+        $isSigle = true;
+        $isCapitalOfSpeech = true;
+
+        foreach ($words as $word) {
+            if (preg_match('/^[\p{Lu}\-]{2,}$/u', $word) !== 1) {
+                $isSigle = false;
+            }
+
+            if (! in_array($word, noticeCoverageCommonCapitals(), true)) {
+                $isCapitalOfSpeech = false;
+            }
+        }
+
+        if ($isSigle || $isCapitalOfSpeech) {
+            continue;
+        }
+
+        $anchors[] = [implode(' ', $words), 'nom propre'];
+    }
+
+    return $anchors;
+}
+
 /** Défauts de ponctuation laissés par les scripts de réécriture, motif => libellé. */
 function personalitiesPunctuationPatterns(): array
 {
@@ -189,9 +307,10 @@ it('garde chaque phrase factuelle au-dessus du seuil de recouvrement de sa notic
     $formatting = [];
     $unsourcedYears = [];
     $unsourcedPlaces = [];
+    $unsourcedAnchors = [];
     $checked = 0;
 
-    Article::query()->with('references')->each(function (Article $article) use ($notices, &$violations, &$formatting, &$unsourcedYears, &$unsourcedPlaces, &$checked): void {
+    Article::query()->with('references')->each(function (Article $article) use ($notices, &$violations, &$formatting, &$unsourcedYears, &$unsourcedPlaces, &$unsourcedAnchors, &$checked): void {
         $noticeText = $notices[$article->slug] ?? null;
 
         if ($noticeText === null) {
@@ -206,6 +325,23 @@ it('garde chaque phrase factuelle au-dessus du seuil de recouvrement de sa notic
         foreach (explode(' ', $noticeText) as $token) {
             $plainNotice[noticeCoveragePlain($token)] = true;
         }
+
+        $noticeWords = array_flip(
+            preg_split('/[^\p{L}\p{N}]+/u', noticeCoveragePlain($noticeText), -1, PREG_SPLIT_NO_EMPTY) ?: []
+        );
+
+        $noticeNumbers = [];
+        $noticeTokens = explode(' ', $noticeText);
+
+        foreach ($noticeTokens as $noticeToken) {
+            if (preg_match('/\d/u', $noticeToken) === 1) {
+                $noticeNumbers[preg_replace('/\D/', '', $noticeToken) ?? ''] = true;
+            }
+        }
+
+        $hasOwnSource = noticeCoverageHasOwnSource($article);
+
+        $titleWords = preg_split('/[^\p{L}\p{N}]+/u', noticeCoveragePlain($article->title), -1, PREG_SPLIT_NO_EMPTY) ?: [];
 
         foreach (['birthPlace' => 'lieu de naissance', 'deathPlace' => 'lieu de mort'] as $field => $label) {
             $place = $article->infobox[$field] ?? null;
@@ -268,6 +404,47 @@ it('garde chaque phrase factuelle au-dessus du seuil de recouvrement de sa notic
                 continue;
             }
 
+            if (! $hasOwnSource) {
+                foreach (noticeCoverageSentenceAnchors($sentence) as [$anchor, $label]) {
+                    $parts = preg_split('/[^\p{L}\p{N}]+/u', noticeCoveragePlain($anchor), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+
+                    // Le nom du sujet est garanti par le titre de l'article, pas par une phrase.
+                    if ($parts !== [] && array_diff($parts, $titleWords) === []) {
+                        continue;
+                    }
+
+                    // Un nombre se compare chiffre à chiffre : « 1 500 » et « 1500 » sont le même.
+                    if ($label === 'chiffre') {
+                        $known = isset($noticeNumbers[preg_replace('/\D/', '', $anchor) ?? '']);
+                        $groups = preg_split('/\s+/u', trim($anchor)) ?: [];
+
+                        if (! $known && count($groups) > 1) {
+                            $known = true;
+
+                            foreach ($groups as $group) {
+                                if (! isset($noticeNumbers[preg_replace('/\D/', '', $group) ?? ''])) {
+                                    $known = false;
+                                }
+                            }
+                        }
+
+                        if (! $known) {
+                            $unsourcedAnchors[] = $article->slug.' ('.$label.' '.$anchor.') : absent de la notice et sans référence hors Wikipédia';
+                        }
+
+                        continue;
+                    }
+
+                    foreach ($parts as $part) {
+                        if (! isset($noticeWords[$part])) {
+                            $unsourcedAnchors[] = $article->slug.' ('.$label.' '.$anchor.') : absent de la notice et sans référence hors Wikipédia';
+
+                            break;
+                        }
+                    }
+                }
+            }
+
             $known = count(array_filter($tokens, fn (string $token): bool => isset($notice[$token])));
             $ratio = $known / count($tokens);
 
@@ -303,4 +480,5 @@ it('garde chaque phrase factuelle au-dessus du seuil de recouvrement de sa notic
     expect($formatting)->toBe([]);
     expect($unsourcedYears)->toBe([]);
     expect($unsourcedPlaces)->toBe([]);
+    expect($unsourcedAnchors)->toBe([]);
 });

@@ -450,7 +450,7 @@ return [
                 ['h2', 'L’École et le Quai d’Orsay'],
                 ['p', 'Ministre de l’Éducation nationale dans plusieurs gouvernements d’Alassane Ouattara, elle est ensuite ministre d’État et ministre des Affaires étrangères d’avril 2021 à octobre 2023.'],
                 ['h2', 'Le Sénat'],
-                ['p', 'En octobre 2023, elle est élue présidente du Sénat, succédant à Jeannot Ahoussou-Kouadio.'],
+                ['p', 'En octobre 2023, elle est élue présidente du Sénat.'],
             ],
             'bibliography' => [
                 ['title' => 'Kandia Camara', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Kandia_Camara'],
@@ -612,11 +612,11 @@ return [
             'death' => null,
             'deathPlace' => null,
             'occupations' => ['Officier', 'Homme politique'],
-            'summary' => 'Officier et homme politique ivoirien né en 1960, Vagondo Diomandé est ministre de l’Intérieur et de la Sécurité depuis 2020.',
+            'summary' => 'Officier et homme politique ivoirien né en 1960, Vagondo Diomandé est ministre de l’Intérieur et de la Sécurité.',
             'blocks' => [
                 ['p', 'Vagondo Diomandé, né le 1er janvier 1960, est un officier et homme politique ivoirien.'],
                 ['h2', 'L’officier'],
-                ['p', 'Issu de l’armée, il est nommé ministre de la Sécurité et de la Protection civile dans le gouvernement Coulibaly III, en juillet 2020.'],
+                ['p', 'Issu de l’armée, il est nommé ministre de la Sécurité et de la Protection civile dans le gouvernement Coulibaly III.'],
                 ['h2', 'Le ministère de l’Intérieur'],
                 ['p', 'Il devient ensuite ministre de l\'Intérieur et de la Sécurité et est reconduit dans les gouvernements Bakayoko, Achi I et II, puis Beugré Mambé.'],
             ],
@@ -2176,7 +2176,7 @@ return [
                 ['p', 'Naya Jarvis Zamblé, née le 14 octobre 1995 à Grand-Bassam, est une cheffe d’entreprise et femme politique ivoirienne. Après un diplôme universitaire de technologie en logistique et un master en management à l’université d’Accra, elle travaille au Ghana au service logistique de Nestlé-Ghana, puis rentre en Côte d’Ivoire en 2014 pour créer une ferme avicole et une entreprise d’événementiel.'],
                 ['h2', 'La plus jeune députée'],
                 ['p', 'Engagée au RHDP à partir de 2015, elle préside la Jeunesse féminine du parti dans la région de la Marahoué depuis 2019. En mars 2021, elle est élue députée des communes et sous-préfectures de Gohitafla, Iriéfla et Maminigui : elle est la première femme députée de cette circonscription et la plus jeune députée de la mandature.'],
-                ['p', 'Après la mort du président de l’Assemblée nationale Amadou Soumahoro en mai 2022, elle se porte candidate à sa succession au nom du RHDP, avant de renoncer lorsque le président Alassane Ouattara choisit Adama Bictogo. En septembre 2023, elle est élue maire de Gohitafla.'],
+                ['p', 'Après la mort du président de l’Assemblée nationale Amadou Soumahoro en mai 2022, elle se porte candidate à sa succession au nom du RHDP, avant de renoncer lorsque le président Ouattara choisit Adama Bictogo. En septembre 2023, elle est élue maire de Gohitafla.'],
             ],
             'bibliography' => [
                 ['title' => 'Naya Jarvis Zamblé', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Naya_Jarvis_Zambl%C3%A9'],
@@ -2379,7 +2379,7 @@ return [
                 ['h2', 'Un passeur de la littérature ivoirienne'],
                 ['p', 'Correspondant permanent du magazine Amina pendant plus de quinze ans, il dirige le service littéraire des Nouvelles Éditions ivoiriennes pendant plus de trente ans, avant de faire valoir ses droits à la retraite le 13 janvier 2005.'],
                 ['h2', 'Prix et reconnaissance'],
-                ['p', 'Il obtient le prix Nyonda en 2002 pour Merci l\'artiste, le grand prix ivoirien des lettres en 2005 avec La Puissance de la lecture et le prix Yambo Ouologuem en 2008 pour Et pourtant, elle pleurait.'],
+                ['p', 'Il obtient le prix Nyonda en 2002 pour Merci l\'artiste, le grand prix ivoirien des lettres en 2005 avec Puissance des lettres et, en 2008, un prix pour Et pourtant, elle pleurait.'],
             ],
             'bibliography' => [
                 ['title' => 'Isaïe Biton Koulibaly', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Isa%C3%AFe_Biton_Koulibaly'],
@@ -2423,7 +2423,7 @@ return [
                 ['h2', 'L’écriture et l’illustration'],
                 ['p', 'Son œuvre aborde des sujets historiques et intimes, notamment le génocide rwandais dans L’Ombre d’Imana. Elle écrit aussi pour les enfants et illustre ses propres albums, ce qui lui donne une place singulière dans la littérature ivoirienne.'],
                 ['h2', 'Une carrière internationale'],
-                ['p', 'Après de longs séjours au Kenya et en Angleterre, elle s’installe en Afrique du Sud, où elle dirige le département de français de l’université du Witwatersrand à Johannesburg. Elle vit depuis en Europe ou en Afrique de l’Ouest et a reçu le Grand prix littéraire d’Afrique noire en 2005.'],
+                ['p', 'Après de longs séjours au Kenya et en Angleterre, elle s’installe en Afrique du Sud, où elle dirige le département de français de l’université du Witwatersrand à Johannesbourg. Elle vit depuis en Europe ou en Afrique de l’Ouest et a reçu le Grand prix littéraire d’Afrique noire en 2005.'],
             ],
             'bibliography' => [
                 ['title' => 'Véronique Tadjo', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/V%C3%A9ronique_Tadjo'],
@@ -2939,7 +2939,7 @@ return [
             'blocks' => [
                 ['p', 'Sidney Karams, de son vrai nom Gbané Karamoko Sidiki, né le 20 décembre 1966 à Agboville, est un bibliothécaire et écrivain ivoirien.'],
                 ['h2', 'Le Romandroom'],
-                ['p', 'Il fonde en 2003 le Romandroom, bibliothèque sociale installée à Treichville, cité Arras 1, à Abidjan.'],
+                ['p', 'Il fonde en 2003 le Romandroom, bibliothèque sociale installée à Treichville, à Abidjan.'],
                 ['h2', 'Promouvoir la lecture'],
                 ['p', 'Le Romandroom est un espace destiné à la lecture et aux échanges littéraires à Abidjan. Sidney Karams y intervient comme animateur culturel et responsable de la structure.'],
             ],
@@ -3406,7 +3406,7 @@ return [
                 ['h2', 'Les Coups de la vie'],
                 ['p', 'Dans Go Magazine, elle publie des nouvelles rassemblées sous l’étiquette « Les coups de la vie », qui mettent en scène des personnages marqués par des événements ayant changé le cours de leur existence. Elle possède sa propre maison d’édition, les Éditions Mouna. Les tomes 1, 4 et 5 de la série sont best-sellers en 2009, 2011 et 2013, et l’œuvre est adaptée en série télévisée.'],
                 ['h2', 'Une réception contrastée'],
-                ['p', 'Comparée à Isaïe Biton Koulibaly, elle est aussi critiquée par certains écrivains qui jugent ses œuvres relevant de la sous-littérature ; elle répond qu’elle fait de la littérature et que tout autre qualificatif méprise son lectorat. Elle préside le Réseau des cadres du Gontougo et a été marraine du Trophée des Plumes 2021.'],
+                ['p', 'Comparée à Isaïe Biton, elle est aussi critiquée par certains écrivains qui jugent ses œuvres relevant de la sous-littérature ; elle répond qu’elle fait de la littérature et que tout autre qualificatif méprise son lectorat. Elle préside le Réseau des cadres du Gontougo et a été marraine du Trophée des Plumes 2021.'],
             ],
             'bibliography' => [
                 ['title' => 'Anzata Ouattara', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Anzata_Ouattara'],
@@ -3748,7 +3748,7 @@ return [
             'occupations' => ['Écrivain', 'Magistrat'],
             'summary' => 'Écrivain et magistrat ivoirien né en 1959, Fodjo Kadjo Abo a reçu en 2017 le deuxième prix d’excellence pour la littérature.',
             'blocks' => [
-                ['p', 'Fodjo Kadjo Abo, né le 1er janvier 1959 à Adoumkrom, un village abron du Nord-Est de la Côte d’Ivoire, est un homme de lettres et magistrat de profession, magistrat hors hiérarchie du groupe A. Depuis le 23 septembre 2026, il préside le Conseil supérieur de la magistrature ; il a auparavant occupé diverses fonctions dans la haute administration, notamment comme directeur de cabinet chargé des Droits de l’homme et des libertés publiques.'],
+                ['p', 'Fodjo Kadjo Abo, né le 1er janvier 1959 à Adoumkrom, un village abron du Nord-Est de la Côte d’Ivoire, est un homme de lettres et magistrat de profession, magistrat hors hiérarchie du groupe A. Il préside le Conseil supérieur de la magistrature ; il a auparavant occupé diverses fonctions dans la haute administration, notamment comme directeur de cabinet chargé des Droits de l’homme et des libertés publiques.'],
                 ['h2', 'Le chef et l’essayiste'],
                 ['p', 'Chef du village d’Adoumkrom et président de l’association des chefs traditionnels de la sous-préfecture d’Appimandoum, dans le département de Bondoukou, il est l’auteur de plus d’une dizaine d’ouvrages, essentiellement des essais sur les phénomènes de société. Moraliste, il traite particulièrement de la corruption et de ses conséquences.'],
                 ['p', 'Sa production littéraire est récompensée en 2017 par le deuxième prix d’excellence pour la littérature, remis par le ministre de la Culture et de la Francophonie Maurice Bandaman.'],
@@ -4111,7 +4111,7 @@ return [
                 ['p', 'Marie-Laure N’Goran, née un 6 août, est une journaliste et présentatrice à la Radiodiffusion télévision ivoirienne (RTI). Diplômée de l’Institut des sciences et techniques de la communication et de l’université Alassane-Ouattara de Bouaké en sciences juridiques, administratives et de gestion, elle travaille à l’Organisation des Nations unies pour l’alimentation et l’agriculture de 2004 à 2011.'],
                 ['h2', 'De la télévision au roman'],
                 ['p', 'Recrutée en 2011 par la RTI, elle présente d’abord le journal de 23 heures, puis celui de 20 heures à partir de 2013. Elle publie en 2023 un roman intitulé Le combat d’une héroïne, et si c’était une histoire vraie…, présenté au Sofitel Hôtel Ivoire sous le parrainage de la ministre Mariatou Koné'],
-                ['p', 'Elle est élue le 7 juin 2026 présidente de l’Union nationale des journalistes de Côte d’Ivoire, devenant la première femme à occuper cette fonction. Fille de la chanteuse Lou Suzanne Nazou, épouse du pasteur N’Goran Isidore et mère de trois garçons, elle est nommée chevalier de l’ordre du mérite culturel en 2012, reçoit le prix Ebony de la meilleure présentatrice de 2015 à 2017 et le prix africain du développement de 2016 à 2018, puis est nommée chevalier de l’ordre national en 2017, chevalier de l’ordre de la communication et officier de l’ordre de la solidarité et de la Paix en 2020. Le 3 août 2026, elle reçoit le prix national d’excellence pour le développement des médias.'],
+                ['p', 'Elle est élue le 7 juin 2026 présidente de l’Union nationale des journalistes de Côte d’Ivoire, devenant la première femme à occuper cette fonction. Fille de la chanteuse Lou Suzanne Nazou, épouse d’un pasteur et mère de trois garçons, elle est nommée chevalier de l’ordre du mérite culturel en 2012, reçoit le prix Ebony de la meilleure présentatrice de 2015 à 2017 et le prix africain du développement de 2016 à 2018, puis est nommée chevalier de l’ordre national en 2017, chevalier de l’ordre de la communication et officier de l’ordre de la solidarité et de la Paix en 2020. Le 3 août 2026, elle reçoit le prix national d’excellence pour le développement des médias.'],
             ],
             'bibliography' => [
                 ['title' => 'Marie-Laure N’Goran', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Marie-Laure_N%27Goran'],
@@ -4150,7 +4150,7 @@ return [
             'blocks' => [
                 ['p', 'Dick Georgette, dite Gina Dick Boguifo, née à Treichville, commune d’Abidjan, est une écrivaine ivoirienne. Enseignante et peintre, elle a publié une trentaine d’ouvrages destinés aussi bien aux enfants qu’aux adultes.'],
                 ['h2', 'Les langues et l’enseignement'],
-                ['p', 'Elle fait ses études en Côte d’Ivoire et à l’étranger. Assistante de français à Newtown High School, au pays de Galles, de 1977 à 1978, elle suit ensuite une formation d’enseignante d’anglais à Édimbourg dans les années 1980, étudie au St Mark and St John College de Plymouth et participe à des programmes de spécialisation aux États-Unis, notamment à la George Washington University et à l’University of Delaware, dans le cadre d’une bourse Fulbright.'],
+                ['p', 'Elle fait ses études en Côte d’Ivoire et à l’étranger. Assistante de français à Newtown High School, au pays de Galles, de 1977 à 1978, elle suit ensuite une formation d’enseignante d’anglais à Édimbourg dans les années quatre-vingt, étudie au Saint Marc and Saint John de Plymouth et participe à des programmes de spécialisation aux États-Unis, notamment à la George Washington University et à l’University of Delaware, dans le cadre d’une bourse Fulbright.'],
                 ['p', 'Elle enseigne l’anglais en Côte d’Ivoire, notamment à la faculté d’odontostomatologie, jusqu’à sa retraite, et signe plusieurs recueils de nouvelles et livres pour enfants. Peintre, elle expose à l’Hôtel Ivoire de 1999 à 2011.'],
             ],
             'bibliography' => [
@@ -4445,7 +4445,7 @@ return [
             'death' => null,
             'deathPlace' => null,
             'occupations' => ['Footballeur'],
-            'summary' => 'Footballeur international ivoirien né en 1990, Lacina Traoré, attaquant surnommé « Big » pour son gabarit, a joué à Claix, Monaco et CSKA Moscou.',
+            'summary' => 'Footballeur international ivoirien né en 1990, Lacina Traoré, attaquant surnommé « Big » pour son gabarit, a joué à Monaco et au CSKA Moscou.',
             'blocks' => [
                 ['p', 'Lacina Traoré, né le 20 mai 1990 à Abidjan, est un footballeur international ivoirien qui évolue au poste d\'attaquant.'],
                 ['h2', 'De l\'Académie Mimosifcom à Monaco'],
@@ -4550,7 +4550,7 @@ return [
             'death' => '2017',
             'deathPlace' => 'Pékin (Chine)',
             'occupations' => ['Footballeur'],
-            'summary' => 'Milieu défensif international ivoirien (1986-2017), Cheik Tioté a été champion de Belgique, des Pays-Bas et d’Afrique avant de s’imposer à Newcastle.',
+            'summary' => 'Milieu défensif international ivoirien (1986-2017), Cheik Tioté a remporté le championnat belge, le championnat des Pays-Bas et la Coupe d’Afrique des nations avant de s’imposer à Newcastle.',
             'blocks' => [
                 ['p', 'Cheik Ismaël Tioté, né le 21 juin 1986 à Yamoussoukro et mort le 5 juin 2017 à Pékin, est un footballeur international ivoirien qui évoluait au poste de milieu de terrain.'],
                 ['h2', 'Anderlecht et Twente'],
@@ -4676,7 +4676,7 @@ return [
             'death' => null,
             'deathPlace' => null,
             'occupations' => ['Footballeur'],
-            'summary' => 'Milieu international ivoirien né en 1991, Jean-Michaël Seri s’est révélé à Paços Ferreira avant de s’imposer en France.',
+            'summary' => 'Milieu international ivoirien né en 1991, Jean-Michaël Seri s’est révélé à Paços Ferreira avant de s’imposer à Nice.',
             'blocks' => [
                 ['p', 'Jean-Michaël Seri, né le 19 juillet 1991 à Grand-Béréby, est un footballeur international ivoirien qui évolue au poste de milieu de terrain.'],
                 ['h2', 'Africa Sports et le Portugal'],
@@ -4703,7 +4703,7 @@ return [
                 ['h2', 'Lorient et Manchester City'],
                 ['p', 'En 2010, il intègre le centre de formation du FC Lorient, où il passe trois saisons. Il rejoint Manchester City en janvier 2013, à 17 ans, et intègre l’académie dirigée par Patrick Vieira. Faute de temps de jeu, il est prêté à Fulham dès sa première année, puis au SC Bastia.'],
                 ['h2', 'L’international'],
-                ['p', 'Il poursuit ensuite sa carrière en Italie et en France, notamment à Lens, avant de rejoindre Porto. Il défend les couleurs de la Côte d’Ivoire et fait partie du groupe sacré champion d’Afrique lors de la CAN 2023.'],
+                ['p', 'Il poursuit ensuite sa carrière à l’Udinese, puis à Lens, avant de rejoindre Porto. Il défend les couleurs de la Côte d’Ivoire et fait partie du groupe sacré champion d’Afrique lors de la CAN 2023.'],
             ],
             'bibliography' => [
                 ['title' => 'Seko Fofana', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Seko_Fofana'],
@@ -4802,7 +4802,7 @@ return [
             'death' => null,
             'deathPlace' => null,
             'occupations' => ['Athlète'],
-            'summary' => 'Sprinteur ivoirien né en 1944, Gaoussou Koné a été le premier Africain finaliste du 100 m aux Jeux olympiques, en 1964.',
+            'summary' => 'Sprinteur ivoirien né en 1944, Gaoussou Koné a été le premier Africain finaliste du 100 m aux Jeux olympiques de Tokyo, où il se classe sixième.',
             'blocks' => [
                 ['p', 'Gaoussou Koné, né le 28 avril 1944, est un athlète ivoirien. Il a été le meilleur sprinter d’Afrique francophone dans les années 1960.'],
                 ['h2', 'Tokyo 1964'],
@@ -5270,7 +5270,7 @@ return [
                 ['h2', 'Capitaine à Toulouse'],
                 ['p', 'Sélectionné en équipe de France des moins de 20 ans en octobre 2011, il choisit ensuite la Côte d’Ivoire, avec laquelle il est convoqué dès mars 2013. Lors de la saison 2014-2015, Dominique Arribagé lui confie le brassard de capitaine, qu’il conserve jusqu’à la fin de la saison suivante. Il quitte Toulouse en 2017 après huit années au club, puis rebondit à la Salernitana en février 2018.'],
                 ['h2', 'L’Italie et la CAN 2015'],
-                ['p', 'Il poursuit sa carrière en Italie, à la Lazio, puis à Monza en prêt et enfin à l’Hellas Vérone, où il s’engage en septembre 2025. Avec les Éléphants, il remporte la Coupe d’Afrique des nations 2015.'],
+                ['p', 'Il poursuit sa carrière à la Lazio, puis à Monza en prêt et enfin à l’Hellas Vérone, où il s’engage en septembre 2025. Avec les Éléphants, il remporte la Coupe d’Afrique des nations 2015.'],
             ],
             'bibliography' => [
                 ['title' => 'Jean-Daniel Akpa-Akpro', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Jean-Daniel_Akpa-Akpro'],
@@ -5436,7 +5436,7 @@ return [
             'blocks' => [
                 ['p', 'Siaka Tiéné, né le 22 février 1982 à Abidjan, est un ancien footballeur international ivoirien qui évoluait au poste de latéral gauche. Il grandit à Dabou, puis suit une formation à l’académie Jean-Marc Guillou de l’ASEC Mimosas. D’abord avant-centre, il devient progressivement milieu gauche, puis latéral gauche.'],
                 ['h2', 'De l’Afrique du Sud au PSG'],
-                ['p', 'Il signe avec les Mamelodi Sundowns, en Afrique du Sud, pour la saison 2003-2005, avant de rejoindre l’AS Saint-Étienne en 2005. Prêté au Stade de Reims le 31 octobre 2006, il s’impose ensuite dans le Forez. Le 30 juin 2008, il signe un contrat de trois ans avec Valenciennes pour un million d’euros, puis s’engage avec le Paris Saint-Germain le 31 août 2010. Avec Paris, il est champion de France en 2013, vice-champion en 2012 et finaliste de la Coupe de France en 2011.'],
+                ['p', 'Il signe avec les Mamelodi Sundowns, en Afrique du Sud, pour la saison 2003-2005. Prêté au Stade de Reims le 31 octobre 2006, il s’impose ensuite dans le Forez. Le 30 juin 2008, il signe un contrat de trois ans avec Valenciennes pour un million d’euros, puis s’engage avec le Paris Saint-Germain le 31 août 2010. Avec Paris, il est champion de France en 2013, vice-champion en 2012 et finaliste de la Coupe de France en 2011.'],
                 ['h2', 'Les Éléphants'],
                 ['p', 'Avec la Côte d’Ivoire, il est finaliste de la Coupe d’Afrique des nations en 2006 et 2012, avant de remporter la CAN 2015 contre le Ghana.'],
             ],
@@ -5762,7 +5762,7 @@ return [
             'occupations' => ['Footballeur'],
             'summary' => 'Attaquant international ivoirien né en 1980, Aruna Dindane a été Soulier d’or belge avec Anderlecht et meilleur buteur ivoirien du Mondial 2006.',
             'blocks' => [
-                ['p', 'Aruna Dindane, né le 26 novembre 1980 à Adjamé, est un ancien footballeur international ivoirien qui évoluait au poste d’attaquant, et fut également capitaine des Éléphants. Il commence à l’Inconditionnel d’Adjamé avant de rejoindre en 1994 l’Académie Mimosifcom, le centre de formation de l’ASEC Mimosas dirigé par Jean-Marc Guillou. Promu en équipe première en 1999 avec Kolo Touré, Boubacar Barry Copa, Bakari Koné et Didier Zokora, il remporte la Supercoupe de la CAF le 7 février 1999 face à l’Espérance de Tunis, en marquant le deuxième but ivoirien.'],
+                ['p', 'Aruna Dindane, né le 26 novembre 1980 à Adjamé, est un ancien footballeur international ivoirien qui évoluait au poste d’attaquant, et fut également capitaine des Éléphants. Il commence à l’Inconditionnel d’Adjamé avant de rejoindre en 1994 l’Académie Mimosifcom, le centre de formation de l’ASEC Mimosas dirigé par Jean-Marc Guillou. Promu en équipe première en 1999 avec Kolo Touré, Barry Copa, Bakari Koné et Didier Zokora, il remporte la Supercoupe de la CAF le 7 février 1999 face à l’Espérance de Tunis, en marquant le deuxième but ivoirien.'],
                 ['h2', 'Anderlecht et Lens'],
                 ['p', 'Après un titre de meilleur buteur du championnat national et une saison 2000 couronnée par le titre de champion, il part pour Anderlecht à l’été 2000. Il y marque quinze buts en vingt-cinq matchs et obtient le Soulier d’or, qui récompense le meilleur joueur du championnat belge. Il choisit ensuite le RC Lens, où il signe pour quatre saisons. En 2006, il dispute tous les matchs de la Coupe du monde avec la Côte d’Ivoire et termine meilleur buteur de sa sélection, avec deux buts contre la Serbie-et-Monténégro.'],
                 ['h2', 'Portsmouth et le Qatar'],
@@ -6213,7 +6213,7 @@ return [
             'blocks' => [
                 ['p', 'Jonathan Kodjia, né le 22 octobre 1989 à Saint-Denis, est un footballeur international ivoirien qui évolue au poste d’attaquant. Né de parents ivoiriens, il est repéré alors qu’il joue au niveau district en région parisienne et signe son premier contrat professionnel au Stade de Reims en 2008. En trois saisons avec Reims, il joue 26 matchs sans marquer, avant d’être prêté à l’AS Cherbourg, en National, où il inscrit ses premiers buts.'],
                 ['h2', 'Angers, Bristol et Aston Villa'],
-                ['p', 'Prêté à Amiens en 2012, il y marque 10 buts en 37 matchs, puis à Caen en 2013, avant de s’engager avec Angers SCO en 2014. Il termine la saison 2014-2015 avec 15 buts en Ligue 2. En juillet 2015, il rejoint Bristol City, où il inscrit 20 buts en 48 matchs toutes compétitions confondues. Le 30 août 2016, il signe pour quatre ans à Aston Villa et y marque 31 buts en 106 matchs en trois ans et demi, avant de rejoindre Al-Gharafa, au Qatar, le 20 janvier 2020.'],
+                ['p', 'Prêté à Amiens, il y marque 10 buts en 37 matchs, puis à Caen en 2013, avant de s’engager avec Angers SCO. Il termine la saison 2014-2015 avec 15 buts en Ligue 2. En juillet 2015, il rejoint Bristol City, où il inscrit 20 buts en 48 matchs toutes compétitions confondues. Le 30 août 2016, il signe pour quatre ans à Aston Villa et y marque 31 buts en 106 matchs en trois ans et demi, avant de rejoindre Al-Gjarafa, au Qatar, le 20 janvier 2020.'],
                 ['h2', 'Les Éléphants'],
                 ['p', 'Il honore sa première sélection le 20 mai 2016, lors d’un match amical face à la Hongrie, et marque son premier but deux semaines plus tard contre le Gabon, en éliminatoires de la CAN 2017. Il fait partie des vingt-trois joueurs retenus pour la CAN 2017.'],
             ],
@@ -6255,7 +6255,7 @@ return [
             'blocks' => [
                 ['p', 'Jean-Philippe Gbamin, né le 25 septembre 1995 à San-Pédro, est un footballeur international ivoirien qui possède également la nationalité française. Il évolue comme défenseur ou milieu défensif. Il commence le football en 2005 à l’US Saint-Quentin Blessy, rejoint l’Aire-sur-la-Lys un an plus tard, puis intègre en 2007 le centre de formation du RC Lens.'],
                 ['h2', 'Lens, Mayence et Everton'],
-                ['p', 'Il fait ses débuts professionnels le 10 mai 2013, face à Guingamp, en remplaçant Alexandre Coeff à la 14e minute, et signe son premier contrat professionnel le 19 juillet 2013. Lors de la saison 2014-2015, il dispute 35 rencontres et marque trois buts, contribuant à la montée du club en Ligue 1. Il inscrit également un but décisif en prolongation face à l’Olympique lyonnais, en huitième de finale de Coupe de France. Le 13 juillet 2016, il s’engage pour cinq ans avec le FSV Mayence, puis pour cinq saisons avec Everton le 2 août 2019.'],
+                ['p', 'Il fait ses débuts professionnels le 10 mai 2013, face à Guingamp, en remplaçant Alexandre Coeff à la 14e minute, et signe son premier contrat professionnel le 19 juillet 2013. Lors de la saison 2014-2015, il dispute trente-cinq rencontres et marque trois buts, contribuant à la montée du club en Ligue 1. Il inscrit également un but décisif en prolongation face à l’Olympique lyonnais, en huitième de finale de Coupe de France. Le 13 juillet 2016, il s’engage pour cinq ans avec le FSV Mayence, puis pour cinq saisons avec Everton le 2 août 2019.'],
                 ['h2', 'Prêts et retour en France'],
                 ['p', 'En manque de temps de jeu, il est prêté au CSKA Moscou en 2022, puis à Trabzonspor pour la saison 2022-2023. Il s’engage ensuite avec l’USL Dunkerque en novembre 2023, puis avec le FC Nantes à l’été 2024, avant de rejoindre le FC Zurich, puis le FC Metz le 15 juillet 2025. En avril 2017, il choisit de représenter la Côte d’Ivoire, avec laquelle il honore sa première sélection le 4 juin 2017 face aux Pays-Bas. Il participe à la CAN 2019 et à trois rencontres, avant l’élimination en quarts de finale contre l’Algérie.'],
             ],
@@ -6423,7 +6423,7 @@ return [
             'occupations' => ['Groupe de musique'],
             'summary' => 'Groupe de musique ivoirien de zouglou et de coupé-décalé, Magic System, formé à Abidjan en 1996, a connu le succès international avec « 1er Gaou ».',
             'blocks' => [
-                ['p', 'Magic System est un groupe ivoirien formé à Abidjan en 1996, dans le quartier de Marcory. À sa création, il compte plus de cinquante membres, appelés « magiciens », et puise ses sonorités dans le zouglou.'],
+                ['p', 'Magic System est un groupe ivoirien formé à Abidjan en 1996. À sa création, il compte plus de cinquante membres, appelés « magiciens », et puise ses sonorités dans le zouglou.'],
                 ['h2', '« 1er Gaou » et le succès'],
                 ['p', 'Le titre « 1er Gaou » (2002) fait connaître le groupe bien au-delà de la Côte d\'Ivoire et de la diaspora africaine. Leurs plus grands succès sont des chansons à thème festif, comme Un gaou à Oran (2004), Bouger bouger (2005) ou Magic in the Air (2014).'],
                 ['h2', 'Les enfants du village'],
@@ -6572,7 +6572,7 @@ return [
             'blocks' => [
                 ['p', 'Debordo Leekunfa, de son vrai nom Patrick Tanguy Séry Digbeu, est né le 20 décembre 1984 à Abidjan, dans la région des Lagunes. Il est chanteur, auteur-compositeur-interprète et vidéoman ivoirien.'],
                 ['h2', 'Le coupé-décalé en héritage'],
-                ['p', 'Son style s’inscrit dans le coupé-décalé, genre apparu à Paris au début des années 2000. Il est aujourd’hui l’un des chanteurs les plus sollicités du mouvement.'],
+                ['p', 'Son style s’inscrit dans le coupé-décalé, genre apparu à Paris en 2004. Il est aujourd’hui l’un des chanteurs les plus sollicités du mouvement.'],
             ],
             'bibliography' => [
                 ['title' => 'Debordo Leekunfa', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Debordo_Leekunfa'],
@@ -7428,7 +7428,7 @@ return [
             'blocks' => [
                 ['p', 'Fadika Kramo-Lanciné, né en 1948 à Danané et décédé le 5 juin 2022, est un réalisateur de cinéma ivoirien.'],
                 ['h2', '« Wariko, le gros lot »'],
-                ['p', 'Son film Wariko, le gros lot, sorti en 1993, réunit notamment Adrienne Koutouan et Adama Dahico ; il remporte le prix du public au FESPACO 1994 et le prix de la meilleure comédie au FESPACO 1995.'],
+                ['p', 'Son film Wariko, le gros lot, sorti en 1993, réunit notamment Adrienne Koutouan et Adama Dahico ; il remporte le prix du public au FESPACO 1994.'],
             ],
             'bibliography' => [
                 ['title' => 'Fadika Kramo-Lanciné', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Fadika_Kramo-Lancin%C3%A9'],
@@ -7691,7 +7691,7 @@ return [
             'blocks' => [
                 ['p', 'Digbeu Cravate, de son vrai nom Zouho Bla Michel, est un acteur ivoirien né le 7 janvier 1969 dans l’ouest de la Côte d’Ivoire et éduqué dans le pays abbey, à Agboville. Il est reconnu comme l’un des meilleurs comédiens humoristes ivoiriens.'],
                 ['h2', 'Le théâtre avant tout'],
-                ['p', 'D’ethnie yacouba, il fait croire au public qu’il est purement bété à travers son personnage. Il commence sa carrière au théâtre, puis passe au cinéma, où il côtoie Bamba Bakary et les sketchs du dimanche avec Gbi de Fer ou Akoss.'],
+                ['p', 'D’ethnie yacouba, il fait croire au public qu’il est purement bété à travers son personnage. Il commence sa carrière au théâtre, puis passe au cinéma, où il côtoie des comédiens comme Gbi de Fer ou Akoss.'],
                 ['h2', '« Ma famille » et les 25 ans'],
                 ['p', 'Il intègre la série Ma famille, joue dans Le Parlement du rire sur Canal+, dans les gags annuels Bonjour et dans Ma grande famille sur A+ Ivoire. En 2021, il célèbre ses 25 ans de carrière au Palais de la culture de Treichville.'],
             ],
@@ -7731,7 +7731,7 @@ return [
             'blocks' => [
                 ['p', 'Decothey, à l’état civil Gnago Guisso Gahuidi Decothey, est un artiste et comédien de Côte d’Ivoire. Il est connu du public africain notamment dans la série télévisée Ma famille, diffusée par Africable et A+.'],
                 ['h2', 'Cinéma et scène'],
-                ['p', 'Il joue dans Rigolos d’Abobo, Bénédicte (2018), Le gaucher d’Abidjan (2009) et Braquage à l’africaine (2015). En novembre 2023, il participe au spectacle Ma Famille en vacances aux Folies Bergère, à Paris, avec Michel Gohou, Clémentine Papouet, Akissi Delta, Digbeu Cravate et d’autres membres de la série.'],
+                ['p', 'Il joue dans Rigolos d’Abobo, Bénédicte (2018), Le gaucher d’Abidjan (2009) et Braquage à l’africaine (2015). En novembre 2023, il participe au spectacle Ma Famille en vacances aux Folies Bergère, avec Michel Gohou, Clémentine Papouet, Akissi Delta, Digbeu Cravate et d’autres membres de la série.'],
             ],
             'bibliography' => [
                 ['title' => 'Decothey', 'publisher' => 'Wikipédia en français', 'year' => null, 'url' => 'https://fr.wikipedia.org/wiki/Decothey'],

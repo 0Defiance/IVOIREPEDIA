@@ -2846,6 +2846,34 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 109 — 26 novembre 2026 · Les ancres inconnues d'une phrase
+
+**Motif** : dans le test de recouvrement, une phrase dont un nom propre, une année ou un chiffre manquait à la notice sortait du contrôle au lieu d'échouer — le trou restant après les séances 107 et 108.
+
+**Fait**
+- Nouvelle assertion `$unsourcedAnchors` : une phrase dont une ancre est absente de la notice échoue, sauf si la fiche possède une référence propre hors Wikipédia — la règle déjà appliquée aux années et aux lieux.
+- `noticeCoverageSentenceAnchors()` définit ce qu'est une ancre, pour éviter de condamner la langue courante : années (16xx-202x), nombres, et noms propres. Ne sont pas des ancres : la majuscule de début de phrase, un mot capitalisé précédé d'un déterminant ou d'un numéral (« les Éléphants », « du Front », « deux Coupes »), un sobriquet entre guillemets (« Big »), un sigle (CAN, PDCI-RDA) et les noms communs capitalisés listés par `noticeCoverageCommonCapitals()`.
+- Le nom du sujet lui-même est écarté : il est garanti par le titre de l'article.
+- Les âges (« à 33 ans ») sont écartés : ils découlent des dates, déjà contrôlées par le garde-fou des années.
+- Un nombre se compare chiffre à chiffre : `1 500` et `1500` sont le même nombre, et `1 000` se lit aussi quand la notice écrit les milliers séparément.
+- Comparaison insensible aux accents, aux traits d'union et aux apostrophes, comme pour les lieux : `Tiérou` et `Tierou`, `Houphouët-Boigny`, `N’Goran`.
+
+**Corrigé — 28 phrases dans 25 fiches**
+- *Détails que la notice ne porte pas* : « succédant à Jeannot Ahoussou-Kouadio » (Kandia Camara), la date de 2020 et le mois de nomination (Vagondo Diomandé), « depuis le 23 septembre 2026 » (Fodjo Kadjo Abo), le mari de Marie Laure N'Goran, le collège de Plymouth et les années 1980 (Gina Dick Boguifo), « cité Arras 1 » (Sidney Karams), « à Claix » (Lacina Traoré), « à Johannesburg », « au Qatar » requalifié en `Al-Gjarafa`, la date de prêt 2012 et 2014 (Jonathan Kodjia), le nombre de rencontres de 2014-2015 (Jean-Philippe Gbamin), le quartier de Marcory (Magic System), le prix de 1995 (Fadika Kramo Lanciné), la date de 1964 remplacée par Tokyo (Gaoussou Koné), la clause Saint-Étienne de 2005 (Siaka Tiéné), « à Paris » (Decothey), le nom du pasteur, la précision « Yambo Ouologuem ».
+- *Formes alignées sur la notice* : « Johannesbourg », « Saint Marc and Saint John », « Al-Gjarafa », « Bamba Kakary » écarté au profit des seuls noms portés par la notice, « Isaïe Biton » sans le patronyme, « Barry Copa », « le président Ouattara », « Puissance des lettres » (le titre que donne la notice), « championnat belge » au lieu de « champion de Belgique », « à Nice » au lieu de « en France », « à l'Udinese » au lieu de « en Italie ».
+
+**Vérifié**
+- Le garde-fou échoue là où il doit : ajouter « par Kwamé Zongo » à la fiche Magic System (sans référence propre) fait échouer le test avec `magic-system (nom propre Kwamé Zongo)` ; la phrase restaurée, le test repasse au vert.
+- `composer test` : **165 tests, 5 665 assertions** ; `composer format:check` : 163 fichiers ; `composer analyse` : aucun problème.
+
+**Reste**
+- Les sigles ne sont pas vérifiés : la notice peut écrire « Coupe d'Afrique des nations » là où la fiche écrit « CAN ».
+- Un nom propre qui est aussi un nom commun capitalisé (liste `noticeCoverageCommonCapitals()`) passe sans contrôle ; la liste devra grandir avec le corpus.
+- Les variantes orthographiques suivent la notice, y compris quand elle est fautive : la fiche dit désormais « Al-Gjarafa » et « Saint Marc and Saint John ».
+- Les textes corrigés ne sont pas encore en production : un `db:seed --class=PersonalitiesSeeder --force` reste à lancer.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
