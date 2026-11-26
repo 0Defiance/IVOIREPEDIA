@@ -2956,6 +2956,27 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 114 — 26 novembre 2026 · Tranche 2 des références propres
+
+**Motif** : les quatre fiches restantes de l'audit. La vérification a montré que deux affirmations n'étaient pas seulement non sourcées, mais fausses.
+
+**Corrigé**
+- **Tidjane Thiam** : « direction de la BICICI puis groupe Axa » remplacé par le parcours que porte la notice — retour chez McKinsey à Paris de 2000 à 2002, puis équipe dirigeante d'Aviva en France. Aucune source ne mentionne la BICICI, et son assureur est Aviva, pas Axa. La référence « Conseil constitutionnel » reste : elle documente la proclamation de 2025, pas la carrière.
+- **Charles Konan Banny** : « formé à l'université de Dijon » remplacé par « diplômé de l'ESSEC en 1968 », la formation réelle (RFI, FratMat, Wikipédia) et la forme que porte la notice. La référence BCEAO reste, elle documente son gouvernorat.
+- **Hanny Tchelley** : « Kidderminster » devient « Kiddeminster », l'orthographe de la notice, reprise de sa référence Africultures — même règle que « Al-Gjarafa » en séance 109.
+- **Yaya Diomandé** : les quatre affirmations (2020, JC Lattès, Moussa, Adjamé) versées dans `noticeCoverageOwnSourceClaims()` avec la page JC Lattès ; `noticeCoveragePendingClaims()` est supprimée, la liste d'attente est vide.
+
+**Vérifié**
+- Corpus des 401 fiches vert ; plus aucune exception de fiche, seulement treize affirmations vérifiées, chacune adossée à sa page.
+- `composer test` : **166 tests, 5 675 assertions** ; `composer format:check` : 163 fichiers ; `composer analyse` : 75 fichiers, aucun problème.
+- Production re-seedée et caches reconstruits ; les trois fiches corrigées répondent en 200 (Thiam sans BICICI ni Axa, Banny avec ESSEC 1968, Tchelley avec Kiddeminster).
+
+**Reste**
+- L'audit des références propres est clos : plus aucune fiche n'échappe globalement aux garde-fous d'ancres.
+- Les 22 références qui sont des pages d'accueil restent faibles ; elles ne portent plus aucune exception et pourront être remplacées par des pages précises lors d'un prochain passage.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

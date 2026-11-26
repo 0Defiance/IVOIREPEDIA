@@ -209,35 +209,11 @@ function noticeCoverageOwnSourceClaims(): array
         'papa-ministre' => [
             '1979' => 'https://www.qobuz.com/gb-en/interpreter/papa-ministre/1216791',
         ],
-    ];
-}
-
-/**
- * Affirmations encore à arbitrer (tranche 2 de l'audit) : elles restent hors du
- * contrôle le temps de vérifier leur référence. Elles sont listées ici, jamais
- * couvertes par une exemption de fiche, et cette liste doit être vidée avant de
- * clore l'audit des références propres.
- *
- * @return array<string, array<string, string>>
- */
-function noticeCoveragePendingClaims(): array
-{
-    return [
         'yaya-diomande' => [
             '2020' => 'https://www.editions-jclattes.fr/livre/abobo-marley-9782709667845/',
             'lattes' => 'https://www.editions-jclattes.fr/livre/abobo-marley-9782709667845/',
             'moussa' => 'https://www.editions-jclattes.fr/livre/abobo-marley-9782709667845/',
             'adjame' => 'https://www.editions-jclattes.fr/livre/abobo-marley-9782709667845/',
-        ],
-        'tidjane-thiam' => [
-            'bicici' => 'https://www.conseil-constitutionnel.ci',
-            'axa' => 'https://www.conseil-constitutionnel.ci',
-        ],
-        'charles-konan-banny' => [
-            'dijon' => 'https://www.bceao.int',
-        ],
-        'hanny-tchelley' => [
-            'kidderminster' => 'https://www.yeclo.com/hanny-tchelley-de-retour-a-abidjan-apres-10-ans-dexil-des-images/',
         ],
     ];
 }
@@ -257,10 +233,8 @@ function noticeCoverageOwnSourceCovers(Article $article, string $value): bool
         return false;
     }
 
-    // Union et non array_merge : une année « 1968 » est une clé numérique que
-    // array_merge renuméroterait, et l'exception ne matcherait jamais.
-    $claims = (noticeCoverageOwnSourceClaims()[$article->slug] ?? [])
-        + (noticeCoveragePendingClaims()[$article->slug] ?? []);
+    // Une année est une clé numérique : on la compare en chaîne.
+    $claims = noticeCoverageOwnSourceClaims()[$article->slug] ?? [];
 
     foreach (array_keys($claims) as $claim) {
         if (noticeCoverageClaimKey((string) $claim) === $key) {

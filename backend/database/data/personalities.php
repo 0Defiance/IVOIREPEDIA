@@ -75,7 +75,7 @@ return [
             'blocks' => [
                 ['p', 'Tidjane Thiam, né le 29 juillet 1962 à Abidjan, a suivi ses études à Polytechnique puis à l\'INSEAD avant de revenir en Côte d\'Ivoire pour enseigner et travailler dans le secteur bancaire national.'],
                 ['h2', 'Le patron de banque devenu ministre'],
-                ['p', 'Ministre du Plan et du Développement dans le gouvernement de Henri Konan Bédié, il prend ensuite la direction de la BICICI avant de partir diriger le groupe Axa en France. En juillet 2015, il est nommé directeur général du Crédit Suisse, l\'un des tout premiers Africains à la tête d\'une grande banque européenne.'],
+                ['p', 'Ministre du Plan et du Développement dans le gouvernement de Henri Konan Bédié, il retourne ensuite chez McKinsey à Paris de 2000 à 2002, puis rejoint l\'équipe dirigeante d\'Aviva en France. En juillet 2015, il est nommé directeur général du Crédit Suisse, l\'un des tout premiers Africains à la tête d\'une grande banque européenne.'],
                 ['h2', 'La politique ivoirienne'],
                 ['p', 'Il quitte la banque en 2020 et se tourne vers la politique de son pays. Élu à la tête du Parti démocratique de Côte d\'Ivoire (PDCI) en décembre 2023, il se présente à l\'élection présidentielle de 2025, dont sa candidature est écartée par le Conseil constitutionnel.'],
             ],
@@ -117,7 +117,7 @@ return [
             'occupations' => ['Économiste', 'Homme d’État'],
             'summary' => "Économiste et homme d'État ivoirien (1942-2021), Charles Konan Banny a été Premier ministre de 2005 à 2007 et gouverneur de la BCEAO.",
             'blocks' => [
-                ['p', 'Charles Konan Banny, né le 11 novembre 1942 à Divo, est un économiste ivoirien formé à l\'université de Dijon. Il mène une carrière bancaire qui le conduit à la tête de la Banque centrale des États de l\'Afrique de l\'Ouest (BCEAO), dont il devient gouverneur.'],
+                ['p', 'Charles Konan Banny, né le 11 novembre 1942 à Divo, est un économiste ivoirien diplômé de l’ESSEC en 1968. Il mène une carrière bancaire qui le conduit à la tête de la Banque centrale des États de l\'Afrique de l\'Ouest (BCEAO), dont il devient gouverneur.'],
                 ['h2', 'Premier ministre de transition'],
                 ['p', 'Il est nommé Premier ministre ivoirien le 4 décembre 2005, en pleine crise politico-militaire. Il quitte la tête du gouvernement le 29 mars 2007.'],
             ],
@@ -4208,7 +4208,7 @@ return [
             'occupations' => ['Écrivaine', 'Actrice', 'Réalisatrice'],
             'summary' => 'Actrice, productrice et écrivaine ivoirienne, Hanny Tchelley dirige le Festival du court-métrage d’Abidjan et a publié Et si c’était à refaire ? en 2023.',
             'blocks' => [
-                ['p', 'Hanny Tchelley, de son nom complet Hanny Tchelley Brigitte Etibou est une actrice, productrice, réalisatrice et écrivaine ivoirienne. Elle se forme à l’Institut national des arts d’Abidjan de 1983 à 1985, au conservatoire de danse et de musique, obtient en 1985 un diplôme de chorégraphe du Margaret Morris Movement et suit des stages à Londres, Stourbridge et Kidderminster, en Grande-Bretagne.'],
+                ['p', 'Hanny Tchelley, de son nom complet Hanny Tchelley Brigitte Etibou est une actrice, productrice, réalisatrice et écrivaine ivoirienne. Elle se forme à l’Institut national des arts d’Abidjan de 1983 à 1985, au conservatoire de danse et de musique, obtient en 1985 un diplôme de chorégraphe du Margaret Morris Movement et suit des stages à Londres, Stourbridge et Kiddeminster, en Grande-Bretagne.'],
                 ['h2', 'Le cinéma et le FICA'],
                 ['p', 'Elle se révèle au grand public grâce au film Bal poussière d’Henri Duparc et organise depuis 1998 le Festival du court-métrage d’Abidjan.'],
                 ['h2', 'L’exil et le livre'],
