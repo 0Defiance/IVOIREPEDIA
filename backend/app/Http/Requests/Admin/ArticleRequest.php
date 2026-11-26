@@ -37,7 +37,12 @@ class ArticleRequest extends FormRequest
             'cover_image_alt' => ['nullable', 'string', 'max:255', 'required_with:cover_image_url'],
             'cover_image_credit' => ['nullable', 'string', 'max:255'],
             'cover_image_license' => ['nullable', 'string', 'max:60'],
-            'cover_image_source_url' => ['nullable', 'url', 'max:500'],
+            'cover_image_source_url' => [
+                'nullable',
+                'url',
+                'max:500',
+                $this->precisePageRule('L’adresse de la page source de l’image doit pointer vers une page précise, pas vers l’accueil d’un site.'),
+            ],
             'references' => ['nullable', 'array', 'max:20'],
             'references.*.title' => ['nullable', 'string', 'max:255'],
             'references.*.authors' => ['nullable', 'string', 'max:255'],
@@ -47,11 +52,7 @@ class ArticleRequest extends FormRequest
                 'nullable',
                 'url',
                 'max:500',
-                function (string $attribute, mixed $value, Closure $fail): void {
-                    if (is_string($value) && ReferenceUrl::isHomePage($value)) {
-                        $fail('L’adresse de la source doit pointer vers une page précise, pas vers l’accueil d’un site.');
-                    }
-                },
+                $this->precisePageRule('L’adresse de la source doit pointer vers une page précise, pas vers l’accueil d’un site.'),
             ],
             'infobox' => ['nullable', 'array', 'max:20'],
             'infobox.*.label' => ['nullable', 'string', 'max:60'],
@@ -206,6 +207,18 @@ class ArticleRequest extends FormRequest
         $ids = array_values(array_filter((array) $this->input('tags', []), 'is_string'));
 
         return $ids;
+    }
+
+    /**
+     * Refuse l'accueil d'un site là où une page précise est attendue.
+     */
+    private function precisePageRule(string $message): Closure
+    {
+        return function (string $attribute, mixed $value, Closure $fail) use ($message): void {
+            if (is_string($value) && ReferenceUrl::isHomePage($value)) {
+                $fail($message);
+            }
+        };
     }
 
     private function nullable(mixed $value): ?string

@@ -3040,6 +3040,16 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 119 — 26 novembre 2026 · Même règle pour la source de l'image
+
+**Ajout** : la règle de page d'accueil s'applique aussi à `cover_image_source_url` dans le formulaire d'article. La closure est factorisée dans `ArticleRequest::precisePageRule()`, appelée par les deux champs avec un message adapté : « L’adresse de la page source de l’image doit pointer vers une page précise, pas vers l’accueil d’un site. » Une URL à requête reste acceptée, comme pour les sources.
+
+**Test** : dans `AdminContentTest`, une soumission avec `cover_image_source_url = https://example.test` est refusée (erreur sur `cover_image_source_url`, aucun article créé) ; la même avec la page du fichier aboutit et enregistre l'adresse.
+
+**Reste** : aucune référence de production à reprendre — le corpus est déjà propre, la règle ne bloque que les nouvelles saisies.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

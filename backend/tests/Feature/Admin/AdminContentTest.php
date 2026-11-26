@@ -181,6 +181,48 @@ it('refuse une source qui pointe vers une page d’accueil', function () {
     expect($article->references()->value('url'))->toBe('https://example.test/page');
 });
 
+it('refuse une page source d’image qui pointe vers une page d’accueil', function () {
+    $contributor = User::factory()->contributor()->create();
+    $category = Category::factory()->create();
+
+    $this->actingAs($contributor)
+        ->from('/admin/articles/create')
+        ->post('/admin/articles', [
+            'title' => 'Une image à l’accueil',
+            'summary' => 'Un article dont la source de l’image ne mène pas à une page précise.',
+            'body' => 'Un corps suffisamment long pour passer la validation.',
+            'type' => 'TOPIC',
+            'category_id' => $category->getKey(),
+            'cover_image_url' => 'https://example.test/photo.jpg',
+            'cover_image_alt' => 'Une rue d’Abidjan au coucher du soleil.',
+            'cover_image_source_url' => 'https://example.test',
+        ])
+        ->assertRedirect('/admin/articles/create')
+        ->assertSessionHasErrors([
+            'cover_image_source_url' => 'L’adresse de la page source de l’image doit pointer vers une page précise, pas vers l’accueil d’un site.',
+        ]);
+
+    expect(Article::query()->where('title', 'Une image à l’accueil')->exists())->toBeFalse();
+
+    // La page du fichier, elle, est une page précise : elle passe.
+    $this->actingAs($contributor)
+        ->post('/admin/articles', [
+            'title' => 'Une image bien sourcée',
+            'summary' => 'Un article dont la source de l’image mène à la page du fichier.',
+            'body' => 'Un corps suffisamment long pour passer la validation.',
+            'type' => 'TOPIC',
+            'category_id' => $category->getKey(),
+            'cover_image_url' => 'https://example.test/photo.jpg',
+            'cover_image_alt' => 'Une rue d’Abidjan au coucher du soleil.',
+            'cover_image_source_url' => 'https://example.test/wiki/File:Rue_Abidjan.jpg',
+        ])
+        ->assertRedirect();
+
+    $article = Article::query()->where('title', 'Une image bien sourcée')->firstOrFail();
+
+    expect($article->cover_image_source_url)->toBe('https://example.test/wiki/File:Rue_Abidjan.jpg');
+});
+
 it('remplace les sources à l’enregistrement, dans l’ordre saisi', function () {
     $editor = User::factory()->editor()->create();
     $article = Article::factory()->create();
