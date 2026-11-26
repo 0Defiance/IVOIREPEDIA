@@ -3004,6 +3004,24 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 116 — 26 novembre 2026 · Arbitrage de la date de Mamadou Koulibaly
+
+**Question** : la page historique de l'Assemblée nationale dit qu'il « quitte les rênes en 2010 », « remplacé en 2012 » ; la fiche dit 2001-2012.
+
+**Sources**
+- Wikipédia : président de l'Assemblée du 22 janvier 2001 au 12 mars 2012 (11 ans, 1 mois et 19 jours).
+- Le Monde/AFP du 12 mars 2012 : Guillaume Soro est élu président de l'Assemblée « une première depuis dix ans ».
+- Africa Check : « Mamadou Koulibaly va céder son fauteuil à Guillaume Soro en 2012 » ; le mandat des députés élus en 2000 a été prolongé par décrets successifs.
+- La page de l'Assemblée : le « 2010 » correspond au départ de fait pendant la crise post-électorale, pas à la transmission du fauteuil, qui n'a lieu qu'à l'installation de la nouvelle Assemblée, le 12 mars 2012.
+
+**Décision** : la fiche avait raison sur le fond. Le corps dit désormais « jusqu'en 2012 » au lieu de « pendant onze ans », pour que la date de fin soit lisible sans introduire de jour ou de mois absents de la notice. La référence de l'Assemblée n'est pas rétablie : sa page ne porte pas le mandat 2001-2012.
+
+**Vérifié**
+- Test de recouvrement vert ; `composer test` : 166 tests, 5 675 assertions ; format 163 fichiers ; analyse 75 fichiers sans erreur.
+- Production re-seedée et caches reconstruits ; la fiche répond en 200 avec la nouvelle formulation.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

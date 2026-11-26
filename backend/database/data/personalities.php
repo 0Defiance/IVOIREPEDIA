@@ -1474,7 +1474,7 @@ return [
             'blocks' => [
                 ['p', 'Mamadou Koulibaly, né le 21 avril 1957 à Azaguié-Gare, est un économiste, enseignant-chercheur et homme politique ivoirien. Agrégé de sciences économiques à l’université Aix-Marseille III en 1987, il enseigne dans plusieurs facultés d’Abidjan ainsi qu’en France.'],
                 ['h2', 'Le ministre et le président de l’Assemblée'],
-                ['p', 'Appelé comme ministre du Budget, puis de l’Économie et des Finances du gouvernement de transition en 2000, il organise le référendum constitutionnel et les élections présidentielles d’octobre 2000. Élu député de Koumassi en décembre 2000, il devient président de l’Assemblée nationale en janvier 2001, fonction qu’il exerce pendant onze ans.'],
+                ['p', 'Appelé comme ministre du Budget, puis de l’Économie et des Finances du gouvernement de transition en 2000, il organise le référendum constitutionnel et les élections présidentielles d’octobre 2000. Élu député de Koumassi en décembre 2000, il devient président de l’Assemblée nationale en janvier 2001, fonction qu’il exerce jusqu’en 2012.'],
                 ['p', 'En juillet 2011, il fonde Liberté et Démocratie pour la République (LIDER), parti d’opposition libéral.'],
             ],
             'bibliography' => [
