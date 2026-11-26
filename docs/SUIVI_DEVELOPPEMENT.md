@@ -3054,6 +3054,8 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 **Ajout** : le formulaire d'article affiche « Une page précise, pas l’accueil d’un site. » sous l'adresse de chaque source et sous la page source de l'image. La ligne de source enveloppe son champ d'adresse dans `.ref-url` (grille d'une colonne) pour que l'aide reste sous le champ dans la grille à six colonnes, et le gabarit de ligne ajoutée par le bouton « Ajouter une source » porte la même aide.
 
+**Corrigé à l'écran** : la colonne d'adresse (1.4fr, 205 px) coupait la phrase en deux lignes et l'étirement de la grille allongeait le bouton « Retirer ». La grille passe à `1.35fr .85fr .85fr 78px 2.1fr auto` (adresse à 295 px, phrase sur une ligne) avec `align-items: start`. Vérifié dans le navigateur à 1280 px et à 390 px, sur la ligne d'origine et sur une ligne ajoutée par le bouton.
+
 **Vérifié** : `composer test` : 169 tests, 5 692 assertions ; format 164 fichiers ; analyse 76 fichiers sans erreur.
 
 **Reste** : rien — la règle et son rappel sont désormais au même endroit.

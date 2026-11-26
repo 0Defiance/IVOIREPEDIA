@@ -196,7 +196,7 @@
         .short-box { min-height: 74px; font-family: var(--sans); font-size: 13.5px; line-height: 1.5; }
 
         .pair-row { display: grid; grid-template-columns: 1fr 1.4fr auto; gap: 10px; margin-bottom: 10px; }
-        .ref-row { display: grid; grid-template-columns: 1.5fr 1fr 1fr 84px 1.4fr auto; gap: 10px; margin-bottom: 10px; }
+        .ref-row { display: grid; grid-template-columns: 1.35fr .85fr .85fr 78px 2.1fr auto; gap: 10px; margin-bottom: 10px; align-items: start; }
         .check { display: inline-flex; align-items: center; gap: 7px; font-size: 13.5px; margin: 0 16px 8px 0; }
         .check input { width: auto; }
         .diff-chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0 0; }
