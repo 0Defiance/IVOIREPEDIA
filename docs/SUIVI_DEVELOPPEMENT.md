@@ -2934,6 +2934,28 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 113 — 26 novembre 2026 · Les références propres, affirmation par affirmation
+
+**Motif** : l'exemption des contrôles d'ancres était accordée à la fiche entière dès qu'elle citait une source non-Wikipédia. L'audit de la séance précédente a montré que 29 des 42 fiches n'en avaient pas besoin et que deux d'entre elles s'appuyaient sur une page d'accueil.
+
+**Fait**
+- `noticeCoverageOwnSourceClaims()` remplace l'exemption de fiche : chaque entrée lie une fiche, une affirmation normalisée (année, nombre, nom, lieu) et l'URL de la page qui la porte. Les neuf dates et lieux de la tranche 1 y sont inscrits après ouverture des pages : Africultures, Jeune Afrique, Takam Tikou (BnF), galerie LouiSimone Guirandou, Universal Music, Linfodrome, Qobuz (deux fiches) et le facilitateur FP Éditions.
+- `noticeCoverageHasOwnSource()` ne sert plus au contrôle : seules les affirmations listées échappent à la notice, dans le texte comme dans l'infobox (année et lieu de naissance ou de mort).
+- `noticeCoveragePendingClaims()` liste les sept affirmations de la tranche 2 encore à arbitrer — Yaya Diomandé, Tidjane Thiam, Charles Konan Banny, Hanny Tchelley — visible dans le test, à vider avant de clore l'audit.
+- Le cas permanent ajoute une référence non-Wikipédia à la fiche Magic System et vérifie que le sigle inventé « CTP » reste signalé : une référence propre ne couvre plus la fiche.
+- Piège corrigé : `array_merge` renumérote les clés numériques, donc « 1968 » ne matchait jamais l'exception ; l'union `+` conserve les clés.
+
+**Vérifié**
+- Corpus des 401 fiches vert : les neuf affirmations de la tranche 1 passent par leur liste, pas par une exemption de fiche.
+- `composer test` : **166 tests, 5 675 assertions** ; `composer format:check` : 163 fichiers ; `composer analyse` : 75 fichiers, aucun problème.
+- Production re-seedée et caches reconstruits ; `adama-dahico` et `cedric-marshall-kissy` répondent en 200 et servent leurs dates.
+
+**Reste**
+- Tranche 2 : sept affirmations dans quatre fiches (Yaya Diomandé, Tidjane Thiam, Charles Konan Banny, Hanny Tchelley), dont deux adossées à des pages d'accueil ; à vérifier puis, soit inscrire dans `noticeCoverageOwnSourceClaims()`, soit les aligner sur la notice.
+- Une fois `noticeCoveragePendingClaims()` vide, l'audit des références propres est clos.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

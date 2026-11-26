@@ -24,15 +24,18 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
  * personalities.php.
  *
  * Enfin, une année ou un lieu de naissance ou de mort absent de la notice doit
- * venir d'une référence propre à la fiche : une source qui n'est pas Wikipédia.
+ * venir d'une référence propre vérifiée : une source qui n'est pas Wikipédia et
+ * qui porte cette affirmation précise.
  * Pour un lieu, c'est la ville — le mot principal, avant la parenthèse — qui
  * doit figurer dans la notice.
  *
  * La même règle vaut pour les ancres d'une phrase et d'un titre de section :
- * une année, un nombre, un sigle ou un nom propre que la notice ne porte pas doit venir
- * d'une référence propre. Ni une phrase ni un titre n'échappent donc au
- * contrôle parce qu'ils nomment une personne, un lieu ou un chiffre inconnu de
- * la notice.
+ * une année, un nombre, un sigle ou un nom propre que la notice ne porte pas
+ * doit venir d'une référence propre, vérifiée affirmation par affirmation dans
+ * noticeCoverageOwnSourceClaims(). Une référence propre ne couvre plus la fiche
+ * entière : seules les affirmations qu'elle porte réellement échappent au
+ * contrôle. Ni une phrase ni un titre ne passent donc parce qu'ils nomment une
+ * personne, un lieu ou un chiffre inconnu de la notice.
  */
 uses(RefreshDatabase::class);
 
@@ -159,6 +162,121 @@ function noticeCoverageHasOwnSource(Article $article): bool
     }
 
     return false;
+}
+
+/**
+ * Affirmations vérifiées sur une référence propre, fiche par fiche. La clé est
+ * l'ancre normalisée (année, nombre, nom ou lieu de naissance ou de mort), la
+ * valeur la page qui la porte réellement, ouverte le 26 novembre 2026.
+ *
+ * Une référence propre ne couvre donc plus la fiche entière : tout ce qui n'est
+ * pas listé ici reste soumis à la notice.
+ *
+ * @return array<string, array<string, string>>
+ */
+function noticeCoverageOwnSourceClaims(): array
+{
+    return [
+        'adama-dahico' => [
+            '10' => 'https://africultures.com/personnes?no=27434',
+            '1968' => 'https://africultures.com/personnes?no=27434',
+            'adjame' => 'https://africultures.com/personnes?no=27434',
+        ],
+        'jean-paul-mehansio' => [
+            '11' => 'https://www.jeuneafrique.com/mag/367678/culture/cote-divoire-jean-paul-mehansio-realite-entre-danse',
+            '1986' => 'https://www.jeuneafrique.com/mag/367678/culture/cote-divoire-jean-paul-mehansio-realite-entre-danse',
+            'bangolo' => 'https://www.jeuneafrique.com/mag/367678/culture/cote-divoire-jean-paul-mehansio-realite-entre-danse',
+        ],
+        'irie-goli-bi' => [
+            '1960' => 'https://www.fomesoutra.com/sujets/espace-prof/prof-de-francais/facilitateurs-francais/23133-facilitateur-le-testament-by-tehua/file',
+            'vrigrita' => 'https://www.fomesoutra.com/sujets/espace-prof/prof-de-francais/facilitateurs-francais/23133-facilitateur-le-testament-by-tehua/file',
+        ],
+        'cedric-marshall-kissy' => [
+            '1988' => 'https://takamtikou.bnf.fr/bibliographies/notices/afrique/la-legende-du-fils-de-la-lumiere',
+        ],
+        'claudie-titty-dimbeng' => [
+            '1968' => 'https://www.louisimoneguirandou.gallery/artists/61-claudie-titty-dimbeng/overview',
+        ],
+        'soum-bill' => [
+            '1972' => 'https://universalmusic.fr/artistes/34266710034',
+        ],
+        'angeline-nadie' => [
+            '1968' => 'https://www.linfodrome.com/cinema/68785-deces-d-angeline-nadie-akissi-delta-raconte-les-derniers-instants-de-l-actrice',
+        ],
+        'antoinette-konan' => [
+            '1961' => 'https://www.qobuz.com/fr-fr/interpreter/antoinette-konan/297598',
+        ],
+        'papa-ministre' => [
+            '1979' => 'https://www.qobuz.com/gb-en/interpreter/papa-ministre/1216791',
+        ],
+    ];
+}
+
+/**
+ * Affirmations encore à arbitrer (tranche 2 de l'audit) : elles restent hors du
+ * contrôle le temps de vérifier leur référence. Elles sont listées ici, jamais
+ * couvertes par une exemption de fiche, et cette liste doit être vidée avant de
+ * clore l'audit des références propres.
+ *
+ * @return array<string, array<string, string>>
+ */
+function noticeCoveragePendingClaims(): array
+{
+    return [
+        'yaya-diomande' => [
+            '2020' => 'https://www.editions-jclattes.fr/livre/abobo-marley-9782709667845/',
+            'lattes' => 'https://www.editions-jclattes.fr/livre/abobo-marley-9782709667845/',
+            'moussa' => 'https://www.editions-jclattes.fr/livre/abobo-marley-9782709667845/',
+            'adjame' => 'https://www.editions-jclattes.fr/livre/abobo-marley-9782709667845/',
+        ],
+        'tidjane-thiam' => [
+            'bicici' => 'https://www.conseil-constitutionnel.ci',
+            'axa' => 'https://www.conseil-constitutionnel.ci',
+        ],
+        'charles-konan-banny' => [
+            'dijon' => 'https://www.bceao.int',
+        ],
+        'hanny-tchelley' => [
+            'kidderminster' => 'https://www.yeclo.com/hanny-tchelley-de-retour-a-abidjan-apres-10-ans-dexil-des-images/',
+        ],
+    ];
+}
+
+/** Clé de comparaison d'une affirmation : minuscules, sans accents ni ponctuation. */
+function noticeCoverageClaimKey(string $value): string
+{
+    return trim(preg_replace('/[^\p{L}\p{N}]+/u', ' ', noticeCoveragePlain($value)) ?? '');
+}
+
+/** Cette affirmation est-elle couverte par une référence propre vérifiée de la fiche ? */
+function noticeCoverageOwnSourceCovers(Article $article, string $value): bool
+{
+    $key = noticeCoverageClaimKey($value);
+
+    if ($key === '') {
+        return false;
+    }
+
+    // Union et non array_merge : une année « 1968 » est une clé numérique que
+    // array_merge renuméroterait, et l'exception ne matcherait jamais.
+    $claims = (noticeCoverageOwnSourceClaims()[$article->slug] ?? [])
+        + (noticeCoveragePendingClaims()[$article->slug] ?? []);
+
+    foreach (array_keys($claims) as $claim) {
+        if (noticeCoverageClaimKey((string) $claim) === $key) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/** Même règle pour un lieu : c'est la ville, avant la parenthèse, qui est vérifiée. */
+function noticeCoverageOwnSourceCoversPlace(Article $article, string $place): bool
+{
+    $head = preg_split('/\s*[\(\[]/u', $place)[0] ?? $place;
+
+    return noticeCoverageOwnSourceCovers($article, $head);
 }
 
 /**
@@ -355,8 +473,9 @@ function noticeCoverageAcronymKnown(string $acronym, array $noticeWords): bool
 }
 
 /**
- * Ancres d'une fiche que sa notice ne porte pas, quand la fiche n'a aucune
- * référence propre hors Wikipédia : un message par ancre, avec sa nature.
+ * Ancres d'une fiche que sa notice ne porte pas : un message par ancre, avec
+ * sa nature. Une référence propre ne couvre que les affirmations vérifiées et
+ * listées par noticeCoverageOwnSourceClaims(), jamais la fiche entière.
  *
  * Le résumé, les paragraphes et les titres de section sont contrôlés de la
  * même façon : un titre ne peut pas nommer ni dater ce que la notice ignore.
@@ -365,10 +484,6 @@ function noticeCoverageAcronymKnown(string $acronym, array $noticeWords): bool
  */
 function noticeCoverageUnsourcedAnchors(Article $article, string $noticeText): array
 {
-    if (noticeCoverageHasOwnSource($article)) {
-        return [];
-    }
-
     $noticeWords = array_flip(
         preg_split('/[^\p{L}\p{N}]+/u', noticeCoveragePlain($noticeText), -1, PREG_SPLIT_NO_EMPTY) ?: []
     );
@@ -403,7 +518,7 @@ function noticeCoverageUnsourcedAnchors(Article $article, string $noticeText): a
                 }
 
                 if ($label === 'sigle') {
-                    if (! noticeCoverageAcronymKnown($anchor, $noticeWords)) {
+                    if (! noticeCoverageAcronymKnown($anchor, $noticeWords) && ! noticeCoverageOwnSourceCovers($article, $anchor)) {
                         $unsourced[] = $article->slug.' ('.$label.' '.$anchor.') : absent de la notice et sans référence hors Wikipédia';
                     }
 
@@ -425,7 +540,7 @@ function noticeCoverageUnsourcedAnchors(Article $article, string $noticeText): a
                         }
                     }
 
-                    if (! $known) {
+                    if (! $known && ! noticeCoverageOwnSourceCovers($article, $anchor)) {
                         $unsourced[] = $article->slug.' ('.$label.' '.$anchor.') : absent de la notice et sans référence hors Wikipédia';
                     }
 
@@ -433,7 +548,7 @@ function noticeCoverageUnsourcedAnchors(Article $article, string $noticeText): a
                 }
 
                 foreach ($parts as $part) {
-                    if (! isset($noticeWords[$part])) {
+                    if (! isset($noticeWords[$part]) && ! noticeCoverageOwnSourceCovers($article, $anchor)) {
                         $unsourced[] = $article->slug.' ('.$label.' '.$anchor.') : absent de la notice et sans référence hors Wikipédia';
 
                         break;
@@ -499,8 +614,6 @@ it('garde chaque phrase factuelle au-dessus du seuil de recouvrement de sa notic
             $plainNotice[noticeCoveragePlain($token)] = true;
         }
 
-        $hasOwnSource = noticeCoverageHasOwnSource($article);
-
         foreach (['birthPlace' => 'lieu de naissance', 'deathPlace' => 'lieu de mort'] as $field => $label) {
             $place = $article->infobox[$field] ?? null;
 
@@ -508,7 +621,7 @@ it('garde chaque phrase factuelle au-dessus du seuil de recouvrement de sa notic
                 continue;
             }
 
-            if (noticeCoveragePlaceKnown($place, $plainNotice) || noticeCoverageHasOwnSource($article)) {
+            if (noticeCoveragePlaceKnown($place, $plainNotice) || noticeCoverageOwnSourceCoversPlace($article, $place)) {
                 continue;
             }
 
@@ -525,7 +638,7 @@ it('garde chaque phrase factuelle au-dessus du seuil de recouvrement de sa notic
             preg_match_all('/\b(1[6-9]\d{2}|20[0-2]\d)\b/u', $value, $years);
 
             foreach ($years[1] as $year) {
-                if (isset($notice[$year]) || noticeCoverageHasOwnSource($article)) {
+                if (isset($notice[$year]) || noticeCoverageOwnSourceCovers($article, $year)) {
                     continue;
                 }
 
@@ -648,4 +761,20 @@ it('échoue sur une ancre inventée, absente de la notice et sans référence pr
     $found = noticeCoverageUnsourcedAnchors($article->fresh(['references']), $noticeText);
 
     expect($found)->toContain('magic-system (sigle CTP) : absent de la notice et sans référence hors Wikipédia');
+
+    // Une référence propre ne couvre plus la fiche entière : l'ancre inventée
+    // reste signalée même quand la fiche possède une source hors Wikipédia.
+    $article->references()->create([
+        'position' => 2,
+        'kind' => 'OTHER',
+        'title' => 'Magic System',
+        'publisher' => 'Africultures',
+        'url' => 'https://africultures.com/magic-system',
+    ]);
+
+    $withOwnSource = $article->fresh(['references']);
+
+    expect(noticeCoverageHasOwnSource($withOwnSource))->toBeTrue();
+    expect(noticeCoverageUnsourcedAnchors($withOwnSource, $noticeText))
+        ->toContain('magic-system (sigle CTP) : absent de la notice et sans référence hors Wikipédia');
 });
