@@ -23,8 +23,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
  * points, des espaces avant ponctuation ou des espaces multiples dans
  * personalities.php.
  *
- * Enfin, une année de naissance ou de mort absente de la notice doit venir
- * d'une référence propre à la fiche : une source qui n'est pas Wikipédia.
+ * Enfin, une année ou un lieu de naissance ou de mort absent de la notice doit
+ * venir d'une référence propre à la fiche : une source qui n'est pas Wikipédia.
  */
 uses(RefreshDatabase::class);
 
@@ -100,6 +100,34 @@ function noticeCoverageBody(Article $article): string
     return trim(implode(' ', $parts));
 }
 
+/** Minuscules sans accents, pour comparer villes et jetons sans piège typographique. */
+function noticeCoveragePlain(string $value): string
+{
+    return strtr(mb_strtolower($value), [
+        'à' => 'a', 'â' => 'a', 'ä' => 'a', 'á' => 'a', 'ã' => 'a', 'å' => 'a',
+        'ç' => 'c', 'é' => 'e', 'è' => 'e', 'ê' => 'e', 'ë' => 'e',
+        'î' => 'i', 'ï' => 'i', 'í' => 'i', 'ô' => 'o', 'ö' => 'o', 'ó' => 'o', 'õ' => 'o',
+        'ù' => 'u', 'û' => 'u', 'ü' => 'u', 'ú' => 'u', 'ÿ' => 'y', 'ñ' => 'n',
+    ]);
+}
+
+/** Un des mots du lieu figure-t-il dans la notice (accentué ou non) ? */
+function noticeCoveragePlaceKnown(string $place, array $plainNotice): bool
+{
+    $words = array_filter(
+        preg_split('/\s+/u', trim(preg_replace('/[^\p{L}\p{N}]+/u', ' ', noticeCoveragePlain($place)) ?? '')) ?: [],
+        fn (string $word): bool => mb_strlen($word) > 2
+    );
+
+    foreach ($words as $word) {
+        if (isset($plainNotice[$word])) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 /** La fiche cite-t-elle une source qui n'est pas Wikipédia ? */
 function noticeCoverageHasOwnSource(Article $article): bool
 {
@@ -148,9 +176,10 @@ it('garde chaque phrase factuelle au-dessus du seuil de recouvrement de sa notic
     $violations = [];
     $formatting = [];
     $unsourcedYears = [];
+    $unsourcedPlaces = [];
     $checked = 0;
 
-    Article::query()->with('references')->each(function (Article $article) use ($notices, &$violations, &$formatting, &$unsourcedYears, &$checked): void {
+    Article::query()->with('references')->each(function (Article $article) use ($notices, &$violations, &$formatting, &$unsourcedYears, &$unsourcedPlaces, &$checked): void {
         $noticeText = $notices[$article->slug] ?? null;
 
         if ($noticeText === null) {
@@ -160,6 +189,25 @@ it('garde chaque phrase factuelle au-dessus du seuil de recouvrement de sa notic
         $checked++;
 
         $notice = array_flip(explode(' ', $noticeText));
+
+        $plainNotice = [];
+        foreach (explode(' ', $noticeText) as $token) {
+            $plainNotice[noticeCoveragePlain($token)] = true;
+        }
+
+        foreach (['birthPlace' => 'lieu de naissance', 'deathPlace' => 'lieu de mort'] as $field => $label) {
+            $place = $article->infobox[$field] ?? null;
+
+            if (! is_string($place) || trim($place) === '') {
+                continue;
+            }
+
+            if (noticeCoveragePlaceKnown($place, $plainNotice) || noticeCoverageHasOwnSource($article)) {
+                continue;
+            }
+
+            $unsourcedPlaces[] = $article->slug.' ('.$label.' '.$place.') : lieu absent de la notice et sans référence hors Wikipédia';
+        }
 
         foreach (['birthDate' => 'naissance', 'deathDate' => 'mort'] as $field => $label) {
             $value = $article->infobox[$field] ?? null;
@@ -242,4 +290,5 @@ it('garde chaque phrase factuelle au-dessus du seuil de recouvrement de sa notic
     expect($violations)->toBe([]);
     expect($formatting)->toBe([]);
     expect($unsourcedYears)->toBe([]);
+    expect($unsourcedPlaces)->toBe([]);
 });

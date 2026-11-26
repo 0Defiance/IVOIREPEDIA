@@ -2809,6 +2809,25 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 107 — 25 novembre 2026 · Le garde-fou des lieux
+
+**Fait**
+- Le même contrôle s'applique maintenant aux champs `birthPlace` et `deathPlace` : si aucun mot du lieu (plus de deux lettres) ne figure dans la notice, la fiche doit citer une référence hors Wikipédia, sinon le test échoue avec `slug (lieu de mort Treichville) : lieu absent de la notice et sans référence hors Wikipédia`.
+- La comparaison est **insensible aux accents**, via `noticeCoveragePlain()` : la notice écrit « bouake », la fiche « Bouaké », et cela ne doit pas être un faux positif. Un mot suffit (la ville), les précisions entre parenthèses ne sont donc pas obligatoires.
+- La simulation sur le corpus a trouvé **trois lieux faux**, corrigés d'après la notice :
+  - **Siméon Aké** : né à **Bingerville** (la fiche disait Tagbougbe).
+  - **Emmanuel Eboué** : né à **Abidjan** (la fiche disait Koukoua).
+  - **Paco Séry** : né à **Divo** (la fiche disait Treichville, alors que son propre texte disait Divo dans le résumé et la première phrase).
+
+**Vérifié**
+- Garde-fou éprouvé par mutation, puis restauré : donner `Treichville` comme lieu de mort à Josiane Yapo (référence Wikipédia seule) fait échouer le test en citant exactement `josiane-yapo (lieu de mort Treichville)` ; remis à Ouagadougou, le test repasse au vert.
+- `composer test` : **165 tests, 5 664 assertions** ; `composer format:check` : 163 fichiers ; `composer analyse` : aucun problème. Production re-seedée, les trois fiches corrigées répondent en 200.
+
+**Reste**
+- Le garde-fou ne vérifie que la présence d'un mot du lieu dans la notice : un lieu composé dont la ville est citée passe, même si la précision entre parenthèses est inventée. Une relecture reste nécessaire pour les lieux à plusieurs niveaux.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
