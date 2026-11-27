@@ -996,12 +996,10 @@ class _CategoryBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tone = ToneColors.from(context);
-    final links = <String>[
-      if (article.categoryName != null) article.categoryName!,
-      ...article.tags,
-    ];
+    final hasCategory =
+        article.categoryName != null && article.categorySlug != null;
 
-    if (links.isEmpty) {
+    if (!hasCategory && article.tags.isEmpty) {
       return const SizedBox.shrink();
     }
 
@@ -1025,13 +1023,17 @@ class _CategoryBar extends StatelessWidget {
               color: tone.ink,
             ),
           ),
-          for (final link in links)
+          if (hasCategory)
             HoverLink(
-              label: link,
+              label: article.categoryName!,
               onTap: () =>
-                  article.categoryName == link && article.categorySlug != null
-                  ? wikiGo(context, '/categories/${article.categorySlug}')
-                  : wikiNotImplemented(context, 'Étiquette « $link »'),
+                  wikiGo(context, '/categories/${article.categorySlug}'),
+              style: const TextStyle(fontSize: 12.5),
+            ),
+          for (final tag in article.tags)
+            HoverLink(
+              label: tag.name,
+              onTap: () => wikiGo(context, tagPagePath(tag.slug, tag.name)),
               style: const TextStyle(fontSize: 12.5),
             ),
         ],

@@ -14,6 +14,7 @@ import 'ui/search_page.dart';
 import 'ui/shell.dart';
 import 'ui/sources_page.dart';
 import 'ui/statistics_page.dart';
+import 'ui/tag_page.dart';
 import 'ui/trust_pages.dart';
 import 'ui/timeline_page.dart';
 
@@ -57,6 +58,15 @@ GoRouter buildRouter() {
         path: '/categories/:slug',
         pageBuilder: (context, state) =>
             _page(CategoryPage(slug: state.pathParameters['slug'] ?? '')),
+      ),
+      GoRoute(
+        path: '/etiquettes/:slug',
+        pageBuilder: (context, state) => _page(
+          TagPage(
+            slug: state.pathParameters['slug'] ?? '',
+            name: state.uri.queryParameters['nom'],
+          ),
+        ),
       ),
       GoRoute(
         path: '/articles/:slug',

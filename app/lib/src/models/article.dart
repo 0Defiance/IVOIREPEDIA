@@ -123,7 +123,7 @@ class ArticleDetail extends ArticleSummary {
     required this.contentOps,
     this.infobox,
     this.references = const <ArticleReference>[],
-    this.tags = const <String>[],
+    this.tags = const <ArticleTag>[],
     this.updatedAt,
     super.categoryName,
     super.categorySlug,
@@ -143,7 +143,7 @@ class ArticleDetail extends ArticleSummary {
   final List<Map<String, dynamic>> contentOps;
   final Map<String, dynamic>? infobox;
   final List<ArticleReference> references;
-  final List<String> tags;
+  final List<ArticleTag> tags;
 
   /// Dernière modification enregistrée par l'API (`updated_at`), distincte
   /// de la date de publication.
@@ -178,7 +178,7 @@ class ArticleDetail extends ArticleSummary {
       contentOps: ops.whereType<Map<String, dynamic>>().toList(growable: false),
       infobox: json['infobox'] as Map<String, dynamic>?,
       tags: tags
-          .map((tag) => (tag as Map<String, dynamic>)['name'] as String)
+          .map((tag) => ArticleTag.fromJson(tag as Map<String, dynamic>))
           .toList(growable: false),
       updatedAt: updated == null ? null : DateTime.tryParse(updated),
       references: references
@@ -217,5 +217,19 @@ class PagedArticles {
       limit: (meta['limit'] as num?)?.toInt() ?? data.length,
       total: (meta['total'] as num?)?.toInt() ?? data.length,
     );
+  }
+}
+
+/// Étiquette d'un article : son nom affiché et son adresse (`/etiquettes/…`).
+class ArticleTag {
+  const ArticleTag({required this.name, required this.slug});
+
+  final String name;
+  final String slug;
+
+  factory ArticleTag.fromJson(Map<String, dynamic> json) {
+    final name = json['name'] as String? ?? '';
+
+    return ArticleTag(name: name, slug: json['slug'] as String? ?? '');
   }
 }

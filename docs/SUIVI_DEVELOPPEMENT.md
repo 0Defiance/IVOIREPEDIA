@@ -3198,6 +3198,24 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 130 — 27 novembre 2026 · Les pages d'étiquette
+
+**Constat** : la séance 129 laissait une seule case du Sprint 4 vide côté lecture — les pages d'étiquette. L'API savait déjà filtrer (`GET /api/v1/articles?tag=…`) et les étiquettes s'affichaient sous chaque article, mais un clic répondait par `wikiNotImplemented(« Étiquette… »)`.
+
+**Fait** :
+- `app/lib/src/models/article.dart` : `ArticleTag` (nom + slug) remplace la chaîne nue ; l'API renvoyait déjà `{name, slug}` et l'application jetait le slug, sans quoi aucune adresse n'était constructible. Les usages (copie de l'article, export PDF, statistiques) lisent maintenant `tag.name`.
+- `app/lib/src/ui/tag_page.dart` : écran `/etiquettes/{slug}` sur le modèle de la page de catégorie — chargement de 20 articles par page, « Charger la suite », états vide, erreur et squelette. Le nom vient de `?nom=`, sinon le slug est mis en forme (« culture-gouro » → « Culture gouro »), l'API ne servant pas de liste d'étiquettes.
+- `app/lib/src/ui/wiki_actions.dart` : `tagPagePath(slug, nom)` construit l'adresse et l'encode ; `app/lib/src/router.dart` enregistre la route.
+- `app/lib/src/ui/article_page.dart` : la barre « Catégories : » distingue maintenant explicitement la catégorie (premier lien, vers `/categories/{slug}`) de ses étiquettes (chacune vers sa page) ; l'ancien test comparait les libellés pour deviner la nature du lien.
+
+**Test** : `app/test/tag_page_test.dart`, trois cas sur le vrai routeur (`buildRouter`) — la page d'étiquette demande bien `tag=independance` au serveur et affiche « Étiquette : Indépendance » avec la page étiquetée ; sans `?nom=`, le slug est mis en forme ; depuis un article, le clic sur l'étiquette ouvre `/etiquettes/independance?nom=Ind%C3%A9pendance`. Le faux API enregistre le filtre reçu, ce qui prouve que l'écran s'appuie sur le filtre du serveur et non sur une liste locale. `article_page_test.dart` suit le nouveau type `ArticleTag`.
+
+**Vérifié** : `dart format --set-exit-if-changed lib test` → 68 fichiers, aucun écart ; `flutter analyze --no-pub` → « No issues found! » ; `flutter test --no-pub` → **76 tests verts** (73 + 3). Backend intact : aucun fichier PHP touché.
+
+**Reste** : la pagination des résultats de recherche, toujours à offrir. L'écran n'a pas été regardé dans un navigateur : il faudra reconstruire le site (`flutter build web`) pour que `/etiquettes/…` existe en production, et c'est à ce moment qu'une relecture visuelle aura du sens.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

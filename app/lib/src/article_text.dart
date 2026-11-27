@@ -171,7 +171,7 @@ String articleAsText(ArticleDetail article) {
 
   final categories = <String>[
     if (article.categoryName != null) article.categoryName!,
-    ...article.tags,
+    ...article.tags.map((tag) => tag.name),
   ];
   if (categories.isNotEmpty) {
     buffer

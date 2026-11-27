@@ -170,7 +170,7 @@ Future<Uint8List> buildArticlePdf(
             if (article.categoryName != null)
               'Domaine : ${article.categoryName}',
             if (article.tags.isNotEmpty)
-              'Catégories : ${article.tags.join(', ')}',
+              'Catégories : ${article.tags.map((tag) => tag.name).join(', ')}',
           ].join('\n'),
           style: style(size: 8.5, color: _muted, lineSpacing: 1.5),
         ),

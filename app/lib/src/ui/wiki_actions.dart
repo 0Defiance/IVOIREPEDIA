@@ -23,6 +23,21 @@ void wikiNotImplemented(BuildContext context, String label) {
 /// Navigation interne (le routeur gère les URLs propres).
 void wikiGo(BuildContext context, String path) => context.go(path);
 
+/// Adresse d'une page d'étiquette.
+///
+/// L'API filtre par slug (`?tag=`), mais ne sert pas de liste d'étiquettes :
+/// le nom affiché voyage donc dans l'adresse (`?nom=`), sinon la page retombe
+/// sur le slug mis en forme.
+String tagPagePath(String slug, String name) {
+  if (name.trim().isEmpty) {
+    return '/etiquettes/$slug';
+  }
+
+  final query = Uri(queryParameters: {'nom': name}).query;
+
+  return '/etiquettes/$slug?$query';
+}
+
 /// Formulaire de rédaction du panneau éditorial.
 ///
 /// Il vit hors du SPA : le panneau garde sa propre session (cookie), alors que

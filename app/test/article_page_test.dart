@@ -76,7 +76,7 @@ class _ArticleApi extends FakeIvoirepediaApi {
         'birthDate': '1905-10-18',
         'occupations': ['Médecin', 'Homme d’État'],
       },
-      tags: const ['Indépendance'],
+      tags: const [ArticleTag(name: 'Indépendance', slug: 'independance')],
       references: const [
         ArticleReference(
           position: 1,
