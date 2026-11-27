@@ -3090,6 +3090,18 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 123 — 27 novembre 2026 · « Créer un article » mène au formulaire
+
+**Fait** : dans la barre latérale, l'entrée « Créer un article » du groupe « Écrire ensemble » annonçait « sera activé avec les fonctionnalités à venir ». Elle appelle désormais `wikiOpenEditorialForm()` (`wiki_actions.dart`) : un compte connecté ouvre `/admin/articles/nouveau` dans l'onglet courant, un visiteur est renvoyé vers `/connexion`. L'adresse est bâtie sur l'origine de l'API par `editorialFormUri()` — donc `/admin/articles/nouveau` en production, où l'API est servie sous `/api/v1`, et `http://localhost:8000/admin/articles/nouveau` en développement. L'ouvreur d'onglet (`openSiteTab`) est remplaçable, comme `ivoireMotionEnabled`, pour qu'un test lise l'adresse visée sans navigateur.
+
+**Test** : `app/test/editorial_form_test.dart` (widget) : sans compte, l'entrée ouvre la page de connexion de l'application (`auth-page`) ; avec un compte, l'adresse passée à l'ouvreur vaut exactement `http://localhost:8000/admin/articles/nouveau` et l'application ne change pas de page. `AdminContentTest` (HTTP) : un visiteur sur `/admin/articles/nouveau` est redirigé vers `/admin/connexion`, un contributeur reçoit 200 et le formulaire (« Page source de l’image »), un lecteur est refusé (403).
+
+**Vérifié** : `composer test` : 170 tests, 5 703 assertions ; format 164 fichiers ; analyse 76 fichiers sans erreur. `flutter analyze` : aucune remarque ; `flutter test` : 72 tests verts (70 + 2).
+
+**Reste** : un compte de lecteur connecté dans l'application part vers `/admin/articles/nouveau`, où le panneau ne connaît que sa session par cookie : il atterrit sur `/admin/connexion`, et un compte READER y reçoit 403. La vraie réponse reste l'éditeur dans l'application (Sprint 2 : routes d'écriture `/api/v1/articles` + éditeur Flutter).
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

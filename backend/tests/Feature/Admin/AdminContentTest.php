@@ -139,6 +139,26 @@ it('enregistre plusieurs sources, une infobox et des étiquettes', function () {
         ->and($article->tags->pluck('name')->all())->toBe(['Pêche']);
 });
 
+it('n’ouvre le formulaire d’article qu’à l’équipe éditoriale', function () {
+    // Cible de l’entrée « Créer un article » du site : un visiteur est d’abord
+    // renvoyé vers la connexion du panneau.
+    $this->get('/admin/articles/nouveau')->assertRedirect('/admin/connexion');
+
+    $contributor = User::factory()->contributor()->create();
+
+    $this->actingAs($contributor)
+        ->get('/admin/articles/nouveau')
+        ->assertOk()
+        ->assertSee('Page source de l’image');
+
+    // Un compte de lecteur n’entre pas : le panneau a sa propre session.
+    $reader = User::factory()->create();
+
+    $this->actingAs($reader)
+        ->get('/admin/articles/nouveau')
+        ->assertForbidden();
+});
+
 it('refuse une source qui pointe vers une page d’accueil', function () {
     $contributor = User::factory()->contributor()->create();
     $category = Category::factory()->create();

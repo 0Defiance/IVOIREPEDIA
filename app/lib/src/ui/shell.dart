@@ -849,7 +849,7 @@ class _Sidebar extends StatelessWidget {
                 'Créer un article',
                 icon: Icons.edit_outlined,
                 tone: tone,
-                onTap: () => wikiNotImplemented(context, 'Créer un article'),
+                onTap: () => wikiOpenEditorialForm(context),
               ),
               _SidebarItem(
                 'Charte et sources',
