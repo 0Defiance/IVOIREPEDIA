@@ -33,16 +33,24 @@ Le tableau de bord doit répondre à trois besoins, dans cet ordre :
 
 ## 2. Où vit l'administration
 
-**Décision proposée : un panneau serveur rendu par Laravel, sur `/admin`,
-séparé de l'application Flutter.**
+**Décision : un panneau serveur rendu par Laravel, sur `/admin`, séparé de
+l'application Flutter — option B, écrans Blade sans Filament.**
 
 | Option | Avantage | Inconvénient |
 |---|---|---|
-| **A. Filament sur `/admin`** (recommandée) | Ressources, formulaires, tableaux, filtres, rôles et journal d'activité fournis ; ~1 mois gagné sur l'éditeur et les listes | Dépendance supplémentaire ; il faut un éditeur riche pour le JSON Quill (champ JSON + aperçu) |
+| **A. Filament sur `/admin`** (écartée) | Ressources, formulaires, tableaux, filtres, rôles et journal d'activité fournis ; ~1 mois gagné sur l'éditeur et les listes | Dépendance supplémentaire ; il faut un éditeur riche pour le JSON Quill (champ JSON + aperçu) |
 | B. Panneau Blade + Livewire maison | Aucune dépendance, contrôle total du rendu | Tout est à écrire : tables, filtres, permissions, téléversements, accessibilité |
 | C. Écrans d'administration dans l'app Flutter | Une seule base de code | L'app est une SPA publique servie en statique ; il faudrait un second build, un routage protégé et un éditeur riche en Flutter — le plus coûteux |
 
-Raisons de retenir A :
+> **Tranché** : l'option A n'a jamais été installée (aucun paquet Filament dans
+> `backend/composer.json`) et le panneau est aujourd'hui en service en Blade
+> maison, sans Livewire : utilisateurs, catégories, étiquettes, articles et
+> transitions, messages de contact. Les pages vivent dans
+> `backend/resources/views/admin/`, les contrôleurs dans
+> `App\Http\Controllers\Admin`. Ce qui suit garde la trace du raisonnement
+> d'origine.
+
+Raisons qui avaient fait préférer A :
 
 - le back-office est un outil de bureau, pas un écran public : il n'a rien à
   faire dans le bundle Flutter de 2,9 Mo servi aux lecteurs ;
@@ -237,10 +245,9 @@ la première semaine.
 
 ## 10. Questions ouvertes
 
-1. **Filament ou maison ?** La branche Filament compatible avec Laravel 13 doit
-   être vérifiée à l'installation (matrice de compatibilité du paquet) ; si elle
-   n'existe pas, l'option B revient sur la table et l'effort de la phase 2
-   double.
+1. **Filament ou maison ?** — **tranchée** : panneau maison en Blade (option B),
+   sans Filament ni Livewire. L'effort supplémentaire a été absorbé au fil des
+   séances ; la question de la compatibilité du paquet ne se pose plus.
 2. **Éditeur riche** : Q8 du CONTEXT reste ouverte. Le format de stockage est
    fixé (Delta Quill) ; l'éditeur du panneau est un choix d'implémentation.
 3. **Hébergement** : le panneau tourne sur le même compte Alwaysdata que l'API.

@@ -3142,6 +3142,23 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 127 — 27 novembre 2026 · Adieu Filament, dans le code comme dans le contexte
+
+**Constat** : la séance 126 avait corrigé le README et le guide de déploiement, laissant deux zones qui annonçaient encore Filament : le commentaire du `.htaccess` de `backend/public/` (« API (et administration Filament) ») et le CONTEXT, qui présentait Filament comme le panneau d'administration dans son TL;DR, ADR-001/004/007, sa table de technos, son arborescence, son schéma de couches, l'installation, la note du contrat d'API, le Sprint 5 et son glossaire — soit dix-sept mentions. Un contrôleur d'API disait aussi « la gestion des catégories reste dans Filament au Sprint 5 », et `AGENTS.md` exigeait « la ressource Filament » pour dire une fonctionnalité de back-office accessible.
+
+**Fait** :
+- `backend/public/.htaccess` : commentaire de la règle `^(api|admin|livewire|sanctum|up)` réécrit (API et panneau éditorial ; `livewire`/`sanctum` restent dans le motif bien qu'aucun des deux ne soit installé). Aucun changement de règle.
+- `backend/app/Http/Controllers/Api/V1/CategoryController.php` : la note de classe renvoie au panneau `/admin` (`App\Http\Controllers\Admin\CategoryController`) au lieu de Filament au Sprint 5.
+- `AGENTS.md` §1 : la règle du back-office parle de l'écran du menu `/admin` (Blade), plus d'une ressource Filament.
+- `IVOIREPEDIA_CONTEXT.md` (version 2.1) : TL;DR, ADR-001, ADR-004, ADR-007, table des technos (Administration, versions), arborescence (`resources/views/` remplace `Filament/`), schéma de couches et sa table, commande `php artisan serve`, note du §11.1, intitulé et case du Sprint 5 (cochée), §18 (honnêteté et interdits) et glossaire alignés sur le panneau Blade ; en-tête daté du 27 novembre 2026 avec le statut réel ; ligne 2.1 ajoutée à l'historique du document.
+- `docs/DASHBOARD_ADMIN.md` : la note de cadrage présente la décision comme tranchée (option B, Blade sans Filament ni Livewire), l'option A comme écartée et sa question ouverte n° 1 comme résolue, l'analyse d'origine restant lisible.
+
+**Vérifié** : `grep -rn Filament` ne trouve plus, hors des entrées historiques du journal, que les mentions qui disent l'écartement (README, `.htaccess`, CONTEXT, `DASHBOARD_ADMIN.md`). Arborescence du CONTEXT relue après suppression de la ligne `Filament/`. Côté code, seuls des commentaires changent : `composer test` (170 tests, 5 703 assertions), `composer format:check` (164 fichiers) et `composer analyse` (« No errors ») restent verts.
+
+**Reste** : le `.htaccess` corrigé ne prend effet qu'au prochain envoi du fichier sur le serveur — il ne change aucune règle, donc rien ne presse. `docs/DASHBOARD_ADMIN.md` garde son tableau comparatif d'origine, volontairement conservé comme trace du raisonnement.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

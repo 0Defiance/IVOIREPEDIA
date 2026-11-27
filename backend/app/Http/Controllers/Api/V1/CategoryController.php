@@ -9,8 +9,9 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**
  * `GET /api/v1/categories` — arbre des catégories, avec le nombre d'articles
- * publiés par nœud (CONTEXT §11.1). La gestion des catégories reste dans
- * Filament au Sprint 5 : aucune écriture ici.
+ * publiés par nœud (CONTEXT §11.1). La gestion des catégories se fait dans le
+ * panneau `/admin` (`App\Http\Controllers\Admin\CategoryController`) : aucune
+ * écriture côté API.
  */
 class CategoryController extends Controller
 {

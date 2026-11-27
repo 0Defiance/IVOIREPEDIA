@@ -8,7 +8,7 @@ Une fonctionnalité n'existe que si l'on y arrive par le chemin normal de l'util
 
 - **Flutter (`app/`)** : route enregistrée dans `app/lib/src/app.dart` **et** point d'entrée visible (menu, bouton, lien) depuis un écran déjà accessible ; l'écran s'affiche sans flag de debug ni activation manuelle.
 - **API (`backend/`)** : route déclarée dans `backend/routes/api.php` et appelable en HTTP (`/api/v1/...`) avec les mêmes paramètres que ceux que l'app envoie.
-- **Back-office** : la ressource Filament est présente dans le menu `/admin` et ses actions s'exécutent réellement.
+- **Back-office** : l'écran correspondant est présent dans le menu du panneau `/admin` (écrans Blade, pas Filament) et ses actions s'exécutent réellement.
 
 Vérification concrète : atteindre la fonctionnalité avec `flutter run -d web-server --web-port 8082` + `php artisan serve --port 8000` en suivant uniquement les chemins décrits dans `docs/INSTALLATION.md` (au Sprint 0 ; en attendant, CONTEXT §7), ou avec `curl` sur l'API.
 

@@ -1,7 +1,7 @@
 # IVOIREPEDIA — Fichier de contexte (équipe dev + assistants IA)
 
 > **À placer à la racine du dépôt.** Peut être renommé `CONTEXT.md`, `CLAUDE.md` ou `AGENTS.md` selon l'outil IA utilisé.
-> Dernière mise à jour : 2 novembre 2026 · Statut : **pré-MVP, développement solo**
+> Dernière mise à jour : 27 novembre 2026 · Statut : **en ligne, développement solo** — Sprints 0 et 1 réalisés, panneau éditorial `/admin` en service, contenu publié ; Sprint 2 (éditeur dans l'app) en cours
 
 ---
 
@@ -17,7 +17,7 @@
 |---|---|
 | Projet | Encyclopédie web libre dédiée à la Côte d'Ivoire (articles structurés, validés par des éditeurs, versionnés). |
 | Équipe actuelle | **1 seul développeur, niveau junior/intermédiaire en progression.** Pas encore de contributeurs externes. |
-| Stack MVP | **Flutter** (`app/` : web d'abord, Android ensuite) + **Laravel** (`backend/` : API REST `/api/v1` + admin Filament) + **MySQL hébergé sur Alwaysdata** (dev et production) + **Mailjet** pour les emails. **Rien d'autre sans ADR.** |
+| Stack MVP | **Flutter** (`app/` : web d'abord, Android ensuite) + **Laravel** (`backend/` : API REST `/api/v1` + panneau éditorial maison sur `/admin`, en Blade) + **MySQL hébergé sur Alwaysdata** (dev et production) + **Mailjet** pour les emails. **Rien d'autre sans ADR.** |
 | Architecture | **Monolithe modulaire** : un seul dépôt, un seul backend Laravel, une seule base. Pas de microservices. |
 | Périmètre | **MVP uniquement** (section 3). Ne jamais implémenter une fonctionnalité V1/V2 sans demande explicite. |
 | Langue | Code, commits, noms de variables et tables : **anglais**. Interface utilisateur et docs : **français**. |
@@ -100,7 +100,7 @@ Elasticsearch / Meilisearch · Publication Android/iOS (le code Flutter est part
 Chaque décision est numérotée. Pour en changer : ouvrir une PR qui ajoute un nouvel ADR dans `docs/adr/` et met à jour ce fichier.
 
 ### ADR-001 — Un dépôt, deux applications : Flutter (`app/`) + Laravel monolithe modulaire (`backend/`)
-- **Décision** : `app/` Flutter/Dart pour toute l'interface (site web d'abord, Android ensuite) ; `backend/` Laravel pour l'API REST `/api/v1` **et** le panneau d'administration Filament sur `/admin`. Une seule base, un seul déploiement backend.
+- **Décision** : `app/` Flutter/Dart pour toute l'interface (site web d'abord, Android ensuite) ; `backend/` Laravel pour l'API REST `/api/v1` **et** le panneau d'administration maison sur `/admin` (écrans Blade servis par Laravel, pas de paquet Filament). Une seule base, un seul déploiement backend.
 - **Pourquoi** : objectif multiplateforme — une seule base de code pour le web puis Android ; backend et base indépendants des interfaces ; le monolithe limite les composants à installer, surveiller et maintenir pour un dev seul.
 - **Risque** : deux langages (Dart, PHP) pour une personne seule → **le backend est l'unique source des règles métier**, l'app n'affiche et n'appelle que l'API ; couplage → respecter la séparation en couches (section 6.2).
 - **Sortie** : si un module devient un goulot (recherche, médias), il pourra être extrait en service indépendant.
@@ -116,7 +116,7 @@ Chaque décision est numérotée. Pour en changer : ouvrir une PR qui ajoute un 
 - **Pourquoi** : une seule base à sauvegarder, administrer et apprendre. La recherche utilise `LIKE` au MVP ; full-text MySQL en V1 ; Meilisearch sera réévalué au seuil défini dans le PDF Phase 2 (plusieurs milliers d'articles ou tolérance aux fautes avancée).
 
 ### ADR-004 — Laravel Sanctum (session web + jeton révocable Android)
-- **Décision** : authentification par email + mot de passe. Côté web (Flutter Web), session par **cookie** (`HttpOnly`, `SameSite=Lax`) ; côté Android plus tard, **jeton personnel révocable** dans `flutter_secure_storage`. Mêmes comptes et rôles pour l'app, l'API et Filament.
+- **Décision** : authentification par email + mot de passe. Côté web (Flutter Web), session par **cookie** (`HttpOnly`, `SameSite=Lax`) ; côté Android plus tard, **jeton personnel révocable** dans `flutter_secure_storage`. Mêmes comptes et rôles pour l'app, l'API et le panneau `/admin`.
 - **Pourquoi** : brique officielle de Laravel, évite d'écrire de la cryptographie maison ; un seul système d'authentification pour les trois surfaces.
 - **Sécurité** : mots de passe hachés avec `Hash::make()` (bcrypt, ≥ 12 rounds), jamais stockés ni loggés en clair.
 
@@ -131,7 +131,7 @@ Chaque décision est numérotée. Pour en changer : ouvrir une PR qui ajoute un 
 - Les enums PHP sont en anglais (`App\Enums\*`) ; les libellés français vivent côté Flutter (`app/lib/`, fichiers de libellés).
 
 ### ADR-007 — API REST versionnée `/api/v1` + couche Service
-- **Décision** : toute écriture passe par `backend/routes/api.php` → contrôleur `Api/V1` (mince) → `backend/app/Services/*`. Filament appelle les **mêmes** Services. Les widgets Flutter lisent et écrivent uniquement via l'API.
+- **Décision** : toute écriture passe par `backend/routes/api.php` → contrôleur `Api/V1` (mince) → `backend/app/Services/*`. Les contrôleurs du panneau `/admin` appellent les **mêmes** Services. Les widgets Flutter lisent et écrivent uniquement via l'API.
 - **Pourquoi** : API testable avec Pest, prête pour une future API publique, logique métier isolée ; une action d'administration ne peut pas contourner les règles de statut ni la traçabilité.
 
 ### ADR-008 — Hébergement : Alwaysdata (mutualisé), dès le développement
@@ -159,7 +159,7 @@ Chaque décision est numérotée. Pour en changer : ouvrir une PR qui ajoute un 
 | Stockage de session mobile | `flutter_secure_storage` | Jetons Android dans le stockage protégé de l'appareil, jamais en clair |
 | Éditeur riche | `flutter_quill` (Delta JSON) — **choix de référence, à confirmer avant le Sprint 2 (Q8)** | Édition structurée ; le Delta JSON est le contenu stocké |
 | Backend / API | PHP 8.3+ avec Laravel, monolithe modulaire | API REST `/api/v1` JSON, règles métier testables côté serveur |
-| Administration | Filament pour Laravel (`/admin`) | Utilisateurs, catégories, tableaux de bord — accès protégé par rôle et Policy |
+| Administration | Panneau maison en Blade sur `/admin` (Laravel, session par cookie) | Utilisateurs, catégories, étiquettes, articles et transitions, messages — accès protégé par rôle et Policy |
 | Authentification | Laravel Sanctum | Session cookie pour le web, jeton révocable pour Android |
 | Base de données | MySQL/MariaDB hébergé sur **Alwaysdata** — base de dev et base de production distinctes | Stockage relationnel, migrations versionnées |
 | Hébergement | **Alwaysdata** : site PHP + SSH, MySQL, HTTPS — compte dédié à IVOIREPEDIA (ADR-008) | Développement et production sur le même moteur (ADR-008) |
@@ -173,7 +173,7 @@ Chaque décision est numérotée. Pour en changer : ouvrir une PR qui ajoute un 
 | CI | GitHub Actions — 2 jobs (backend, flutter) | Tests, analyse et build web à chaque PR |
 | Gestionnaire de dépendances | Composer (backend), `pub` (Flutter) | Fichiers de verrouillage `composer.lock`, `pubspec.lock` |
 
-**Versions** : utiliser les versions stables courantes à l'initialisation, puis **figer via les lockfiles** (`composer.lock`, `pubspec.lock`). Versions constatées sur ce poste le 3 novembre 2026 : Laravel 13 / PHP 8.3 / Filament 5 / Sanctum 4 / Pest 4 ; Flutter stable récent (Dart ≥ 3.13). **Ne pas copier de numéros de version depuis ce document** — les figer dans `docs/INSTALLATION.md` après exécution réelle.
+**Versions** : utiliser les versions stables courantes à l'initialisation, puis **figer via les lockfiles** (`composer.lock`, `pubspec.lock`). Versions constatées sur ce poste le 3 novembre 2026 : Laravel 13 / PHP 8.3 / Sanctum 4 / Pest 4 (Filament écarté : panneau en Blade) ; Flutter stable récent (Dart ≥ 3.13). **Ne pas copier de numéros de version depuis ce document** — les figer dans `docs/INSTALLATION.md` après exécution réelle.
 
 > **Règle d'ajout de dépendance** : toute nouvelle librairie doit être justifiée dans la PR (besoin, alternatives, taille, maintenance). Préférer le cadre standard (fonctions natives de Laravel, packages `flutter_*`) quand c'est suffisant.
 
@@ -200,7 +200,7 @@ ivoirepedia/
 │  ├─ test/                   # tests flutter_test
 │  ├─ web/                    # index.html, manifest
 │  └─ pubspec.yaml
-├─ backend/                   # Laravel — API /api/v1 + admin Filament
+├─ backend/                   # Laravel — API /api/v1 + panneau /admin (Blade)
 │  ├─ app/
 │  │  ├─ Enums/               # Role, ArticleStatus, ArticleType… (anglais)
 │  │  ├─ Exceptions/          # WorkflowException…
@@ -209,12 +209,12 @@ ivoirepedia/
 │  │  │  └─ Requests/             # validation FormRequest
 │  │  ├─ Models/              # modèles Eloquent et relations
 │  │  ├─ Policies/            # autorisations par ressource
-│  │  ├─ Services/            # LOGIQUE MÉTIER (ArticleService, Workflow…)
-│  │  └─ Filament/            # ressources et pages du panneau /admin
+│  │  └─ Services/            # LOGIQUE MÉTIER (ArticleService, Workflow…)
 │  ├─ database/
 │  │  ├─ migrations/          # schéma versionné (source de vérité du schéma)
 │  │  ├─ seeders/             # catégories de base + admin de dev
 │  │  └─ factories/
+│  ├─ resources/views/        # écrans Blade : panneau /admin, pages pré-rendues
 │  ├─ routes/api.php
 │  ├─ storage/                # médias locaux (Phase 1)
 │  ├─ tests/{Feature,Unit}/   # tests Pest
@@ -232,7 +232,7 @@ ivoirepedia/
 Flutter (app/) ──HTTP JSON /api/v1──► routes/api.php ──► Contrôleur ──► Service ──► Eloquent ──► MySQL
                                           │ FormRequest       │ règles métier + Policies
                                           │ Sanctum (session) │ transactions
-Filament (/admin) ───────────────────────────────────────► mêmes Services
+Panneau /admin (Blade) ──────────────────────────────────► mêmes Services
 ```
 
 | Couche | Autorisé | Interdit |
@@ -240,7 +240,7 @@ Filament (/admin) ────────────────────�
 | Contrôleur `Api/V1` | Recevoir la requête validée (FormRequest), récupérer l'utilisateur Sanctum, appeler un service, renvoyer JSON | Requêtes Eloquent directes, règles métier |
 | Service (`app/Services`) | Règles métier, vérification des permissions (Policies), transactions, notifications | Dépendre des objets HTTP (`Request`) ou d'un widget Flutter |
 | Model Eloquent | Relations, accès aux données, casts | Règles métier complexes |
-| Filament | UI d'administration qui appelle les Services | Contourner les règles de statut ou de traçabilité |
+| Panneau `/admin` (Blade) | Écrans d'administration qui appellent les Services et les Policies | Contourner les règles de statut ou de traçabilité |
 | Widget Flutter | Affichage, état d'UI, appels API via `dio` | Logique métier, accès direct à la base |
 
 ---
@@ -271,7 +271,7 @@ composer install
 cp .env.example .env             # puis compléter DB_* et MAIL_* (jamais versionné)
 php artisan key:generate
 php artisan migrate --seed       # tables + catégories + admin de dev
-php artisan serve --port 8000    # API /api/v1 + admin Filament /admin
+php artisan serve --port 8000    # API /api/v1 + panneau /admin
 
 # 3. Application Flutter (terminal 2)
 cd app
@@ -807,7 +807,7 @@ Base : `/api/v1`. Format JSON. Authentification : session Sanctum (cookie) côt�
 | GET | `/api/v1/history` | public | Récits sourcés de la section « Histoire incroyable » (cache 6 h) | HIS |
 | POST | `/api/v1/articles/{id}/cover` | CONTRIBUTOR+ | Upload d'image (multipart) : MIME vérifié côté serveur, `alt` obligatoire | ART-06 |
 
-*Gestion des catégories et des utilisateurs : **panneau Filament `/admin`** (ressources + Policies), pas de routes API admin dédiées au MVP.*
+*Gestion des catégories et des utilisateurs : **panneau `/admin`** (écrans Blade + Policies), pas de routes API admin dédiées au MVP.*
 *V1 : `POST /api/v1/articles/{id}/rollback`, signalements, logs d'activité.*
 
 ### 11.2 Format d'erreur unique
@@ -924,8 +924,8 @@ Durées **indicatives** pour un développeur seul à temps partiel ; ajuster sel
 - [ ] Responsive mobile-first
 - **Critère de sortie** : un visiteur anonyme trouve et lit un article publié depuis un mobile.
 
-### Sprint 5 — Admin Filament & durcissement (≈ 2 semaines) · EF-ADM-01→03,05,08
-- [ ] Panneau Filament `/admin` : ressources utilisateurs (rôle, suspension) et catégories
+### Sprint 5 — Panneau d'administration & durcissement (≈ 2 semaines) · EF-ADM-01→03,05,08
+- [x] Panneau `/admin` en **Blade** (pas Filament) : utilisateurs (rôle, suspension), catégories, étiquettes, articles et transitions du workflow, messages de contact
 - [ ] Tableau de bord minimal (compteurs)
 - [ ] Sauvegardes automatiques MySQL + **test de restauration**
 - [ ] Revue sécurité (checklist section 13) + en-têtes HTTP
@@ -1049,12 +1049,12 @@ jobs:
 3. **Petits pas** : proposer des changements courts et vérifiables (un fichier ou une fonction à la fois), avec la commande pour les tester.
 4. **Pédagogie** : le développeur est en apprentissage. Pour chaque concept non trivial (ORM, transaction, Policy, verrou optimiste, Delta Quill…), donner une définition en une phrase et le *pourquoi*.
 5. **Cohérence** : réutiliser les noms de la section 8.1, les codes d'erreur de 11.2, les conventions de 15.
-6. **Honnêteté** : si une information dépend de la version d'une librairie (Laravel, Filament, Sanctum, Flutter, Quill…), **dire de vérifier la documentation officielle** plutôt que d'affirmer de mémoire.
+6. **Honnêteté** : si une information dépend de la version d'une librairie (Laravel, Sanctum, Flutter, Quill…), **dire de vérifier la documentation officielle** plutôt que d'affirmer de mémoire.
 7. **Tests d'abord pour la logique métier** : proposer les tests Pest de `Workflow`/`Policies` avant ou avec l'implémentation.
 
 ### 16.2 À ne jamais faire
 - Ajouter une dépendance, un service cloud ou un changement d'architecture sans ADR.
-- Mettre de la logique métier dans un contrôleur Laravel, une route Filament ou un widget Flutter.
+- Mettre de la logique métier dans un contrôleur Laravel, un écran du panneau `/admin` ou un widget Flutter.
 - Écrire une requête SQL par concaténation de chaînes.
 - Insérer du HTML non sanitisé ; accepter un contenu ou un `content` non validé depuis le client.
 - Contourner `Workflow::assertTransition` pour changer un statut.
@@ -1126,7 +1126,7 @@ jobs:
 | **CSP** | *Content Security Policy* : en-tête HTTP limitant les sources de scripts autorisées (défense contre XSS). |
 | **Delta (Quill)** | Format JSON de l'éditeur `flutter_quill` : le contenu d'un article est stocké sous cette forme. |
 | **Eloquent** | L'ORM de Laravel : traduit les objets PHP en requêtes SQL paramétrées. |
-| **Filament** | Framework d'administration pour Laravel : construit le panneau `/admin` à partir des modèles. |
+| **Filament** | Framework d'administration pour Laravel ; **écarté ici** : le panneau `/admin` est fait d'écrans Blade maison. |
 | **Hash / empreinte** | Résultat d'une fonction à sens unique appliquée à une donnée (ex. SHA-256). |
 | **MVP** | *Minimum Viable Product* : plus petite version utilisable du produit. |
 | **Pest / PHPUnit** | Frameworks de tests PHP ; le projet retient **Pest** (un seul outil de test). |
@@ -1158,6 +1158,7 @@ jobs:
 | 2026-11-13 | 1.6 | **Pluviométrie et Histoire incroyable** : trois tables de climatologie (ERA5 1991-2020, six villes), `data.climate` dans l'API statistique, graphiques à axes et barres mensuelles, table `history_stories`, endpoint `/api/v1/history`, page Flutter `/histoires`. §8.2 et §11.1 mis à jour. |
 | 2026-11-11 | 1.5 | **Statistiques nationales et articles enrichis** : trois tables (`country_indicators`, `country_indicator_points`, `census_divisions`), endpoint public `GET /api/v1/statistics`, page Flutter `/statistiques`, commandes `country:sync-statistics` (Banque mondiale + RGPH 2021) et `articles:enrich-sources` (infobox et références vérifiées). §8.2 et §11.1 mis à jour. |
 | 2026-11-11 | 1.4 | **Répertoire des sources documentaires** : `docs/SOURCES_INFORMATION.md` recense environ 150 plateformes (institutions ivoiriennes, statistiques internationales, cartographie, patrimoine, archives, recherche, presse, droit, langues, images), chacune vérifiée par requête HTTP le 11 novembre 2026 et assortie de son statut, de sa licence et des règles de citation. Ajouté au §2 comme document de référence. |
+| 2026-11-27 | 2.1 | **Le panneau d'administration n'est pas Filament** : le back-office est un panneau maison en Blade sur `/admin` (session par cookie, middleware `editorial`, Policies), en service avec utilisateurs, catégories, étiquettes, articles et transitions, messages. §0.1, §4 (ADR-001/004/007), §5, §6.1-6.2, §7.2, §11.1, Sprint 5 et glossaire alignés. |
 | 2026-11-03 | 1.3 | **Compte d'hébergement dédié** : IVOIREPEDIA quitte le compte Alwaysdata partagé (ADR-008) — compte, site `ivoirepedia.alwaysdata.net`, dossier, bases `ivoirepedia_prod`/`ivoirepedia_dev` et utilisateur MySQL propres, phpMyAdmin par compte. §5, §7, ADR-002 et ADR-008 alignés ; aucune référence à un autre projet ne subsiste dans le dépôt. |
 
 > **Règle de maintenance** : tout changement d'architecture, de modèle de données ou de workflow doit mettre à jour ce fichier **dans la même PR**. Un contexte obsolète est pire que pas de contexte.

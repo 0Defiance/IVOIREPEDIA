@@ -22,7 +22,9 @@
     RewriteCond %{HTTP:x-xsrf-token} .
     RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
 
-    # API (et administration Filament) : requêtes traitées par Laravel.
+    # API et panneau éditorial (/admin, écrans Blade) : requêtes traitées par
+    # Laravel. `livewire` et `sanctum` restent dans le motif au cas où une page
+    # du panneau les appellerait un jour ; aucun des deux n'est installé.
     RewriteRule ^(api|admin|livewire|sanctum|up)(/|$) index.php [L]
 
     # Pages d'articles pré-rendues et sitemap : Laravel produit le HTML et le
