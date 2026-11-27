@@ -917,21 +917,24 @@ Durées **indicatives** pour un développeur seul à temps partiel ; ajuster sel
 - **Critère de sortie** : cycle complet brouillon → publié, avec traçabilité, couvert par tests d'intégration Pest.
 
 ### Sprint 4 — Lecture publique, navigation, recherche (≈ 2 semaines) · EF-RCH-01→05, 08
-- [ ] Accueil (récents / mis en avant), page article (infobox, références, tags)
-- [ ] Pages catégorie (arborescence) et tag
-- [ ] Recherche simple + page de résultats paginée
+- [x] Accueil (la une, récents, article au hasard) et page article (infobox, références, étiquettes, sommaire) — en production, `GET /api/v1/articles/{slug}` renvoie bien `infobox`, `references` et `tags`
+- [x] Pages catégorie avec leur arborescence : `/categories/{slug}` liste les sous-catégories puis les articles ; `GET /api/v1/articles?category=histoire` répond (5 articles)
+- [ ] Pages **étiquette** : l'étiquette s'affiche sous un article, mais le clic appelle encore `wikiNotImplemented(« Étiquette… »)` — l'API filtre pourtant par tag (`?tag=…`, 100 articles sur une étiquette de test)
+- [x] Recherche simple : `/recherche?q=`, suggestions pendant la frappe, `GET /api/v1/search` (479 résultats pour « a » le 27 novembre 2026)
+- [ ] Page de résultats **paginée** : l'API expose `meta.page/limit/total`, l'écran annonce « Résultats 1 à 12 sur 479 » mais n'offre aucun contrôle pour charger la suite
 - [x] Navigation `go_router` avec URLs propres ; pages d'articles pré-rendues côté Laravel (`/articles/{slug}`), Open Graph et `sitemap.xml` (séance 44) — les autres pages restent côté client (§17 R-09)
-- [ ] Responsive mobile-first
-- **Critère de sortie** : un visiteur anonyme trouve et lit un article publié depuis un mobile.
+- [x] Responsive mobile-first : barre latérale au-dessus de 1000 px, tiroir en dessous, colonne unique sur téléphone ; tests de widgets en 390 × 844 et contrôles en production à cette largeur (séances 71 à 120)
+- **Critère de sortie** : **atteint** — un visiteur anonyme trouve et lit un article publié depuis un mobile (390 × 844) ; il reste l'étiquette à brancher et la pagination de la recherche à offrir.
 
 ### Sprint 5 — Panneau d'administration & durcissement (≈ 2 semaines) · EF-ADM-01→03,05,08
 - [x] Panneau `/admin` en **Blade** (pas Filament) : utilisateurs (rôle, suspension), catégories, étiquettes, articles et transitions du workflow, messages de contact
-- [ ] Tableau de bord minimal (compteurs)
-- [ ] Sauvegardes automatiques MySQL + **test de restauration**
-- [ ] Revue sécurité (checklist section 13) + en-têtes HTTP
-- [ ] Pages légales (confidentialité, mentions, licence du contenu)
-- [ ] Contenu initial : **au moins 30 articles de qualité** avant ouverture publique
-- **Critère de sortie** : bêta privée avec 5-10 testeurs.
+- [x] Tableau de bord (compteurs) : effectifs par statut, publiés, défauts de qualité (sans source, sans image, sans texte alternatif, résumé court), file de relecture et dernières actions
+- [ ] Sauvegardes automatiques MySQL + **test de restauration** — Alwaysdata sauvegarde le compte, mais aucune restauration n'a été essayée (risque R-04)
+- [ ] Revue sécurité (checklist section 13) + en-têtes HTTP — aucune revue écrite ; le 27 novembre 2026, la racine ne sert ni `X-Frame-Options`, ni `Content-Security-Policy`, ni `Referrer-Policy`
+- [x] Pages légales — confidentialité (`/confidentialite`) et licence du contenu (CC BY-SA 4.0, pages « À propos » et « Charte »)
+- [ ] **Mentions légales** : ni éditeur, ni responsable de publication, ni hébergeur nommés
+- [x] Contenu initial : **479 articles publiés** au 27 novembre 2026 (403 biographies, 41 territoires, 30 sujets, 5 institutions) — bien au-delà des 30 attendus
+- **Critère de sortie** : bêta privée avec 5-10 testeurs — **pas encore** ; restent les sauvegardes, la revue de sécurité et les mentions légales.
 
 ### Après le MVP (V1)
 Rollback · Recherche full-text MySQL · Commentaires éditoriaux · Signalements · Logs d'activité · Autocomplétion · Wiki-links `[[Terme]]` · Audio · API publique en lecture · Publication Android (packaging du code Flutter partagé) · Premiers contributeurs externes (voir `CONTRIBUTING.md` à rédiger).
@@ -1158,6 +1161,7 @@ jobs:
 | 2026-11-13 | 1.6 | **Pluviométrie et Histoire incroyable** : trois tables de climatologie (ERA5 1991-2020, six villes), `data.climate` dans l'API statistique, graphiques à axes et barres mensuelles, table `history_stories`, endpoint `/api/v1/history`, page Flutter `/histoires`. §8.2 et §11.1 mis à jour. |
 | 2026-11-11 | 1.5 | **Statistiques nationales et articles enrichis** : trois tables (`country_indicators`, `country_indicator_points`, `census_divisions`), endpoint public `GET /api/v1/statistics`, page Flutter `/statistiques`, commandes `country:sync-statistics` (Banque mondiale + RGPH 2021) et `articles:enrich-sources` (infobox et références vérifiées). §8.2 et §11.1 mis à jour. |
 | 2026-11-11 | 1.4 | **Répertoire des sources documentaires** : `docs/SOURCES_INFORMATION.md` recense environ 150 plateformes (institutions ivoiriennes, statistiques internationales, cartographie, patrimoine, archives, recherche, presse, droit, langues, images), chacune vérifiée par requête HTTP le 11 novembre 2026 et assortie de son statut, de sa licence et des règles de citation. Ajouté au §2 comme document de référence. |
+| 2026-11-27 | 2.2 | **Sprints 4 et 5 évalués sur pièces** : cases cochées pour l'accueil et la page article, les pages catégorie, la recherche, la navigation, le responsive, le tableau de bord du panneau, la confidentialité, la licence et le corpus (479 articles). Restent décochés, chacun nommé : pages étiquette, pagination des résultats de recherche, sauvegardes avec test de restauration, revue de sécurité et en-têtes HTTP, mentions légales. Critères de sortie annotés. |
 | 2026-11-27 | 2.1 | **Le panneau d'administration n'est pas Filament** : le back-office est un panneau maison en Blade sur `/admin` (session par cookie, middleware `editorial`, Policies), en service avec utilisateurs, catégories, étiquettes, articles et transitions, messages. §0.1, §4 (ADR-001/004/007), §5, §6.1-6.2, §7.2, §11.1, Sprint 5 et glossaire alignés. |
 | 2026-11-03 | 1.3 | **Compte d'hébergement dédié** : IVOIREPEDIA quitte le compte Alwaysdata partagé (ADR-008) — compte, site `ivoirepedia.alwaysdata.net`, dossier, bases `ivoirepedia_prod`/`ivoirepedia_dev` et utilisateur MySQL propres, phpMyAdmin par compte. §5, §7, ADR-002 et ADR-008 alignés ; aucune référence à un autre projet ne subsiste dans le dépôt. |
 

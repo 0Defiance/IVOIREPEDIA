@@ -3159,6 +3159,26 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 128 — 27 novembre 2026 · Sprints 4 et 5 confrontés aux cases à cocher
+
+**Constat** : les listes du CONTEXT (§14) n'avaient pas suivi les séances. Le Sprint 4 affichait quatre cases vides sur cinq alors que la lecture publique, les catégories, la recherche et le responsive tournent en production ; le Sprint 5 gardait « tableau de bord », « pages légales » et « contenu initial » vides alors que le panneau affiche ses compteurs, que `/confidentialite`, `/a-propos` et `/charte` existent, et que 479 articles sont publiés.
+
+**Vérifié, production et code** :
+- `GET /api/v1/articles/{slug}` renvoie `infobox` (7 champs), `references` et `tags` — la page article a de quoi remplir ses blocs.
+- `GET /api/v1/articles?category=histoire` → `total` 5 ; `?tag=…` → `total` 100 : les deux filtres marchent côté API. `app/lib/src/router.dart` déclare `/categories/:slug` et `CategoryPage` affiche les sous-catégories (`category.children`) : l'arborescence est en place.
+- Aucune route d'étiquette : sous un article, le lien appelle `wikiNotImplemented(« Étiquette… »)`. Les étiquettes s'affichent, seules leurs pages manquent.
+- `GET /api/v1/search?q=a&page=1` et `page=2` renvoient bien `meta.page` différent (479 résultats), mais `search_page.dart` ne rend que la première page (« Résultats 1 à 12 sur 479 ») sans bouton de suite.
+- Responsive : barre latérale au-dessus de 1000 px, tiroir en dessous ; tests de widgets et contrôles en production en 390 × 844 (séances 71 à 120).
+- `DashboardController` compte les statuts, les publiés et quatre défauts de qualité, et `dashboard.blade.php` les affiche.
+- `trust_pages.dart` contient la confidentialité et la licence CC BY-SA 4.0 ; rien sur l'éditeur, le responsable de publication ou l'hébergeur.
+- En-têtes HTTP de la racine le 27 novembre 2026 : aucun `X-Frame-Options`, `Content-Security-Policy` ni `Referrer-Policy` — la revue de sécurité du Sprint 5 n'est pas faite.
+
+**Fait** : CONTEXT §14 (version 2.2) — sept cases cochées avec leur preuve (quatre au Sprint 4, trois au Sprint 5), et trois items partiels découpés pour ne plus mentir : catégorie / étiquette, recherche / pagination, pages légales / mentions légales. Les critères de sortie des deux sprints sont annotés (Sprint 4 atteint, Sprint 5 non).
+
+**Reste** : pages d'étiquette (brancher l'API `?tag=` déjà prête), pagination de la recherche, sauvegardes avec test de restauration, revue de sécurité et en-têtes HTTP, mentions légales. Les Sprints 1 à 3 restent intégralement décochés alors qu'ils sont largement livrés (comptes, éditeur du panneau, workflow, versions) : même travail à prévoir, hors de cette séance.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
