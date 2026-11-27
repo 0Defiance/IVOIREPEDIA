@@ -4,7 +4,7 @@
 >
 > **Complément local :** [`INSTALLATION.md`](INSTALLATION.md). **État réel :** [`SUIVI_DEVELOPPEMENT.md`](SUIVI_DEVELOPPEMENT.md).
 >
-> **Version :** 2.1 · **Dernière mise à jour :** 3 novembre 2026
+> **Version :** 2.2 · **Dernière mise à jour :** 27 novembre 2026
 >
 > **Convention de lecture** : `ivoirepedia` désigne l'identifiant du compte Alwaysdata. S'il diffère, remplacer cette valeur partout (hôtes, bases, chemins) — le raisonnement ne change pas.
 
@@ -325,7 +325,7 @@ php artisan config:cache && php artisan route:cache && php artisan view:cache
 | API vivante | `curl -s https://ivoirepedia.alwaysdata.net/api/v1/health` | `{"status":"ok","service":"ivoirepedia-api","version":"v1"}` |
 | HTTPS + redirection | `curl -sI http://ivoirepedia.alwaysdata.net` | `301` vers `https://` |
 | Base connectée | `php artisan migrate:status` en SSH | Migrations listées, aucune « Pending » |
-| Panneau admin | `https://ivoirepedia.alwaysdata.net/admin` | Écran de connexion Filament (à partir du Sprint 5) |
+| Panneau admin | `curl -sI https://ivoirepedia.alwaysdata.net/admin` | `302` vers `/admin/connexion` : le panneau (Blade, session par cookie) est en service, pas Filament |
 | Email | `Mail::raw(...)` en tinker | Message reçu, expéditeur validé |
 | Article — visiteur | `curl -s https://ivoirepedia.alwaysdata.net/articles/<slug> \| grep 'og:title'` | Balises présentes et coquille Flutter (`flutter_bootstrap.js`) |
 | Parcours navigateur | `python ../tools/verify_deploy.py` (depuis `app/`) | `OK` partout, JS/wasm décompressés identiques aux originaux |

@@ -3130,6 +3130,18 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 126 — 27 novembre 2026 · README et guide de déploiement remis au niveau du site
+
+**Constat** : la séance 125 avait corrigé l'en-tête du journal, pas les deux documents que lit un nouvel arrivant. `README.md` annonçait « pré-MVP — Sprint 0 (fondations) réalisé », une prochaine étape qui était « déploiement Alwaysdata, puis Sprint 1 », et un « back-office Filament sur `/admin` » ; `docs/DEPLOIEMENT.md` attendait « l'écran de connexion Filament (à partir du Sprint 5) » dans sa table de vérifications. Aucun des deux ne décrivait le site sous `/site/` : le guide décrit déjà la racine, `--base-href=/` et le contrôle `verify_deploy.py`.
+
+**Fait** : README § Statut et prochaine étape réécrit sur l'état réel — site en ligne à la racine, Sprints 0 et 1 réalisés, panneau `/admin` opérationnel, 479 articles publiés, prochaine étape le Sprint 2 ; la ligne « Backend » de la pile nomme le panneau Blade (Filament n'est pas installé, `backend/composer.json` ne le liste pas) ; la ligne « Tests / CI » signale le contrôle de formatage Dart ajouté en séance 124 ; version 1.4 au 27 novembre 2026. Dans `DEPLOIEMENT.md`, la ligne « Panneau admin » vérifie désormais la redirection vers `/admin/connexion` au lieu d'annoncer Filament au Sprint 5 ; version 2.2 au 27 novembre 2026. Une entrée de séance est ajoutée au journal.
+
+**Vérifié en production** : `GET /admin` → **302** vers `/admin/connexion`, qui répond **200** en HTML avec les champs `email` et `password`. Les chiffres du README (479 articles, répartition) et l'adresse racine sont ceux relevés en séance 125 le même jour.
+
+**Reste** : le commentaire du `.htaccess` de `backend/public/` parle encore d'« administration Filament » (`RewriteRule ^(api|admin|livewire|sanctum|up)(/|$)`). Il ne change pas le comportement — la règle envoie bien `/admin` à Laravel — mais il faudra le corriger et redéployer un jour, hors du périmètre de cette relecture documentaire.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.
