@@ -31,6 +31,10 @@ class AuthUser {
 
   bool get isEditor => role == 'ADMIN' || role == 'EDITOR';
 
+  /// Rédaction : même frontière que le middleware `editorial` du backend
+  /// (CONTRIBUTOR et au-dessus).
+  bool get canContribute => isEditor || role == 'CONTRIBUTOR';
+
   factory AuthUser.fromJson(Map<String, dynamic> json) {
     return AuthUser(
       id: (json['id'] ?? '') as String,

@@ -10,13 +10,17 @@ import 'package:ivoirepedia/src/ui/wiki_actions.dart';
 import 'support/fake_home_api.dart';
 
 /// Comptes en mémoire : ces parcours ne demandent que la connexion et le
-/// profil, sans réseau.
+/// profil, sans réseau. Le rôle décide de l'accès au formulaire.
 class _FakeAuthApi implements AuthApi {
-  static const user = AuthUser(
+  _FakeAuthApi({this.role = 'EDITOR'});
+
+  final String role;
+
+  AuthUser get user => AuthUser(
     id: 'compte-1',
     name: 'Awa Koné',
     email: 'awa@example.test',
-    role: 'EDITOR',
+    role: role,
   );
 
   @override
@@ -24,7 +28,7 @@ class _FakeAuthApi implements AuthApi {
     required String email,
     required String password,
   }) async {
-    return const AuthSession(user: user, token: 'jeton-de-test');
+    return AuthSession(user: user, token: 'jeton-de-test');
   }
 
   @override
@@ -70,6 +74,17 @@ Future<void> tapCreateArticle(WidgetTester tester) async {
   await tester.pumpAndSettle();
 }
 
+/// L'application ouverte avec le compte donné, déjà connecté.
+Future<AuthStore> openSignedIn(WidgetTester tester, String role) async {
+  final store = AuthStore(api: _FakeAuthApi(role: role));
+  await store.signIn(email: 'awa@example.test', password: 'motdepasse123');
+
+  await tester.pumpWidget(IvoirepediaApp(api: FakeApi(), auth: store));
+  await tester.pumpAndSettle();
+
+  return store;
+}
+
 void main() {
   setUp(() {
     SharedPreferences.setMockInitialValues({});
@@ -85,7 +100,10 @@ void main() {
     useWideScreen(tester);
 
     await tester.pumpWidget(
-      IvoirepediaApp(api: FakeApi(), auth: AuthStore(api: _FakeAuthApi())),
+      IvoirepediaApp(
+        api: FakeApi(),
+        auth: AuthStore(api: _FakeAuthApi()),
+      ),
     );
     await tester.pumpAndSettle();
 
@@ -96,13 +114,10 @@ void main() {
     expect(find.byKey(const Key('auth-page')), findsOneWidget);
   });
 
-  testWidgets('un compte connecté ouvre le formulaire éditorial du panneau', (
+  testWidgets('un compte de contributeur ouvre le formulaire éditorial', (
     tester,
   ) async {
     useWideScreen(tester);
-
-    final store = AuthStore(api: _FakeAuthApi());
-    await store.signIn(email: 'awa@example.test', password: 'motdepasse123');
 
     Uri? opened;
     openSiteTab = (url) async {
@@ -111,14 +126,41 @@ void main() {
       return true;
     };
 
-    await tester.pumpWidget(IvoirepediaApp(api: FakeApi(), auth: store));
-    await tester.pumpAndSettle();
-
+    // CONTRIBUTOR est le premier rôle qui écrit : c'est la frontière que le
+    // middleware `editorial` du backend applique aussi.
+    await openSignedIn(tester, 'CONTRIBUTOR');
     await tapCreateArticle(tester);
 
     // Le formulaire vit hors du SPA : l'adresse est celle du site, sur la même
     // origine que l'API, et l'application ne change pas de page.
     expect(opened.toString(), 'http://localhost:8000/admin/articles/nouveau');
     expect(find.byKey(const Key('auth-page')), findsNothing);
+  });
+
+  testWidgets('un compte de lecteur est prévenu, sans être envoyé au panneau', (
+    tester,
+  ) async {
+    useWideScreen(tester);
+
+    Uri? opened;
+    openSiteTab = (url) async {
+      opened = url;
+
+      return true;
+    };
+
+    await openSignedIn(tester, 'READER');
+    await tapCreateArticle(tester);
+
+    // Un lecteur n'a rien à faire dans le panneau : ni formulaire, ni 403.
+    expect(opened, isNull);
+    expect(find.byKey(const Key('auth-page')), findsNothing);
+    expect(
+      find.text(
+        'Écrire est réservé à l’équipe éditoriale. Demandez le statut de '
+        'contributeur depuis la page Contact.',
+      ),
+      findsOneWidget,
+    );
   });
 }

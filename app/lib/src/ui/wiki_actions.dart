@@ -56,11 +56,32 @@ Future<bool> openSiteInSameTab(Uri url) async {
 /// : un test de widget lit ainsi l'adresse visée sans navigateur.
 Future<bool> Function(Uri url) openSiteTab = openSiteInSameTab;
 
-/// « Créer un article » : le formulaire éditorial pour un compte connecté, la
-/// page de connexion de l'application sinon.
+/// « Créer un article » : le formulaire éditorial pour l'équipe de rédaction,
+/// la page de connexion pour un visiteur, et un mot clair pour un lecteur.
+///
+/// Le panneau n'ouvre ses portes qu'aux CONTRIBUTOR et au-dessus : envoyer un
+/// compte de lecteur à `/admin/articles/nouveau` ne le mènerait qu'à un 403.
 Future<void> wikiOpenEditorialForm(BuildContext context) async {
-  if (!AuthScope.of(context).signedIn) {
+  final store = AuthScope.of(context);
+
+  if (!store.signedIn) {
     wikiGo(context, '/connexion');
+
+    return;
+  }
+
+  if (!(store.user?.canContribute ?? false)) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Écrire est réservé à l’équipe éditoriale. Demandez le statut de '
+            'contributeur depuis la page Contact.',
+          ),
+          duration: Duration(seconds: 4),
+        ),
+      );
 
     return;
   }
