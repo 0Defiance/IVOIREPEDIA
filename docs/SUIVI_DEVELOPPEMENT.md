@@ -3062,6 +3062,18 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 121 — 26 novembre 2026 · Erreur rappelée sous le champ fautif
+
+**Ajout** : avec vingt sources possibles, le message du bloc global ne disait pas laquelle corriger. Le formulaire d'article affiche désormais l'erreur sous l'adresse concernée : `@error("references.$index.url")` produit un `span.error` identifié `references-N-url-error`, et `cover_image_source_url` un `span.error` `cover-image-source-url-error`. Le champ fautif reçoit `aria-invalid="true"` et `aria-describedby` vers ce message ; le bloc global est conservé.
+
+**Test** : les deux tests de refus de `AdminContentTest` rechargent le formulaire et vérifient l'identifiant sous le champ et le message. Les erreurs flashées ne traversent pas deux requêtes et la session du bac à sable est sérialisée en JSON : le rechargement reçoit donc le sac d'erreurs dans sa forme d'origine, `withSession(['errors' => ['default' => ['messages' => ['champ' => 'message'], 'format' => ':message']]])`. La forme courte `['errors' => ['champ' => 'message']]` échoue en `Cannot access offset of type string on string` (`Store.php`), et un `ViewErrorBag` injecté ressort vide : `ShareErrorsFromSession` attend un tableau par nom de sac, avec ses `messages`. Le refus lui-même reste vérifié par le vrai POST.
+
+**Vérifié** : `composer test` : 169 tests, 5 698 assertions ; format 164 fichiers ; analyse 76 fichiers sans erreur. Contrôle à l'écran : soumission d'une source en page d'accueil, l'erreur apparaît en tête et sous la bonne ligne.
+
+**Reste** : rien.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

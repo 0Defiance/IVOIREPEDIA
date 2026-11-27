@@ -162,6 +162,19 @@ it('refuse une source qui pointe vers une page d’accueil', function () {
 
     expect(Article::query()->where('title', 'Une source en page d’accueil')->exists())->toBeFalse();
 
+    // L’erreur est aussi rappelée sous l’adresse fautive, pas seulement en tête.
+    // La session du bac à sable est sérialisée en JSON : on redonne au
+    // rechargement la forme exacte que Laravel restaure depuis la session.
+    $this->actingAs($contributor)
+        ->withSession(['errors' => ['default' => [
+            'messages' => ['references.0.url' => 'L’adresse de la source doit pointer vers une page précise, pas vers l’accueil d’un site.'],
+            'format' => ':message',
+        ]]])
+        ->get('/admin/articles/nouveau')
+        ->assertOk()
+        ->assertSee('id="references-0-url-error"', false)
+        ->assertSee('L’adresse de la source doit pointer vers une page précise, pas vers l’accueil d’un site.');
+
     // Une page précise reste acceptée.
     $this->actingAs($contributor)
         ->post('/admin/articles', [
@@ -203,6 +216,17 @@ it('refuse une page source d’image qui pointe vers une page d’accueil', func
         ]);
 
     expect(Article::query()->where('title', 'Une image à l’accueil')->exists())->toBeFalse();
+
+    // L’erreur est rappelée sous la page source de l’image.
+    $this->actingAs($contributor)
+        ->withSession(['errors' => ['default' => [
+            'messages' => ['cover_image_source_url' => 'L’adresse de la page source de l’image doit pointer vers une page précise, pas vers l’accueil d’un site.'],
+            'format' => ':message',
+        ]]])
+        ->get('/admin/articles/nouveau')
+        ->assertOk()
+        ->assertSee('id="cover-image-source-url-error"', false)
+        ->assertSee('L’adresse de la page source de l’image doit pointer vers une page précise, pas vers l’accueil d’un site.');
 
     // La page du fichier, elle, est une page précise : elle passe.
     $this->actingAs($contributor)

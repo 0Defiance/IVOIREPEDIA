@@ -145,10 +145,15 @@
                                value="{{ $row['publisher'] ?? '' }}" placeholder="Éditeur ou institution" aria-label="Éditeur">
                         <input type="number" name="references[{{ $index }}][year]" min="1800" max="2100"
                                value="{{ $row['year'] ?? '' }}" placeholder="Année" aria-label="Année">
+                        @php($urlErrorId = 'references-'.$index.'-url-error')
                         <div class="ref-url">
                             <input type="url" name="references[{{ $index }}][url]" maxlength="500"
-                                   value="{{ $row['url'] ?? '' }}" placeholder="https://…" aria-label="Adresse en ligne">
+                                   value="{{ $row['url'] ?? '' }}" placeholder="https://…" aria-label="Adresse en ligne"
+                                   @if ($errors->has("references.$index.url")) aria-invalid="true" aria-describedby="{{ $urlErrorId }}" @endif>
                             <span class="hint">Une page précise, pas l’accueil d’un site.</span>
+                            @error("references.$index.url")
+                                <span class="error" id="{{ $urlErrorId }}">{{ $message }}</span>
+                            @enderror
                         </div>
                         <button type="button" class="btn ghost small" data-remove-row>Retirer</button>
                     </div>
@@ -190,8 +195,12 @@
                     <label for="cover_image_source_url">Page source de l’image</label>
                     <input id="cover_image_source_url" name="cover_image_source_url" type="url"
                            value="{{ old('cover_image_source_url', $article->cover_image_source_url) }}"
-                           placeholder="https://commons.wikimedia.org/wiki/File:…">
+                           placeholder="https://commons.wikimedia.org/wiki/File:…"
+                           @if ($errors->has('cover_image_source_url')) aria-invalid="true" aria-describedby="cover-image-source-url-error" @endif>
                     <span class="hint">Une page précise, pas l’accueil d’un site.</span>
+                    @error('cover_image_source_url')
+                        <span class="error" id="cover-image-source-url-error">{{ $message }}</span>
+                    @enderror
                 </div>
             </div>
         </div>
