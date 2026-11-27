@@ -51,6 +51,9 @@ jobs:
       - run: flutter pub get
         working-directory: app
 
+      - run: dart format --set-exit-if-changed lib test
+        working-directory: app
+
       - run: flutter analyze
         working-directory: app
 

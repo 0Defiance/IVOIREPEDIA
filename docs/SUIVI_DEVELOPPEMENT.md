@@ -3102,6 +3102,18 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 124 — 27 novembre 2026 · Contrôle de formatage Dart dans la CI
+
+**Constat** : la séance 122 a reformaté 37 fichiers `app/`, mais aucune étape ne vérifiait le formatage — la CI ne lançait que `flutter analyze`, `flutter test` et `flutter build web`. Le décalage pouvait donc revenir sans que rien ne le signale, et se mêler plus tard à une séance sans rapport.
+
+**Fait** : une étape `dart format --set-exit-if-changed lib test` précède `flutter analyze` dans le job `flutter` de `.github/workflows/ci.yml` (même dossier de travail `app`). Elle sort en erreur dès qu'un fichier de `app/lib` ou `app/test` n'est plus la sortie exacte du formateur, sans rien réécrire puisqu'on ne lui demande pas de formater. La commande est ajoutée au bloc de vérification d'`AGENTS.md` §3, avec la marche à suivre en cas d'échec (`dart format lib test`, à committer séparément s'il n'y a que du style), ainsi qu'à la liste de contrôle de `docs/INSTALLATION.md` §7, au canevas CI et à la Definition of Done de `IVOIREPEDIA_CONTEXT.md` (§15.4, §15.5).
+
+**Vérifié** : localement, `dart format --set-exit-if-changed lib test` → « Formatted 66 files (0 changed) », code de sortie 0 (Dart 3.13.5, le SDK de Flutter 3.47.7). Le décompte passe de 65 à 66 fichiers depuis la séance 122 : `app/test/editorial_form_test.dart` s'est ajouté. Le formatage n'étant pas touché, les suites restent celles de la séance 123 (`flutter analyze` sans remarque, 73 tests verts ; backend 170 tests / 5 703 assertions).
+
+**Reste** : rien. Le contrôle ne dit rien du formatage au-delà de `lib` et `test` (ni `integration_test/`, ni les fichiers hors de `app/`), ce qui correspond au périmètre formaté à ce jour.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

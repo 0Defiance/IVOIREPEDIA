@@ -147,6 +147,7 @@ curl http://127.0.0.1:8000/api/v1/health
 
 # 3. Application Flutter
 cd ../app
+dart format --set-exit-if-changed lib test   # aucun fichier à reformater
 flutter analyze          # "No issues found!"
 flutter test             # écran d'accueil : 1 test vert
 ```

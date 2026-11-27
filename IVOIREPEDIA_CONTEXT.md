@@ -1010,6 +1010,8 @@ jobs:
           cache: true
       - run: flutter pub get
         working-directory: app
+      - run: dart format --set-exit-if-changed lib test
+        working-directory: app
       - run: flutter analyze
         working-directory: app
       - run: flutter test
@@ -1024,7 +1026,7 @@ jobs:
 - [ ] Le comportement correspond à l'exigence `EF-*` citée
 - [ ] Entrées validées (`FormRequest`) et permissions vérifiées côté serveur (Services/Policies)
 - [ ] Tests ajoutés pour la logique métier touchée (Pest ou flutter_test selon la couche)
-- [ ] `composer test`, `composer format:check`, `composer analyse`, `flutter analyze`, `flutter test` passent en local et en CI
+- [ ] `composer test`, `composer format:check`, `composer analyse`, `dart format --set-exit-if-changed lib test`, `flutter analyze`, `flutter test` passent en local et en CI
 - [ ] Aucun secret ni donnée personnelle dans le code ou les logs
 - [ ] Textes d'interface en français, accessibles (alt, labels, contraste)
 - [ ] Ce fichier et/ou un ADR mis à jour si une décision a changé

@@ -29,8 +29,10 @@ Mêmes commandes que la CI prévue (CONTEXT §15.4), à exécuter avant chaque c
 
 ```bash
 cd backend && composer test && composer format:check && composer analyse
-cd app && flutter analyze && flutter test
+cd app && dart format --set-exit-if-changed lib test && flutter analyze && flutter test
 ```
+
+`dart format --set-exit-if-changed lib test` échoue dès qu'un fichier de `app/lib` ou `app/test` n'est pas à la sortie exacte du formateur du SDK : c'est ce contrôle qui empêche une dérive de formatage de s'installer (séance 122). Le corriger se fait par `cd app && dart format lib test`, à committer séparément si le reformatage ne touche que du style.
 
 *Ces commandes deviennent exécutables au Sprint 0, quand `backend/` et `app/` sont initialisés. En attendant, un commit de documentation reste possible, mais reste soumis aux deux règles ci-dessous.*
 
