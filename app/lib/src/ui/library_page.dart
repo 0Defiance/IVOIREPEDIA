@@ -30,7 +30,11 @@ class LibraryPage extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               'Ma bibliothèque',
-              style: titleStyle(size: 30, weight: FontWeight.w600, color: tone.ink),
+              style: titleStyle(
+                size: 30,
+                weight: FontWeight.w600,
+                color: tone.ink,
+              ),
             ),
             const SizedBox(height: 10),
             Text(
@@ -48,7 +52,8 @@ class LibraryPage extends StatelessWidget {
 
                 final favorites = _EntryList(
                   title: 'Favoris',
-                  empty: 'Aucun favori pour le moment. Utilisez « Garder » en '
+                  empty:
+                      'Aucun favori pour le moment. Utilisez « Garder » en '
                       'haut d’un article.',
                   listenable: storage.favorites,
                   onClear: null,
@@ -113,7 +118,11 @@ class _EntryList extends StatelessWidget {
                 Expanded(
                   child: Text(
                     title,
-                    style: titleStyle(size: 17, weight: FontWeight.w600, color: tone.ink),
+                    style: titleStyle(
+                      size: 17,
+                      weight: FontWeight.w600,
+                      color: tone.ink,
+                    ),
                   ),
                 ),
                 if (onClear != null && entries.isNotEmpty)
@@ -133,7 +142,11 @@ class _EntryList extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 child: Text(
                   empty,
-                  style: TextStyle(fontSize: 13, height: 1.6, color: tone.faint),
+                  style: TextStyle(
+                    fontSize: 13,
+                    height: 1.6,
+                    color: tone.faint,
+                  ),
                 ),
               ),
             for (final entry in entries) _EntryRow(entry: entry),
@@ -160,7 +173,11 @@ class _EntryRow extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
         child: Row(
           children: [
-            const Icon(Icons.article_outlined, size: 15, color: IvoireColors.green),
+            const Icon(
+              Icons.article_outlined,
+              size: 15,
+              color: IvoireColors.green,
+            ),
             const SizedBox(width: 10),
             Expanded(
               child: Column(

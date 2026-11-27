@@ -27,8 +27,9 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  late final TextEditingController _controller =
-      TextEditingController(text: widget.query);
+  late final TextEditingController _controller = TextEditingController(
+    text: widget.query,
+  );
   final FocusNode _focus = FocusNode();
   Timer? _debounce;
   Timer? _suggestDebounce;
@@ -143,7 +144,8 @@ class _SearchPageState extends State<SearchPage> {
             const PageHeader(
               kicker: 'RECHERCHER DANS L’ENCYCLOPÉDIE',
               title: 'Recherche',
-              intro: 'Un nom, un lieu, une langue, un plat : tapez quelques '
+              intro:
+                  'Un nom, un lieu, une langue, un plat : tapez quelques '
                   'lettres, les articles arrivent au fil de la frappe.',
             ),
             const SizedBox(height: 18),
@@ -204,8 +206,10 @@ class _SearchPageState extends State<SearchPage> {
                   future: _future,
                   builder: (context, snapshot) {
                     if (snapshot.hasError) {
-                      return Text('${snapshot.error}',
-                          style: const TextStyle(fontSize: 14));
+                      return Text(
+                        '${snapshot.error}',
+                        style: const TextStyle(fontSize: 14),
+                      );
                     }
 
                     if (!snapshot.hasData) {
@@ -239,10 +243,13 @@ class _SearchPageState extends State<SearchPage> {
                         Text(
                           'Résultats 1 à ${page.items.length} sur ${page.total} pour « $_term »',
                           style: const TextStyle(
-                              fontSize: 12.5, color: IvoireColors.muted),
+                            fontSize: 12.5,
+                            color: IvoireColors.muted,
+                          ),
                         ),
                         const SizedBox(height: 16),
-                        for (final article in page.items) _Result(article: article),
+                        for (final article in page.items)
+                          _Result(article: article),
                       ],
                     );
                   },
@@ -294,13 +301,20 @@ class _Suggestions extends StatelessWidget {
                 behavior: HitTestBehavior.opaque,
                 child: Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 9,
+                  ),
                   decoration: BoxDecoration(
                     border: Border(top: BorderSide(color: tone.lineSoft)),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.search, size: 14, color: IvoireColors.green),
+                      const Icon(
+                        Icons.search,
+                        size: 14,
+                        color: IvoireColors.green,
+                      ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
@@ -361,8 +375,10 @@ class _EmptyState extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Text('Recherches récentes',
-                        style: titleStyle(size: 14, weight: FontWeight.w600)),
+                    Text(
+                      'Recherches récentes',
+                      style: titleStyle(size: 14, weight: FontWeight.w600),
+                    ),
                     const SizedBox(width: 10),
                     HoverLink(
                       label: 'effacer',
@@ -382,14 +398,18 @@ class _EmptyState extends StatelessWidget {
                         onTap: () => onSubmit(term),
                         child: Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 5),
+                            horizontal: 10,
+                            vertical: 5,
+                          ),
                           decoration: BoxDecoration(
                             color: IvoireColors.subtle,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(color: IvoireColors.lineSoft),
                           ),
-                          child: Text(term,
-                              style: const TextStyle(fontSize: 12.5)),
+                          child: Text(
+                            term,
+                            style: const TextStyle(fontSize: 12.5),
+                          ),
                         ),
                       ),
                   ],
@@ -399,7 +419,10 @@ class _EmptyState extends StatelessWidget {
             );
           },
         ),
-        Text('Quelques sujets :', style: titleStyle(size: 14, weight: FontWeight.w600)),
+        Text(
+          'Quelques sujets :',
+          style: titleStyle(size: 14, weight: FontWeight.w600),
+        ),
         const SizedBox(height: 8),
         Wrap(
           spacing: 16,

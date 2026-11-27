@@ -10,9 +10,8 @@ void main() {
   tearDown(() => ivoireMotionEnabled = true);
 
   Finder motifPainter() => find.byWidgetPredicate(
-        (widget) =>
-            widget is CustomPaint && widget.painter is IvorianMotifPainter,
-      );
+    (widget) => widget is CustomPaint && widget.painter is IvorianMotifPainter,
+  );
 
   IvorianMotifPainter painterOf(WidgetTester tester) =>
       tester.widget<CustomPaint>(motifPainter()).painter!
@@ -20,9 +19,7 @@ void main() {
 
   testWidgets('le pagne est peint derrière le contenu', (tester) async {
     await tester.pumpWidget(
-      const MaterialApp(
-        home: IvorianBackdrop(child: Text('contenu')),
-      ),
+      const MaterialApp(home: IvorianBackdrop(child: Text('contenu'))),
     );
     await tester.pump();
 
@@ -43,9 +40,7 @@ void main() {
 
   testWidgets('les motifs réagissent au pointeur', (tester) async {
     await tester.pumpWidget(
-      const MaterialApp(
-        home: IvorianBackdrop(child: SizedBox.expand()),
-      ),
+      const MaterialApp(home: IvorianBackdrop(child: SizedBox.expand())),
     );
     await tester.pump();
 

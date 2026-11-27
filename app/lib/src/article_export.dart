@@ -66,8 +66,7 @@ Future<Uint8List> buildArticlePdf(
     PdfColor color = _ink,
     bool bold = false,
     double lineSpacing = 3.6,
-  }) =>
-      text(size: size, color: color, bold: bold, lineSpacing: lineSpacing);
+  }) => text(size: size, color: color, bold: bold, lineSpacing: lineSpacing);
 
   document.addPage(
     pw.MultiPage(
@@ -99,7 +98,8 @@ Future<Uint8List> buildArticlePdf(
         // Repères éditoriaux : domaine et type, comme sur la page.
         pw.Text(
           [
-            if (article.categoryName != null) article.categoryName!.toUpperCase(),
+            if (article.categoryName != null)
+              article.categoryName!.toUpperCase(),
             article.typeLabel.toUpperCase(),
           ].join('  ·  '),
           style: pw.TextStyle(
@@ -167,8 +167,10 @@ Future<Uint8List> buildArticlePdf(
         pw.SizedBox(height: 7),
         pw.Text(
           [
-            if (article.categoryName != null) 'Domaine : ${article.categoryName}',
-            if (article.tags.isNotEmpty) 'Catégories : ${article.tags.join(', ')}',
+            if (article.categoryName != null)
+              'Domaine : ${article.categoryName}',
+            if (article.tags.isNotEmpty)
+              'Catégories : ${article.tags.join(', ')}',
           ].join('\n'),
           style: style(size: 8.5, color: _muted, lineSpacing: 1.5),
         ),
@@ -197,13 +199,12 @@ class _PdfText {
     PdfColor color = _ink,
     bool bold = false,
     double lineSpacing = 3.6,
-  }) =>
-      pw.TextStyle(
-        font: bold ? fonts.bold : fonts.regular,
-        fontSize: size,
-        color: color,
-        lineSpacing: lineSpacing,
-      );
+  }) => pw.TextStyle(
+    font: bold ? fonts.bold : fonts.regular,
+    fontSize: size,
+    color: color,
+    lineSpacing: lineSpacing,
+  );
 }
 
 List<pw.Widget> _pdfBlocks(List<ArticleBlock> blocks, _PdfText text) {
@@ -257,39 +258,38 @@ List<pw.Widget> _pdfBlocks(List<ArticleBlock> blocks, _PdfText text) {
 }
 
 pw.Widget _pdfHeading(String text, _PdfText style) => pw.Padding(
-      padding: const pw.EdgeInsets.only(top: 10, bottom: 8),
-      child: pw.Column(
-        crossAxisAlignment: pw.CrossAxisAlignment.start,
-        children: [
-          pw.Text(
-            text,
-            style: pw.TextStyle(
-              font: style(bold: true).font,
-              fontSize: 13.5,
-              color: _ink,
-              lineSpacing: 2,
-            ),
-          ),
-          pw.SizedBox(height: 4),
-          pw.Container(height: 0.5, color: _rule),
-        ],
+  padding: const pw.EdgeInsets.only(top: 10, bottom: 8),
+  child: pw.Column(
+    crossAxisAlignment: pw.CrossAxisAlignment.start,
+    children: [
+      pw.Text(
+        text,
+        style: pw.TextStyle(
+          font: style(bold: true).font,
+          fontSize: 13.5,
+          color: _ink,
+          lineSpacing: 2,
+        ),
       ),
-    );
+      pw.SizedBox(height: 4),
+      pw.Container(height: 0.5, color: _rule),
+    ],
+  ),
+);
 
-pw.Widget _pdfListRow(String marker, String text, _PdfText style) =>
-    pw.Padding(
-      padding: const pw.EdgeInsets.only(bottom: 4),
-      child: pw.Row(
-        crossAxisAlignment: pw.CrossAxisAlignment.start,
-        children: [
-          pw.SizedBox(
-            width: 16,
-            child: pw.Text(marker, style: style(color: _muted)),
-          ),
-          pw.Expanded(child: pw.Text(text, style: style())),
-        ],
+pw.Widget _pdfListRow(String marker, String text, _PdfText style) => pw.Padding(
+  padding: const pw.EdgeInsets.only(bottom: 4),
+  child: pw.Row(
+    crossAxisAlignment: pw.CrossAxisAlignment.start,
+    children: [
+      pw.SizedBox(
+        width: 16,
+        child: pw.Text(marker, style: style(color: _muted)),
       ),
-    );
+      pw.Expanded(child: pw.Text(text, style: style())),
+    ],
+  ),
+);
 
 String _formatDate(DateTime date) {
   const months = [

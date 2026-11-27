@@ -223,7 +223,10 @@ class _StoryCardState extends State<_StoryCard> {
                 children: [
                   for (final figure in story.figures)
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 7,
+                      ),
                       decoration: BoxDecoration(
                         color: IvoireColors.subtle,
                         borderRadius: BorderRadius.circular(7),
@@ -295,8 +298,10 @@ class _StoryCardState extends State<_StoryCard> {
                         Text(
                           [
                             story.source.title,
-                            if (story.source.publisher != null) story.source.publisher!,
-                            if (story.source.year != null) '${story.source.year}',
+                            if (story.source.publisher != null)
+                              story.source.publisher!,
+                            if (story.source.year != null)
+                              '${story.source.year}',
                           ].join(' · '),
                           style: const TextStyle(
                             fontSize: 11.5,

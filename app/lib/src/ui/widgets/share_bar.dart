@@ -18,10 +18,30 @@ String shareUrl(String articleUrl, {String? section}) {
 /// fragments d'URL habituels (`#histoire`).
 String sectionAnchor(String title) {
   const accents = {
-    'à': 'a', 'â': 'a', 'ä': 'a', 'á': 'a', 'ã': 'a',
-    'ç': 'c', 'é': 'e', 'è': 'e', 'ê': 'e', 'ë': 'e',
-    'î': 'i', 'ï': 'i', 'í': 'i', 'ô': 'o', 'ö': 'o', 'ó': 'o', 'õ': 'o',
-    'ù': 'u', 'û': 'u', 'ü': 'u', 'ú': 'u', 'ÿ': 'y', 'ñ': 'n', 'œ': 'oe',
+    'à': 'a',
+    'â': 'a',
+    'ä': 'a',
+    'á': 'a',
+    'ã': 'a',
+    'ç': 'c',
+    'é': 'e',
+    'è': 'e',
+    'ê': 'e',
+    'ë': 'e',
+    'î': 'i',
+    'ï': 'i',
+    'í': 'i',
+    'ô': 'o',
+    'ö': 'o',
+    'ó': 'o',
+    'õ': 'o',
+    'ù': 'u',
+    'û': 'u',
+    'ü': 'u',
+    'ú': 'u',
+    'ÿ': 'y',
+    'ñ': 'n',
+    'œ': 'oe',
   };
 
   final buffer = StringBuffer();
@@ -62,7 +82,10 @@ Map<String, String> shareLinks(String url, String title) {
 /// Ouvre un lien hors de l'application ; renvoie faux si le navigateur refuse.
 Future<bool> openExternal(String url) async {
   try {
-    return await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    return await launchUrl(
+      Uri.parse(url),
+      mode: LaunchMode.externalApplication,
+    );
   } catch (_) {
     return false;
   }
@@ -101,10 +124,7 @@ class ShareBar extends StatelessWidget {
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         if (!compact)
-          Text(
-            'Partager :',
-            style: TextStyle(fontSize: 12, color: tone.muted),
-          ),
+          Text('Partager :', style: TextStyle(fontSize: 12, color: tone.muted)),
         for (final entry in links.entries)
           _SharePill(
             label: entry.key,

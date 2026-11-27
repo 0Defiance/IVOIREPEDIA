@@ -30,7 +30,10 @@ const _article = ArticleDetail(
   contentOps: [
     {'insert': 'Abidjan s’étend sur plusieurs communes.\n'},
     {'insert': 'Une population publiée au recensement.[1]\n'},
-    {'insert': 'Histoire\n', 'attributes': {'header': 2}},
+    {
+      'insert': 'Histoire\n',
+      'attributes': {'header': 2},
+    },
     {'insert': 'La ville devient capitale en 1934.\n'},
   ],
   references: [
@@ -52,71 +55,75 @@ class _DiscoveryApi extends FakeIvoirepediaApi {
 
   @override
   Future<List<TimelineEvent>> fetchTimeline() async => const [
-        TimelineEvent(
-          slug: 'indenie-abengourou',
-          year: 1701,
-          era: 'Avant 1800',
-          title: 'Abengourou, fondée par un chef qui cherchait la paix',
-          teaser: 'Les Agni Ndénian viennent du royaume d’Aowin.',
-          period: '1701-1870',
-        ),
-        TimelineEvent(
-          slug: 'samory-guelemou-1898',
-          year: 1898,
-          era: 'XIXe siècle',
-          title: 'La capture sans un coup de feu',
-          teaser: 'Samory Touré est pris à Guélémou.',
-          period: '29 septembre 1898',
-        ),
-      ];
+    TimelineEvent(
+      slug: 'indenie-abengourou',
+      year: 1701,
+      era: 'Avant 1800',
+      title: 'Abengourou, fondée par un chef qui cherchait la paix',
+      teaser: 'Les Agni Ndénian viennent du royaume d’Aowin.',
+      period: '1701-1870',
+    ),
+    TimelineEvent(
+      slug: 'samory-guelemou-1898',
+      year: 1898,
+      era: 'XIXe siècle',
+      title: 'La capture sans un coup de feu',
+      teaser: 'Samory Touré est pris à Guélémou.',
+      period: '29 septembre 1898',
+    ),
+  ];
 
   @override
   Future<PlaceDirectory> fetchPlaces() async => const PlaceDirectory(
-        districts: [PlaceChild(name: 'Abidjan', slug: 'abidjan', population: 6321017)],
-        regions: [PlaceChild(name: 'Lagunes', slug: 'lagunes', population: 2042623)],
-        cities: [PlaceChild(name: 'Bouaké', slug: 'bouake', population: 832371)],
-      );
+    districts: [
+      PlaceChild(name: 'Abidjan', slug: 'abidjan', population: 6321017),
+    ],
+    regions: [
+      PlaceChild(name: 'Lagunes', slug: 'lagunes', population: 2042623),
+    ],
+    cities: [PlaceChild(name: 'Bouaké', slug: 'bouake', population: 832371)],
+  );
 
   @override
   Future<PlaceDetail> fetchPlace(String slug) async => const PlaceDetail(
-        slug: 'abidjan',
-        name: 'Abidjan',
+    slug: 'abidjan',
+    name: 'Abidjan',
+    level: 'district',
+    entries: [
+      PlaceEntry(
         level: 'district',
-        entries: [
-          PlaceEntry(
-            level: 'district',
-            label: 'District',
-            population: 6321017,
-            households: 1414136,
-            averageSize: 4.5,
-          ),
-        ],
-        climate: PlaceClimate(
-          annualRainMm: 1851.5,
-          wettestMonth: 6,
-          wettestMonthRainMm: 253.2,
-          averageTemperatureC: 26.4,
-          periodStart: 1991,
-          periodEnd: 2020,
-          sourceLicence: 'CC BY 4.0',
-        ),
-        articles: [
-          ArticleSummary(
-            slug: 'abidjan',
-            title: 'Abidjan',
-            summary: 'La capitale économique.',
-            typeLabel: 'Ville',
-          ),
-        ],
-      );
+        label: 'District',
+        population: 6321017,
+        households: 1414136,
+        averageSize: 4.5,
+      ),
+    ],
+    climate: PlaceClimate(
+      annualRainMm: 1851.5,
+      wettestMonth: 6,
+      wettestMonthRainMm: 253.2,
+      averageTemperatureC: 26.4,
+      periodStart: 1991,
+      periodEnd: 2020,
+      sourceLicence: 'CC BY 4.0',
+    ),
+    articles: [
+      ArticleSummary(
+        slug: 'abidjan',
+        title: 'Abidjan',
+        summary: 'La capitale économique.',
+        typeLabel: 'Ville',
+      ),
+    ],
+  );
 
   @override
   Future<ArticleDetail> fetchArticle(String slug) async => _article;
 
   @override
   Future<List<SearchSuggestion>> suggest(String query) async => const [
-        SearchSuggestion(slug: 'abidjan', title: 'Abidjan', category: 'Villes'),
-      ];
+    SearchSuggestion(slug: 'abidjan', title: 'Abidjan', category: 'Villes'),
+  ];
 }
 
 void main() {
@@ -125,7 +132,9 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  testWidgets('la frise affiche les jalons et ouvre le récit choisi', (tester) async {
+  testWidgets('la frise affiche les jalons et ouvre le récit choisi', (
+    tester,
+  ) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(1280, 1600);
     addTearDown(tester.view.reset);
@@ -139,14 +148,13 @@ void main() {
     expect(find.text('La frise du temps'), findsWidgets);
     expect(find.text('1701'), findsOneWidget);
     expect(find.text('XIXe siècle'.toUpperCase()), findsOneWidget);
-    expect(
-      find.text('La capture sans un coup de feu'),
-      findsOneWidget,
-    );
+    expect(find.text('La capture sans un coup de feu'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('l’annuaire mène à une fiche de lieu avec son climat', (tester) async {
+  testWidgets('l’annuaire mène à une fiche de lieu avec son climat', (
+    tester,
+  ) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(1280, 1600);
     addTearDown(tester.view.reset);
@@ -170,14 +178,18 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('la recherche propose des suggestions et garde l’historique', (tester) async {
+  testWidgets('la recherche propose des suggestions et garde l’historique', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       AuthScope(
         store: AuthStore(),
         child: ApiScope(
           api: _DiscoveryApi(),
-          child:
-              MaterialApp(theme: buildIvoireTheme(), home: const SearchPage()),
+          child: MaterialApp(
+            theme: buildIvoireTheme(),
+            home: const SearchPage(),
+          ),
         ),
       ),
     );
@@ -192,46 +204,60 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('un appel de note renvoie vers la référence, et l’article se garde', (tester) async {
-    tester.view.devicePixelRatio = 1;
-    tester.view.physicalSize = const Size(1280, 1600);
-    addTearDown(tester.view.reset);
+  testWidgets(
+    'un appel de note renvoie vers la référence, et l’article se garde',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(1280, 1600);
+      addTearDown(tester.view.reset);
 
-    await tester.pumpWidget(
-      AuthScope(
-        store: AuthStore(),
-        child: ApiScope(
-          api: _DiscoveryApi(),
-          child: MaterialApp(
-            theme: buildIvoireTheme(),
-            home: const ArticlePage(slug: 'abidjan'),
+      await tester.pumpWidget(
+        AuthScope(
+          store: AuthStore(),
+          child: ApiScope(
+            api: _DiscoveryApi(),
+            child: MaterialApp(
+              theme: buildIvoireTheme(),
+              home: const ArticlePage(slug: 'abidjan'),
+            ),
           ),
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
+      );
+      await tester.pumpAndSettle();
 
-    expect(find.text('Notes et références'), findsOneWidget);
-    expect(find.text('RGPH 2021, résultats globaux'), findsNothing);
-    expect(find.textContaining('RGPH 2021, résultats globaux'), findsOneWidget);
+      expect(find.text('Notes et références'), findsOneWidget);
+      expect(find.text('RGPH 2021, résultats globaux'), findsNothing);
+      expect(
+        find.textContaining('RGPH 2021, résultats globaux'),
+        findsOneWidget,
+      );
 
-    await tester.tap(find.text('Garder').first);
-    await tester.pumpAndSettle();
+      await tester.tap(find.text('Garder').first);
+      await tester.pumpAndSettle();
 
-    expect(AppStorage.instance.favorites.value.map((e) => e.slug), contains('abidjan'));
-    expect(find.text('Gardé'), findsOneWidget);
-    expect(tester.takeException(), isNull);
-  });
+      expect(
+        AppStorage.instance.favorites.value.map((e) => e.slug),
+        contains('abidjan'),
+      );
+      expect(find.text('Gardé'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   test('les URL de partage sont propres et pointent la section', () {
     expect(articleUrl('abidjan'), '$kSiteUrl/articles/abidjan');
-    expect(shareUrl(articleUrl('abidjan'), section: 'Le café et le cacao'),
-        '$kSiteUrl/articles/abidjan#le-cafe-et-le-cacao');
+    expect(
+      shareUrl(articleUrl('abidjan'), section: 'Le café et le cacao'),
+      '$kSiteUrl/articles/abidjan#le-cafe-et-le-cacao',
+    );
 
     final links = shareLinks(articleUrl('abidjan'), 'Abidjan');
 
     expect(links.keys, containsAll(['WhatsApp', 'X', 'Facebook', 'LinkedIn']));
     expect(links['WhatsApp'], contains('wa.me'));
-    expect(links['WhatsApp'], contains(Uri.encodeComponent(articleUrl('abidjan'))));
+    expect(
+      links['WhatsApp'],
+      contains(Uri.encodeComponent(articleUrl('abidjan'))),
+    );
   });
 }

@@ -116,8 +116,10 @@ class _CategoryPageState extends State<CategoryPage> {
             if (category == null) {
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 50),
-                child: Text('Cette catégorie n’existe pas.',
-                    style: titleStyle(size: 24)),
+                child: Text(
+                  'Cette catégorie n’existe pas.',
+                  style: titleStyle(size: 24),
+                ),
               );
             }
 
@@ -145,7 +147,10 @@ class _CategoryPageState extends State<CategoryPage> {
                 const SizedBox(height: 10),
                 Text(
                   '${category.articleCount} page${category.articleCount > 1 ? 's' : ''} dans cette catégorie.',
-                  style: const TextStyle(fontSize: 12, color: IvoireColors.faint),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: IvoireColors.faint,
+                  ),
                 ),
                 if (category.children.isNotEmpty) ...[
                   const SizedBox(height: 22),
@@ -155,16 +160,25 @@ class _CategoryPageState extends State<CategoryPage> {
                       padding: const EdgeInsets.only(bottom: 6),
                       child: Row(
                         children: [
-                          const Icon(Icons.chevron_right, size: 14, color: IvoireColors.faint),
+                          const Icon(
+                            Icons.chevron_right,
+                            size: 14,
+                            color: IvoireColors.faint,
+                          ),
                           HoverLink(
                             label: child.name,
-                            onTap: () => wikiGo(context, '/categories/${child.slug}'),
+                            onTap: () =>
+                                wikiGo(context, '/categories/${child.slug}'),
                             style: const TextStyle(fontSize: 14),
                           ),
                           const SizedBox(width: 6),
-                          Text('(${child.articleCount})',
-                              style: const TextStyle(
-                                  fontSize: 12, color: IvoireColors.muted)),
+                          Text(
+                            '(${child.articleCount})',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: IvoireColors.muted,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -172,8 +186,10 @@ class _CategoryPageState extends State<CategoryPage> {
                 const SizedBox(height: 22),
                 _Heading('Pages dans la catégorie'),
                 if (_loaded.isEmpty)
-                  const Text('Aucune page publiée pour le moment.',
-                      style: TextStyle(fontSize: 14))
+                  const Text(
+                    'Aucune page publiée pour le moment.',
+                    style: TextStyle(fontSize: 14),
+                  )
                 else
                   for (final article in _loaded)
                     Padding(
@@ -250,9 +266,7 @@ class _Heading extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SectionHeading(title: label),
-        ],
+        children: [SectionHeading(title: label)],
       ),
     );
   }

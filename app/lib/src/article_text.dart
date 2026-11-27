@@ -102,9 +102,9 @@ List<ArticleBlock> articleBlocks(List<Map<String, dynamic>> ops) {
 
 /// Titres de sections, dans l'ordre d'apparition.
 List<String> articleSections(List<ArticleBlock> blocks) => [
-      for (final block in blocks)
-        if (block.isHeading) block.text,
-    ];
+  for (final block in blocks)
+    if (block.isHeading) block.text,
+];
 
 /// Blocs d'une seule section, titre exclu, jusqu'au titre suivant.
 List<ArticleBlock> sectionBlocks(List<ArticleBlock> blocks, String heading) {
@@ -133,7 +133,10 @@ int articleWordCount(List<Map<String, dynamic>> ops) {
   var words = 0;
 
   for (final block in articleBlocks(ops)) {
-    words += block.text.split(RegExp(r'\s+')).where((word) => word.isNotEmpty).length;
+    words += block.text
+        .split(RegExp(r'\s+'))
+        .where((word) => word.isNotEmpty)
+        .length;
   }
 
   return words;
@@ -159,7 +162,9 @@ String articleAsText(ArticleDetail article) {
       ..writeln('Notes et références')
       ..writeln();
     for (final reference in article.references) {
-      buffer.writeln('${reference.position}. ${articleReferenceLine(reference)}');
+      buffer.writeln(
+        '${reference.position}. ${articleReferenceLine(reference)}',
+      );
     }
     buffer.writeln();
   }
@@ -230,12 +235,12 @@ String _blocksAsText(List<ArticleBlock> blocks) {
 }
 
 String articleReferenceLine(ArticleReference reference) => [
-      if (reference.authors != null) reference.authors!,
-      reference.title,
-      if (reference.publisher != null) reference.publisher!,
-      if (reference.year != null) '${reference.year}',
-      if (reference.url != null) reference.url!,
-    ].join(', ');
+  if (reference.authors != null) reference.authors!,
+  reference.title,
+  if (reference.publisher != null) reference.publisher!,
+  if (reference.year != null) '${reference.year}',
+  if (reference.url != null) reference.url!,
+].join(', ');
 
 String _sourceLine(ArticleDetail article) =>
     'Source : Ivoirepedia, l’encyclopédie libre de la Côte d’Ivoire — '

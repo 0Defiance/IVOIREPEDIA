@@ -165,10 +165,7 @@ class _IvorianBackdropState extends State<IvorianBackdrop> {
                 child: AnimatedBuilder(
                   animation: _drift,
                   builder: (context, child) => Transform.translate(
-                    offset: Offset(
-                      0,
-                      math.sin(_drift.value * 2 * math.pi) * 8,
-                    ),
+                    offset: Offset(0, math.sin(_drift.value * 2 * math.pi) * 8),
                     child: child,
                   ),
                   child: const Opacity(
@@ -222,13 +219,17 @@ class IvorianMotifPainter extends CustomPainter {
     // Chaque maille reçoit un motif du répertoire, choisi de façon stable
     // (même colonne, même rangée, même motif à chaque rendu).
     var column = 0;
-    for (double x = drift % kBandWidth - kBandWidth;
-        x < size.width + kBandWidth;
-        x += kBandWidth, column++) {
+    for (
+      double x = drift % kBandWidth - kBandWidth;
+      x < size.width + kBandWidth;
+      x += kBandWidth, column++
+    ) {
       var row = math.max(0, ((drift * 0.15) / kCellHeight).floor() - 1);
-      for (double y = drift * 0.15 - row * kCellHeight - kCellHeight;
-          y < size.height + kCellHeight;
-          y += kCellHeight, row++) {
+      for (
+        double y = drift * 0.15 - row * kCellHeight - kCellHeight;
+        y < size.height + kCellHeight;
+        y += kCellHeight, row++
+      ) {
         final center = Offset(
           x + kBandWidth / 2 + parallax.dx,
           y + kCellHeight / 2 + parallax.dy,
@@ -259,9 +260,11 @@ class IvorianMotifPainter extends CustomPainter {
       ..color = IvoireColors.ink.withValues(alpha: 0.014)
       ..strokeWidth = 0.8;
 
-    for (double x = drift % kBandWidth - kBandWidth;
-        x < size.width + kBandWidth;
-        x += kBandWidth) {
+    for (
+      double x = drift % kBandWidth - kBandWidth;
+      x < size.width + kBandWidth;
+      x += kBandWidth
+    ) {
       final seamX = x + parallax.dx;
       canvas.drawLine(Offset(seamX, 0), Offset(seamX, size.height), seam);
     }

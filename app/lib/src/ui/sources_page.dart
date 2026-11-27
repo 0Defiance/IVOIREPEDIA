@@ -175,18 +175,12 @@ class _Counters extends StatelessWidget {
       spacing: 30,
       runSpacing: 12,
       children: [
-        _Counter(
-          value: '${library.institutionCount}',
-          label: 'institutions',
-        ),
+        _Counter(value: '${library.institutionCount}', label: 'institutions'),
         _Counter(
           value: '${library.referenceCount}',
           label: 'références distinctes',
         ),
-        _Counter(
-          value: '${library.articleCount}',
-          label: 'articles sourcés',
-        ),
+        _Counter(value: '${library.articleCount}', label: 'articles sourcés'),
       ],
     );
   }
@@ -273,7 +267,10 @@ class _InstitutionCard extends StatelessWidget {
                   institution.count == 1
                       ? '1 référence'
                       : '${institution.count} références',
-                  style: const TextStyle(fontSize: 11, color: IvoireColors.muted),
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: IvoireColors.muted,
+                  ),
                 ),
               ),
             ],
@@ -317,7 +314,9 @@ class _ReferenceRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      key: highlightKey ?? ValueKey('source-ref-${reference.id ?? reference.title}'),
+      key:
+          highlightKey ??
+          ValueKey('source-ref-${reference.id ?? reference.title}'),
       margin: const EdgeInsets.only(bottom: 10),
       padding: highlighted
           ? const EdgeInsets.fromLTRB(8, 8, 4, 6)

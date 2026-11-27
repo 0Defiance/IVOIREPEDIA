@@ -22,7 +22,11 @@ class DisplayPrefs {
 
   bool get isNight => tone == ReadingTone.night;
 
-  DisplayPrefs copyWith({ReadingTone? tone, double? textScale, bool? readingMode}) {
+  DisplayPrefs copyWith({
+    ReadingTone? tone,
+    double? textScale,
+    bool? readingMode,
+  }) {
     return DisplayPrefs(
       tone: tone ?? this.tone,
       textScale: textScale ?? this.textScale,
@@ -31,10 +35,10 @@ class DisplayPrefs {
   }
 
   Map<String, dynamic> toJson() => {
-        'tone': tone.name,
-        'scale': textScale,
-        'reading': readingMode,
-      };
+    'tone': tone.name,
+    'scale': textScale,
+    'reading': readingMode,
+  };
 
   factory DisplayPrefs.fromJson(Map<String, dynamic> json) {
     final tone = ReadingTone.values.firstWhere(
@@ -66,11 +70,11 @@ class LibraryEntry {
   final DateTime? at;
 
   Map<String, dynamic> toJson() => {
-        'slug': slug,
-        'title': title,
-        if (category != null) 'category': category,
-        if (at != null) 'at': at!.millisecondsSinceEpoch,
-      };
+    'slug': slug,
+    'title': title,
+    if (category != null) 'category': category,
+    if (at != null) 'at': at!.millisecondsSinceEpoch,
+  };
 
   factory LibraryEntry.fromJson(Map<String, dynamic> json) {
     final at = (json['at'] as num?)?.toInt();
@@ -106,7 +110,9 @@ class AppStorage {
   final ValueNotifier<List<LibraryEntry>> favorites = ValueNotifier(const []);
   final ValueNotifier<List<LibraryEntry>> recent = ValueNotifier(const []);
   final ValueNotifier<List<String>> searchHistory = ValueNotifier(const []);
-  final ValueNotifier<DisplayPrefs> display = ValueNotifier(const DisplayPrefs());
+  final ValueNotifier<DisplayPrefs> display = ValueNotifier(
+    const DisplayPrefs(),
+  );
 
   SharedPreferences? _prefs;
   bool _loaded = false;

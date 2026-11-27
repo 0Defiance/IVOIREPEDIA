@@ -69,10 +69,7 @@ abstract interface class AuthApi {
     required String password,
   });
 
-  Future<AuthSession> login({
-    required String email,
-    required String password,
-  });
+  Future<AuthSession> login({required String email, required String password});
 
   Future<AuthUser> me(String token);
 
@@ -93,8 +90,8 @@ abstract interface class AuthApi {
 /// Client HTTP des routes `/api/v1/auth`.
 class HttpAuthApi implements AuthApi {
   HttpAuthApi({http.Client? client, String? baseUrl})
-      : _client = client ?? http.Client(),
-        _baseUrl = baseUrl ?? apiBaseUrl;
+    : _client = client ?? http.Client(),
+      _baseUrl = baseUrl ?? apiBaseUrl;
 
   final http.Client _client;
   final String _baseUrl;
@@ -411,11 +408,14 @@ class AuthStore extends ChangeNotifier {
 /// Rend la session accessible à tout l'arbre (et remplaçable en test).
 class AuthScope extends InheritedNotifier<AuthStore> {
   const AuthScope({required AuthStore store, required super.child, super.key})
-      : super(notifier: store);
+    : super(notifier: store);
 
   static AuthStore of(BuildContext context) {
     final scope = context.dependOnInheritedWidgetOfExactType<AuthScope>();
-    assert(scope?.notifier != null, 'AuthScope manquant au-dessus de ce widget.');
+    assert(
+      scope?.notifier != null,
+      'AuthScope manquant au-dessus de ce widget.',
+    );
     return scope!.notifier!;
   }
 }

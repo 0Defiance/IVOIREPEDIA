@@ -134,7 +134,11 @@ Future<void> showDisplaySettings(BuildContext context) async {
                 children: [
                   Text(
                     'Confort de lecture',
-                    style: titleStyle(size: 19, weight: FontWeight.w700, color: tone.ink),
+                    style: titleStyle(
+                      size: 19,
+                      weight: FontWeight.w700,
+                      color: tone.ink,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -170,7 +174,10 @@ Future<void> showDisplaySettings(BuildContext context) async {
                         onTap: prefs.textScale <= 0.86
                             ? null
                             : () => update(
-                                prefs.copyWith(textScale: prefs.textScale - 0.1)),
+                                prefs.copyWith(
+                                  textScale: prefs.textScale - 0.1,
+                                ),
+                              ),
                       ),
                       const SizedBox(width: 10),
                       Text(
@@ -188,7 +195,10 @@ Future<void> showDisplaySettings(BuildContext context) async {
                         onTap: prefs.textScale >= 1.49
                             ? null
                             : () => update(
-                                prefs.copyWith(textScale: prefs.textScale + 0.1)),
+                                prefs.copyWith(
+                                  textScale: prefs.textScale + 0.1,
+                                ),
+                              ),
                       ),
                     ],
                   ),
@@ -223,7 +233,11 @@ void openDisplaySettings(BuildContext context) {
 }
 
 class _ToneChip extends StatelessWidget {
-  const _ToneChip({required this.label, required this.selected, required this.onTap});
+  const _ToneChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
 
   final String label;
   final bool selected;
@@ -309,11 +323,7 @@ class DisplaySettingsButton extends StatelessWidget {
     return IconButton(
       tooltip: 'Confort de lecture',
       onPressed: () => showDisplaySettings(context),
-      icon: Icon(
-        Icons.text_fields,
-        size: compact ? 20 : 22,
-        color: tone.muted,
-      ),
+      icon: Icon(Icons.text_fields, size: compact ? 20 : 22, color: tone.muted),
     );
   }
 }

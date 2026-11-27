@@ -53,7 +53,8 @@ class _ArticlePageState extends State<ArticlePage> {
         future: _future,
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            final notFound = snapshot.error is ApiException &&
+            final notFound =
+                snapshot.error is ApiException &&
                 (snapshot.error as ApiException).statusCode == 404;
 
             return _ErrorState(
@@ -288,7 +289,10 @@ class _ArticleBodyState extends State<_ArticleBody> {
       return;
     }
 
-    Scrollable.ensureVisible(context, duration: const Duration(milliseconds: 420));
+    Scrollable.ensureVisible(
+      context,
+      duration: const Duration(milliseconds: 420),
+    );
   }
 
   /// Message de confirmation, sur le messager saisi avant l'attente :
@@ -346,7 +350,9 @@ class _ArticleBodyState extends State<_ArticleBody> {
     setState(() => _favorite = added);
     _notify(
       messenger,
-      added ? 'Article ajouté à votre bibliothèque.' : 'Article retiré de votre bibliothèque.',
+      added
+          ? 'Article ajouté à votre bibliothèque.'
+          : 'Article retiré de votre bibliothèque.',
     );
   }
 
@@ -400,7 +406,8 @@ class _ArticleBodyState extends State<_ArticleBody> {
           const SizedBox(height: 20),
           Text(
             [
-              if (_article.categoryName != null) _article.categoryName!.toUpperCase(),
+              if (_article.categoryName != null)
+                _article.categoryName!.toUpperCase(),
               _article.typeLabel.toUpperCase(),
             ].join('  ·  '),
             style: kickerStyle(),
@@ -408,7 +415,12 @@ class _ArticleBodyState extends State<_ArticleBody> {
           const SizedBox(height: 6),
           Text(
             _article.title,
-            style: titleStyle(size: 30, weight: FontWeight.w600, height: 1.2, color: tone.ink),
+            style: titleStyle(
+              size: 30,
+              weight: FontWeight.w600,
+              height: 1.2,
+              color: tone.ink,
+            ),
           ),
           const SizedBox(height: 12),
           Container(height: 1, color: tone.line),
@@ -512,10 +524,7 @@ class _ArticleBodyState extends State<_ArticleBody> {
         final sidebar = Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (aside != null) ...[
-              aside,
-              const SizedBox(height: 16),
-            ],
+            if (aside != null) ...[aside, const SizedBox(height: 16)],
             _ArticleStats(article: _article),
           ],
         );
@@ -566,10 +575,8 @@ class _ArticleBodyState extends State<_ArticleBody> {
               ShareBar(
                 url: articleUrl(_article.slug),
                 title: _article.title,
-                onCopied: (message) => _notify(
-                  ScaffoldMessenger.of(context),
-                  message,
-                ),
+                onCopied: (message) =>
+                    _notify(ScaffoldMessenger.of(context), message),
               ),
             ],
           ),
@@ -701,7 +708,11 @@ class _TocRowState extends State<_TocRow> {
 }
 
 class _ToolButton extends StatefulWidget {
-  const _ToolButton({required this.icon, required this.label, required this.onTap});
+  const _ToolButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
 
   final IconData icon;
   final String label;
@@ -739,7 +750,10 @@ class _ToolButtonState extends State<_ToolButton> {
               const SizedBox(width: 6),
               Text(
                 widget.label,
-                style: const TextStyle(fontSize: 12, color: IvoireColors.greenDeep),
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: IvoireColors.greenDeep,
+                ),
               ),
             ],
           ),
@@ -770,8 +784,14 @@ class _UnavailableTab extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('« $label » arrive bientôt',
-                style: titleStyle(size: 18, weight: FontWeight.w700, color: tone.ink)),
+            Text(
+              '« $label » arrive bientôt',
+              style: titleStyle(
+                size: 18,
+                weight: FontWeight.w700,
+                color: tone.ink,
+              ),
+            ),
             const SizedBox(height: 8),
             Text(
               'L’onglet existe déjà pour que vous trouviez vos repères. '
@@ -871,12 +891,15 @@ class _References extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Notes et références',
-                  style: titleStyle(
-                      size: 21,
-                      weight: FontWeight.w600,
-                      letterSpacing: -0.3,
-                      color: tone.ink)),
+              Text(
+                'Notes et références',
+                style: titleStyle(
+                  size: 21,
+                  weight: FontWeight.w600,
+                  letterSpacing: -0.3,
+                  color: tone.ink,
+                ),
+              ),
               const SizedBox(height: 7),
               Divider(height: 1, color: tone.lineSoft),
             ],
@@ -891,8 +914,10 @@ class _References extends StatelessWidget {
               children: [
                 SizedBox(
                   width: 24,
-                  child: Text('${reference.position}.',
-                      style: TextStyle(fontSize: 13, color: tone.muted)),
+                  child: Text(
+                    '${reference.position}.',
+                    style: TextStyle(fontSize: 13, color: tone.muted),
+                  ),
                 ),
                 Expanded(
                   child: Text.rich(
@@ -906,7 +931,8 @@ class _References extends StatelessWidget {
                         TextSpan(text: reference.title),
                         if (reference.publisher != null)
                           TextSpan(text: ', ${reference.publisher}'),
-                        if (reference.year != null) TextSpan(text: ', ${reference.year}'),
+                        if (reference.year != null)
+                          TextSpan(text: ', ${reference.year}'),
                         if (reference.url != null)
                           TextSpan(
                             text: ' — ${reference.url}',
@@ -914,7 +940,11 @@ class _References extends StatelessWidget {
                           ),
                       ],
                     ),
-                    style: TextStyle(fontSize: 13, height: 1.5, color: tone.ink),
+                    style: TextStyle(
+                      fontSize: 13,
+                      height: 1.5,
+                      color: tone.ink,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 4),
@@ -925,10 +955,15 @@ class _References extends StatelessWidget {
                       onPressed: () => onOpenSource(reference.position),
                       visualDensity: VisualDensity.compact,
                       padding: EdgeInsets.zero,
-                      constraints:
-                          const BoxConstraints(minWidth: 26, minHeight: 26),
-                      icon: Icon(Icons.library_books_outlined,
-                          size: 13, color: IvoireColors.green),
+                      constraints: const BoxConstraints(
+                        minWidth: 26,
+                        minHeight: 26,
+                      ),
+                      icon: Icon(
+                        Icons.library_books_outlined,
+                        size: 13,
+                        color: IvoireColors.green,
+                      ),
                     ),
                   ),
                 const SizedBox(width: 4),
@@ -938,7 +973,10 @@ class _References extends StatelessWidget {
                     onPressed: onBack,
                     visualDensity: VisualDensity.compact,
                     padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(minWidth: 26, minHeight: 26),
+                    constraints: const BoxConstraints(
+                      minWidth: 26,
+                      minHeight: 26,
+                    ),
                     icon: Icon(Icons.arrow_upward, size: 13, color: tone.faint),
                   ),
                 ),
@@ -982,12 +1020,16 @@ class _CategoryBar extends StatelessWidget {
           Text(
             'Catégories :',
             style: TextStyle(
-                fontSize: 12.5, fontWeight: FontWeight.w600, color: tone.ink),
+              fontSize: 12.5,
+              fontWeight: FontWeight.w600,
+              color: tone.ink,
+            ),
           ),
           for (final link in links)
             HoverLink(
               label: link,
-              onTap: () => article.categoryName == link && article.categorySlug != null
+              onTap: () =>
+                  article.categoryName == link && article.categorySlug != null
                   ? wikiGo(context, '/categories/${article.categorySlug}')
                   : wikiNotImplemented(context, 'Étiquette « $link »'),
               style: const TextStyle(fontSize: 12.5),
@@ -1017,12 +1059,20 @@ class _AsideCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('À propos de cet article',
-              style: titleStyle(size: 15, weight: FontWeight.w700, color: tone.ink)),
+          Text(
+            'À propos de cet article',
+            style: titleStyle(
+              size: 15,
+              weight: FontWeight.w700,
+              color: tone.ink,
+            ),
+          ),
           const SizedBox(height: 10),
           _line('Type', article.typeLabel, tone),
-          if (article.categoryName != null) _line('Domaine', article.categoryName!, tone),
-          if (article.authorName != null) _line('Auteur', article.authorName!, tone),
+          if (article.categoryName != null)
+            _line('Domaine', article.categoryName!, tone),
+          if (article.authorName != null)
+            _line('Auteur', article.authorName!, tone),
         ],
       ),
     );
@@ -1032,13 +1082,18 @@ class _AsideCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
       child: Text.rich(
-        TextSpan(children: [
-          TextSpan(
-            text: '$label : ',
-            style: TextStyle(fontSize: 12, color: tone.muted),
-          ),
-          TextSpan(text: value, style: TextStyle(fontSize: 12.5, color: tone.ink)),
-        ]),
+        TextSpan(
+          children: [
+            TextSpan(
+              text: '$label : ',
+              style: TextStyle(fontSize: 12, color: tone.muted),
+            ),
+            TextSpan(
+              text: value,
+              style: TextStyle(fontSize: 12.5, color: tone.ink),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1083,7 +1138,12 @@ class _ArticleStats extends StatelessWidget {
             style: TextStyle(fontSize: 11.5, color: tone.faint),
           ),
           const SizedBox(height: 8),
-          _line('Mots', '${articleWordCount(article.contentOps)}', 'stat-mots', tone),
+          _line(
+            'Mots',
+            '${articleWordCount(article.contentOps)}',
+            'stat-mots',
+            tone,
+          ),
           if (sections > 0)
             _line('Sections', '$sections', 'stat-sections', tone),
           _line(
@@ -1165,7 +1225,11 @@ class _ErrorState extends StatelessWidget {
         children: [
           Text(
             notFound ? 'Page inexistante' : 'Service indisponible',
-            style: titleStyle(size: 26, weight: FontWeight.w700, color: tone.ink),
+            style: titleStyle(
+              size: 26,
+              weight: FontWeight.w700,
+              color: tone.ink,
+            ),
           ),
           const SizedBox(height: 8),
           const WeaveRule(height: 3, opacity: 0.7),

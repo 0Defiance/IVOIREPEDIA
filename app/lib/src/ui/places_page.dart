@@ -54,7 +54,8 @@ class _PlacesPageState extends State<PlacesPage> {
             const PageHeader(
               kicker: 'GÉOGRAPHIE DE LA CÔTE D’IVOIRE',
               title: 'Villes, régions et districts',
-              intro: 'Population résidente au 14 décembre 2021, telle que '
+              intro:
+                  'Population résidente au 14 décembre 2021, telle que '
                   'publiée par l’ANStat. Ouvrez une fiche pour le détail, le '
                   'climat et les articles qui parlent du lieu.',
             ),
@@ -85,8 +86,10 @@ class _PlacesPageState extends State<PlacesPage> {
               future: _future,
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
-                  return Text('${snapshot.error}',
-                      style: TextStyle(fontSize: 14, color: tone.ink));
+                  return Text(
+                    '${snapshot.error}',
+                    style: TextStyle(fontSize: 14, color: tone.ink),
+                  );
                 }
 
                 if (!snapshot.hasData) {
@@ -117,7 +120,8 @@ class _PlacesPageState extends State<PlacesPage> {
                           places: directory.regions.where(_matches).toList(),
                         );
                         final cities = _Section(
-                          title: 'Les ${directory.cities.length} villes chef-lieu',
+                          title:
+                              'Les ${directory.cities.length} villes chef-lieu',
                           places: directory.cities.where(_matches).toList(),
                         );
 
@@ -157,7 +161,11 @@ class _PlacesPageState extends State<PlacesPage> {
                     Text(
                       'Source : ${directory.sourceName ?? 'ANStat — RGPH 2021'}. '
                       'Les effectifs ne sont pas recalculés.',
-                      style: TextStyle(fontSize: 12, height: 1.5, color: tone.faint),
+                      style: TextStyle(
+                        fontSize: 12,
+                        height: 1.5,
+                        color: tone.faint,
+                      ),
                     ),
                   ],
                 );
@@ -188,7 +196,11 @@ class _Section extends StatelessWidget {
             Expanded(
               child: Text(
                 title,
-                style: titleStyle(size: 17, weight: FontWeight.w600, color: tone.ink),
+                style: titleStyle(
+                  size: 17,
+                  weight: FontWeight.w600,
+                  color: tone.ink,
+                ),
               ),
             ),
             Text(

@@ -25,7 +25,10 @@ Page<void> _page(Widget child) {
     transitionDuration: const Duration(milliseconds: 220),
     reverseTransitionDuration: const Duration(milliseconds: 160),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      final curved = CurvedAnimation(parent: animation, curve: Curves.easeOutCubic);
+      final curved = CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeOutCubic,
+      );
 
       return FadeTransition(
         opacity: curved,
@@ -52,9 +55,8 @@ GoRouter buildRouter() {
       ),
       GoRoute(
         path: '/categories/:slug',
-        pageBuilder: (context, state) => _page(
-          CategoryPage(slug: state.pathParameters['slug'] ?? ''),
-        ),
+        pageBuilder: (context, state) =>
+            _page(CategoryPage(slug: state.pathParameters['slug'] ?? '')),
       ),
       GoRoute(
         path: '/articles/:slug',
@@ -67,9 +69,8 @@ GoRouter buildRouter() {
       ),
       GoRoute(
         path: '/recherche',
-        pageBuilder: (context, state) => _page(
-          SearchPage(query: state.uri.queryParameters['q'] ?? ''),
-        ),
+        pageBuilder: (context, state) =>
+            _page(SearchPage(query: state.uri.queryParameters['q'] ?? '')),
       ),
       GoRoute(
         path: '/statistiques',
@@ -77,9 +78,8 @@ GoRouter buildRouter() {
       ),
       GoRoute(
         path: '/histoires',
-        pageBuilder: (context, state) => _page(
-          HistoryPage(story: state.uri.queryParameters['recit']),
-        ),
+        pageBuilder: (context, state) =>
+            _page(HistoryPage(story: state.uri.queryParameters['recit'])),
       ),
       GoRoute(
         path: '/chronologie',
@@ -87,9 +87,8 @@ GoRouter buildRouter() {
       ),
       GoRoute(
         path: '/sources',
-        pageBuilder: (context, state) => _page(
-          SourcesPage(highlight: state.uri.queryParameters['ref']),
-        ),
+        pageBuilder: (context, state) =>
+            _page(SourcesPage(highlight: state.uri.queryParameters['ref'])),
       ),
       GoRoute(
         path: '/lieux',
@@ -97,9 +96,8 @@ GoRouter buildRouter() {
       ),
       GoRoute(
         path: '/lieux/:slug',
-        pageBuilder: (context, state) => _page(
-          PlacePage(slug: state.pathParameters['slug'] ?? ''),
-        ),
+        pageBuilder: (context, state) =>
+            _page(PlacePage(slug: state.pathParameters['slug'] ?? '')),
       ),
       // Pages de confiance : elles répondent aux liens du pied de page.
       GoRoute(

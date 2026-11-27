@@ -43,7 +43,9 @@ class _HoverLinkState extends State<HoverLink> {
           duration: const Duration(milliseconds: 120),
           style: base.copyWith(
             color: color,
-            decoration: _hovered ? TextDecoration.underline : TextDecoration.none,
+            decoration: _hovered
+                ? TextDecoration.underline
+                : TextDecoration.none,
             decorationColor: color,
             decorationThickness: 1.4,
           ),
@@ -81,7 +83,9 @@ class _HoverSurfaceState extends State<HoverSurface> {
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
-      cursor: widget.onTap == null ? SystemMouseCursors.basic : SystemMouseCursors.click,
+      cursor: widget.onTap == null
+          ? SystemMouseCursors.basic
+          : SystemMouseCursors.click,
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
       child: GestureDetector(
@@ -95,11 +99,15 @@ class _HoverSurfaceState extends State<HoverSurface> {
             color: widget.background,
             borderRadius: BorderRadius.circular(widget.radius),
             border: Border.all(
-              color: _hovered ? IvoireColors.green.withValues(alpha: 0.55) : IvoireColors.lineSoft,
+              color: _hovered
+                  ? IvoireColors.green.withValues(alpha: 0.55)
+                  : IvoireColors.lineSoft,
             ),
             boxShadow: [
               BoxShadow(
-                color: IvoireColors.ink.withValues(alpha: _hovered ? 0.10 : 0.03),
+                color: IvoireColors.ink.withValues(
+                  alpha: _hovered ? 0.10 : 0.03,
+                ),
                 blurRadius: _hovered ? 18 : 6,
                 offset: Offset(0, _hovered ? 6 : 2),
               ),
@@ -162,7 +170,8 @@ class Skeleton extends StatefulWidget {
   State<Skeleton> createState() => _SkeletonState();
 }
 
-class _SkeletonState extends State<Skeleton> with SingleTickerProviderStateMixin {
+class _SkeletonState extends State<Skeleton>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 900),
@@ -201,7 +210,11 @@ class _SkeletonState extends State<Skeleton> with SingleTickerProviderStateMixin
         width: widget.width,
         height: widget.height,
         decoration: BoxDecoration(
-          color: Color.lerp(IvoireColors.lineSoft, IvoireColors.subtle, _controller.value),
+          color: Color.lerp(
+            IvoireColors.lineSoft,
+            IvoireColors.subtle,
+            _controller.value,
+          ),
           borderRadius: BorderRadius.circular(widget.radius),
         ),
       ),
@@ -223,7 +236,10 @@ class SkeletonParagraph extends StatelessWidget {
         for (var i = 0; i < lines; i++)
           Padding(
             padding: const EdgeInsets.only(bottom: 8),
-            child: Skeleton(height: 12, width: i == lines - 1 ? 240 : double.infinity),
+            child: Skeleton(
+              height: 12,
+              width: i == lines - 1 ? 240 : double.infinity,
+            ),
           ),
       ],
     );

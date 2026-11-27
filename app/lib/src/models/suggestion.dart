@@ -1,6 +1,10 @@
 /// Entrée de la recherche instantanée (`GET /api/v1/search/suggest`).
 class SearchSuggestion {
-  const SearchSuggestion({required this.slug, required this.title, this.category});
+  const SearchSuggestion({
+    required this.slug,
+    required this.title,
+    this.category,
+  });
 
   final String slug;
   final String title;

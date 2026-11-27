@@ -37,7 +37,8 @@ class _PlacePageState extends State<PlacePage> {
         future: _future,
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            final notFound = snapshot.error is ApiException &&
+            final notFound =
+                snapshot.error is ApiException &&
                 (snapshot.error as ApiException).statusCode == 404;
 
             return Padding(
@@ -47,11 +48,17 @@ class _PlacePageState extends State<PlacePage> {
                 children: [
                   Text(
                     notFound ? 'Lieu inconnu' : 'Service indisponible',
-                    style: titleStyle(size: 24, weight: FontWeight.w700, color: tone.ink),
+                    style: titleStyle(
+                      size: 24,
+                      weight: FontWeight.w700,
+                      color: tone.ink,
+                    ),
                   ),
                   const SizedBox(height: 8),
-                  Text('${snapshot.error}',
-                      style: TextStyle(fontSize: 14, color: tone.muted)),
+                  Text(
+                    '${snapshot.error}',
+                    style: TextStyle(fontSize: 14, color: tone.muted),
+                  ),
                   const SizedBox(height: 18),
                   OutlinedButton(
                     onPressed: () => context.go('/lieux'),
@@ -122,7 +129,10 @@ class _PlaceBody extends StatelessWidget {
                   style: TextStyle(fontSize: 12, color: tone.muted),
                 ),
                 Text('›', style: TextStyle(fontSize: 12, color: tone.faint)),
-                Text(place.name, style: TextStyle(fontSize: 12, color: tone.faint)),
+                Text(
+                  place.name,
+                  style: TextStyle(fontSize: 12, color: tone.faint),
+                ),
               ],
             ),
             const SizedBox(height: 12),
@@ -130,7 +140,11 @@ class _PlaceBody extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               place.name,
-              style: titleStyle(size: 32, weight: FontWeight.w600, color: tone.ink),
+              style: titleStyle(
+                size: 32,
+                weight: FontWeight.w600,
+                color: tone.ink,
+              ),
             ),
             if (place.parent != null && place.parent != place.name) ...[
               const SizedBox(height: 4),
@@ -158,7 +172,8 @@ class _PlaceBody extends StatelessWidget {
                 final right = Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (place.climate != null) _ClimateCard(climate: place.climate!),
+                    if (place.climate != null)
+                      _ClimateCard(climate: place.climate!),
                     if (place.articles.isNotEmpty) ...[
                       const SizedBox(height: 22),
                       _RelatedArticles(place: place),
@@ -226,10 +241,17 @@ class _PopulationBlock extends StatelessWidget {
             children: [
               Text(
                 formatNumber(place.population),
-                style: titleStyle(size: 34, weight: FontWeight.w700, color: tone.ink),
+                style: titleStyle(
+                  size: 34,
+                  weight: FontWeight.w700,
+                  color: tone.ink,
+                ),
               ),
               const SizedBox(width: 6),
-              Text('habitants', style: TextStyle(fontSize: 13, color: tone.muted)),
+              Text(
+                'habitants',
+                style: TextStyle(fontSize: 13, color: tone.muted),
+              ),
             ],
           ),
           if (place.estimate != null) ...[
@@ -239,7 +261,11 @@ class _PopulationBlock extends StatelessWidget {
             Text(
               '≈ ${formatNumber(place.estimate!.population)} habitants en '
               '${place.estimate!.year}',
-              style: titleStyle(size: 17, weight: FontWeight.w600, color: tone.ink),
+              style: titleStyle(
+                size: 17,
+                weight: FontWeight.w600,
+                color: tone.ink,
+              ),
             ),
             const SizedBox(height: 4),
             if (place.estimate!.basis != null)
@@ -251,7 +277,11 @@ class _PopulationBlock extends StatelessWidget {
               const SizedBox(height: 2),
               Text(
                 place.estimate!.note!,
-                style: TextStyle(fontSize: 11.5, height: 1.5, color: tone.faint),
+                style: TextStyle(
+                  fontSize: 11.5,
+                  height: 1.5,
+                  color: tone.faint,
+                ),
               ),
             ],
           ],
@@ -273,8 +303,10 @@ class _EntriesTable extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Détail du recensement',
-            style: titleStyle(size: 17, weight: FontWeight.w600, color: tone.ink)),
+        Text(
+          'Détail du recensement',
+          style: titleStyle(size: 17, weight: FontWeight.w600, color: tone.ink),
+        ),
         const SizedBox(height: 8),
         for (final entry in entries)
           Container(
@@ -303,13 +335,17 @@ class _EntriesTable extends StatelessWidget {
                   runSpacing: 8,
                   children: [
                     _figure('Population', formatNumber(entry.population)),
-                    if (entry.men != null) _figure('Hommes', formatNumber(entry.men!)),
-                    if (entry.women != null) _figure('Femmes', formatNumber(entry.women!)),
+                    if (entry.men != null)
+                      _figure('Hommes', formatNumber(entry.men!)),
+                    if (entry.women != null)
+                      _figure('Femmes', formatNumber(entry.women!)),
                     if (entry.households != null)
                       _figure('Ménages', formatNumber(entry.households!)),
                     if (entry.averageSize != null)
-                      _figure('Taille moyenne',
-                          '${entry.averageSize!.toStringAsFixed(1)} pers.'),
+                      _figure(
+                        'Taille moyenne',
+                        '${entry.averageSize!.toStringAsFixed(1)} pers.',
+                      ),
                   ],
                 ),
               ],
@@ -334,11 +370,14 @@ class _EntriesTable extends StatelessWidget {
           children: [
             Text(label, style: TextStyle(fontSize: 11, color: tone.faint)),
             const SizedBox(height: 2),
-            Text(value,
-                style: TextStyle(
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w600,
-                    color: tone.ink)),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 13.5,
+                fontWeight: FontWeight.w600,
+                color: tone.ink,
+              ),
+            ),
           ],
         );
       },
@@ -352,8 +391,18 @@ class _ClimateCard extends StatelessWidget {
   final PlaceClimate climate;
 
   static const _months = [
-    'janvier', 'février', 'mars', 'avril', 'mai', 'juin',
-    'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre',
+    'janvier',
+    'février',
+    'mars',
+    'avril',
+    'mai',
+    'juin',
+    'juillet',
+    'août',
+    'septembre',
+    'octobre',
+    'novembre',
+    'décembre',
   ];
 
   @override
@@ -376,16 +425,30 @@ class _ClimateCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.water_drop_outlined, size: 16, color: IvoireColors.green),
+              const Icon(
+                Icons.water_drop_outlined,
+                size: 16,
+                color: IvoireColors.green,
+              ),
               const SizedBox(width: 6),
-              Text('Climat',
-                  style: titleStyle(size: 16, weight: FontWeight.w600, color: tone.ink)),
+              Text(
+                'Climat',
+                style: titleStyle(
+                  size: 16,
+                  weight: FontWeight.w600,
+                  color: tone.ink,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 4),
           Text(period, style: TextStyle(fontSize: 11.5, color: tone.faint)),
           const SizedBox(height: 12),
-          _row('Pluie par an', '${formatNumber(climate.annualRainMm.round())} mm', tone),
+          _row(
+            'Pluie par an',
+            '${formatNumber(climate.annualRainMm.round())} mm',
+            tone,
+          ),
           if (climate.wettestMonth != null)
             _row(
               'Mois le plus arrosé',
@@ -394,8 +457,11 @@ class _ClimateCard extends StatelessWidget {
               tone,
             ),
           if (climate.averageTemperatureC != null)
-            _row('Température moyenne',
-                '${climate.averageTemperatureC!.toStringAsFixed(1)} °C', tone),
+            _row(
+              'Température moyenne',
+              '${climate.averageTemperatureC!.toStringAsFixed(1)} °C',
+              tone,
+            ),
           const SizedBox(height: 12),
           HoverLink(
             label: 'Voir la pluviométrie détaillée',
@@ -419,12 +485,18 @@ class _ClimateCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
-            child: Text(label, style: TextStyle(fontSize: 12.5, color: tone.muted)),
+            child: Text(
+              label,
+              style: TextStyle(fontSize: 12.5, color: tone.muted),
+            ),
           ),
           Text(
             value,
             style: TextStyle(
-                fontSize: 13, fontWeight: FontWeight.w600, color: tone.ink),
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: tone.ink,
+            ),
           ),
         ],
       ),
@@ -444,8 +516,10 @@ class _RelatedArticles extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Articles liés',
-            style: titleStyle(size: 17, weight: FontWeight.w600, color: tone.ink)),
+        Text(
+          'Articles liés',
+          style: titleStyle(size: 17, weight: FontWeight.w600, color: tone.ink),
+        ),
         const SizedBox(height: 8),
         for (final article in place.articles)
           GestureDetector(
@@ -473,7 +547,11 @@ class _RelatedArticles extends StatelessWidget {
                     article.summary,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 12.5, height: 1.5, color: tone.muted),
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      height: 1.5,
+                      color: tone.muted,
+                    ),
                   ),
                 ],
               ),

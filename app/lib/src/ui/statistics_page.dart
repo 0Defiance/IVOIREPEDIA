@@ -39,10 +39,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
         future: _future,
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return _Message(
-              text: '${snapshot.error}',
-              action: _retry,
-            );
+            return _Message(text: '${snapshot.error}', action: _retry);
           }
 
           if (!snapshot.hasData) {
@@ -73,7 +70,8 @@ class _StatisticsBody extends StatelessWidget {
           const PageHeader(
             kicker: 'DONNÉES · CÔTE D’IVOIRE',
             title: 'La Côte d’Ivoire en chiffres',
-            intro: 'Population, économie, santé, éducation, environnement : '
+            intro:
+                'Population, économie, santé, éducation, environnement : '
                 'chaque valeur porte son année et sa source. Le recensement '
                 'fournit les effectifs datés, la Banque mondiale les séries '
                 'annuelles.',
@@ -128,7 +126,8 @@ class _StatisticsBody extends StatelessWidget {
             const SizedBox(height: 30),
             _DivisionsSection(
               title: 'Les régions',
-              caption: 'Effectifs du RGPH 2021, du plus peuplé au moins peuplé.',
+              caption:
+                  'Effectifs du RGPH 2021, du plus peuplé au moins peuplé.',
               divisions: data.regions,
               dense: true,
             ),
@@ -206,7 +205,8 @@ class _CensusPanel extends StatelessWidget {
               if (census.growthPercent != null)
                 _MiniFact(
                   label: 'Croissance annuelle',
-                  value: '${_decimal(census.growthPercent!)} % '
+                  value:
+                      '${_decimal(census.growthPercent!)} % '
                       '(${census.growthYear ?? ''})',
                 ),
             ],
@@ -314,7 +314,9 @@ class _HeadlineGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final columns = constraints.maxWidth > 900 ? 3 : (constraints.maxWidth > 560 ? 2 : 1);
+        final columns = constraints.maxWidth > 900
+            ? 3
+            : (constraints.maxWidth > 560 ? 2 : 1);
         final width = (constraints.maxWidth - (columns - 1) * 12) / columns;
 
         return Wrap(
@@ -453,7 +455,10 @@ class _IndicatorRow extends StatelessWidget {
                     if (indicator.year != null) '${indicator.year}',
                     if (indicator.source?.name != null) indicator.source!.name!,
                   ].join(' · '),
-                  style: const TextStyle(fontSize: 10.5, color: IvoireColors.faint),
+                  style: const TextStyle(
+                    fontSize: 10.5,
+                    color: IvoireColors.faint,
+                  ),
                 ),
                 if (indicator.trend != null) ...[
                   const SizedBox(height: 3),
@@ -502,7 +507,10 @@ class _DivisionsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final max = divisions.fold<int>(1, (value, item) => math.max(value, item.population));
+    final max = divisions.fold<int>(
+      1,
+      (value, item) => math.max(value, item.population),
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -523,7 +531,11 @@ class _DivisionsSection extends StatelessWidget {
           constraints: const BoxConstraints(maxWidth: 700),
           child: Text(
             caption,
-            style: const TextStyle(fontSize: 12, height: 1.6, color: IvoireColors.faint),
+            style: const TextStyle(
+              fontSize: 12,
+              height: 1.6,
+              color: IvoireColors.faint,
+            ),
           ),
         ),
         const SizedBox(height: 12),
@@ -567,57 +579,65 @@ class _DivisionRow extends StatelessWidget {
           : () => context.go('/lieux/$slug'),
       behavior: HitTestBehavior.opaque,
       child: Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  division.name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 13, color: IvoireColors.ink),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                _thousands(division.population),
-                style: const TextStyle(
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w600,
-                  color: IvoireColors.ink,
-                  fontFeatures: [FontFeature.tabularFigures()],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Row(
-            children: [
-              Expanded(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(2),
-                  child: LinearProgressIndicator(
-                    value: ratio,
-                    minHeight: 3,
-                    backgroundColor: IvoireColors.subtle,
-                    valueColor: const AlwaysStoppedAnimation(IvoireColors.green),
+        padding: const EdgeInsets.symmetric(vertical: 5),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    division.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: IvoireColors.ink,
+                    ),
                   ),
                 ),
-              ),
-              if (division.households != null) ...[
-                const SizedBox(width: 10),
+                const SizedBox(width: 8),
                 Text(
-                  '${_thousands(division.households!)} ménages',
-                  style: const TextStyle(fontSize: 10.5, color: IvoireColors.faint),
+                  _thousands(division.population),
+                  style: const TextStyle(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w600,
+                    color: IvoireColors.ink,
+                    fontFeatures: [FontFeature.tabularFigures()],
+                  ),
                 ),
               ],
-            ],
-          ),
-        ],
-      ),
+            ),
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                Expanded(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(2),
+                    child: LinearProgressIndicator(
+                      value: ratio,
+                      minHeight: 3,
+                      backgroundColor: IvoireColors.subtle,
+                      valueColor: const AlwaysStoppedAnimation(
+                        IvoireColors.green,
+                      ),
+                    ),
+                  ),
+                ),
+                if (division.households != null) ...[
+                  const SizedBox(width: 10),
+                  Text(
+                    '${_thousands(division.households!)} ménages',
+                    style: const TextStyle(
+                      fontSize: 10.5,
+                      color: IvoireColors.faint,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -638,8 +658,18 @@ class _ClimateSectionState extends State<_ClimateSection> {
   int _selected = 0;
 
   static const List<String> _monthNames = [
-    'janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin',
-    'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.',
+    'janv.',
+    'févr.',
+    'mars',
+    'avr.',
+    'mai',
+    'juin',
+    'juil.',
+    'août',
+    'sept.',
+    'oct.',
+    'nov.',
+    'déc.',
   ];
 
   @override
@@ -650,7 +680,8 @@ class _ClimateSectionState extends State<_ClimateSection> {
       return const SizedBox.shrink();
     }
 
-    final selected = climate.cities[_selected.clamp(0, climate.cities.length - 1)];
+    final selected =
+        climate.cities[_selected.clamp(0, climate.cities.length - 1)];
     final wettest = selected.wettest;
     final years = selected.years
         .map((year) => StatisticPoint(year: year.year, value: year.rainMm))
@@ -681,7 +712,10 @@ class _ClimateSectionState extends State<_ClimateSection> {
                 ),
                 child: Text(
                   'Normales ${climate.periodStart}–${climate.periodEnd}',
-                  style: const TextStyle(fontSize: 10.5, color: IvoireColors.muted),
+                  style: const TextStyle(
+                    fontSize: 10.5,
+                    color: IvoireColors.muted,
+                  ),
                 ),
               ),
             ],
@@ -698,7 +732,11 @@ class _ClimateSectionState extends State<_ClimateSection> {
             'réanalyse ERA5 (grille d’environ 9 km). Une année donnée s’écarte '
             'toujours de cette moyenne : la courbe du bas montre l’amplitude '
             'réelle des trente années observées.',
-            style: const TextStyle(fontSize: 12, height: 1.7, color: IvoireColors.faint),
+            style: const TextStyle(
+              fontSize: 12,
+              height: 1.7,
+              color: IvoireColors.faint,
+            ),
           ),
         ),
         const SizedBox(height: 12),
@@ -757,7 +795,10 @@ class _ClimateSectionState extends State<_ClimateSection> {
                             ),
                             const TextSpan(
                               text: ' mm',
-                              style: TextStyle(fontSize: 13, color: IvoireColors.muted),
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: IvoireColors.muted,
+                              ),
                             ),
                           ],
                         ),
@@ -767,7 +808,8 @@ class _ClimateSectionState extends State<_ClimateSection> {
                   if (wettest != null)
                     _MiniFact(
                       label: 'Mois le plus arrosé',
-                      value: '${_monthNames[wettest.month - 1]} · '
+                      value:
+                          '${_monthNames[wettest.month - 1]} · '
                           '${wettest.rainMm.round()} mm',
                     ),
                   if (selected.driestYear != null)
@@ -876,12 +918,17 @@ class _SourcesFooter extends StatelessWidget {
             [
               'Recensement général de la population et de l’habitat 2021 '
                   '(ANStat, ex-INS), Licence Ouverte.',
-              if (data.sources.isNotEmpty) '${data.sources.join(', ')} (CC BY 4.0).',
+              if (data.sources.isNotEmpty)
+                '${data.sources.join(', ')} (CC BY 4.0).',
               'Les chiffres sont publiés tels quels : une estimation annuelle et '
                   'un recensement ne mesurent pas la même chose et ne doivent pas '
                   'être additionnés ni comparés sans le dire.',
             ].join(' '),
-            style: const TextStyle(fontSize: 11.5, height: 1.7, color: IvoireColors.faint),
+            style: const TextStyle(
+              fontSize: 11.5,
+              height: 1.7,
+              color: IvoireColors.faint,
+            ),
           ),
         ),
         if (data.updatedAt != null) ...[
@@ -1012,7 +1059,8 @@ class _SparklinePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_SparklinePainter oldDelegate) => oldDelegate.points != points;
+  bool shouldRepaint(_SparklinePainter oldDelegate) =>
+      oldDelegate.points != points;
 }
 
 class _Message extends StatelessWidget {
@@ -1034,10 +1082,7 @@ class _Message extends StatelessWidget {
           ),
           if (action != null) ...[
             const SizedBox(height: 16),
-            OutlinedButton(
-              onPressed: action,
-              child: const Text('Réessayer'),
-            ),
+            OutlinedButton(onPressed: action, child: const Text('Réessayer')),
           ],
         ],
       ),
@@ -1063,5 +1108,6 @@ String _thousands(int value) {
 /// « 5,2 » — virgule décimale, une décimale.
 String _decimal(double value) => value.toStringAsFixed(1).replaceAll('.', ',');
 
-String _date(DateTime date) => '${date.day.toString().padLeft(2, '0')}/'
+String _date(DateTime date) =>
+    '${date.day.toString().padLeft(2, '0')}/'
     '${date.month.toString().padLeft(2, '0')}/${date.year}';

@@ -157,10 +157,10 @@ class _AuthPageState extends State<AuthPage> {
                   title: widget.register ? 'Créer un compte' : 'Se connecter',
                   intro: widget.register
                       ? 'Un compte vous permet de retrouver votre bibliothèque '
-                          'et, bientôt, de proposer des articles à la rédaction. '
-                          'La lecture reste libre et sans compte.'
+                            'et, bientôt, de proposer des articles à la rédaction. '
+                            'La lecture reste libre et sans compte.'
                       : 'Retrouvez votre bibliothèque et votre historique de '
-                          'lecture. Aucun article n’est réservé aux inscrits.',
+                            'lecture. Aucun article n’est réservé aux inscrits.',
                 ),
                 const SizedBox(height: 22),
                 if (store.signedIn)
@@ -221,8 +221,9 @@ class _AuthPageState extends State<AuthPage> {
               key: const Key('auth-password'),
               controller: _password,
               obscureText: _obscure,
-              textInputAction:
-                  widget.register ? TextInputAction.next : TextInputAction.done,
+              textInputAction: widget.register
+                  ? TextInputAction.next
+                  : TextInputAction.done,
               autofillHints: [
                 widget.register
                     ? AutofillHints.newPassword
@@ -241,7 +242,9 @@ class _AuthPageState extends State<AuthPage> {
                   tooltip: _obscure ? 'Afficher' : 'Masquer',
                   onPressed: () => setState(() => _obscure = !_obscure),
                   icon: Icon(
-                    _obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                    _obscure
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
                     size: 20,
                   ),
                 ),
@@ -274,19 +277,20 @@ class _AuthPageState extends State<AuthPage> {
               const SizedBox(height: 16),
               Container(
                 key: const Key('auth-error'),
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   color: IvoireColors.highlight,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: IvoireColors.terracotta.withValues(alpha: 0.35)),
+                  border: Border.all(
+                    color: IvoireColors.terracotta.withValues(alpha: 0.35),
+                  ),
                 ),
                 child: Text(
                   _error!,
-                  style: TextStyle(
-                    fontSize: 13,
-                    height: 1.45,
-                    color: tone.ink,
-                  ),
+                  style: TextStyle(fontSize: 13, height: 1.45, color: tone.ink),
                 ),
               ),
             ],
@@ -328,12 +332,15 @@ class _AuthPageState extends State<AuthPage> {
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         Text(
-          widget.register ? 'Vous avez déjà un compte ?' : 'Pas encore de compte ?',
+          widget.register
+              ? 'Vous avez déjà un compte ?'
+              : 'Pas encore de compte ?',
           style: TextStyle(fontSize: 13.5, color: tone.muted),
         ),
         TextButton(
           key: const Key('auth-switch'),
-          onPressed: () => context.go(widget.register ? '/connexion' : '/inscription'),
+          onPressed: () =>
+              context.go(widget.register ? '/connexion' : '/inscription'),
           child: Text(widget.register ? 'Se connecter' : 'Créer un compte'),
         ),
       ],
@@ -383,9 +390,16 @@ class _SignedInPanel extends StatelessWidget {
                   children: [
                     Text(
                       user.name,
-                      style: titleStyle(size: 16, weight: FontWeight.w600, color: tone.ink),
+                      style: titleStyle(
+                        size: 16,
+                        weight: FontWeight.w600,
+                        color: tone.ink,
+                      ),
                     ),
-                    Text(user.email, style: TextStyle(fontSize: 12.5, color: tone.muted)),
+                    Text(
+                      user.email,
+                      style: TextStyle(fontSize: 12.5, color: tone.muted),
+                    ),
                   ],
                 ),
               ),
@@ -396,7 +410,7 @@ class _SignedInPanel extends StatelessWidget {
             user.emailVerified
                 ? 'Votre adresse est vérifiée.'
                 : 'Votre adresse n’est pas encore vérifiée : la vérification par '
-                    'courriel arrive avec l’ouverture des contributions.',
+                      'courriel arrive avec l’ouverture des contributions.',
             style: TextStyle(fontSize: 12.5, height: 1.55, color: tone.muted),
           ),
           const SizedBox(height: 16),

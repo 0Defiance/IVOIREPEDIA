@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import '../../theme.dart';
@@ -54,9 +53,8 @@ class _KenteBandState extends State<KenteBand>
       width: double.infinity,
       child: AnimatedBuilder(
         animation: _controller,
-        builder: (context, _) => CustomPaint(
-          painter: _KentePainter(progress: _controller.value),
-        ),
+        builder: (context, _) =>
+            CustomPaint(painter: _KentePainter(progress: _controller.value)),
       ),
     );
   }
@@ -84,15 +82,16 @@ class _KentePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    canvas.drawRect(
-      Offset.zero & size,
-      Paint()..color = IvoireColors.ivory,
-    );
+    canvas.drawRect(Offset.zero & size, Paint()..color = IvoireColors.ivory);
 
     final shift = -progress * _period;
     final paint = Paint();
 
-    for (double start = shift - _period; start < size.width + _period; start += _period) {
+    for (
+      double start = shift - _period;
+      start < size.width + _period;
+      start += _period
+    ) {
       var x = start;
       for (final block in _blocks) {
         paint.color = block.$2;
@@ -129,7 +128,8 @@ class WeaveRule extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            for (final color in IvoireColors.weave) color.withValues(alpha: opacity),
+            for (final color in IvoireColors.weave)
+              color.withValues(alpha: opacity),
           ],
         ),
       ),
@@ -167,7 +167,11 @@ class _DividerPainter extends CustomPainter {
 
     final mid = size.height / 2;
     canvas.drawLine(Offset(0, mid), Offset(size.width * 0.32, mid), line);
-    canvas.drawLine(Offset(size.width * 0.68, mid), Offset(size.width, mid), line);
+    canvas.drawLine(
+      Offset(size.width * 0.68, mid),
+      Offset(size.width, mid),
+      line,
+    );
 
     for (var i = 0; i < 3; i++) {
       final cx = size.width / 2 + (i - 1) * 16.0;

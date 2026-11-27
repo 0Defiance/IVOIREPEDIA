@@ -78,7 +78,12 @@ class _YearChartPainter extends CustomPainter {
     final low = min - span * 0.08;
     final high = max + span * 0.08;
 
-    final chart = Rect.fromLTRB(_left, _top, size.width - 4, size.height - _bottom);
+    final chart = Rect.fromLTRB(
+      _left,
+      _top,
+      size.width - 4,
+      size.height - _bottom,
+    );
 
     double yFor(double value) =>
         chart.bottom - (value - low) / (high - low) * chart.height;
@@ -97,10 +102,10 @@ class _YearChartPainter extends CustomPainter {
     final unit = magnitude >= 1e9
         ? (factor: 1e9, suffix: ' Md', decimals: 1)
         : magnitude >= 1e6
-            ? (factor: 1e6, suffix: ' M', decimals: 1)
-            : magnitude >= 1e4
-                ? (factor: 1e3, suffix: ' k', decimals: 0)
-                : (factor: 1.0, suffix: '', decimals: decimals);
+        ? (factor: 1e6, suffix: ' M', decimals: 1)
+        : magnitude >= 1e4
+        ? (factor: 1e3, suffix: ' k', decimals: 0)
+        : (factor: 1.0, suffix: '', decimals: decimals);
 
     for (var step = 0; step <= 3; step++) {
       final value = low + (high - low) * step / 3;
@@ -210,11 +215,7 @@ class _YearChartPainter extends CustomPainter {
 /// 1 400 mm n'ont pas la même saison. Les barres montrent les mois, la ligne
 /// orange la température moyenne de chaque mois.
 class MonthlyRainChart extends StatelessWidget {
-  const MonthlyRainChart({
-    required this.months,
-    this.height = 190,
-    super.key,
-  });
+  const MonthlyRainChart({required this.months, this.height = 190, super.key});
 
   final List<ClimateMonth> months;
   final double height;
@@ -238,7 +239,11 @@ class MonthlyRainChart extends StatelessWidget {
           children: [
             _Legend(color: IvoireColors.green, label: 'Pluie (mm)'),
             const SizedBox(width: 16),
-            _Legend(color: IvoireColors.orange, label: 'Température (°C)', line: true),
+            _Legend(
+              color: IvoireColors.orange,
+              label: 'Température (°C)',
+              line: true,
+            ),
           ],
         ),
       ],
@@ -286,12 +291,28 @@ class _MonthlyRainPainter extends CustomPainter {
   static const double _top = 8;
 
   static const List<String> _initials = [
-    'J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D',
+    'J',
+    'F',
+    'M',
+    'A',
+    'M',
+    'J',
+    'J',
+    'A',
+    'S',
+    'O',
+    'N',
+    'D',
   ];
 
   @override
   void paint(Canvas canvas, Size size) {
-    final chart = Rect.fromLTRB(_left, _top, size.width - 24, size.height - _bottom);
+    final chart = Rect.fromLTRB(
+      _left,
+      _top,
+      size.width - 24,
+      size.height - _bottom,
+    );
     final maxRain = months.map((month) => month.rainMm).reduce(math.max);
     final niceMax = (maxRain / 100).ceil() * 100.0;
 
@@ -330,7 +351,10 @@ class _MonthlyRainPainter extends CustomPainter {
       final isWettest = month.rainMm == maxRain;
       canvas.drawRRect(
         rect,
-        Paint()..color = isWettest ? IvoireColors.green : IvoireColors.green.withValues(alpha: 0.55),
+        Paint()
+          ..color = isWettest
+              ? IvoireColors.green
+              : IvoireColors.green.withValues(alpha: 0.55),
       );
 
       _text(
@@ -346,7 +370,10 @@ class _MonthlyRainPainter extends CustomPainter {
         _text(
           canvas,
           '${month.rainMm.round()} mm',
-          Offset(chart.left + slot * index + slot / 2, chart.bottom - barHeight - 4),
+          Offset(
+            chart.left + slot * index + slot / 2,
+            chart.bottom - barHeight - 4,
+          ),
           align: _Align.center,
           size: 9.5,
           color: IvoireColors.greenDeep,
@@ -394,7 +421,11 @@ class _MonthlyRainPainter extends CustomPainter {
       );
 
       for (var index = 0; index < months.length; index++) {
-        canvas.drawCircle(pointFor(index), 1.8, Paint()..color = IvoireColors.orange);
+        canvas.drawCircle(
+          pointFor(index),
+          1.8,
+          Paint()..color = IvoireColors.orange,
+        );
       }
     }
   }

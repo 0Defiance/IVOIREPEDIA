@@ -72,13 +72,15 @@ class DeltaContent extends StatelessWidget {
         orderedIndex = 0;
       }
 
-      blocks.add(_block(
-        context,
-        text,
-        attributes,
-        lead: isLead && !isHeader,
-        orderedIndex: isOrdered ? orderedIndex++ : 0,
-      ));
+      blocks.add(
+        _block(
+          context,
+          text,
+          attributes,
+          lead: isLead && !isHeader,
+          orderedIndex: isOrdered ? orderedIndex++ : 0,
+        ),
+      );
 
       if (isLead && !isHeader && afterLead != null) {
         blocks.add(afterLead!);
@@ -143,8 +145,9 @@ class DeltaContent extends StatelessWidget {
           text: text,
           level: header,
           onCopy: onCopySection == null ? null : () => onCopySection!(text),
-          onCopyLink:
-              onCopySectionLink == null ? null : () => onCopySectionLink!(text),
+          onCopyLink: onCopySectionLink == null
+              ? null
+              : () => onCopySectionLink!(text),
         ),
       );
     }
@@ -207,11 +210,7 @@ class DeltaContent extends StatelessWidget {
 /// Les `[n]` sont rendus en exposant vert et renvoient à la référence n ;
 /// le reste du texte reste un simple `TextSpan`, donc sélectionnable.
 class _RichText extends StatefulWidget {
-  const _RichText({
-    required this.text,
-    required this.style,
-    this.onFootnote,
-  });
+  const _RichText({required this.text, required this.style, this.onFootnote});
 
   final String text;
   final TextStyle style;
@@ -312,7 +311,10 @@ class _SectionHeading extends StatelessWidget {
     final primary = level <= 2;
 
     return Padding(
-      padding: EdgeInsets.only(top: primary ? 30 : 20, bottom: primary ? 10 : 4),
+      padding: EdgeInsets.only(
+        top: primary ? 30 : 20,
+        bottom: primary ? 10 : 4,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -340,7 +342,10 @@ class _SectionHeading extends StatelessWidget {
                     onPressed: onCopyLink,
                     visualDensity: VisualDensity.compact,
                     padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(minWidth: 26, minHeight: 26),
+                    constraints: const BoxConstraints(
+                      minWidth: 26,
+                      minHeight: 26,
+                    ),
                     icon: Icon(Icons.link, size: 14, color: tone.faint),
                   ),
                 ),
@@ -352,7 +357,8 @@ class _SectionHeading extends StatelessWidget {
                 label: 'modifier',
                 color: tone.faint,
                 hoverColor: IvoireColors.link,
-                onTap: () => wikiNotImplemented(context, 'Modifier une section'),
+                onTap: () =>
+                    wikiNotImplemented(context, 'Modifier une section'),
                 style: const TextStyle(fontSize: 11.5, height: 1.2),
               ),
             ],

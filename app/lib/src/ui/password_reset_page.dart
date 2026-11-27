@@ -29,8 +29,9 @@ class PasswordResetPage extends StatefulWidget {
 
 class _PasswordResetPageState extends State<PasswordResetPage> {
   final GlobalKey<FormState> _form = GlobalKey<FormState>();
-  late final TextEditingController _email =
-      TextEditingController(text: widget.email ?? '');
+  late final TextEditingController _email = TextEditingController(
+    text: widget.email ?? '',
+  );
   final TextEditingController _password = TextEditingController();
   final TextEditingController _confirm = TextEditingController();
 
@@ -156,10 +157,10 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
                       : 'Mot de passe oublié',
                   intro: _choosing
                       ? 'Ce lien est valable une heure et ne sert qu’une fois. '
-                          'Choisissez un mot de passe d’au moins 8 caractères.'
+                            'Choisissez un mot de passe d’au moins 8 caractères.'
                       : 'Indiquez l’adresse de votre compte : si elle est inscrite, '
-                          'un lien de réinitialisation lui est envoyé. La lecture '
-                          'reste libre et sans compte.',
+                            'un lien de réinitialisation lui est envoyé. La lecture '
+                            'reste libre et sans compte.',
                 ),
                 const SizedBox(height: 22),
                 if (_notice != null) _noticePanel(tone) else _formPanel(tone),
@@ -191,8 +192,9 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
               controller: _email,
               readOnly: _choosing,
               keyboardType: TextInputType.emailAddress,
-              textInputAction:
-                  _choosing ? TextInputAction.next : TextInputAction.done,
+              textInputAction: _choosing
+                  ? TextInputAction.next
+                  : TextInputAction.done,
               autofillHints: const [AutofillHints.email],
               validator: _validateEmail,
               onFieldSubmitted: (_) {
@@ -246,7 +248,10 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
               const SizedBox(height: 16),
               Container(
                 key: const Key('reset-error'),
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   color: IvoireColors.highlight,
                   borderRadius: BorderRadius.circular(10),
@@ -283,9 +288,9 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
             Text(
               _choosing
                   ? 'Le lien est brûlé dès l’enregistrement : il ne pourra plus '
-                      'resservir. Toutes les sessions ouvertes ailleurs sont fermées.'
+                        'resservir. Toutes les sessions ouvertes ailleurs sont fermées.'
                   : 'La réponse est la même que l’adresse soit inscrite ou non : '
-                      'ce formulaire ne permet pas de savoir qui possède un compte.',
+                        'ce formulaire ne permet pas de savoir qui possède un compte.',
               style: TextStyle(fontSize: 11.5, height: 1.55, color: tone.faint),
             ),
           ],
@@ -309,7 +314,9 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
           Row(
             children: [
               Icon(
-                _choosing ? Icons.check_circle_outline : Icons.mark_email_read_outlined,
+                _choosing
+                    ? Icons.check_circle_outline
+                    : Icons.mark_email_read_outlined,
                 size: 22,
                 color: IvoireColors.greenDeep,
               ),
@@ -335,10 +342,10 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
           Text(
             _choosing
                 ? 'Connectez-vous avec ce nouveau mot de passe ; les autres '
-                    'appareils devront se reconnecter.'
+                      'appareils devront se reconnecter.'
                 : 'Le lien expire au bout d’une heure. Sans courriel après '
-                    'quelques minutes, regardez les indésirables, puis '
-                    'redemandez-en un.',
+                      'quelques minutes, regardez les indésirables, puis '
+                      'redemandez-en un.',
             style: TextStyle(fontSize: 12.5, height: 1.55, color: tone.muted),
           ),
           if (_choosing) ...[
@@ -362,14 +369,15 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         Text(
-          _choosing ? 'Lien expiré ou déjà utilisé ?' : 'Vous vous en souvenez ?',
+          _choosing
+              ? 'Lien expiré ou déjà utilisé ?'
+              : 'Vous vous en souvenez ?',
           style: TextStyle(fontSize: 13.5, color: tone.muted),
         ),
         TextButton(
           key: const Key('reset-restart'),
-          onPressed: () => context.go(
-            _choosing ? '/mot-de-passe-oublie' : '/connexion',
-          ),
+          onPressed: () =>
+              context.go(_choosing ? '/mot-de-passe-oublie' : '/connexion'),
           child: Text(
             _choosing ? 'Demander un nouveau lien' : 'Revenir à la connexion',
           ),

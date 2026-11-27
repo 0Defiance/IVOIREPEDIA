@@ -81,7 +81,11 @@ class PlaceClimate {
 
 /// Une région rattachée à un district.
 class PlaceChild {
-  const PlaceChild({required this.name, required this.slug, required this.population});
+  const PlaceChild({
+    required this.name,
+    required this.slug,
+    required this.population,
+  });
 
   final String name;
   final String slug;
@@ -178,7 +182,10 @@ class PlaceDetail {
           ? null
           : PlaceEstimate.fromJson(json['estimate'] as Map<String, dynamic>),
       articles: ((json['articles'] as List<dynamic>?) ?? const [])
-          .map((article) => ArticleSummary.fromJson(article as Map<String, dynamic>))
+          .map(
+            (article) =>
+                ArticleSummary.fromJson(article as Map<String, dynamic>),
+          )
           .toList(growable: false),
       sourceName: source?['name'] as String?,
       sourceUrl: source?['url'] as String?,
@@ -205,8 +212,10 @@ class PlaceDirectory {
   final String? sourceUrl;
 
   factory PlaceDirectory.fromJson(Map<String, dynamic> json) {
-    final data = (json['data'] as Map<String, dynamic>?) ?? const <String, dynamic>{};
-    final meta = (json['meta'] as Map<String, dynamic>?) ?? const <String, dynamic>{};
+    final data =
+        (json['data'] as Map<String, dynamic>?) ?? const <String, dynamic>{};
+    final meta =
+        (json['meta'] as Map<String, dynamic>?) ?? const <String, dynamic>{};
     final source = meta['source'] as Map<String, dynamic>?;
 
     List<PlaceChild> parse(String key) {

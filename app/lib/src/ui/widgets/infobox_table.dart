@@ -87,7 +87,10 @@ class InfoboxTable extends StatelessWidget {
                 Text(
                   typeLabel,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 11, color: IvoireColors.muted),
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: IvoireColors.muted,
+                  ),
                 ),
               ],
             ),

@@ -61,7 +61,8 @@ class HistoryStory {
   final HistorySource source;
 
   factory HistoryStory.fromJson(Map<String, dynamic> json) {
-    final paragraphs = (json['paragraphs'] as List<dynamic>?) ?? const <dynamic>[];
+    final paragraphs =
+        (json['paragraphs'] as List<dynamic>?) ?? const <dynamic>[];
     final figures = (json['figures'] as List<dynamic>?) ?? const <dynamic>[];
 
     return HistoryStory(
@@ -69,7 +70,9 @@ class HistoryStory {
       title: json['title'] as String? ?? '',
       period: json['period'] as String?,
       teaser: json['teaser'] as String? ?? '',
-      paragraphs: paragraphs.map((item) => item.toString()).toList(growable: false),
+      paragraphs: paragraphs
+          .map((item) => item.toString())
+          .toList(growable: false),
       figures: figures
           .map((item) => HistoryFigure.fromJson(item as Map<String, dynamic>))
           .toList(growable: false),

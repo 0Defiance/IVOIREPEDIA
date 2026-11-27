@@ -125,13 +125,16 @@ class StatisticTheme {
   final List<StatisticIndicator> indicators;
 
   factory StatisticTheme.fromJson(Map<String, dynamic> json) {
-    final indicators = (json['indicators'] as List<dynamic>?) ?? const <dynamic>[];
+    final indicators =
+        (json['indicators'] as List<dynamic>?) ?? const <dynamic>[];
 
     return StatisticTheme(
       code: json['code'] as String? ?? '',
       label: json['label'] as String? ?? '',
       indicators: indicators
-          .map((item) => StatisticIndicator.fromJson(item as Map<String, dynamic>))
+          .map(
+            (item) => StatisticIndicator.fromJson(item as Map<String, dynamic>),
+          )
           .toList(growable: false),
     );
   }
@@ -200,14 +203,17 @@ class CensusSummary {
       source: json['source'] is Map<String, dynamic>
           ? StatisticSource.fromJson(json['source'] as Map<String, dynamic>)
           : null,
-      growthPercent: (json['growth'] is Map<String, dynamic>
-              ? (json['growth'] as Map<String, dynamic>)['percent_per_year'] as num?
-              : null)
-          ?.toDouble(),
-      growthYear: (json['growth'] is Map<String, dynamic>
-              ? (json['growth'] as Map<String, dynamic>)['year'] as num?
-              : null)
-          ?.toInt(),
+      growthPercent:
+          (json['growth'] is Map<String, dynamic>
+                  ? (json['growth'] as Map<String, dynamic>)['percent_per_year']
+                        as num?
+                  : null)
+              ?.toDouble(),
+      growthYear:
+          (json['growth'] is Map<String, dynamic>
+                  ? (json['growth'] as Map<String, dynamic>)['year'] as num?
+                  : null)
+              ?.toInt(),
     );
   }
 }
@@ -242,14 +248,20 @@ class StatisticsSnapshot {
   final String? censusNote;
 
   factory StatisticsSnapshot.fromJson(Map<String, dynamic> payload) {
-    final data = (payload['data'] as Map<String, dynamic>?) ?? const <String, dynamic>{};
-    final divisions = (data['divisions'] as Map<String, dynamic>?) ?? const <String, dynamic>{};
-    final meta = (payload['meta'] as Map<String, dynamic>?) ?? const <String, dynamic>{};
+    final data =
+        (payload['data'] as Map<String, dynamic>?) ?? const <String, dynamic>{};
+    final divisions =
+        (data['divisions'] as Map<String, dynamic>?) ??
+        const <String, dynamic>{};
+    final meta =
+        (payload['meta'] as Map<String, dynamic>?) ?? const <String, dynamic>{};
 
     List<StatisticDivision> read(String key) {
       final rows = (divisions[key] as List<dynamic>?) ?? const <dynamic>[];
       return rows
-          .map((item) => StatisticDivision.fromJson(item as Map<String, dynamic>))
+          .map(
+            (item) => StatisticDivision.fromJson(item as Map<String, dynamic>),
+          )
           .toList(growable: false);
     }
 
@@ -258,7 +270,9 @@ class StatisticsSnapshot {
         (data['census'] as Map<String, dynamic>?) ?? const <String, dynamic>{},
       ),
       headline: ((data['headline'] as List<dynamic>?) ?? const <dynamic>[])
-          .map((item) => StatisticIndicator.fromJson(item as Map<String, dynamic>))
+          .map(
+            (item) => StatisticIndicator.fromJson(item as Map<String, dynamic>),
+          )
           .toList(growable: false),
       themes: ((data['themes'] as List<dynamic>?) ?? const <dynamic>[])
           .map((item) => StatisticTheme.fromJson(item as Map<String, dynamic>))
@@ -390,7 +404,8 @@ class ClimateSnapshot {
   bool get isEmpty => cities.isEmpty;
 
   factory ClimateSnapshot.fromJson(Map<String, dynamic> json) {
-    final period = (json['period'] as Map<String, dynamic>?) ?? const <String, dynamic>{};
+    final period =
+        (json['period'] as Map<String, dynamic>?) ?? const <String, dynamic>{};
     final cities = (json['cities'] as List<dynamic>?) ?? const <dynamic>[];
 
     return ClimateSnapshot(

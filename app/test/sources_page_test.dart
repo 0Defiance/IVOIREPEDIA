@@ -35,12 +35,16 @@ class _SourcesApi extends FakeIvoirepediaApi {
               'url': 'https://www.anstat.ci',
               'articles': [
                 {'slug': 'abidjan', 'title': 'Abidjan'},
-                {'slug': 'le-cacao-en-cote-d-ivoire', 'title': 'Le cacao en Côte d’Ivoire'},
+                {
+                  'slug': 'le-cacao-en-cote-d-ivoire',
+                  'title': 'Le cacao en Côte d’Ivoire',
+                },
               ],
             },
             {
               'id': 'rgph-2021',
-              'title': 'Recensement général de la population et de l’habitat 2021',
+              'title':
+                  'Recensement général de la population et de l’habitat 2021',
               'year': 2022,
               'url': null,
               'articles': [
@@ -59,7 +63,10 @@ class _SourcesApi extends FakeIvoirepediaApi {
               'year': null,
               'url': 'https://whc.unesco.org/fr/etatsparties/ci',
               'articles': [
-                {'slug': 'parc-national-de-tai', 'title': 'Parc national de Taï'},
+                {
+                  'slug': 'parc-national-de-tai',
+                  'title': 'Parc national de Taï',
+                },
               ],
             },
           ],
@@ -103,7 +110,10 @@ void main() {
     expect(find.text('D’où viennent nos informations'), findsOneWidget);
     expect(find.text('ANStat (ex-INS)'), findsOneWidget);
     expect(find.text('UNESCO'), findsOneWidget);
-    expect(find.text('Chiffres clés de la Côte d’Ivoire 2025 (2025)'), findsOneWidget);
+    expect(
+      find.text('Chiffres clés de la Côte d’Ivoire 2025 (2025)'),
+      findsOneWidget,
+    );
     expect(find.text('2 références'), findsOneWidget);
     expect(find.text('1 référence'), findsOneWidget);
     expect(find.textContaining('Cité par :'), findsNWidgets(3));
@@ -120,7 +130,9 @@ void main() {
     expect(find.text('ARTICLES SOURCÉS'), findsOneWidget);
   });
 
-  testWidgets('une source cite ses articles et mène à l’article', (tester) async {
+  testWidgets('une source cite ses articles et mène à l’article', (
+    tester,
+  ) async {
     await openSources(tester);
 
     await tester.tap(find.text('Bouaké').first);
@@ -129,8 +141,9 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('la fiche ouverte depuis un article est mise en évidence',
-      (tester) async {
+  testWidgets('la fiche ouverte depuis un article est mise en évidence', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       AuthScope(
         store: AuthStore(),
@@ -147,7 +160,9 @@ void main() {
 
     expect(find.text('Référence ouverte depuis un article'), findsOneWidget);
     expect(
-      find.text('Recensement général de la population et de l’habitat 2021 (2022)'),
+      find.text(
+        'Recensement général de la population et de l’habitat 2021 (2022)',
+      ),
       findsOneWidget,
     );
     expect(tester.takeException(), isNull);

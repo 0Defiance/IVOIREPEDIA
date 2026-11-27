@@ -62,7 +62,8 @@ class SourceInstitution {
   final List<SourceReference> references;
 
   factory SourceInstitution.fromJson(Map<String, dynamic> json) {
-    final references = (json['references'] as List<dynamic>?) ?? const <dynamic>[];
+    final references =
+        (json['references'] as List<dynamic>?) ?? const <dynamic>[];
 
     return SourceInstitution(
       name: (json['name'] as String?) ?? '',

@@ -8,7 +8,9 @@ void wikiNotImplemented(BuildContext context, String label) {
     ..hideCurrentSnackBar()
     ..showSnackBar(
       SnackBar(
-        content: Text('« $label » sera activé avec les fonctionnalités à venir.'),
+        content: Text(
+          '« $label » sera activé avec les fonctionnalités à venir.',
+        ),
         duration: const Duration(seconds: 2),
       ),
     );

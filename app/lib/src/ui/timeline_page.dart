@@ -42,7 +42,8 @@ class _TimelinePageState extends State<TimelinePage> {
             const PageHeader(
               kicker: 'HISTOIRE DE LA CÔTE D’IVOIRE',
               title: 'La frise du temps',
-              intro: 'Des royaumes akan à aujourd’hui : chaque date renvoie au '
+              intro:
+                  'Des royaumes akan à aujourd’hui : chaque date renvoie au '
                   'récit qui la raconte, avec son document de référence.',
             ),
             const SizedBox(height: 18),
@@ -87,13 +88,18 @@ class _TimelinePageState extends State<TimelinePage> {
                     children: [
                       for (final entry in eras.entries) ...[
                         _EraHeader(label: entry.key, count: entry.value.length),
-                        for (final event in entry.value) _TimelineRow(event: event),
+                        for (final event in entry.value)
+                          _TimelineRow(event: event),
                         const SizedBox(height: 26),
                       ],
                       Text(
                         'Source des dates : les récits citent chacun leur document '
                         '(UNESCO, revue académique, recensement).',
-                        style: TextStyle(fontSize: 12, height: 1.5, color: tone.faint),
+                        style: TextStyle(
+                          fontSize: 12,
+                          height: 1.5,
+                          color: tone.faint,
+                        ),
                       ),
                     ],
                   ),
@@ -196,15 +202,13 @@ class _TimelineRowState extends State<_TimelineRow> {
                     height: 9,
                     margin: const EdgeInsets.only(top: 6),
                     decoration: BoxDecoration(
-                      color: _hovered ? IvoireColors.orange : IvoireColors.green,
+                      color: _hovered
+                          ? IvoireColors.orange
+                          : IvoireColors.green,
                       shape: BoxShape.circle,
                     ),
                   ),
-                  Container(
-                    width: 1,
-                    height: 46,
-                    color: tone.lineSoft,
-                  ),
+                  Container(width: 1, height: 46, color: tone.lineSoft),
                 ],
               ),
               const SizedBox(width: 14),
@@ -230,7 +234,11 @@ class _TimelineRowState extends State<_TimelineRow> {
                     const SizedBox(height: 5),
                     Text(
                       event.teaser,
-                      style: TextStyle(fontSize: 13.5, height: 1.6, color: tone.muted),
+                      style: TextStyle(
+                        fontSize: 13.5,
+                        height: 1.6,
+                        color: tone.muted,
+                      ),
                     ),
                   ],
                 ),

@@ -3074,6 +3074,22 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 122 — 27 novembre 2026 · Reformatage Dart de `app/`
+
+**Constat** : `git status` traînait depuis plusieurs séances 37 fichiers modifiés dans `app/lib` et `app/test` (1 111 insertions, 586 suppressions), sans commit ni explication.
+
+**Vérification** : ces fichiers sont la sortie du formateur sur la version commitée, rien de plus. Export de HEAD (`git archive`) puis `dart format` : « Formatted 65 files (37 changed) » ; la comparaison avec l'arbre de travail ne donne aucune ligne de différence. Le formateur n'a fait que replier des arguments et réindenter — style « tall » des listes, des `for` et des constructeurs —, sans toucher au comportement.
+
+**Décision** : committer plutôt qu'abandonner. Abandonner ne ferait pas disparaître le bruit : le prochain `dart format` recréerait les mêmes 37 fichiers, et ils finiraient par se mêler à une séance sans rapport. Le dépôt reste ainsi au niveau de sortie de son propre SDK (Dart 3.13.5).
+
+**Piège** : sous Windows, `diff -r` signale les fichiers entiers à cause des CRLF ; il faut `--strip-trailing-cr` pour ne comparer que le contenu, sinon on conclut à tort à un vrai diff.
+
+**Vérifié** : `flutter analyze --no-pub` : « No issues found! » ; `flutter test --no-pub` : 70 tests verts. `--no-pub` est nécessaire ici : pub.dev est injoignable depuis cette machine (`schannel: CRYPT_E_REVOCATION_OFFLINE`), et les paquets déjà résolus dans `.dart_tool/` suffisent.
+
+**Reste** : rien côté app. Aucune étape ne contrôle le formatage (la CI ne lance que `flutter analyze` et `flutter test`) : le décalage peut revenir.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

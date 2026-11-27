@@ -323,10 +323,7 @@ class PrivacyPage extends StatelessWidget {
               'purgés.',
         ]),
       ],
-      links: {
-        'Nous écrire': '/contact',
-        'À propos du projet': '/a-propos',
-      },
+      links: {'Nous écrire': '/contact', 'À propos du projet': '/a-propos'},
     );
   }
 }
@@ -528,7 +525,8 @@ class _ContactPageState extends State<ContactPage> {
                 return null;
               }
 
-              final valid = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email);
+              final valid = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
+                  .hasMatch(email);
 
               return valid ? null : 'Cette adresse ne semble pas valide.';
             },
@@ -569,7 +567,10 @@ class _ContactPageState extends State<ContactPage> {
             Text(
               _error!,
               key: const Key('contact-error'),
-              style: const TextStyle(fontSize: 13.5, color: IvoireColors.orangeDeep),
+              style: const TextStyle(
+                fontSize: 13.5,
+                color: IvoireColors.orangeDeep,
+              ),
             ),
           ],
           const SizedBox(height: 14),
