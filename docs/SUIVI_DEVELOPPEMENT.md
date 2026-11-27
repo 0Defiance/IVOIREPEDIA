@@ -4,9 +4,9 @@
 > Chaque séance de travail ajoute une entrée datée.
 > Règle : ce journal, le dépôt local et le dépôt distant restent **au même niveau d'information**.
 
-**Version** : 1.8 · **Dernière mise à jour** : 4 novembre 2026
+**Version** : 1.9 · **Dernière mise à jour** : 27 novembre 2026
 
-**État en une phrase** : **IVOIREPEDIA est en ligne** sur son compte Alwaysdata dédié — Sprint 0 terminé, backend déployé (Laravel 13.39.0, PHP 8.4.27), le **site est lisible en ligne** (`https://ivoirepedia.alwaysdata.net/site/`) et branché sur l'API (`/api/v1/articles`, `/categories`, `/search`). Restent le contenu éditorial, l'authentification (Sprint 1) et l'éditeur (Sprint 2).
+**État en une phrase** : **IVOIREPEDIA est en ligne** sur son compte Alwaysdata dédié — Sprint 0 terminé et backend déployé (Laravel 13.39.0, PHP 8.4.27), le **site se lit en ligne** (`https://ivoirepedia.alwaysdata.net/site/`) sur une API `/api/v1` qui sert articles, catégories, recherche, statistiques, histoire, lieux et sources ; le **Sprint 1 est fait** (comptes lecteurs : inscription, connexion par jeton, mot de passe oublié, rôles READER / CONTRIBUTOR / ADMIN) et le **panneau éditorial `/admin`** couvre tout le cycle d'un article (rédaction, modification, transitions de relecture, catégories, étiquettes, utilisateurs, messages de contact), sur un corpus de 401 notices de personnalités ; **restent l'éditeur d'article dans l'application (Sprint 2)**, les contributions et discussions (Sprint 3), et l'élargissement du contenu au-delà des personnalités — le tout tenu par 170 tests backend (5 703 assertions) et 73 tests Flutter, avec une CI qui vérifie aussi le formatage Dart depuis la séance 124.
 
 ---
 
