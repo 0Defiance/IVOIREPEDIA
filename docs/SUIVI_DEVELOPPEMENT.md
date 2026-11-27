@@ -4,9 +4,9 @@
 > Chaque séance de travail ajoute une entrée datée.
 > Règle : ce journal, le dépôt local et le dépôt distant restent **au même niveau d'information**.
 
-**Version** : 1.9 · **Dernière mise à jour** : 27 novembre 2026
+**Version** : 1.10 · **Dernière mise à jour** : 27 novembre 2026
 
-**État en une phrase** : **IVOIREPEDIA est en ligne** sur son compte Alwaysdata dédié — Sprint 0 terminé et backend déployé (Laravel 13.39.0, PHP 8.4.27), le **site se lit en ligne** (`https://ivoirepedia.alwaysdata.net/site/`) sur une API `/api/v1` qui sert articles, catégories, recherche, statistiques, histoire, lieux et sources ; le **Sprint 1 est fait** (comptes lecteurs : inscription, connexion par jeton, mot de passe oublié, rôles READER / CONTRIBUTOR / ADMIN) et le **panneau éditorial `/admin`** couvre tout le cycle d'un article (rédaction, modification, transitions de relecture, catégories, étiquettes, utilisateurs, messages de contact), sur un corpus de 401 notices de personnalités ; **restent l'éditeur d'article dans l'application (Sprint 2)**, les contributions et discussions (Sprint 3), et l'élargissement du contenu au-delà des personnalités — le tout tenu par 170 tests backend (5 703 assertions) et 73 tests Flutter, avec une CI qui vérifie aussi le formatage Dart depuis la séance 124.
+**État en une phrase** : **IVOIREPEDIA est en ligne** sur son compte Alwaysdata dédié — Sprint 0 terminé et backend déployé (Laravel 13.39.0, PHP 8.4.27), le **site se lit en ligne à la racine du domaine** (`https://ivoirepedia.alwaysdata.net/` ; l'ancienne adresse `/site/` y redirige en 301) sur une API `/api/v1` qui sert articles, catégories, recherche, statistiques, histoire, frise, lieux et sources — ces routes vérifiées en production le 27 novembre 2026 ; le **Sprint 1 est fait** (comptes lecteurs : inscription, connexion par jeton, mot de passe oublié, rôles READER / CONTRIBUTOR / ADMIN) et le **panneau éditorial `/admin`** couvre tout le cycle d'un article (rédaction, modification, transitions de relecture, catégories, étiquettes, utilisateurs, messages de contact), sur **479 articles publiés** (403 biographies, 41 territoires, 30 sujets, 5 institutions) ; **restent l'éditeur d'article dans l'application (Sprint 2)**, les contributions et discussions (Sprint 3), et l'élargissement du contenu — le tout tenu par 170 tests backend (5 703 assertions) et 73 tests Flutter, avec une CI qui vérifie aussi le formatage Dart depuis la séance 124.
 
 ---
 
@@ -3111,6 +3111,22 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 **Vérifié** : localement, `dart format --set-exit-if-changed lib test` → « Formatted 66 files (0 changed) », code de sortie 0 (Dart 3.13.5, le SDK de Flutter 3.47.7). Le décompte passe de 65 à 66 fichiers depuis la séance 122 : `app/test/editorial_form_test.dart` s'est ajouté. Le formatage n'étant pas touché, les suites restent celles de la séance 123 (`flutter analyze` sans remarque, 73 tests verts ; backend 170 tests / 5 703 assertions).
 
 **Reste** : rien. Le contrôle ne dit rien du formatage au-delà de `lib` et `test` (ni `integration_test/`, ni les fichiers hors de `app/`), ce qui correspond au périmètre formaté à ce jour.
+
+---
+
+## Séance 125 — 27 novembre 2026 · L'en-tête du journal confronté à la production
+
+**Constat** : l'en-tête venait d'être rafraîchi sur la foi des séances 121 à 124, sans aller voir le site. Deux affirmations y étaient périmées ou fausses : l'adresse du site (`/site/`) et le corpus (« 401 notices de personnalités »).
+
+**Vérifié en production** (lecture seule, `curl` et un onglet de navigateur, 27 novembre 2026) :
+- **Routes de lecture** : `/api/v1/health`, `articles`, `categories`, `search?q=ivoire`, `statistics`, `history`, `timeline`, `places`, `sources`, `articles/random` → toutes **200** en `application/json`, avec du contenu réel (statistiques 101 ko, sources 105 ko, histoire 18 ko, lieux 7 ko).
+- **Routes d'authentification** : `POST /auth/login` et `POST /auth/register` sans corps → **422** avec les messages de validation attendus ; `POST /auth/forgot-password` sans corps → **422** ; `GET /auth/me` sans jeton → **401 `UNAUTHENTICATED`**. Aucune écriture : les seules requêtes non-GET étaient ces refus de validation, aucun compte n'a été créé.
+- **Site Flutter** : `/site/` répond **301** vers `https://ivoirepedia.alwaysdata.net/` ; la racine sert la coquille (`<base href="/">`, titre « Ivoirepedia, l'encyclopédie libre de la Côte d'Ivoire »), `main.dart.js` (3,08 Mo, `text/javascript`), `flutter_bootstrap.js`, `FontManifest.json` et `manifest.json` en **200**. Dans le navigateur, `flutter-view` est présente et la page appelle six fois l'API en **200** (articles, catégories, statistiques, frise, sources, histoire), sans erreur de console.
+- **Corpus** : `meta.total` = **479** articles publiés, répartis en 403 biographies, 41 territoires, 30 sujets et 5 institutions (comptage sur les 24 pages de `limit=20`).
+
+**Corrigé** : l'adresse de l'en-tête devient la racine du domaine, `/site/` n'étant plus qu'une redirection ; le corpus annoncé passe de « 401 notices de personnalités » à « 479 articles publiés », avec sa répartition. Les 401 restent le nombre de notices couvertes par la fixture `notice_tokens.php` des tests, pas ce que sert le site.
+
+**Reste** : la version de PHP (8.4.27) de l'en-tête n'est pas vérifiable en HTTP — elle vient du relevé SSH du déploiement et n'a pas été recontrôlée ici. Quatre mentions de `/site/` subsistent dans des entrées historiques de ce journal (mise en ligne sous ce sous-dossier, bouton « Copier », diagnostic Brotli, motif du déménagement vers la racine), volontairement laissées telles quelles : elles décrivent l'état de l'époque.
 
 ---
 
