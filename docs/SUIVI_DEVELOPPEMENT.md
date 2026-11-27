@@ -3216,6 +3216,20 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 131 — 27 novembre 2026 · Une seule liste d'articles pour catégories et étiquettes
+
+**Constat** : la page de catégorie (séance 40) et la page d'étiquette (séance 130) rendaient la même liste paginée avec deux copies du même code — chargement, accumulation des pages, bouton « Charger la suite », squelette, état vide, lignes d'article. Environ 90 lignes dupliquées : corriger la mise en page d'une ligne d'article demandait de le faire deux fois.
+
+**Fait** : nouveau widget `app/lib/src/ui/widgets/article_list.dart` (`PagedArticleList`) qui porte le chargement page par page, l'accumulation, le bouton de suite, les états chargement / vide / erreur avec réessai, et la ligne d'article (vignette, titre, résumé). Il reçoit `loadPage(page)` — le filtre reste donc celui du serveur, catégorie ou étiquette — et prévient la page du total via `onTotal`. Les deux écrans ne gardent que ce qui leur est propre : la page de catégorie ses onglets, son en-tête et ses sous-catégories ; la page d'étiquette son nom mis en forme et sa ligne de total. La page de catégorie n'a plus qu'à attendre la liste des catégories (un seul appel), et non plus la catégorie **et** ses articles ensemble.
+
+**Test** : `app/test/category_page_test.dart` ajouté — la page de catégorie affiche son en-tête, ses sous-catégories, ses 25 pages annoncées, puis « Charger la suite » demande bien la page 2 au serveur (`[1, 2]`). Les trois cas de `tag_page_test.dart` restent verts sans modification, ce qui vérifie le même widget par l'autre appelant.
+
+**Vérifié** : `dart format --set-exit-if-changed lib test` → 70 fichiers, aucun écart ; `flutter analyze --no-pub` → « No issues found! » ; `flutter test --no-pub` → **77 tests verts** (76 + 1). Aucun fichier PHP touché.
+
+**Reste** : la pagination des résultats de recherche, toujours à offrir — elle prendra le même widget une fois le formulaire de recherche prêt à charger la suite. Toujours aucune relecture visuelle : le site en production porte encore l'ancien bundle.
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

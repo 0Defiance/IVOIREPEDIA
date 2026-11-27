@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../api.dart';
-import '../models/article.dart';
 import '../theme.dart';
 import 'shell.dart';
-import 'wiki_actions.dart';
-import 'widgets/article_image.dart';
-import 'widgets/interactive.dart';
+import 'widgets/article_list.dart';
 import 'widgets/page_parts.dart';
 
 /// Page d'étiquette : « Étiquette : Indépendance » et les articles qui la
@@ -28,33 +25,9 @@ class TagPage extends StatefulWidget {
 }
 
 class _TagPageState extends State<TagPage> {
-  Future<PagedArticles>? _future;
-  int _page = 1;
-  final List<ArticleSummary> _loaded = <ArticleSummary>[];
-  PagedArticles? _lastPage;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _future ??= _load();
-  }
-
-  Future<PagedArticles> _load() async {
-    final articles = await ApiScope.of(context)
-        .fetchArticles(tag: widget.slug, limit: 20, page: _page);
-
-    _lastPage = articles;
-    _loaded.addAll(articles.items);
-
-    return articles;
-  }
-
-  void _loadMore() {
-    setState(() {
-      _page += 1;
-      _future = _load();
-    });
-  }
+  /// Total annoncé par la première page ; nul tant que le serveur n'a pas
+  /// répondu, pour ne pas afficher « 0 page » le temps du chargement.
+  int? _total;
 
   /// Nom lisible quand l'adresse arrive sans `?nom=` (lien partagé, saisie).
   String get _label {
@@ -73,134 +46,39 @@ class _TagPageState extends State<TagPage> {
 
   @override
   Widget build(BuildContext context) {
+    final api = ApiScope.of(context);
+
     return SiteShell(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-        child: FutureBuilder<PagedArticles>(
-          future: _future,
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 50),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Étiquette indisponible', style: titleStyle(size: 26)),
-                    const SizedBox(height: 10),
-                    Text('${snapshot.error}'),
-                    const SizedBox(height: 16),
-                    OutlinedButton(
-                      onPressed: () => setState(() => _future = _load()),
-                      child: const Text('Réessayer'),
-                    ),
-                  ],
-                ),
-              );
-            }
-
-            if (!snapshot.hasData) {
-              return const Padding(
-                padding: EdgeInsets.fromLTRB(0, 28, 0, 40),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Skeleton(width: 200, height: 12),
-                    SizedBox(height: 12),
-                    Skeleton(width: 320, height: 28),
-                    SizedBox(height: 22),
-                    SkeletonParagraph(lines: 3),
-                  ],
-                ),
-              );
-            }
-
-            final total = _lastPage?.total ?? 0;
-
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                PageHeader(
-                  kicker: 'ÉTIQUETTE',
-                  title: 'Étiquette : $_label',
-                  intro:
-                      'Articles publiés qui portent cette étiquette, quel que '
-                      'soit leur domaine.',
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  '$total page${total > 1 ? 's' : ''} avec cette étiquette.',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: IvoireColors.faint,
-                  ),
-                ),
-                const SizedBox(height: 22),
-                SectionHeading(title: 'Pages étiquetées'),
-                const SizedBox(height: 8),
-                if (_loaded.isEmpty)
-                  const Text(
-                    'Aucune page publiée ne porte encore cette étiquette.',
-                    style: TextStyle(fontSize: 14),
-                  )
-                else
-                  for (final article in _loaded)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: MotifCard(
-                        padding: const EdgeInsets.fromLTRB(14, 12, 14, 13),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (article.coverImageUrl != null) ...[
-                              ArticleThumb(
-                                article: article,
-                                width: 92,
-                                height: 70,
-                              ),
-                              const SizedBox(width: 12),
-                            ],
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  HoverLink(
-                                    label: article.title,
-                                    onTap: () => wikiGo(
-                                      context,
-                                      '/articles/${article.slug}',
-                                    ),
-                                    style: titleStyle(
-                                      size: 16,
-                                      weight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 3),
-                                  Text(
-                                    article.summary,
-                                    style: const TextStyle(
-                                      fontSize: 13,
-                                      color: IvoireColors.muted,
-                                      height: 1.55,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                if (_lastPage?.hasMore == true)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 6),
-                    child: OutlinedButton(
-                      onPressed: _loadMore,
-                      child: const Text('Charger la suite'),
-                    ),
-                  ),
-              ],
-            );
-          },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            PageHeader(
+              kicker: 'ÉTIQUETTE',
+              title: 'Étiquette : $_label',
+              intro:
+                  'Articles publiés qui portent cette étiquette, quel que '
+                  'soit leur domaine.',
+            ),
+            if (_total != null) ...[
+              const SizedBox(height: 10),
+              Text(
+                '$_total page${_total! > 1 ? 's' : ''} avec cette étiquette.',
+                style: const TextStyle(fontSize: 12, color: IvoireColors.faint),
+              ),
+            ],
+            const SizedBox(height: 22),
+            SectionHeading(title: 'Pages étiquetées'),
+            const SizedBox(height: 8),
+            PagedArticleList(
+              loadPage: (page) =>
+                  api.fetchArticles(tag: widget.slug, limit: 20, page: page),
+              onTotal: (total) => setState(() => _total = total),
+              emptyMessage:
+                  'Aucune page publiée ne porte encore cette étiquette.',
+            ),
+          ],
         ),
       ),
     );

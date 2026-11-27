@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../api.dart';
-import '../models/article.dart';
 import '../models/category.dart';
 import '../theme.dart';
 import 'shell.dart';
 import 'wiki_actions.dart';
+import 'widgets/article_list.dart';
 import 'widgets/interactive.dart';
-import 'widgets/article_image.dart';
 import 'widgets/page_parts.dart';
 
 /// Page de catégorie : « Catégorie : Histoire », sous-catégories et pages.
@@ -21,30 +20,16 @@ class CategoryPage extends StatefulWidget {
 }
 
 class _CategoryPageState extends State<CategoryPage> {
-  Future<({Category? category, PagedArticles articles})>? _future;
-  int _page = 1;
-  final List<ArticleSummary> _loaded = <ArticleSummary>[];
-  PagedArticles? _lastPage;
+  Future<List<Category>>? _future;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _future ??= _load();
+    _future ??= ApiScope.of(context).fetchCategories();
   }
 
-  Future<({Category? category, PagedArticles articles})> _load() async {
-    final api = ApiScope.of(context);
-    final categories = await api.fetchCategories();
-    final articles = await api.fetchArticles(
-      category: widget.slug,
-      limit: 20,
-      page: _page,
-    );
-
-    _lastPage = articles;
-    _loaded.addAll(articles.items);
-
-    return (category: _find(categories, widget.slug), articles: articles);
+  Future<void> _reload() async {
+    setState(() => _future = ApiScope.of(context).fetchCategories());
   }
 
   Category? _find(List<Category> categories, String slug) {
@@ -61,19 +46,14 @@ class _CategoryPageState extends State<CategoryPage> {
     return null;
   }
 
-  void _loadMore() {
-    setState(() {
-      _page += 1;
-      _future = _load();
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    final api = ApiScope.of(context);
+
     return SiteShell(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-        child: FutureBuilder(
+        child: FutureBuilder<List<Category>>(
           future: _future,
           builder: (context, snapshot) {
             if (snapshot.hasError) {
@@ -87,7 +67,7 @@ class _CategoryPageState extends State<CategoryPage> {
                     Text('${snapshot.error}'),
                     const SizedBox(height: 16),
                     OutlinedButton(
-                      onPressed: () => setState(() => _future = _load()),
+                      onPressed: _reload,
                       child: const Text('Réessayer'),
                     ),
                   ],
@@ -111,7 +91,7 @@ class _CategoryPageState extends State<CategoryPage> {
               );
             }
 
-            final category = snapshot.data!.category;
+            final category = _find(snapshot.data!, widget.slug);
 
             if (category == null) {
               return Padding(
@@ -152,106 +132,54 @@ class _CategoryPageState extends State<CategoryPage> {
                     color: IvoireColors.faint,
                   ),
                 ),
-                if (category.children.isNotEmpty) ...[
-                  const SizedBox(height: 22),
-                  _Heading('Sous-catégories'),
-                  for (final child in category.children)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 6),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.chevron_right,
-                            size: 14,
-                            color: IvoireColors.faint,
-                          ),
-                          HoverLink(
-                            label: child.name,
-                            onTap: () =>
-                                wikiGo(context, '/categories/${child.slug}'),
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            '(${child.articleCount})',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: IvoireColors.muted,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                ],
+                if (category.children.isNotEmpty)
+                  ..._subcategories(context, category),
                 const SizedBox(height: 22),
-                _Heading('Pages dans la catégorie'),
-                if (_loaded.isEmpty)
-                  const Text(
-                    'Aucune page publiée pour le moment.',
-                    style: TextStyle(fontSize: 14),
-                  )
-                else
-                  for (final article in _loaded)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: MotifCard(
-                        padding: const EdgeInsets.fromLTRB(14, 12, 14, 13),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (article.coverImageUrl != null) ...[
-                              ArticleThumb(
-                                article: article,
-                                width: 92,
-                                height: 70,
-                              ),
-                              const SizedBox(width: 12),
-                            ],
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  HoverLink(
-                                    label: article.title,
-                                    onTap: () => wikiGo(
-                                      context,
-                                      '/articles/${article.slug}',
-                                    ),
-                                    style: titleStyle(
-                                      size: 16,
-                                      weight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 3),
-                                  Text(
-                                    article.summary,
-                                    style: const TextStyle(
-                                      fontSize: 13,
-                                      color: IvoireColors.muted,
-                                      height: 1.55,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                if (_lastPage?.hasMore == true)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 6),
-                    child: OutlinedButton(
-                      onPressed: _loadMore,
-                      child: const Text('Charger la suite'),
-                    ),
+                const _Heading('Pages dans la catégorie'),
+                PagedArticleList(
+                  loadPage: (page) => api.fetchArticles(
+                    category: widget.slug,
+                    limit: 20,
+                    page: page,
                   ),
+                ),
               ],
             );
           },
         ),
       ),
     );
+  }
+
+  /// Sous-catégories cliquables, avec leur nombre de pages.
+  List<Widget> _subcategories(BuildContext context, Category category) {
+    return [
+      const SizedBox(height: 22),
+      const _Heading('Sous-catégories'),
+      for (final child in category.children)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 6),
+          child: Row(
+            children: [
+              const Icon(
+                Icons.chevron_right,
+                size: 14,
+                color: IvoireColors.faint,
+              ),
+              HoverLink(
+                label: child.name,
+                onTap: () => wikiGo(context, '/categories/${child.slug}'),
+                style: const TextStyle(fontSize: 14),
+              ),
+              const SizedBox(width: 6),
+              Text(
+                '(${child.articleCount})',
+                style: const TextStyle(fontSize: 12, color: IvoireColors.muted),
+              ),
+            ],
+          ),
+        ),
+    ];
   }
 }
 
