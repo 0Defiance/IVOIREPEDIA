@@ -3179,6 +3179,25 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 129 — 27 novembre 2026 · Sprints 1 à 3 confrontés au code
+
+**Constat** : après les Sprints 4 et 5 (séance 128), les trois premiers restaient intégralement décochés alors que le panneau fait tourner une bonne partie de leur contenu — comptes, brouillons, workflow, versions.
+
+**Vérifié, code et production** :
+- **Sprint 1** : `AuthController` (inscription → READER, `Hash::make`, connexion, `me`, déconnexion, mot de passe oublié et reset), `PasswordResetService` + `ResetPasswordNotification`, `throttle:5,1` et `throttle:10,1` dans `routes/api.php`, middleware `AuthenticateApiToken` et `EnsureEditorialAccess`, policies `ArticlePolicy` et `UserPolicy`, 6 cas dans `tests/Feature/Api/AuthTest.php`. En production : `/auth/register` et `/auth/login` refusent un corps vide en 422, `/auth/me` sans jeton en 401.
+- **Sprint 1, manque** : aucune route ni envoi de vérification d'adresse. `verification_tokens` et `users.email_verified_at` existent, mais seul le reset les utilise et `email_verified` n'est que lu.
+- **Écart relevé** : Sanctum n'est pas installé ; l'API s'appuie sur un modèle maison `ApiToken` et un middleware dédié. ADR-004 le dit maintenant, avec la décision à trancher.
+- **Sprint 2** : `uniqueSlug()` (articles, catégories, étiquettes) avec suffixe et slug figé hors brouillon ; `Admin\ArticleController::store` et `update` ; catégories et étiquettes (`syncTags`) ; références réordonnées (`syncReferences`) ; 17 cas dans `WorkflowTest`.
+- **Sprint 2, manques** : pas d'`ArticleService` pour créer ou modifier (tout est dans le contrôleur) et `lock_version` incrémenté sans comparaison, donc pas de 409 sur un formulaire périmé ; `flutter_quill` absent du `pubspec.yaml` ; l'image de couverture est une **adresse** saisie (avec `alt`, crédit, licence, page source) et non un téléversement ; aucune prévisualisation de brouillon.
+- **Sprint 3** : `Workflow` + 10 cas de `ArticleWorkflowTest`, `ArticleService::transition` (transaction, `lockForUpdate`, garde de publication, `editorial_actions`), versions sur `submit` et `publish` seulement, file de relecture et historique des versions dans `show.blade.php`, « Mes articles » restreint à l'auteur pour un CONTRIBUTOR.
+- **Sprint 3, manques** : aucun écran Flutter de file de révision ni de « mes articles » (`/ma-bibliotheque` ne contient que les favoris) ; les transitions n'envoient aucun courriel — seul le reset en envoie.
+
+**Fait** : CONTEXT §14 (version 2.3) — quinze cases cochées avec leur preuve (cinq au Sprint 1, quatre au Sprint 2, six au Sprint 3), deux items découpés (service d'écriture / conflit 409 ; file de révision et « Mes articles » panneau d'un côté, app de l'autre), quatre points restés décochés et nommés. Les critères de sortie sont annotés : Sprint 1 presque atteint (vérification d'email), Sprint 2 non atteint, Sprint 3 atteint côté panneau. ADR-004 signale l'écart Sanctum ; ligne 2.3 ajoutée à l'historique.
+
+**Reste** : vérification d'adresse email, éditeur Quill et auto-save, téléversement d'images, prévisualisation de brouillon, emails de workflow, file de révision et « Mes articles » dans l'app — puis le conflit optimiste (409) si l'édition à deux est jugée utile au MVP. Avec les listes à jour, le prochain chantier utile reste l'éditeur Flutter (Sprint 2).
+
+---
+
 ## Blocages
 
 **Aucun blocage.** L'API répond en HTTPS sur le compte dédié.

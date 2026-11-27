@@ -119,6 +119,7 @@ Chaque décision est numérotée. Pour en changer : ouvrir une PR qui ajoute un 
 - **Décision** : authentification par email + mot de passe. Côté web (Flutter Web), session par **cookie** (`HttpOnly`, `SameSite=Lax`) ; côté Android plus tard, **jeton personnel révocable** dans `flutter_secure_storage`. Mêmes comptes et rôles pour l'app, l'API et le panneau `/admin`.
 - **Pourquoi** : brique officielle de Laravel, évite d'écrire de la cryptographie maison ; un seul système d'authentification pour les trois surfaces.
 - **Sécurité** : mots de passe hachés avec `Hash::make()` (bcrypt, ≥ 12 rounds), jamais stockés ni loggés en clair.
+- **⚠️ Écart constaté (27 nov. 2026)** : Sanctum n'est pas installé. L'API utilise un modèle maison `ApiToken` (jeton porteur haché, révocable, conservé par l'app dans le stockage du navigateur) et le middleware `AuthenticateApiToken` ; seule la session du panneau `/admin` reste une session Laravel par cookie. Décision à trancher : revenir à Sanctum pour la session web, ou réviser ADR-004.
 
 ### ADR-005 — Versionnage par jalons
 - **Décision** : le champ `articles.content` (JSON) contient toujours le contenu courant. Une ligne `article_versions` (snapshot immuable) est créée à : soumission, chaque sauvegarde d'un article **publié**, publication, rollback.
@@ -888,33 +889,36 @@ Durées **indicatives** pour un développeur seul à temps partiel ; ajuster sel
 - **Critère de sortie** : un nouvel arrivant suit §7 et obtient l'app Flutter **et** l'API en local ; la CI est verte.
 
 ### Sprint 1 — Authentification (≈ 2 semaines) · EF-AUTH-01→05
-- [ ] Inscription + hash du mot de passe (`Hash::make`)
-- [ ] Vérification email (token haché, expiration)
-- [ ] Connexion / déconnexion (Sanctum, session cookie) + `GET /api/v1/me`
-- [ ] Reset du mot de passe
-- [ ] Rate-limiting sur routes sensibles
-- [ ] Middleware d'authentification + Policies (`requireRole()` équivalent)
-- **Critère de sortie** : un utilisateur s'inscrit, vérifie son email, se connecte ; un ADMIN peut le promouvoir en base (via **phpMyAdmin**, l'UI admin vient au Sprint 5).
+- [x] Inscription + hash du mot de passe — `POST /api/v1/auth/register` (`Hash::make`, rôle READER forcé) ; refus de validation vérifié en production (422), couvert par `tests/Feature/Api/AuthTest.php`
+- [ ] Vérification email (token haché, expiration) — le schéma a bien `verification_tokens` et `users.email_verified_at`, mais aucune route ni envoi ne les renseigne : `email_verified` est seulement lu, jamais écrit
+- [x] Connexion / déconnexion + `GET /api/v1/auth/me` — jeton porteur (modèle `ApiToken`, pas Sanctum — écart d'ADR-004 noté ci-dessus), 401 sans jeton en production ; le panneau `/admin` ouvre en plus une session par cookie
+- [x] Reset du mot de passe — `POST /auth/forgot-password` et `/auth/reset-password`, réponse identique quel que soit le compte, `PasswordResetService` et `ResetPasswordNotification`
+- [x] Rate-limiting sur routes sensibles — `throttle:5,1` (inscription, demande de reset) et `throttle:10,1` (connexion, consommation du jeton)
+- [x] Middleware d'authentification + Policies — `AuthenticateApiToken`, `EnsureEditorialAccess`, `ArticlePolicy`, `UserPolicy`
+- **Critère de sortie** : **presque atteint** — inscription, connexion et reset fonctionnent, et la promotion d'un compte se fait depuis le panneau `/admin` (séance 60), plus par phpMyAdmin ; il manque la vérification d'adresse email.
 
 ### Sprint 2 — Articles & éditeur (≈ 2-3 semaines) · EF-ART-01→09
-- [ ] Génération de slug (`Str::slug` + suffixe anti-doublon, tests)
-- [ ] Service article : créer / lire / mettre à jour (avec `lock_version` → 409)
-- [ ] Éditeur `flutter_quill` + auto-save 60 s
-- [ ] Sélection catégorie + tags
-- [ ] Références bibliographiques (ajout / position / suppression)
-- [ ] Upload image de couverture (disque local, MIME vérifié) avec `alt`
-- [ ] Prévisualisation
-- **Critère de sortie** : un CONTRIBUTOR crée, édite et prévisualise un brouillon depuis Flutter Web.
+- [x] Génération de slug (`Str::slug` + suffixe anti-doublon) — `uniqueSlug()` sur articles, catégories et étiquettes, suffixes `-2`, `-3`…, et slug figé dès qu'un article quitte le brouillon
+- [x] Création, lecture et mise à jour d'un brouillon **dans le panneau** — `Admin\ArticleController::store` et `update`, formulaire complet, testé par `AdminContentTest`
+- [ ] Service d'écriture + conflit optimiste : ces lectures/écritures vivent dans le contrôleur, pas dans un `ArticleService` ; `lock_version` est incrémenté mais jamais comparé à celui du formulaire, donc deux onglets s'écrasent sans 409 (le 409 n'existe que pour `WorkflowException`)
+- [ ] Éditeur `flutter_quill` + auto-save 60 s — aucun éditeur dans l'app (`flutter_quill` absent du `pubspec.yaml`) ; le panneau écrit dans un champ texte, sans sauvegarde automatique
+- [x] Sélection catégorie + étiquettes — `form.blade.php` et `syncTags()`
+- [x] Références bibliographiques (ajout, position, suppression) — `syncReferences()` remplace et réordonne ; refus des pages d'accueil et URL signalée sous le champ fautif (séances 113 à 121)
+- [ ] Upload d'image de couverture (disque local, MIME vérifié) — le panneau saisit une **adresse** d'image, avec `alt`, crédit, licence et page source obligatoires ; aucun téléversement
+- [ ] Prévisualisation d'un brouillon — aucune route : l'API ne sert que les articles publiés
+- **Critère de sortie** : **non atteint** — un CONTRIBUTOR rédige et soumet depuis le panneau, pas depuis Flutter Web ; il manque l'éditeur, le téléversement d'images et la prévisualisation.
 
 ### Sprint 3 — Workflow & versions (≈ 2-3 semaines) · EF-WF-01→06, EF-ART-10
-- [ ] `app/Services/Workflow.php` + **tests Pest exhaustifs** (chaque transition, chaque rôle)
-- [ ] `ArticleService::transition` avec transaction + `editorial_actions`
-- [ ] Création des `article_versions` aux jalons (ADR-005)
-- [ ] File de révision (écran Flutter) + page de relecture
-- [ ] Emails de notification (soumission, révision demandée, publication)
-- [ ] Page « Mes articles » avec statuts
-- [ ] Historique des versions (lecture seule)
-- **Critère de sortie** : cycle complet brouillon → publié, avec traçabilité, couvert par tests d'intégration Pest.
+- [x] `app/Services/Workflow.php` + **tests Pest exhaustifs** — 17 cas dans `tests/Unit/WorkflowTest.php`, 10 dans `tests/Feature/Admin/ArticleWorkflowTest.php` (transitions, rôles, auto-relecture, statut illégal)
+- [x] `ArticleService::transition` avec transaction + `editorial_actions` — `lockForUpdate`, garde de publication (titre, résumé, source, `alt`), ligne `editorial_actions` à chaque action
+- [x] `article_versions` aux jalons (ADR-005) — version écrite sur `submit` et `publish`, jamais sur une sauvegarde
+- [x] Page de relecture **dans le panneau** — file de relecture du tableau de bord et écran d'article avec ses transitions et son historique
+- [ ] File de révision **dans l'app Flutter** — aucune route ni écran : la file n'existe que dans `/admin`
+- [ ] Emails de notification (soumission, révision demandée, publication) — seule la réinitialisation de mot de passe envoie un courriel ; une transition ne notifie personne
+- [x] « Mes articles » avec statuts **dans le panneau** — la liste est déjà restreinte à ses propres articles pour un CONTRIBUTOR, avec statut, recherche et filtres qualité
+- [ ] « Mes articles » **dans l'app Flutter** — `/ma-bibliotheque` ne contient que les favoris et les lectures locales
+- [x] Historique des versions en lecture seule — `show.blade.php` liste les jalons avec leur auteur et leur date
+- **Critère de sortie** : **atteint dans le panneau** — cycle brouillon → publié avec traçabilité, couvert par les tests d'intégration Pest ; côté app, il reste l'éditeur et les écrans de rédaction.
 
 ### Sprint 4 — Lecture publique, navigation, recherche (≈ 2 semaines) · EF-RCH-01→05, 08
 - [x] Accueil (la une, récents, article au hasard) et page article (infobox, références, étiquettes, sommaire) — en production, `GET /api/v1/articles/{slug}` renvoie bien `infobox`, `references` et `tags`
@@ -1161,6 +1165,7 @@ jobs:
 | 2026-11-13 | 1.6 | **Pluviométrie et Histoire incroyable** : trois tables de climatologie (ERA5 1991-2020, six villes), `data.climate` dans l'API statistique, graphiques à axes et barres mensuelles, table `history_stories`, endpoint `/api/v1/history`, page Flutter `/histoires`. §8.2 et §11.1 mis à jour. |
 | 2026-11-11 | 1.5 | **Statistiques nationales et articles enrichis** : trois tables (`country_indicators`, `country_indicator_points`, `census_divisions`), endpoint public `GET /api/v1/statistics`, page Flutter `/statistiques`, commandes `country:sync-statistics` (Banque mondiale + RGPH 2021) et `articles:enrich-sources` (infobox et références vérifiées). §8.2 et §11.1 mis à jour. |
 | 2026-11-11 | 1.4 | **Répertoire des sources documentaires** : `docs/SOURCES_INFORMATION.md` recense environ 150 plateformes (institutions ivoiriennes, statistiques internationales, cartographie, patrimoine, archives, recherche, presse, droit, langues, images), chacune vérifiée par requête HTTP le 11 novembre 2026 et assortie de son statut, de sa licence et des règles de citation. Ajouté au §2 comme document de référence. |
+| 2026-11-27 | 2.3 | **Sprints 1 à 3 évalués sur pièces** : cochés pour l'inscription et le hash, la connexion par jeton et le reset, le rate-limiting, les middleware et Policies, les slugs uniques, le brouillon du panneau, catégories/étiquettes, références, `Workflow` et ses tests, `ArticleService::transition`, les versions de jalon, la page de relecture, « Mes articles » et l'historique du panneau. Découpés : « Service article » (aucun conflit `lock_version` détecté), file de révision et « Mes articles » (panneau fait, app absente). Restent : vérification d'email, éditeur Quill et auto-save, téléversement d'images, prévisualisation, emails de workflow. ADR-004 porte désormais l'écart jeton maison / Sanctum. |
 | 2026-11-27 | 2.2 | **Sprints 4 et 5 évalués sur pièces** : cases cochées pour l'accueil et la page article, les pages catégorie, la recherche, la navigation, le responsive, le tableau de bord du panneau, la confidentialité, la licence et le corpus (479 articles). Restent décochés, chacun nommé : pages étiquette, pagination des résultats de recherche, sauvegardes avec test de restauration, revue de sécurité et en-têtes HTTP, mentions légales. Critères de sortie annotés. |
 | 2026-11-27 | 2.1 | **Le panneau d'administration n'est pas Filament** : le back-office est un panneau maison en Blade sur `/admin` (session par cookie, middleware `editorial`, Policies), en service avec utilisateurs, catégories, étiquettes, articles et transitions, messages. §0.1, §4 (ADR-001/004/007), §5, §6.1-6.2, §7.2, §11.1, Sprint 5 et glossaire alignés. |
 | 2026-11-03 | 1.3 | **Compte d'hébergement dédié** : IVOIREPEDIA quitte le compte Alwaysdata partagé (ADR-008) — compte, site `ivoirepedia.alwaysdata.net`, dossier, bases `ivoirepedia_prod`/`ivoirepedia_dev` et utilisateur MySQL propres, phpMyAdmin par compte. §5, §7, ADR-002 et ADR-008 alignés ; aucune référence à un autre projet ne subsiste dans le dépôt. |
