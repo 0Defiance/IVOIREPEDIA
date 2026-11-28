@@ -3216,6 +3216,27 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 139 — 28 novembre 2026 · Sortir les sauvegardes du serveur, et le dire quand elles s'arrêtent
+
+**Demandé** : attaquer le chantier le plus utile — copie hors-site automatique des sauvegardes et alerte si aucun dump n'apparaît depuis 36 h, avec doc, tests, commit et push.
+
+**Constat** : tous les dumps vivaient dans `~/backups`, sur la même machine et le même compte que la base (risque R-04). `tools/backup_db.py backup` savait déjà rapatrier une copie, mais à la main, depuis un seul poste. Rien, côté serveur, ne signalait qu'une sauvegarde avait cessé d'arriver : le site continuait de répondre, le silence ressemblait à la normalité.
+
+**Fait** :
+- `App\Support\OffsiteBackups` : envoi des archives sur un disque objet **compatible S3** (`config/filesystems.php`, disque `offsite` avec ses propres clés), en flux (`writeStream`), sans réenvoyer une archive déjà présente à la même taille, avec la **même rétention par base** que le serveur (`BACKUP_OFFSITE_KEEP`, 30 par défaut). Rien n'est actif tant que `BACKUP_OFFSITE_DISK` est vide.
+- `php artisan backup:offsite` (`--dry-run` qui liste) ; `backup:run` l'appelle à la fin d'une sauvegarde réussie et **avant** d'écrire le repère du jour : un envoi manqué laisse le repère en échec, donc une nouvelle tentative dans l'heure, sans jamais supprimer le dump local.
+- `App\Support\BackupWatch` : lit le nom du dernier dump **de la base courante** (pas d'ouverture d'archive) et la date de la dernière alerte ; au-delà de `BACKUP_ALERT_AFTER` (36 h) ou en l'absence de tout dump, envoie `App\Mail\BackupStale` au destinataire `BACKUP_ALERT_EMAIL`, au plus une fois par jour (`.last-alert`). Sans destinataire, l'alerte reste dans `laravel.log`.
+- Le tout branché dans `TriggerDailyBackup`, après l'envoi de la réponse : deux `stat` de plus par requête, aucun dump ouvert.
+- Dépendance `league/flysystem-aws-s3-v3` (^3.35) ajoutée au `composer.json` ; `.env.example` complété.
+
+**Vérifié, local** : `composer test` → **196 tests verts** (copie hors-site : envoi, non-réenvoi, purge, refus sans disque ; alerte : seuil 36 h, absence de dump, une par jour, sans destinataire, autre base ignorée ; middleware : alerte après la réponse). `composer format:check` et `composer analyse` propres. `Mail::fake()` n'enregistre pas `Mail::raw` : l'alerte est un Mailable (`App\Mail\BackupStale`, vue texte), ce qui la rend testable.
+
+**Non vérifié, et pourquoi** : l'envoi réel vers un stockage objet. Aucun compte de stockage n'est ouvert et le dépôt n'a aucune clé : le code est testé contre un disque simulé, pas contre un fournisseur. C'est la seule étape qui reste sur ce chantier.
+
+**Reste** : ouvrir un compte de stockage (R2/S3/B2) et renseigner `BACKUP_OFFSITE_DISK/KEY/SECRET/BUCKET/ENDPOINT` dans le `.env` du serveur ; renseigner `BACKUP_ALERT_EMAIL` ; la tâche planifiée du panneau ; le nom du responsable de publication ; la CSP en mode bloquant.
+
+---
+
 ## Séance 138 — 28 novembre 2026 · Une heure sans dump, on retente ; la case légale reste ouverte
 
 **Demandé** : laisser la case « Mentions légales » du Sprint 5 **ouverte** tant que le nom du responsable de publication n'est pas publié, et faire retenter la sauvegarde au bout d'une heure si aucun dump n'est apparu.

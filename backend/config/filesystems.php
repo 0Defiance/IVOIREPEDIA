@@ -47,6 +47,24 @@ return [
             'report' => false,
         ],
 
+        /*
+        | Sauvegardes hors-site (docs/DEPLOIEMENT.md §8.5) : disque objet
+        | compatible S3, avec ses propres clés pour qu'un jeton d'API ne
+        | donne jamais accès aux sauvegardes par un autre disque.
+        */
+
+        'offsite' => [
+            'driver' => 's3',
+            'key' => env('BACKUP_OFFSITE_KEY'),
+            'secret' => env('BACKUP_OFFSITE_SECRET'),
+            'region' => env('BACKUP_OFFSITE_REGION', 'auto'),
+            'bucket' => env('BACKUP_OFFSITE_BUCKET'),
+            'endpoint' => env('BACKUP_OFFSITE_ENDPOINT'),
+            'use_path_style_endpoint' => env('BACKUP_OFFSITE_PATH_STYLE', false),
+            'throw' => false,
+            'report' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

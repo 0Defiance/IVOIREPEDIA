@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Support\BackupRetention;
 use App\Support\DailyBackup;
+use App\Support\OffsiteBackups;
 use Illuminate\Console\Command;
 use RuntimeException;
 use Symfony\Component\Process\ExecutableFinder;
@@ -83,6 +84,28 @@ class BackupRun extends Command
             }
         } finally {
             @unlink($credentials);
+        }
+
+        // Copie hors-site **avant** de marquer le succès : si elle échoue, le
+        // repère dit « échec » et la tentative revient dans une heure ; le dump
+        // local, lui, n'est jamais perdu.
+        $offsite = OffsiteBackups::fromConfig();
+
+        if ($offsite !== null) {
+            $sent = $offsite->sync();
+
+            foreach ($sent['uploaded'] as $key) {
+                $this->line("offsite={$key}");
+            }
+
+            if (! $offsite->has($offsite->keyFor($dump))) {
+                $this->markAttempt($directory, false);
+                $this->error('Copie hors-site impossible pour '.basename($dump).' : nouvelle tentative dans une heure.');
+
+                return self::FAILURE;
+            }
+
+            $this->info('Hors-site : '.count($sent['uploaded']).' envoyée(s), '.count($sent['pruned']).' purgée(s).');
         }
 
         // Repère partagé avec le déclencheur par requête : quelle que soit la

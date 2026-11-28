@@ -358,7 +358,7 @@ php artisan config:cache && php artisan route:cache && php artisan view:cache
 | Pas de root | Aucune commande système privilégiée ; PHP tourne sous l'utilisateur du compte |
 | Composer | Déjà présent côté serveur : `composer install` fonctionne directement |
 | File d'attente | Pas de worker permanent au MVP : `QUEUE_CONNECTION=database` piloté par une tâche planifiée, ou `sync` tant que rien n'est asynchrone |
-| Sauvegardes | Dump quotidien vérifié (§8) ; sauvegardes Alwaysdata du compte en filet de dernier recours ; **copie hors-site encore absente** (risque R-04) |
+| Sauvegardes | Dump quotidien vérifié (§8) et copie hors-site vers un disque objet S3 (§8.5) ; sauvegardes Alwaysdata du compte en filet de dernier recours ; alerte courriel si aucun dump depuis 36 h (§8.6). Le disque hors-site n'est actif qu'une fois ses quatre clés renseignées |
 | Médias | `storage/app/public` + `php artisan storage:link`, à recréer si le dossier est vidé lors d'un déploiement |
 
 ---
@@ -476,12 +476,76 @@ article dans le navigateur.
 3. Vider les caches (`cd ~/ivoirepedia/backend && php artisan cache:clear && php artisan config:clear`)
 et consigner l'incident dans `docs/SUIVI_DEVELOPPEMENT.md`.
 
-### 8.5 Ce qui reste à faire
+### 8.5 Copie hors-site : les dumps quittent l'hébergeur
+
+Un dump rangé dans `~/backups` reste sur la même machine et le même compte que
+la base : la perte du compte emporte les deux (risque R-04). `backup:run`
+envoie donc chaque paire sur un disque objet **compatible S3**, avec sa propre
+rétention — `App\Support\OffsiteBackups`.
+
+Configuration (serveur, `.env`, jamais dans le dépôt) :
+
+```bash
+BACKUP_OFFSITE_DISK=offsite                 # nom du disque config/filesystems.php
+BACKUP_OFFSITE_ENDPOINT=https://<compte>.r2.cloudflarestorage.com
+BACKUP_OFFSITE_BUCKET=ivoirepedia-backups
+BACKUP_OFFSITE_KEY=...                      # jeton d'API du fournisseur
+BACKUP_OFFSITE_SECRET=...
+BACKUP_OFFSITE_REGION=auto                  # R2 ; sinon la région du fournisseur
+BACKUP_OFFSITE_PREFIX=ivoirepedia
+BACKUP_OFFSITE_KEEP=30                      # archives par type et par base
+```
+
+Les clés sont celles du fournisseur de stockage, **pas** celles du serveur : un
+jeton compromis ne donne jamais accès à autre chose qu'aux sauvegardes. Tant
+que `BACKUP_OFFSITE_DISK` est vide, la copie est désactivée sans erreur et le
+dump local reste la seule copie — `php artisan backup:offsite` le dit alors
+explicitement (code de sortie 1).
+
+```bash
+php artisan backup:offsite --dry-run        # ce qui partirait
+php artisan backup:offsite                  # envoi + purge distante
+```
+
+À la fin d'une sauvegarde réussie, `backup:run` l'appelle seul et **avant**
+d'écrire le repère du jour : une copie hors-site en échec laisse le repère en
+échec, donc une nouvelle tentative dans l'heure, alors que le dump local n'est
+jamais supprimé. L'envoi se fait en flux (`writeStream`) : une archive de 40 Mo
+ne passe pas en mémoire. Une archive déjà présente à la même taille n'est pas
+renvoyée ; une taille différente la renvoie.
+
+> **État au 28 novembre 2026** : le code est livré et testé, mais aucun compte
+> de stockage n'est encore ouvert — aucune copie n'existe donc hors du serveur
+> tant que les quatre clés ci-dessus ne sont pas renseignées. C'est la seule
+> étape qui reste sur ce chantier.
+
+### 8.6 Alerte : plus aucun dump depuis 36 h
+
+Une sauvegarde qui s'arrête sans le dire est plus dangereuse qu'une sauvegarde
+absente : le site répond, tout semble normal. `App\Support\BackupWatch` lit,
+après l'envoi de la réponse (même middleware que le déclencheur), le nom du
+dernier dump **de la base courante** et la date de la dernière alerte : deux
+`stat`, aucune archive ouverte.
+
+```bash
+BACKUP_ALERT_EMAIL=admin@ivoirepedia.ci     # destinataire ; vide = journaux seuls
+BACKUP_ALERT_AFTER=129600                   # 36 h
+BACKUP_ALERT_COOLDOWN=86400                 # une alerte par jour au plus
+```
+
+Quand le dernier dump dépasse le seuil — ou qu'il n'y en a aucun — un courriel
+part avec l'âge du dernier dump, la base, le dossier et les trois commandes à
+lancer (`backup:run`, `backup:offsite`, lecture du journal). Le repère
+`.last-alert` dans `~/backups` limite à un envoi par 24 h : une panne dure ne
+produit pas un courriel par visite. Sans destinataire, l'alerte reste dans
+`laravel.log` (`Sauvegarde : le dernier dump de … a N h`) et rien n'est envoyé.
+
+### 8.7 Ce qui reste à faire
 
 - **La tâche planifiée du panneau** (§3) : elle rendrait la sauvegarde nocturne
   indépendante des visites et supprimerait le déclencheur de secours.
-- **La copie hors-site** (disque externe, autre hébergeur) : la règle 3-2-1
-  n'est pas satisfaite par un seul serveur, même sauvegardé chaque nuit.
+- **Renseigner les clés du disque hors-site** (§8.5) : le code est prêt, le
+  compte de stockage ne l'est pas.
 - Le **nettoyage des anciens dumps** (`db-<horodatage>.sql.gz`) une fois une
   paire au nouveau nom conservée.
 
