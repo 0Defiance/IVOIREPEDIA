@@ -45,8 +45,8 @@ en mode **bloquant** — `Content-Security-Policy`, sans `report-uri` : la conso
 du navigateur reste le seul rapport, ce qui suffit tant que le site n'a pas de
 télémétrie.
 
-Trois choses cassaient sous la politique appliquée ; elles ont été corrigées à
-la source plutôt qu'en élargissant `script-src` :
+Ce qu'il a fallu changer sous la politique appliquée, et pourquoi — corrigé à la
+source plutôt qu'en élargissant `script-src` :
 
 - **deux scripts en ligne** : la couverture de lancement de `app/web/index.html`
   (et ses attributs `onload`/`onerror` sur la balise du chargeur) est devenue
