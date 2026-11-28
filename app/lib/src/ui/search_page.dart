@@ -4,15 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../api.dart';
-import '../models/article.dart';
 import '../models/suggestion.dart';
 import '../storage.dart';
 import '../theme.dart';
 import 'display_settings.dart';
-import 'format.dart';
 import 'shell.dart';
+import 'widgets/article_list.dart';
 import 'widgets/interactive.dart';
-import 'widgets/article_image.dart';
 import 'widgets/page_parts.dart';
 
 /// Recherche publique (`/recherche?q=`) : les résultats se rafraîchissent
@@ -33,10 +31,14 @@ class _SearchPageState extends State<SearchPage> {
   final FocusNode _focus = FocusNode();
   Timer? _debounce;
   Timer? _suggestDebounce;
-  Future<PagedArticles>? _future;
   List<SearchSuggestion> _suggestions = const [];
   String _term = '';
   String _suggestTerm = '';
+
+  /// Ce que la liste partagée a chargé et le total annoncé : la page en écrit
+  /// « Résultats 1 à N sur total ».
+  int _loaded = 0;
+  int _total = 0;
 
   @override
   void didChangeDependencies() {
@@ -112,7 +114,8 @@ class _SearchPageState extends State<SearchPage> {
 
       setState(() {
         _term = term;
-        _future = term.isEmpty ? null : ApiScope.of(context).search(term);
+        _loaded = 0;
+        _total = 0;
         if (term.isEmpty) {
           _suggestions = const [];
         }
@@ -189,7 +192,7 @@ class _SearchPageState extends State<SearchPage> {
               ),
             ],
             const SizedBox(height: 22),
-            if (_future == null)
+            if (_term.isEmpty)
               _EmptyState(
                 onPick: (term) {
                   _controller.text = term;
@@ -201,58 +204,35 @@ class _SearchPageState extends State<SearchPage> {
             else
               AnimatedSwitcher(
                 duration: const Duration(milliseconds: 220),
-                child: FutureBuilder<PagedArticles>(
+                child: Padding(
                   key: ValueKey(_term),
-                  future: _future,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasError) {
-                      return Text(
-                        '${snapshot.error}',
-                        style: const TextStyle(fontSize: 14),
-                      );
-                    }
-
-                    if (!snapshot.hasData) {
-                      return const Column(
-                        key: ValueKey('loading'),
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Skeleton(width: 260, height: 12),
-                          SizedBox(height: 18),
-                          SkeletonParagraph(lines: 2),
-                          SizedBox(height: 12),
-                          SkeletonParagraph(lines: 2),
-                        ],
-                      );
-                    }
-
-                    final page = snapshot.data!;
-
-                    if (page.items.isEmpty) {
-                      return Text(
-                        'Aucun résultat pour « $_term ». Essayez un autre mot, '
-                        'ou parcourez les domaines depuis l’accueil.',
-                        style: const TextStyle(fontSize: 14, height: 1.6),
-                      );
-                    }
-
-                    return Column(
-                      key: ValueKey('results-$_term'),
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                  padding: const EdgeInsets.only(bottom: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (_total > 0) ...[
                         Text(
-                          'Résultats 1 à ${page.items.length} sur ${page.total} pour « $_term »',
+                          'Résultats 1 à $_loaded sur $_total pour « $_term »',
                           style: const TextStyle(
                             fontSize: 12.5,
                             color: IvoireColors.muted,
                           ),
                         ),
                         const SizedBox(height: 16),
-                        for (final article in page.items)
-                          _Result(article: article),
                       ],
-                    );
-                  },
+                      PagedArticleList(
+                        loadPage: (page) =>
+                            ApiScope.of(context).search(_term, page: page),
+                        onProgress: (loaded, total) => setState(() {
+                          _loaded = loaded;
+                          _total = total;
+                        }),
+                        emptyMessage:
+                            'Aucun résultat pour « $_term ». Essayez un autre '
+                            'mot, ou parcourez les domaines depuis l’accueil.',
+                      ),
+                    ],
+                  ),
                 ),
               ),
           ],
@@ -437,91 +417,6 @@ class _EmptyState extends StatelessWidget {
           ],
         ),
       ],
-    );
-  }
-}
-
-class _Result extends StatefulWidget {
-  const _Result({required this.article});
-
-  final ArticleSummary article;
-
-  @override
-  State<_Result> createState() => _ResultState();
-}
-
-class _ResultState extends State<_Result> {
-  bool _hovered = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) => setState(() => _hovered = true),
-      onExit: (_) => setState(() => _hovered = false),
-      child: GestureDetector(
-        onTap: () => context.go('/articles/${widget.article.slug}'),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 140),
-          margin: const EdgeInsets.only(bottom: 10),
-          padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
-          decoration: BoxDecoration(
-            color: _hovered ? IvoireColors.ivory : IvoireColors.paper,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: _hovered
-                  ? IvoireColors.green.withValues(alpha: 0.35)
-                  : IvoireColors.lineSoft,
-            ),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (widget.article.coverImageUrl != null) ...[
-                ArticleThumb(article: widget.article, width: 96, height: 72),
-                const SizedBox(width: 12),
-              ],
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.article.title,
-                      style: titleStyle(
-                        size: 17,
-                        weight: FontWeight.w600,
-                        color: _hovered
-                            ? IvoireColors.greenDeep
-                            : IvoireColors.link,
-                      ),
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      [
-                        if (widget.article.categoryName != null)
-                          widget.article.categoryName!,
-                        widget.article.typeLabel,
-                        if (widget.article.publishedAt != null)
-                          formatDate(widget.article.publishedAt),
-                        '${widget.article.readingMinutes} min',
-                      ].join(' · '),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: IvoireColors.faint,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      widget.article.summary,
-                      style: const TextStyle(fontSize: 13.5, height: 1.65),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

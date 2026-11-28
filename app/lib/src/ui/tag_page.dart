@@ -74,7 +74,7 @@ class _TagPageState extends State<TagPage> {
             PagedArticleList(
               loadPage: (page) =>
                   api.fetchArticles(tag: widget.slug, limit: 20, page: page),
-              onTotal: (total) => setState(() => _total = total),
+              onProgress: (_, total) => setState(() => _total = total),
               emptyMessage:
                   'Aucune page publiée ne porte encore cette étiquette.',
             ),

@@ -95,6 +95,8 @@ void main() {
     expect(find.text('25 pages dans cette catégorie.'), findsOneWidget);
     expect(api.askedCategory, 'histoire');
     expect(find.text('Page 1 de la catégorie'), findsOneWidget);
+    // La ligne partagée écrit le type de page sous le titre.
+    expect(find.textContaining('Sujet'), findsWidgets);
 
     // La liste partagée garde la pagination du serveur : un clic demande la
     // page suivante, sans découper ce qui est déjà chargé.

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/article.dart';
 import '../../theme.dart';
+import '../format.dart';
 import '../wiki_actions.dart';
 import 'article_image.dart';
 import 'interactive.dart';
@@ -14,20 +15,21 @@ import 'page_parts.dart';
 /// les états chargement / vide / erreur vivaient en double dans les deux
 /// écrans. Chacune garde son en-tête et ses liens ; seule la liste est ici.
 ///
-/// [loadPage] reçoit le numéro de page et le filtre du serveur (catégorie ou
-/// étiquette) : la pagination reste celle de l'API, jamais une découpe locale.
-/// [onTotal] prévient la page du total annoncé, pour qu'elle puisse l'afficher.
+/// [loadPage] reçoit le numéro de page et le filtre du serveur (catégorie,
+/// étiquette, terme cherché) : la pagination reste celle de l'API, jamais une
+/// découpe locale. [onProgress] prévient la page de ce qui est chargé et du
+/// total annoncé, pour qu'elle puisse l'écrire (« 1 à 20 sur 479 »).
 class PagedArticleList extends StatefulWidget {
   const PagedArticleList({
     required this.loadPage,
     this.emptyMessage = 'Aucune page publiée pour le moment.',
-    this.onTotal,
+    this.onProgress,
     super.key,
   });
 
   final Future<PagedArticles> Function(int page) loadPage;
   final String emptyMessage;
-  final void Function(int total)? onTotal;
+  final void Function(int loaded, int total)? onProgress;
 
   @override
   State<PagedArticleList> createState() => _PagedArticleListState();
@@ -71,7 +73,7 @@ class _PagedArticleListState extends State<PagedArticleList> {
         _hasMore = page.hasMore;
       });
 
-      widget.onTotal?.call(page.total);
+      widget.onProgress?.call(_items.length, page.total);
     } catch (error) {
       if (mounted) {
         setState(() => _error = error);
@@ -165,6 +167,20 @@ class _ArticleRow extends StatelessWidget {
                     style: titleStyle(size: 16, weight: FontWeight.w600),
                   ),
                   const SizedBox(height: 3),
+                  Text(
+                    [
+                      if (article.categoryName != null) article.categoryName!,
+                      article.typeLabel,
+                      if (article.publishedAt != null)
+                        formatDate(article.publishedAt),
+                      '${article.readingMinutes} min',
+                    ].join(' · '),
+                    style: const TextStyle(
+                      fontSize: 11.5,
+                      color: IvoireColors.faint,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
                   Text(
                     article.summary,
                     style: const TextStyle(

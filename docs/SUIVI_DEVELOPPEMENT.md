@@ -3216,6 +3216,22 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 132 — 27 novembre 2026 · La recherche continue après les douze premiers
+
+**Constat** : `/recherche?q=…` demandait `search(term)` sans numéro de page et affichait 12 résultats sur 479, avec son propre `FutureBuilder`, son squelette, son message « Aucun résultat » et sa ligne de résultat (`_Result`, 95 lignes) — tout ce que la séance 131 venait justement de réunir dans `PagedArticleList`.
+
+**Fait** : l'écran de recherche passe au widget partagé. Le compteur lit maintenant l'avancement de la page (« Résultats 1 à 20 sur 479 pour « … » ») au lieu de supposer une seule page, `Charger la suite` demande la page suivante au serveur, et le cache par terme est conservé (`ValueKey(_term)` recrée la liste quand le mot change). `_Result` est supprimé.
+
+**Effet de bord traité** : la ligne partagée n'affichait que titre et résumé, alors que les résultats de recherche portaient aussi domaine · type · date · minutes. Cette ligne de métadonnées est passée dans le widget partagé : la recherche ne perd rien et les pages de catégorie et d'étiquette la gagnent. `onTotal` devient `onProgress(loaded, total)`, seul moyen d'écrire « 1 à N sur total » honnêtement pendant le chargement.
+
+**Test** : `app/test/search_page_test.dart` — nouveau cas « les résultats s'arrêtent par douze et chargent la suite » (vingt résultats servis en 12 + 8) : la page dit « Résultats 1 à 12 sur 20 », un clic sur « Charger la suite » demande la page 2 et la ligne devient « 1 à 20 sur 20 », sans bouton restant. `category_page_test.dart` vérifie en plus que la ligne de type est rendue.
+
+**Vérifié** : `dart format --set-exit-if-changed lib test` → 70 fichiers, aucun écart ; `flutter analyze --no-pub` → « No issues found! » ; `flutter test --no-pub` → **78 tests verts** (76 + 2). Navigateur, site local (`php artisan serve` sur 8000, `flutter run -d web-server` sur 8082),/categories/histoire et /etiquettes/independance?nom=Indépendance regardées en 390 × 844 et 1280 × 900 : en-tête, compteur, liste et pastilles à leur place, aucune bande de débordement, pas d'erreur console après rechargement. La première visite a rendu des 500 : la base de développement est distante (`mysql-ivoirepedia.alwaysdata.net`) et la connexion était encore coupée.
+
+**Reste** : la pagination de la recherche n'a pas été cliquée dans le navigateur (l'arbre d'accessibilité du canevas Flutter n'expose pas le bouton) — elle est prouvée par le test de widget. Aucun envoi en production : le site public sert toujours l'ancien bundle.
+
+---
+
 ## Séance 131 — 27 novembre 2026 · Une seule liste d'articles pour catégories et étiquettes
 
 **Constat** : la page de catégorie (séance 40) et la page d'étiquette (séance 130) rendaient la même liste paginée avec deux copies du même code — chargement, accumulation des pages, bouton « Charger la suite », squelette, état vide, lignes d'article. Environ 90 lignes dupliquées : corriger la mise en page d'une ligne d'article demandait de le faire deux fois.

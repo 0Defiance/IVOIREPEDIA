@@ -72,6 +72,58 @@ class _SearchApi extends FakeIvoirepediaApi {
   }
 }
 
+/// API paginée : vingt résultats, douze sur la première page, huit sur la
+/// seconde. Elle note les pages demandées pour vérifier la pagination.
+class _PagedSearchApi extends FakeIvoirepediaApi {
+  final List<int> pages = <int>[];
+
+  @override
+  Future<List<Category>> fetchCategories() async => const [];
+
+  @override
+  Future<PagedArticles> fetchArticles({
+    String? category,
+    String? tag,
+    String? query,
+    List<String>? slugs,
+    int page = 1,
+    int limit = 12,
+  }) async => const PagedArticles(items: [], page: 1, limit: 12, total: 0);
+
+  @override
+  Future<StatisticsSnapshot> fetchStatistics() async => statisticsFixture();
+
+  @override
+  Future<List<HistoryStory>> fetchHistory() async => const [];
+
+  @override
+  Future<PagedArticles> search(
+    String query, {
+    int page = 1,
+    int limit = 12,
+  }) async {
+    pages.add(page);
+
+    final first = page == 1 ? 1 : 13;
+    final last = page == 1 ? 12 : 20;
+
+    return PagedArticles(
+      items: [
+        for (var i = first; i <= last; i++)
+          ArticleSummary(
+            slug: 'resultat-$i',
+            title: 'Résultat $i',
+            summary: 'Résumé du résultat $i.',
+            typeLabel: 'Sujet',
+          ),
+      ],
+      page: page,
+      limit: limit,
+      total: 20,
+    );
+  }
+}
+
 Widget _wrap(SearchPage page, IvoirepediaApi api) {
   return AuthScope(
     store: AuthStore(),
@@ -111,5 +163,29 @@ void main() {
 
     expect(api.queries, contains('cacao'));
     expect(find.textContaining('pour « cacao »'), findsOneWidget);
+  });
+
+  testWidgets('les résultats s’arrêtent par douze et chargent la suite', (
+    tester,
+  ) async {
+    final api = _PagedSearchApi();
+
+    await tester.pumpWidget(_wrap(const SearchPage(query: 'ivoire'), api));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('Résultats 1 à 12 sur 20'), findsOneWidget);
+    expect(api.pages, [1]);
+
+    final more = find.text('Charger la suite');
+    await tester.ensureVisible(more);
+    await tester.pumpAndSettle();
+    await tester.tap(more);
+    await tester.pumpAndSettle();
+
+    expect(api.pages, [1, 2]);
+    expect(find.textContaining('Résultats 1 à 20 sur 20'), findsOneWidget);
+    expect(find.text('Charger la suite'), findsNothing);
   });
 }
