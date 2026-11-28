@@ -57,7 +57,9 @@ la source plutôt qu'en élargissant `script-src` :
 - **les couvertures d'articles** sont hébergées par Wikimedia (75 en production
   le 28 novembre 2026 : 19 sur `upload.wikimedia.org`, 56 sur
   `thumb.wikimedia.org`) : sans ces deux hôtes dans `img-src`, elles
-  disparaîtraient ;
+  disparaîtraient. Le moteur en récupère les octets par `fetch`, donc la
+  politique les classe aussi en `connect-src` — vérifié en production le
+  28 novembre 2026 : avec `img-src` seul, le cadre restait vide ;
 - **le moteur Flutter et la police de secours Roboto** sont servis par le site :
   le build passe par `--no-web-resources-cdn`, qui rapatrie `/canvaskit/` et
   `assets/fonts/fallback/Roboto-Regular.ttf`. Sans ce drapeau, vérifié en
@@ -77,7 +79,7 @@ script-src 'self' 'wasm-unsafe-eval';
 style-src 'self' 'unsafe-inline';
 img-src 'self' data: blob: https://upload.wikimedia.org https://thumb.wikimedia.org;
 font-src 'self' data:;
-connect-src 'self';
+connect-src 'self' https://upload.wikimedia.org https://thumb.wikimedia.org;
 media-src 'self' blob:;
 worker-src 'self' blob:;
 frame-ancestors 'self';

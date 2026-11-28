@@ -76,11 +76,16 @@ it('garde script-src sans unsafe-inline et n’ouvre que les hôtes nécessaires
     expect($image)->toContain('https://upload.wikimedia.org')
         ->and($image)->toContain('https://thumb.wikimedia.org');
 
+    // Le moteur Flutter récupère les octets de l'image par `fetch` : la CSP
+    // classe cet appel en connect-src, pas en img-src. Sans les deux hôtes ici,
+    // le cadre reste vide malgré un img-src correct — constaté en production le
+    // 28 novembre 2026.
+    expect($connect)->toContain('https://upload.wikimedia.org')
+        ->and($connect)->toContain('https://thumb.wikimedia.org');
+
     // Le build rapatrie le moteur (`/canvaskit/`) et la police de secours
-    // Roboto (`assets/fonts/fallback/`) : aucun de ces deux CDN de Google n'a
-    // besoin d'être ouvert. Tous les scripts restent servis par le site.
+    // Roboto (`assets/fonts/fallback/`) : aucun CDN de Google n'est ouvert.
     expect($font)->not->toMatch('/https?:/')
-        ->and($connect)->not->toMatch('/https?:/')
         ->and($script)->not->toMatch('/https?:/');
 });
 

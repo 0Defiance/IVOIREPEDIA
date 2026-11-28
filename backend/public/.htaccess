@@ -119,7 +119,9 @@
   #   - les feuilles de style et les polices sont injectées à la volée par le
   #     moteur, d'où 'unsafe-inline' pour style-src et data: pour les polices ;
   #   - les couvertures d'articles sont des images sourcées, hébergées par
-  #     Wikimedia : sans ces deux hôtes, 75 articles perdraient leur image ;
+  #     Wikimedia : sans ces deux hôtes, 75 articles perdraient leur image.
+  #     Le moteur en récupère les octets par `fetch`, donc ils figurent aussi
+  #     dans connect-src — sans quoi le cadre reste vide malgré img-src ;
   #   - le moteur (`/canvaskit/`) et la police de secours Roboto
   #     (`assets/fonts/fallback/`) sont servis par le site : le build passe par
   #     `--no-web-resources-cdn`, sans quoi le bootstrap va les chercher sur
@@ -130,7 +132,7 @@
   # jamais depuis un CDN de scripts.
   # Ajouter un hôte est un acte explicite — une ligne ici, documentée dans
   # docs/SECURITE.md §1.1.
-  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://upload.wikimedia.org https://thumb.wikimedia.org; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; worker-src 'self' blob:; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'"
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://upload.wikimedia.org https://thumb.wikimedia.org; font-src 'self' data:; connect-src 'self' https://upload.wikimedia.org https://thumb.wikimedia.org; media-src 'self' blob:; worker-src 'self' blob:; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'"
 
   # Le code doit être revalidé à chaque visite : une réponse 304 coûte quelques
   # centaines d'octets et un déploiement est visible immédiatement.
