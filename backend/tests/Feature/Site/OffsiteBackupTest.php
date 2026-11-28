@@ -1,6 +1,7 @@
 <?php
 
 use App\Support\OffsiteBackups;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -22,6 +23,9 @@ function offsiteArchive(string $dir, string $name): void
 function dropOffsiteDir(string $dir): void
 {
     foreach (glob($dir.DIRECTORY_SEPARATOR.'*') ?: [] as $file) {
+        @unlink($file);
+    }
+    foreach (glob($dir.DIRECTORY_SEPARATOR.'.[a-z]*') ?: [] as $file) {
         @unlink($file);
     }
     @rmdir($dir);
@@ -95,6 +99,65 @@ it('renvoie une archive dont la taille locale a changé', function () {
     file_put_contents($dir.'/db-ivoirepedia_prod-20261128-033000.sql.gz', str_repeat('y', 128));
 
     expect(OffsiteBackups::fromConfig()?->pending())->toHaveCount(1);
+
+    dropOffsiteDir($dir);
+});
+
+it('n’écrit le repère de dernière copie que si un envoi a réellement réussi', function () {
+    Storage::fake('offsite');
+    $dir = offsiteDir();
+    offsiteArchive($dir, 'db-ivoirepedia_prod-20261128-063424.sql.gz');
+
+    config([
+        'backup.directory' => $dir,
+        'backup.offsite.prefix' => 'ivoirepedia',
+        'backup.offsite.keep' => 30,
+    ]);
+
+    // Disque qui accepte la connexion mais n'enregistre rien : l'envoi échoue.
+    $real = Storage::disk('offsite');
+    $failing = new class($real->getDriver(), $real->getAdapter()) extends FilesystemAdapter
+    {
+        public function __construct($driver, $adapter)
+        {
+            parent::__construct($driver, $adapter);
+        }
+
+        public function writeStream($path, $resource, array $options = [])
+        {
+            return false;
+        }
+
+        public function exists($path)
+        {
+            return false;
+        }
+    };
+    Storage::set('offsite-fail', $failing);
+
+    config(['backup.offsite.disk' => 'offsite-fail']);
+
+    $failed = OffsiteBackups::fromConfig();
+    expect($failed)->not->toBeNull()
+        ->and($failed?->sync()['uploaded'])->toBeEmpty()
+        // Aucun repère : une copie manquée ne doit pas se dater.
+        ->and(file_exists($dir.'/.last-offsite'))->toBeFalse()
+        ->and(OffsiteBackups::copiedAt($dir))->toBeNull();
+
+    // Même archive, disque qui fonctionne : l'envoi est confirmé, le repère apparaît.
+    config(['backup.offsite.disk' => 'offsite']);
+
+    $sent = OffsiteBackups::fromConfig();
+    expect($sent?->sync()['uploaded'])->toHaveCount(1)
+        ->and(Storage::disk('offsite')->exists('ivoirepedia/db-ivoirepedia_prod-20261128-063424.sql.gz'))->toBeTrue()
+        ->and(OffsiteBackups::copiedAt($dir))->not->toBeNull();
+
+    // Rien de neuf à envoyer : le repère dit « dernière copie », pas « dernier passage ».
+    $at = (int) OffsiteBackups::copiedAt($dir);
+    @touch($dir.'/.last-offsite', $at - 3600);
+
+    expect(OffsiteBackups::fromConfig()?->sync()['uploaded'])->toBeEmpty()
+        ->and(OffsiteBackups::copiedAt($dir))->toBe($at - 3600);
 
     dropOffsiteDir($dir);
 });

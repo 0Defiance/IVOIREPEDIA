@@ -3216,6 +3216,20 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 141 — 28 novembre 2026 · Le repère de copie hors-site ne ment pas
+
+**Demandé** : un test qui prouve que `OffsiteBackups::sync()` n'écrit `.last-offsite` que si un envoi a réellement réussi — aucun repère après un échec, un repère après un envoi confirmé.
+
+**Constat** : la séance 140 affiche « Copie hors-site » à partir de ce repère, mais rien ne verrouillait la règle qui le rend fiable : le repère est écrit dans `sync()` **seulement quand la liste des envois réussis n'est pas vide**. Un test manquait pour cette condition précise.
+
+**Fait** : cas ajouté à `tests/Feature/Site/OffsiteBackupTest.php` : la même archive est présentée d'abord à un disque qui refuse l'écriture (`writeStream` et `exists` faux) → `uploaded` vide, **aucun** `.last-offsite`, `copiedAt()` nul ; puis au faux disque normal → un envoi, l'objet existe bien, `copiedAt()` renseigné ; enfin un troisième `sync()` sans rien de neuf laisse la date intacte (antidatée d'une heure avant l'appel), ce qui prouve que le repère date la dernière copie et non le dernier passage. `dropOffsiteDir()` nettoie désormais aussi les fichiers cachés du dossier temporaire.
+
+**Vérifié, local** : `composer test` → **201 tests verts** (5 821 assertions), `composer format:check` et `composer analyse` propres.
+
+**Reste** : inchangé — ouvrir le compte de stockage et renseigner ses clés (seule étape ouverte du chantier R-04).
+
+---
+
 ## Séance 140 — 28 novembre 2026 · L'état des sauvegardes se lit dans le panneau
 
 **Demandé** : afficher l'état des sauvegardes dans le panneau `/admin` — date du dernier dump, dernière copie hors-site, alerte visible si rien depuis 36 h — avec test, doc, commit et push.
