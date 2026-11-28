@@ -179,6 +179,7 @@
         .quality .n { font-family: var(--serif); font-size: 17px; }
         .quality li.bad .n { color: var(--red); }
         .quality li.good .n { color: var(--green); }
+        .backup-stale { background: var(--red-wash); border: 1px solid #F1CDC9; color: var(--red); border-radius: 10px; padding: 10px 12px; margin: 0 0 12px; font-size: 13px; }
 
         .activity { list-style: none; margin: 0; padding: 0; }
         .activity li { padding: 10px 0; border-bottom: 1px solid var(--line-soft); font-size: 13.5px; }

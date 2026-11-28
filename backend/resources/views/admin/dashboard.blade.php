@@ -122,6 +122,51 @@
             </div>
 
             <div class="card">
+                <h2>Sauvegardes</h2>
+
+                @if ($backup['stale'])
+                    <p class="backup-stale">
+                        @if ($backup['last'] === null)
+                            Aucun dump de la base : la sauvegarde n’a jamais abouti.
+                        @else
+                            Aucune sauvegarde depuis {{ intdiv((int) $backup['age'], 3600) }} h (seuil {{ intdiv($backup['after'], 3600) }} h).
+                        @endif
+                    </p>
+                @endif
+
+                <ul class="quality">
+                    <li class="{{ $backup['stale'] ? 'bad' : 'good' }}">
+                        <span>Dernier dump</span>
+                        <span class="meta">
+                            @if ($backup['last'] === null)
+                                aucun
+                            @else
+                                {{ gmdate('d/m/Y H:i', $backup['last']) }} UTC
+                                · {{ intdiv((int) $backup['age'], 3600) }} h
+                            @endif
+                        </span>
+                    </li>
+                    <li class="{{ $backup['offsite'] && $backup['copiedAt'] !== null ? 'good' : 'bad' }}">
+                        <span>Copie hors-site</span>
+                        <span class="meta">
+                            @if (! $backup['offsite'])
+                                désactivée
+                            @elseif ($backup['copiedAt'] === null)
+                                jamais
+                            @else
+                                {{ gmdate('d/m/Y H:i', $backup['copiedAt']) }} UTC
+                                · {{ intdiv(max(0, time() - $backup['copiedAt']), 3600) }} h
+                            @endif
+                        </span>
+                    </li>
+                </ul>
+
+                <p class="meta" style="margin:10px 0 0">
+                    Une copie qui ne quitte pas l’hébergeur ne protège pas de la perte du compte.
+                </p>
+            </div>
+
+            <div class="card">
                 <h2>Dernières actions</h2>
                 @if ($activity->isEmpty())
                     <div class="empty">

@@ -4,7 +4,7 @@
 > Chaque séance de travail ajoute une entrée datée.
 > Règle : ce journal, le dépôt local et le dépôt distant restent **au même niveau d'information**.
 
-**Version** : 1.10 · **Dernière mise à jour** : 27 novembre 2026
+**Version** : 1.11 · **Dernière mise à jour** : 28 novembre 2026
 
 **État en une phrase** : **IVOIREPEDIA est en ligne** sur son compte Alwaysdata dédié — Sprint 0 terminé et backend déployé (Laravel 13.39.0, PHP 8.4.27), le **site se lit en ligne à la racine du domaine** (`https://ivoirepedia.alwaysdata.net/` ; l'ancienne adresse `/site/` y redirige en 301) sur une API `/api/v1` qui sert articles, catégories, recherche, statistiques, histoire, frise, lieux et sources — ces routes vérifiées en production le 27 novembre 2026 ; le **Sprint 1 est fait** (comptes lecteurs : inscription, connexion par jeton, mot de passe oublié, rôles READER / CONTRIBUTOR / ADMIN) et le **panneau éditorial `/admin`** couvre tout le cycle d'un article (rédaction, modification, transitions de relecture, catégories, étiquettes, utilisateurs, messages de contact), sur **479 articles publiés** (403 biographies, 41 territoires, 30 sujets, 5 institutions) ; **restent l'éditeur d'article dans l'application (Sprint 2)**, les contributions et discussions (Sprint 3), et l'élargissement du contenu — le tout tenu par 170 tests backend (5 703 assertions) et 73 tests Flutter, avec une CI qui vérifie aussi le formatage Dart depuis la séance 124.
 
@@ -3213,6 +3213,24 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 **Vérifié** : `dart format --set-exit-if-changed lib test` → 68 fichiers, aucun écart ; `flutter analyze --no-pub` → « No issues found! » ; `flutter test --no-pub` → **76 tests verts** (73 + 3). Backend intact : aucun fichier PHP touché.
 
 **Reste** : la pagination des résultats de recherche, toujours à offrir. L'écran n'a pas été regardé dans un navigateur : il faudra reconstruire le site (`flutter build web`) pour que `/etiquettes/…` existe en production, et c'est à ce moment qu'une relecture visuelle aura du sens.
+
+---
+
+## Séance 140 — 28 novembre 2026 · L'état des sauvegardes se lit dans le panneau
+
+**Demandé** : afficher l'état des sauvegardes dans le panneau `/admin` — date du dernier dump, dernière copie hors-site, alerte visible si rien depuis 36 h — avec test, doc, commit et push.
+
+**Constat** : la séance 139 avait rendu les sauvegardes vérifiables, mais seulement par SSH ou par courriel. Entre deux alertes, personne ne pouvait répondre à « la sauvegarde tourne-t-elle ? » depuis le panneau ; `BackupWatch` existait déjà et savait dater le dernier dump, il manquait seulement de le montrer. Et rien ne datait la dernière copie hors-site : `sync()` renvoyait la liste des envois, que le terminal affichait puis oubliait.
+
+**Fait** :
+- `OffsiteBackups` écrit un repère `.last-offsite` dans le dossier de sauvegarde **seulement quand un envoi a réussi** — « dernière copie », pas « dernier passage » — et l'expose par `OffsiteBackups::copiedAt()` : une lecture de `filemtime`, aucun appel au disque distant, donc utilisable par une page.
+- `BackupWatch::after()` expose le seuil (36 h) pour l'afficher sans le répéter dans la vue.
+- `DashboardController` transmet un petit état `backup` (dernier dump, âge, seuil, disque hors-site actif ou non, date de la dernière copie) ; `admin/dashboard.blade.php` le rend en carte « Sauvegardes » : les deux dates en UTC avec leur ancienneté en heures, « aucun » / « jamais » / « désactivée » quand la valeur manque, et un bandeau rouge nommant l'âge et le seuil dès que le dump dépasse 36 h ou n'existe pas.
+- `admin/layout.blade.php` : style `.backup-stale` (fond rouge lavé, même palette que les alertes du panneau).
+
+**Vérifié, local** : `composer test` → **200 tests verts** (5 812 assertions), `composer format:check` et `composer analyse` propres. Trois cas ajoutés (`tests/Feature/Admin/AdminBackupStatusTest.php`) sur de vrais fichiers dans un dossier temporaire : les deux dates s'affichent et aucune alerte n'apparaît pour un dump de 2 h ; sans dump, puis avec un dump de 40 h, le bandeau dit « Aucun dump de la base » puis « Aucune sauvegarde depuis 40 h (seuil 36 h) » et la copie hors-site désactivée est nommée ; un contributeur voit la carte sans alerte. La carte n'a **pas** été regardée dans un navigateur : le panneau se juge sur son HTML rendu ici, une relecture visuelle reste à faire.
+
+**Reste** : ouvrir le compte de stockage et renseigner ses clés (seule étape du chantier R-04) ; la tâche planifiée du panneau ; le nom du responsable de publication ; la CSP bloquante.
 
 ---
 

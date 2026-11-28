@@ -540,6 +540,13 @@ lancer (`backup:run`, `backup:offsite`, lecture du journal). Le repère
 produit pas un courriel par visite. Sans destinataire, l'alerte reste dans
 `laravel.log` (`Sauvegarde : le dernier dump de … a N h`) et rien n'est envoyé.
 
+Le panneau `/admin` montre le même état, sans SSH : carte « Sauvegardes » du
+tableau de bord, avec la date du dernier dump (UTC) et son ancienneté, la date
+de la dernière copie hors-site (repère `.last-offsite`, écrit par le premier
+envoi réussi) ou « désactivée » si `BACKUP_OFFSITE_DISK` est vide, et un bandeau
+rouge dès que le seuil de 36 h est franchi ou qu'aucun dump n'existe. Rien n'y
+interroge le disque distant : deux `stat` par affichage.
+
 ### 8.7 Ce qui reste à faire
 
 - **La tâche planifiée du panneau** (§3) : elle rendrait la sauvegarde nocturne

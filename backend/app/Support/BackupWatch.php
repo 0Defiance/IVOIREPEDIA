@@ -65,6 +65,12 @@ final class BackupWatch
         return $last === null ? null : max(0, $now - $last);
     }
 
+    /** Seuil d'alerte en secondes (36 h par défaut), pour l'afficher tel quel. */
+    public function after(): int
+    {
+        return $this->after;
+    }
+
     /** Vrai quand il n'y a aucun dump, ou que le dernier dépasse le délai. */
     public function stale(?int $now = null): bool
     {

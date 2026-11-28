@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Article;
 use App\Models\EditorialAction;
 use App\Models\User;
+use App\Support\BackupWatch;
+use App\Support\OffsiteBackups;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
@@ -72,8 +74,24 @@ class DashboardController extends Controller
             ->limit(8)
             ->get();
 
+        // État des sauvegardes : deux `stat` sur le dossier des dumps, jamais un
+        // accès au disque distant. La question « la sauvegarde tourne-t-elle ? »
+        // doit se lire ici, pas dans un SSH.
+        $watch = BackupWatch::fromConfig();
+        $directory = (string) config('backup.directory');
+        $backup = [
+            'last' => $watch->lastAt(),
+            'age' => $watch->age(),
+            'stale' => $watch->stale(),
+            'after' => $watch->after(),
+            'directory' => $directory,
+            'offsite' => OffsiteBackups::enabled(),
+            'copiedAt' => OffsiteBackups::copiedAt($directory),
+        ];
+
         return view('admin.dashboard', [
             'counts' => $counts,
+            'backup' => $backup,
             'queue' => $queue,
             'drafts' => $drafts,
             'quality' => $quality,

@@ -22,6 +22,13 @@ final class OffsiteBackups
     /** `db-<base>-<Ymd-His>.sql.gz` et `media-<base>-<Ymd-His>.tar.gz`. */
     private const NAME = '/^(db|media)-(.+)-(\d{8}-\d{6})\.(sql|tar)\.gz$/';
 
+    /**
+     * Repère de la dernière copie réellement confirmée, dans le dossier de
+     * sauvegarde. Le panneau l'affiche : l'état du transfert distant n'a de
+     * valeur que s'il est visible sans ouvrir de session SSH.
+     */
+    public const MARKER = '.last-offsite';
+
     public function __construct(
         private readonly Filesystem $disk,
         private readonly string $directory,
@@ -76,6 +83,17 @@ final class OffsiteBackups
     }
 
     /**
+     * Horodatage de la dernière copie confirmée, lu dans le dossier de
+     * sauvegarde — aucun appel au disque distant, donc utilisable par une page.
+     */
+    public static function copiedAt(string $directory): ?int
+    {
+        $at = @filemtime(rtrim($directory, '/\\').'/'.self::MARKER);
+
+        return $at === false ? null : $at;
+    }
+
+    /**
      * Archives locales absentes du disque distant, ou de taille différente.
      *
      * @return list<string>
@@ -126,6 +144,12 @@ final class OffsiteBackups
             if ($this->upload($path)) {
                 $uploaded[] = $this->keyFor($path);
             }
+        }
+
+        // Rien d'envoyé, rien de neuf à dater : le repère dit « dernière copie »,
+        // pas « dernier passage ».
+        if ($uploaded !== []) {
+            @touch(rtrim($this->directory, '/\\').'/'.self::MARKER);
         }
 
         return ['uploaded' => $uploaded, 'pruned' => $this->prune()];
