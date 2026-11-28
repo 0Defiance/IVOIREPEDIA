@@ -6,8 +6,8 @@ import 'shell.dart';
 import 'wiki_actions.dart';
 import 'widgets/interactive.dart';
 
-/// Pages de confiance du site : à propos, charte éditoriale, contact et
-/// confidentialité.
+/// Pages de confiance du site : à propos, charte éditoriale, contact,
+/// confidentialité et mentions légales.
 ///
 /// Le pied de page les annonçait sans qu'elles existent. Elles disent ce que
 /// le site contient, comment il est écrit, comment le corriger et ce qu'il
@@ -324,6 +324,82 @@ class PrivacyPage extends StatelessWidget {
         ]),
       ],
       links: {'Nous écrire': '/contact', 'À propos du projet': '/a-propos'},
+    );
+  }
+}
+
+/// « Mentions légales » : qui édite le site, qui en répond, qui l’héberge.
+///
+/// Le Sprint 5 les réclamait depuis la séance 128 : la confidentialité existait
+/// mais ni l’éditeur, ni la direction de la publication, ni l’hébergeur n’étaient
+/// nommés. L’hébergeur est donné avec son identité complète, telle qu’il la
+/// publie lui-même (ALWAYSDATA, SARL au capital de 200 000 €, RCS Paris).
+class LegalPage extends StatelessWidget {
+  const LegalPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const TrustPage(
+      eyebrow: 'Mentions légales',
+      title: 'Qui édite ce site, qui en répond, qui l’héberge',
+      intro:
+          'Une encyclopédie engage ceux qui la publient. Cette page dit qui '
+          'édite IVOIREPEDIA, qui assume la publication, où le site tourne et à '
+          'qui s’adresser quand un contenu pose problème.',
+      sections: [
+        TrustSection('L’éditeur', [
+          'IVOIREPEDIA est un projet éditorial indépendant consacré à la Côte '
+              'd’Ivoire : une encyclopédie libre, sans publicité, sans '
+              'actionnaire et sans rattachement à un parti ni à un média.',
+          'Le projet n’est pas encore porté par une structure juridique '
+              'déclarée. Le jour où elle existera, sa raison sociale, son '
+              'adresse et son numéro d’immatriculation seront publiés ici, à la '
+              'même place — pas dans une page séparée que personne ne trouve.',
+        ]),
+        TrustSection('La direction de la publication', [
+          'La direction de la publication est assurée par la personne '
+              'responsable du projet IVOIREPEDIA. C’est elle qui répond des '
+              'contenus publiés, exerce le droit de réponse et traite les '
+              'signalements.',
+          'Toute demande la concernant peut être adressée par le formulaire de '
+              'contact ; elle reçoit une réponse. Son identité nominative sera '
+              'publiée ici à l’ouverture publique du site.',
+        ]),
+        TrustSection('L’hébergeur', [
+          'Le site, son API et sa base de données sont hébergés en France par '
+              'ALWAYSDATA, SARL au capital de 200 000 €, immatriculée au RCS de '
+              'Paris sous le numéro 492 893 490, dont le siège social se trouve '
+              '91 rue du Faubourg Saint-Honoré, 75008 Paris (France).',
+          'Comme pour tout site web, ses serveurs voient l’adresse IP de chaque '
+              'visite ; elle sert à la sécurité du service et à rien d’autre.',
+        ]),
+        TrustSection('Le contenu et sa licence', [
+          'Les textes sont publiés sous CC BY-SA 4.0 : réutilisation libre, y '
+              'compris commerciale, à condition de créditer IVOIREPEDIA et de '
+              'partager les ajouts sous la même licence.',
+          'Les images gardent leur licence propre, indiquée sur chaque page, et '
+              'la charte éditoriale détaille ces engagements.',
+        ]),
+        TrustSection('Données personnelles', [
+          'La page « Confidentialité » dit ce qui est conservé : un compte, un '
+              'message envoyé, les journaux techniques du serveur. Le traitement '
+              'relève de la loi ivoirienne n° 2013-450 relative à la protection '
+              'des données à caractère personnel, sous le contrôle de l’ARTCI.',
+          'Une demande d’accès, de correction ou de suppression passe par le '
+              'formulaire de contact.',
+        ]),
+        TrustSection('Signaler un contenu', [
+          'Une erreur factuelle, une source contestée, un propos problématique : '
+              'le formulaire de contact est le canal prévu. Chaque signalement '
+              'est lu depuis le panneau éditorial, et le texte est corrigé quand '
+              'la correction est justifiée.',
+        ]),
+      ],
+      links: {
+        'Nous écrire': '/contact',
+        'Confidentialité': '/confidentialite',
+        'Charte': '/charte',
+      },
     );
   }
 }

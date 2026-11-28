@@ -84,7 +84,7 @@ télémétrie.
 | Upload | MIME et taille serveur, hors racine web | ➖ | Aucun téléversement n'existe encore (l'image de couverture est une adresse) : à traiter avec le chantier médias |
 | Autorisation | Service + Policy, cas « A accède à B » testé | ✅ | `401` sans jeton (`/auth/me`), `302` vers `/admin/connexion` sans session ; Policies couvertes par `tests/Feature/Admin/*` |
 | Secrets | `.env` hors dépôt, jamais servi, `config:cache` | ✅ | `/.env`, `/backend/.env` et `/storage/logs/laravel.log` renvoient la coquille Flutter, jamais le contenu ; `config:cache` actif |
-| En-têtes HTTP | HTTPS forcé, HSTS, CSP raisonnable, nosniff | ✅ | §1 : `301` depuis HTTP, quatre en-têtes de durcissement + CSP en Report-Only |
+| En-têtes HTTP | HTTPS forcé, HSTS, CSP raisonnable, nosniff | ✅ | §1 : `301` depuis HTTP et **cinq** en-têtes (quatre de durcissement + CSP en Report-Only) |
 | Dépendances | Dependabot + `composer audit` en CI | ✅ | `composer audit` trouvait **13 avis sur 5 paquets** (framework 13.39.0, Symfony 7.4.22) ; montée en 13.44.1 / 7.4.25 → « No security vulnerability advisories found » ; `.github/dependabot.yml` (composer, pub, actions) et étape `composer audit --locked` en CI |
 | Sauvegardes | Quotidienne dès la première semaine, restauration testée | ✅ | `DEPLOIEMENT.md` §8 : dump quotidien automatique, restauration essayée dans `ivoirepedia_dev` |
 
@@ -103,7 +103,8 @@ chemin de fichier.
 | Mots de passe compromis (Have I Been Pwned) | Hors MVP (`ADR-003`, périmètre §3.2) | V2 |
 | 2FA | Explicitement hors MVP (CONTEXT §3.2) | V2 |
 | Suppression de compte en libre-service | Exigée par la loi 2013-450 citée au §13 ; aujourd'hui une demande passe par le panneau admin | Avant la bêta publique |
-| Déclaration ARTCI, mentions légales | Obligations juridiques, pas techniques ; les mentions légales restent la case ouverte du Sprint 5 | Avant la bêta publique |
+| Identité nominative du responsable de publication | La page `/mentions-legales` nomme l’éditeur et l’hébergeur et dit qui répond des contenus, mais pas la personne ; le nom sera publié à la même place | Avant la bêta publique |
+| Déclaration ARTCI | Obligation juridique, pas technique ; à valider avec un juriste | Avant la bêta publique |
 | Copie hors-site des sauvegardes | Règle 3-2-1 non satisfaite par un seul serveur | Avant la bêta publique |
 
 ---
@@ -112,7 +113,7 @@ chemin de fichier.
 
 ```bash
 B=https://ivoirepedia.alwaysdata.net
-curl -sI $B/ | grep -iE "x-frame-options|content-security|x-content-type|referrer-policy|strict-transport"
+curl -sI $B/ | grep -iE "x-frame-options|content-security|x-content-type|referrer-policy|strict-transport"  # 5 en-têtes
 curl -sI http://ivoirepedia.alwaysdata.net/ | head -3          # 301 vers https
 curl -s -o /dev/null -w "%{http_code}\n" $B/api/v1/auth/me      # 401
 for i in $(seq 1 12); do curl -s -o /dev/null -w "%{http_code} " -X POST \

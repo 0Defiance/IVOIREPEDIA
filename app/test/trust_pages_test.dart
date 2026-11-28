@@ -48,7 +48,7 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('les liens du pied de page ouvrent les quatre pages réelles', (
+  testWidgets('les liens du pied de page ouvrent les cinq pages réelles', (
     tester,
   ) async {
     await openSite(tester);
@@ -72,7 +72,26 @@ void main() {
     await tapFooter(tester, 'Confidentialité');
     expect(find.text('Ce que le site sait de vous'), findsOneWidget);
 
+    await tapFooter(tester, 'Mentions légales');
+    expect(
+      find.text('Qui édite ce site, qui en répond, qui l’héberge'),
+      findsOneWidget,
+    );
+
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('les mentions légales nomment l’éditeur et l’hébergeur', (
+    tester,
+  ) async {
+    await openSite(tester);
+    await tapFooter(tester, 'Mentions légales');
+
+    expect(find.text('L’éditeur'), findsOneWidget);
+    expect(find.text('L’hébergeur'), findsOneWidget);
+    expect(find.textContaining('ALWAYSDATA'), findsOneWidget);
+    expect(find.textContaining('492 893 490'), findsOneWidget);
+    expect(find.textContaining('2013-450'), findsOneWidget);
   });
 
   testWidgets('la charte énonce les règles de fond', (tester) async {

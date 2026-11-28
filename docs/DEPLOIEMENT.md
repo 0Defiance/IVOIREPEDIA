@@ -418,18 +418,27 @@ rien ne la déclenche, et `crontab` est refusé au compte.
 
 En attendant, et en secours si la tâche disparaît, le middleware
 `TriggerDailyBackup` (global, `bootstrap/app.php`) déclenche la sauvegarde
-**après l'envoi de la réponse** : le premier visiteur de la journée la lance
-sans l'attendre. Un verrou (`~/backups/.backup.lock`) empêche deux visites
-simultanées de la lancer deux fois, et le repère `~/backups/.last-backup` —
-écrit par `backup:run`, quelle que soit la voie — garantit **une sauvegarde par
-24 h**. Après un échec, la tentative revient une heure plus tard au lieu
-d'attendre un jour.
+**dans un autre processus PHP** (`exec` détaché, `App\Support\DailyBackup`) :
+la requête qui la déclenche n'attend rien, elle paie un `stat` sur le repère.
+Un verrou (`~/backups/.backup.lock`) et une réservation immédiate du repère
+`~/backups/.last-backup` empêchent deux requêtes simultanées de lancer deux
+dumps ; `backup:run` réécrit ce repère à la fin (succès : dans 24 h ; échec :
+retentative dans une heure).
 
-Vérifié le 28 novembre 2026 : repère supprimé, une visite de
-`/api/v1/health` fait apparaître `db-ivoirepedia_prod-20261128-022552.sql.gz`
-et réécrit le repère ; une seconde visite n'ajoute rien. Coût : environ une
-seconde de plus sur la première visite de la journée, une fois par jour. Créer
-la tâche du panneau supprime ce déclencheur de secours sans autre changement.
+Le déclencheur est **global, API comprise**, et pas limité aux pages publiques :
+le 28 novembre 2026, une journée sans visite d'article — trois appels d'API et
+un chargement de coquille Flutter — ne produisait **aucune** sauvegarde. Une
+journée de trafic purement applicatif doit compter comme une journée normale.
+
+Vérifié le 28 novembre 2026, même jour :
+- repère supprimé, **trois appels** de `/api/v1/health` sur une base sans aucune
+  visite d'article → `db-ivoirepedia_prod-20261128-025228.sql.gz` apparaît,
+  repère réécrit, un quatrième appel ne relance rien ;
+- latence des appels : 0,58 s en moyenne, identique à une journée où rien ne
+  tourne (le dump synchrone coûtait auparavant ~1 s à l'appel qui le portait).
+
+Créer la tâche du panneau supprime ce déclencheur de secours sans autre
+changement.
 
 ### 8.3 Restaurer, et le prouver
 

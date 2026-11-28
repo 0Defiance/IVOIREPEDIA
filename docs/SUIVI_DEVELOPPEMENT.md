@@ -3216,6 +3216,24 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 137 — 28 novembre 2026 · Une journée sans article sauvegarde quand même
+
+**Constat** : la séance 136 avait restreint le déclencheur de sauvegarde au groupe `web` pour que les appels d'API ne paient rien. Conséquence mesurée le matin même : le site étant une SPA servie par Apache, une journée sans visite d'article (API et coquille Flutter seules) ne declenchait **aucune** sauvegarde. Vérifié en production : repère supprimé, trois appels de `/api/v1/health` et un chargement de `/recherche?q=a` → aucun dump, aucun repère ; une visite de `/articles/ernesto-djedje` → dump aussitôt.
+
+**Fait** :
+- `App\Support\DailyBackup::spawn()` lance `php artisan backup:run --keep=7` dans un **processus PHP détaché** (`exec '… > /dev/null 2>&1 &'`, `PHP_BINARY`) et rend la main immédiatement. Le déclencheur redevient global (`$middleware->append`) : une requête ne paie qu'un `stat` sur le repère, jamais le dump.
+- Réservation du repère **avant** le lancement : deux requêtes simultanées ne peuvent pas lancer deux dumps. `backup:run` réécrit ensuite le repère pour de vrai (`markAttempt`) : succès → dans 24 h, échec → retentative dans une heure. Un test vérifie que le repère existe déjà quand le runner démarre.
+- Décompte des en-têtes corrigé : `docs/SECURITE.md` et le CONTEXT disent maintenant **cinq** en-têtes (quatre de durcissement + CSP en Report-Only), au lieu de « sept » dans le CONTEXT.
+- **Mentions légales**, dernière case du Sprint 5 : `app/lib/src/ui/trust_pages.dart` gagne `LegalPage` — éditeur, direction de la publication, hébergeur nommé avec son identité complète (ALWAYSDATA, SARL au capital de 200 000 €, RCS Paris 492 893 490, 91 rue du Faubourg Saint-Honoré, 75008 Paris), licence CC BY-SA 4.0, renvoi à la confidentialité et à la loi ivoirienne 2013-450 / ARTCI, canal de signalement. Route `/mentions-legales` et lien dans le pied de page ; deux tests de widgets (le lien ouvre la page, l'hébergeur et le RCS y sont).
+
+**Vérifié, local** : `composer test` → **184 tests verts** (un test ajouté sur la réservation du repère), `composer format:check` et `composer analyse` propres ; `dart format --set-exit-if-changed lib test`, `flutter analyze --no-pub` et `flutter test --no-pub` après la page légale.
+
+**Vérifié, production** : repère supprimé, **trois appels d'API** sans aucune visite d'article → `db-ivoirepedia_prod-20261128-025228.sql.gz` créé, repère réécrit, un quatrième appel ne relance rien ; latence 0,58 s par appel, comme sans sauvegarde.
+
+**Reste** : l'identité **nominative** du responsable de publication (la page dit qui répond des contenus, pas encore son nom) ; la tâche planifiée du panneau ; la copie hors-site ; la CSP en mode bloquant.
+
+---
+
 ## Séance 136 — 28 novembre 2026 · En-têtes, HTTPS forcé et treize avis de sécurité
 
 **Constat** : le Sprint 5 gardait « revue sécurité (checklist section 13) + en-têtes HTTP » décoché, avec le constat du 27 novembre : la racine ne servait ni `X-Frame-Options`, ni CSP, ni `Referrer-Policy`. Par ailleurs le déclencheur de sauvegarde était global : un appel d'API payait le dump de la journée.

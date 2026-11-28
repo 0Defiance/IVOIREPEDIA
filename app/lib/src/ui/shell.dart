@@ -1121,6 +1121,7 @@ class _Footer extends StatelessWidget {
                 'Charte': '/charte',
                 'Contact': '/contact',
                 'Confidentialité': '/confidentialite',
+                'Mentions légales': '/mentions-legales',
               }.entries)
                 HoverLink(
                   label: entry.key,

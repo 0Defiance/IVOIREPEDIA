@@ -127,6 +127,10 @@ GoRouter buildRouter() {
         pageBuilder: (context, state) => _page(const PrivacyPage()),
       ),
       GoRoute(
+        path: '/mentions-legales',
+        pageBuilder: (context, state) => _page(const LegalPage()),
+      ),
+      GoRoute(
         path: '/ma-bibliotheque',
         pageBuilder: (context, state) => _page(const LibraryPage()),
       ),
