@@ -76,13 +76,12 @@ it('garde script-src sans unsafe-inline et n’ouvre que les hôtes nécessaires
     expect($image)->toContain('https://upload.wikimedia.org')
         ->and($image)->toContain('https://thumb.wikimedia.org');
 
-    // Le moteur télécharge Roboto, police par défaut de Material, sur le CDN de
-    // Google : sans cet hôte, les textes sans famille explicite perdent leur
-    // police. Les scripts, eux, restent exclusivement servis par le site.
-    expect($font)->toContain('https://fonts.gstatic.com')
-        ->and($connect)->toContain('https://fonts.gstatic.com');
-
-    expect($script)->not->toMatch('/https?:/');
+    // Le build rapatrie le moteur (`/canvaskit/`) et la police de secours
+    // Roboto (`assets/fonts/fallback/`) : aucun de ces deux CDN de Google n'a
+    // besoin d'être ouvert. Tous les scripts restent servis par le site.
+    expect($font)->not->toMatch('/https?:/')
+        ->and($connect)->not->toMatch('/https?:/')
+        ->and($script)->not->toMatch('/https?:/');
 });
 
 it('rend le formulaire d’article sans aucun script en ligne', function () {
