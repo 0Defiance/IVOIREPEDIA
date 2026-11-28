@@ -3216,6 +3216,26 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 134 — 28 novembre 2026 · Sauvegarder, puis restaurer pour de vrai
+
+**Constat** : le Sprint 5 gardait « Sauvegardes automatiques MySQL + test de restauration » décoché, et `DEPLOIEMENT.md` §7 l'admettait : « aucune restauration n'a été essayée ». Le dépôt n'avait aucun outil d'export, et le poste de travail n'a pas de client MySQL (ADR-002) — la base ne se sauvegarde que depuis le serveur.
+
+**Fait** :
+- `tools/backup_db.py` : `backup` (dump `mysqldump --single-transaction` + `tar` de `backend/storage/app`, `storage/logs` exclu), `restore` (injection d'un `.sql.gz` dans une base nommée, compteurs avant/après) et `counts`. Tout passe par SSH avec la clé `.deploy/` : les identifiants MySQL ne quittent jamais le serveur, le script demande la configuration à Laravel et la range dans un fichier d'options `600` supprimé en fin de commande. Le serveur garde les 7 dernières paires dans `~/backups`, la dernière est rapatriée dans `backups/` (ajouté au `.gitignore`).
+- `docs/DEPLOIEMENT.md` §8 (version 2.3) : quoi sauvegarder, comment restaurer, la procédure d'incident en trois temps et ce qui reste (automatisation, copie hors-site).
+- CONTEXT §14 : la case du Sprint 5 est découpée — l'export et la restauration essayée sont cochés, la sauvegarde **automatique** reste ouverte avec R-04. La case « Page de résultats paginée » du Sprint 4, devenue fausse depuis la séance 133, est cochée avec sa preuve.
+
+**Vérifié, commandes réelles** :
+- `python tools/backup_db.py backup` → `db-20261128-020023.sql.gz` (472 Ko) + `media-…tar.gz` (4 Ko, aucun média téléversé à ce jour), rapatriés localement.
+- État de la dev avant essai : 89 articles, 2 comptes, `GET /api/v1/search?q=a` → `total` 89. Le dump de dev est pris avant l'essai (`db-ivoirepedia_dev-20261128-020134.sql.gz`).
+- Restauration du dump de **production** dans `ivoirepedia_dev` : 89 → **480 articles**, 2 → 1 compte, seules `articles` et `users` bougent ; l'API locale renvoie alors **479** résultats, exactement le chiffre de production.
+- Restauration du dump de dev : retour à 89 articles et 2 comptes, recherche de nouveau à 89. La production n'a reçu aucune écriture (`counts --database ivoirepedia_prod` inchangé : 480 articles, 1 compte).
+- Bug d'outil trouvé et corrigé pendant l'essai : `restore` supprimait son fichier d'identifiants avant de relire les compteurs, d'où un « après » vide. Corrigé, essai rejoué proprement.
+
+**Reste** : la sauvegarde automatique (tâche planifiée quotidienne) et la copie hors-site ; la revue de sécurité et les mentions légales, toujours ouvertes au Sprint 5.
+
+---
+
 ## Séance 133 — 28 novembre 2026 · La recherche paginée en production
 
 **Constat** : les séances 131 à 132 avaient réuni la liste paginée, mais le site public servait encore le bundle du 23 novembre : en ligne, `/recherche` s'arrêtait aux douze premiers résultats.

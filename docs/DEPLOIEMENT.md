@@ -4,7 +4,7 @@
 >
 > **Complément local :** [`INSTALLATION.md`](INSTALLATION.md). **État réel :** [`SUIVI_DEVELOPPEMENT.md`](SUIVI_DEVELOPPEMENT.md).
 >
-> **Version :** 2.2 · **Dernière mise à jour :** 27 novembre 2026
+> **Version :** 2.3 · **Dernière mise à jour :** 28 novembre 2026
 >
 > **Convention de lecture** : `ivoirepedia` désigne l'identifiant du compte Alwaysdata. S'il diffère, remplacer cette valeur partout (hôtes, bases, chemins) — le raisonnement ne change pas.
 
@@ -19,6 +19,7 @@
 5. [Déploiements suivants](#5-déploiements-suivants)
 6. [Vérifications après déploiement](#6-vérifications-après-déploiement)
 7. [Limites et pièges connus](#7-limites-et-pièges-connus)
+8. [Sauvegardes et restauration](#8-sauvegardes-et-restauration)
 
 ---
 
@@ -348,6 +349,73 @@ php artisan config:cache && php artisan route:cache && php artisan view:cache
 | File d'attente | Pas de worker permanent au MVP : `QUEUE_CONNECTION=database` piloté par une tâche planifiée, ou `sync` tant que rien n'est asynchrone |
 | Sauvegardes | Sauvegardes Alwaysdata activées par défaut ; **tester une restauration** avant la bêta (risque R-04) |
 | Médias | `storage/app/public` + `php artisan storage:link`, à recréer si le dossier est vidé lors d'un déploiement |
+
+---
+
+## 8. Sauvegardes et restauration
+
+Une sauvegarde qu'on n'a jamais restaurée n'est pas une sauvegarde (risque R-04,
+CONTEXT §17). L'export et l'essai ci-dessous se rejouent à l'identique ; ils ont
+été faits pour la première fois le 28 novembre 2026.
+
+**Ce que couvre l'export** : la base entière (`mysqldump --single-transaction`,
+donc sans bloquer les visites) et `backend/storage/app`, c'est-à-dire les médias
+téléversés — `storage/logs` est exclu. Les identifiants ne quittent pas le
+serveur : le script demande la configuration à Laravel, la range dans un fichier
+d'options `600` et le supprime en fin de commande.
+
+### 8.1 Sauvegarder
+
+```bash
+python tools/backup_db.py backup                      # base du .env du serveur (production)
+python tools/backup_db.py backup --database ivoirepedia_dev --keep 3
+```
+
+Chaque passage écrit sur le serveur `~/backups/` un couple
+`db-<base>-<horodatage>.sql.gz` + `media-<horodatage>.tar.gz`, n'y garde que
+les `--keep` derniers (7 par défaut) et rapatrie la paire du jour dans
+`backups/<horodatage>/` à la racine du dépôt. Ce dossier est ignoré par Git :
+une sauvegarde est une donnée, pas du code. La **copie hors-site** (disque
+externe, autre hébergeur) reste à faire à la main — la règle 3-2-1 n'est pas
+satisfaite par un seul serveur.
+
+### 8.2 Restaurer, et le prouver
+
+```bash
+python tools/backup_db.py counts --database ivoirepedia_dev          # état avant
+python tools/backup_db.py restore --dump backups/20261128-020023/db-20261128-020023.sql.gz \
+    --database ivoirepedia_dev --yes
+```
+
+`restore` envoie le dump, l'injecte avec `mysql`, puis imprime les compteurs de
+tables **avant et après** et nomme celles qui ont bougé. La base visée doit être
+nommée explicitement et `--yes` est obligatoire : une restauration écrase la
+base cible. **Sauvegarder la base cible avant d'y restaurer autre chose** —
+prévoir trois commandes, pas deux.
+
+Essai réel du 28 novembre 2026, dump de production restauré dans
+`ivoirepedia_dev` : 89 → **480 articles**, 2 → 1 compte, et
+`GET /api/v1/search?q=a` sur l'API locale passe de 89 à **479** résultats, les
+chiffres de la production. Le dump de dev pris avant l'essai a ensuite été
+restauré : retour à 89 articles et 2 comptes. La production n'a pas été touchée.
+
+### 8.3 En cas d'incident en production
+
+1. **Sauvegarder l'état cassé** avant tout (`backup --database ivoirepedia_prod`) :
+il peut contenir des données à récupérer à la main.
+2. Restaurer la dernière paire saine dans `ivoirepedia_prod`, puis vérifier
+`python tools/backup_db.py counts --database ivoirepedia_prod`,
+`curl -s https://ivoirepedia.alwaysdata.net/api/v1/health` et l'ouverture d'un
+article dans le navigateur.
+3. Vider les caches (`cd ~/ivoirepedia/backend && php artisan cache:clear && php artisan config:clear`)
+et consigner l'incident dans `docs/SUIVI_DEVELOPPEMENT.md`.
+
+### 8.4 Ce qui reste à faire
+
+La **sauvegarde automatique** (tâche planifiée quotidienne sur le compte) et la
+**copie hors-site** ne sont pas en place : l'export est aujourd'hui lancé à la
+main. Les sauvegardes du compte par Alwaysdata restent le filet de dernier
+recours.
 
 ---
 

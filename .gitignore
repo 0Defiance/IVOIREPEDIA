@@ -41,3 +41,6 @@ backend/database/*.sqlite-*
 # Les fichiers de verrouillage sont versionnés (versions figées, CONTEXT §5)
 !app/pubspec.lock
 !backend/composer.lock
+
+# Sauvegardes locales (`tools/backup_db.py`)
+backups/
