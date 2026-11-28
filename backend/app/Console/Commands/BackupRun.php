@@ -198,7 +198,9 @@ class BackupRun extends Command
     /**
      * Repère de tentative : un succès repousse la suivante de 24 h, un échec la
      * ramène dans une heure. Le déclencheur par requête a déjà posé une
-     * réservation ; c'est ce fichier qui dit la vérité finale.
+     * réservation (`.backup-pending`) ; c'est ce fichier qui dit la vérité
+     * finale, et la réservation est levée pour qu'elle ne soit pas confondue
+     * avec un lancement resté sans effet.
      */
     private function markAttempt(string $directory, bool $success): void
     {
@@ -206,6 +208,7 @@ class BackupRun extends Command
         $stamp = $success ? time() : time() - $interval + 3600;
 
         @touch($directory.'/'.DailyBackup::MARKER, $stamp);
+        @unlink($directory.'/'.DailyBackup::PENDING);
     }
 
     /** Chemin absolu : la tâche planifiée n'hérite pas toujours du PATH du shell. */

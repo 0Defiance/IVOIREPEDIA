@@ -3216,6 +3216,23 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 138 — 28 novembre 2026 · Une heure sans dump, on retente ; la case légale reste ouverte
+
+**Demandé** : laisser la case « Mentions légales » du Sprint 5 **ouverte** tant que le nom du responsable de publication n'est pas publié, et faire retenter la sauvegarde au bout d'une heure si aucun dump n'est apparu.
+
+**Fait** :
+- Le déclencheur ne s'attribue plus le succès. Il pose une **réservation** `.backup-pending` (`DailyBackup::reserve`) ; c'est `backup:run` qui écrit le repère `.last-backup` — 24 h après un succès, une heure après un échec — puis lève la réservation (`markAttempt`).
+- `DailyBackup::due()` refuse tant qu'une réservation a moins d'une heure ; **passé ce délai sans repère**, elle vaut un lancement resté sans effet (processus tué, disque plein) : la requête suivante retente, au lieu d'attendre le lendemain. Trois tests couvrent les trois cas (réservation posée, lancement sans dump → retentative à l'heure, dump abouti → rien pendant 24 h).
+- `IVOIREPEDIA_CONTEXT.md` §14 : case « Mentions légales » **rouverte** (`[ ]`) avec sa raison — la page est en ligne mais ne nomme pas encore le responsable de publication ; `docs/DEPLOIEMENT.md` §8.2 décrit les deux fichiers et la retentative.
+
+**Vérifié, local** : `composer test` → **185 tests verts**, `composer format:check` et `composer analyse` propres. Aucun changement Flutter, donc pas de `flutter test` inutile.
+
+**Vérifié, production** : sur le serveur, repère supprimé et réservation antidatée de deux heures → un appel d'API suffit à relancer un dump (`db-ivoirepedia_prod-*.sql.gz` neuf, réservation levée) ; réservation fraîche et repère absents → **aucun** dump, comme prévu, avant l'heure.
+
+**Reste** : le **nom du responsable de publication** (seule raison de la case ouverte), la tâche planifiée du panneau, la copie hors-site et la CSP en mode bloquant.
+
+---
+
 ## Séance 137 — 28 novembre 2026 · Une journée sans article sauvegarde quand même
 
 **Constat** : la séance 136 avait restreint le déclencheur de sauvegarde au groupe `web` pour que les appels d'API ne paient rien. Conséquence mesurée le matin même : le site étant une SPA servie par Apache, une journée sans visite d'article (API et coquille Flutter seules) ne declenchait **aucune** sauvegarde. Vérifié en production : repère supprimé, trois appels de `/api/v1/health` et un chargement de `/recherche?q=a` → aucun dump, aucun repère ; une visite de `/articles/ernesto-djedje` → dump aussitôt.

@@ -45,12 +45,15 @@ it('sauvegarde dès qu’aucun repère n’existe', function () {
     expect($backup->due())->toBeTrue()
         ->and($backup->runIfDue())->toBeTrue()
         ->and($calls)->toBe(1)
-        ->and(file_exists($dir.'/'.DailyBackup::MARKER))->toBeTrue();
+        // Le déclencheur ne s'attribue pas le succès : seule la fin réelle du
+        // dump écrit le repère, lui ne pose qu'une réservation.
+        ->and(file_exists($dir.'/'.DailyBackup::PENDING))->toBeTrue()
+        ->and(file_exists($dir.'/'.DailyBackup::MARKER))->toBeFalse();
 
     dropDailyBackupDir($dir);
 });
 
-it('ne se relance pas dans la journée et revient le lendemain', function () {
+it('ne se relance pas dans la journée quand le dump a abouti', function () {
     $dir = dailyBackupDir();
     $now = 1_790_000_000;
     $calls = 0;
@@ -61,11 +64,35 @@ it('ne se relance pas dans la journée et revient le lendemain', function () {
     });
 
     $backup->runIfDue($now);
+    // `backup:run` détaché a terminé : il écrit le repère et lève la réservation.
+    touch($dir.'/'.DailyBackup::MARKER, $now);
+    unlink($dir.'/'.DailyBackup::PENDING);
 
     expect($backup->due($now + 3600))->toBeFalse()
         ->and($backup->runIfDue($now + 3600))->toBeFalse()
         ->and($calls)->toBe(1)
         ->and($backup->due($now + 86400))->toBeTrue();
+
+    dropDailyBackupDir($dir);
+});
+
+it('retente une heure plus tard quand aucun dump n’est apparu', function () {
+    $dir = dailyBackupDir();
+    $now = 1_790_000_000;
+    $calls = 0;
+    // Le processus détaché meurt sans rien écrire : seule la réservation existe.
+    $backup = new DailyBackup($dir, function () use (&$calls): int {
+        $calls++;
+
+        return 0;
+    });
+
+    expect($backup->runIfDue($now))->toBeTrue()
+        ->and($backup->due($now + 60))->toBeFalse()
+        ->and($backup->due($now + 3599))->toBeFalse()
+        ->and($backup->due($now + 3600))->toBeTrue()
+        ->and($backup->runIfDue($now + 3700))->toBeTrue()
+        ->and($calls)->toBe(2);
 
     dropDailyBackupDir($dir);
 });
@@ -87,14 +114,14 @@ it('réessaie une heure après un échec sans marteler les visites suivantes', f
     dropDailyBackupDir($dir);
 });
 
-it('réserve le repère avant de lancer le dump, pour ne pas le lancer deux fois', function () {
+it('réserve le lancement avant de démarrer, pour ne pas le lancer deux fois', function () {
     $dir = dailyBackupDir();
     $reservedAtLaunch = false;
 
     $backup = new DailyBackup($dir, function () use ($dir, &$reservedAtLaunch): int {
-        // Le repère doit déjà être posé quand le dump démarre : c'est ce qui
-        // empêche une deuxième requête de le lancer en parallèle.
-        $reservedAtLaunch = file_exists($dir.'/'.DailyBackup::MARKER);
+        // La réservation doit déjà être posée quand le dump démarre : c'est ce
+        // qui empêche une deuxième requête de le lancer en parallèle.
+        $reservedAtLaunch = file_exists($dir.'/'.DailyBackup::PENDING);
 
         return 0;
     });

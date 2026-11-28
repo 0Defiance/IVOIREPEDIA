@@ -420,10 +420,13 @@ En attendant, et en secours si la tâche disparaît, le middleware
 `TriggerDailyBackup` (global, `bootstrap/app.php`) déclenche la sauvegarde
 **dans un autre processus PHP** (`exec` détaché, `App\Support\DailyBackup`) :
 la requête qui la déclenche n'attend rien, elle paie un `stat` sur le repère.
-Un verrou (`~/backups/.backup.lock`) et une réservation immédiate du repère
-`~/backups/.last-backup` empêchent deux requêtes simultanées de lancer deux
-dumps ; `backup:run` réécrit ce repère à la fin (succès : dans 24 h ; échec :
-retentative dans une heure).
+Un verrou (`~/backups/.backup.lock`) et une réservation immédiate
+(`~/backups/.backup-pending`) empêchent deux requêtes simultanées de lancer
+deux dumps ; `backup:run` écrit le repère `~/backups/.last-backup` à la fin
+(succès : dans 24 h ; échec : retentative dans une heure) et lève la
+réservation. Une réservation qui a plus d'une heure **sans repère** vaut un
+lancement resté sans effet (processus tué, dossier plein) : la requête
+suivante retente, au lieu d'attendre le lendemain.
 
 Le déclencheur est **global, API comprise**, et pas limité aux pages publiques :
 le 28 novembre 2026, une journée sans visite d'article — trois appels d'API et

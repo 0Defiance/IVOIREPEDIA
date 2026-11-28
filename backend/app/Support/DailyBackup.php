@@ -21,12 +21,18 @@ use Illuminate\Support\Facades\Log;
  * seules) ne produisait aucune sauvegarde, ce que le groupe `web` seul ne
  * pouvait pas éviter.
  *
- * Le repère est le même fichier que celui écrit par `backup:run`
- * (`.last-backup`) : quelle que soit la voie, une seule sauvegarde par jour.
+ * Deux fichiers, deux rôles : `.last-backup` est le repère écrit par
+ * `backup:run` quand une sauvegarde a réellement abouti (ou échoué), et
+ * `.backup-pending` la réservation posée au lancement. Une réservation qui a
+ * plus d'une heure sans repère signifie que le processus détaché n'a rien
+ * produit : la requête suivante retente, au lieu d'attendre le lendemain.
  */
 final class DailyBackup
 {
     public const MARKER = '.last-backup';
+
+    /** Réservation posée au lancement, levée par `backup:run` à la fin. */
+    public const PENDING = '.backup-pending';
 
     /** Nouvelle tentative une heure après un échec, sans marteler à chaque visite. */
     private const RETRY_DELAY = 3600;
@@ -87,13 +93,28 @@ final class DailyBackup
         return $this->directory.'/'.self::MARKER;
     }
 
-    /** Vrai quand aucune sauvegarde n'a eu lieu depuis un intervalle. */
+    public function pendingPath(): string
+    {
+        return $this->directory.'/'.self::PENDING;
+    }
+
+    /**
+     * Vrai quand aucune sauvegarde n'a eu lieu depuis un intervalle, et qu'aucune
+     * réservation récente n'est en cours. Une réservation vieille de plus d'une
+     * heure sans repère est un lancement qui n'a rien donné : on retente.
+     */
     public function due(?int $now = null): bool
     {
         $now ??= time();
         $last = @filemtime($this->markerPath());
 
-        return $last === false || ($now - $last) >= $this->interval;
+        if ($last !== false && ($now - $last) < $this->interval) {
+            return false;
+        }
+
+        $pending = @filemtime($this->pendingPath());
+
+        return $pending === false || ($now - $pending) >= self::RETRY_DELAY;
     }
 
     /** Sauvegarde si elle est due ; vrai si une tentative a eu lieu. */
@@ -124,7 +145,8 @@ final class DailyBackup
         try {
             // Réservation immédiate : si le dump tourne dans un autre processus,
             // une deuxième requête ne doit pas le relancer avant qu'il ait fini.
-            $this->record(true, $now);
+            // Si rien n'apparaît dans l'heure, `due()` la considère périmée.
+            $this->reserve($now);
             $code = ($this->runner)();
 
             if ($code !== 0) {
@@ -139,12 +161,19 @@ final class DailyBackup
         }
     }
 
+    /** Réservation de lancement, levée par la fin réelle du dump. */
+    private function reserve(int $now): void
+    {
+        @touch($this->pendingPath(), $now);
+    }
+
     /**
-     * Repère de tentative : après un succès il repousse la suivante de 24 h ;
-     * après un échec il la ramène dans une heure.
+     * Fin de tentative connue : repère à 24 h après un succès, à une heure après
+     * un échec ; la réservation est levée dans les deux cas.
      */
     private function record(bool $success, int $now): void
     {
         @touch($this->markerPath(), $success ? $now : $now - $this->interval + self::RETRY_DELAY);
+        @unlink($this->pendingPath());
     }
 }
