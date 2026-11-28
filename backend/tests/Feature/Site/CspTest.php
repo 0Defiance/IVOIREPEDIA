@@ -50,7 +50,7 @@ it('sert la CSP en mode bloquant, jamais en Report-Only', function () {
         ->and($htaccess)->not->toContain('Content-Security-Policy-Report-Only');
 });
 
-it('garde script-src sans unsafe-inline et ouvre juste les images sourcées', function () {
+it('garde script-src sans unsafe-inline et n’ouvre que les hôtes nécessaires', function () {
     $policy = cspPolicyFromHtaccess();
 
     expect($policy)->not->toBeNull();
@@ -58,6 +58,8 @@ it('garde script-src sans unsafe-inline et ouvre juste les images sourcées', fu
     $script = (string) cspDirective((string) $policy, 'script-src');
     $style = (string) cspDirective((string) $policy, 'style-src');
     $image = (string) cspDirective((string) $policy, 'img-src');
+    $font = (string) cspDirective((string) $policy, 'font-src');
+    $connect = (string) cspDirective((string) $policy, 'connect-src');
 
     // Aucun script en ligne toléré ; 'unsafe-eval' non plus (Flutter n'a besoin
     // que de compiler du WebAssembly).
@@ -73,6 +75,14 @@ it('garde script-src sans unsafe-inline et ouvre juste les images sourcées', fu
     // le 28 novembre 2026) : sans ces deux hôtes, elles disparaîtraient.
     expect($image)->toContain('https://upload.wikimedia.org')
         ->and($image)->toContain('https://thumb.wikimedia.org');
+
+    // Le moteur télécharge Roboto, police par défaut de Material, sur le CDN de
+    // Google : sans cet hôte, les textes sans famille explicite perdent leur
+    // police. Les scripts, eux, restent exclusivement servis par le site.
+    expect($font)->toContain('https://fonts.gstatic.com')
+        ->and($connect)->toContain('https://fonts.gstatic.com');
+
+    expect($script)->not->toMatch('/https?:/');
 });
 
 it('rend le formulaire d’article sans aucun script en ligne', function () {

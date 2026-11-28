@@ -224,7 +224,8 @@ reconstruit l'écran à partir de l'URL).
 
 ```bash
 cd app
-MSYS_NO_PATHCONV=1 flutter build web --release --base-href=/ --dart-define=API_BASE_URL=/api/v1
+MSYS_NO_PATHCONV=1 flutter build web --release --base-href=/ --dart-define=API_BASE_URL=/api/v1 \
+  --no-web-resources-cdn
 
 # Brotli précompressé (qualité 11) pour le JS et le wasm : Apache sert les
 # variantes `.br` aux navigateurs qui annoncent `br` (règles versionnées dans

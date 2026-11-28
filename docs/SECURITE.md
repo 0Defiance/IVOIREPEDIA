@@ -58,6 +58,15 @@ la source plutôt qu'en élargissant `script-src` :
   le 28 novembre 2026 : 19 sur `upload.wikimedia.org`, 56 sur
   `thumb.wikimedia.org`) : sans ces deux hôtes dans `img-src`, elles
   disparaîtraient ;
+- **Roboto**, police par défaut de Material, est téléchargée par le moteur sur
+  `fonts.gstatic.com` : cet hôte est ouvert en `font-src` **et** `connect-src`
+  (le chargement passe par `fetch`), sinon les textes sans famille explicite
+  perdent leur police ;
+- **le moteur Flutter** est servi par le site : le build passe par
+  `--no-web-resources-cdn`, car sans ce drapeau `flutter_bootstrap.js` va
+  chercher CanvasKit sur `www.gstatic.com` — vérifié en production le
+  28 novembre 2026, où la politique bloquante laissait l'écran de chargement
+  figé. `script-src` n'a donc aucun hôte de script tiers ;
 - le bloc **JSON-LD** des pages pré-rendues est conservé : c'est un bloc de
   données, non exécuté, auquel la CSP ne s'applique pas.
 
@@ -68,8 +77,8 @@ default-src 'self';
 script-src 'self' 'wasm-unsafe-eval';
 style-src 'self' 'unsafe-inline';
 img-src 'self' data: blob: https://upload.wikimedia.org https://thumb.wikimedia.org;
-font-src 'self' data:;
-connect-src 'self';
+font-src 'self' data: https://fonts.gstatic.com;
+connect-src 'self' https://fonts.gstatic.com;
 media-src 'self' blob:;
 worker-src 'self' blob:;
 frame-ancestors 'self';

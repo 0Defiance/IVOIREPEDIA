@@ -119,12 +119,17 @@
   #   - les feuilles de style et les polices sont injectées à la volée par le
   #     moteur, d'où 'unsafe-inline' pour style-src et data: pour les polices ;
   #   - les couvertures d'articles sont des images sourcées, hébergées par
-  #     Wikimedia : sans ces deux hôtes, 75 articles perdraient leur image.
+  #     Wikimedia : sans ces deux hôtes, 75 articles perdraient leur image ;
+  #   - le moteur télécharge Roboto, police par défaut de Material, sur
+  #     fonts.gstatic.com : sans cet hôte, les textes sans famille explicite
+  #     perdent leur police (l'appel passe par fetch, donc connect-src aussi).
   # Aucun script en ligne ne subsiste (couverture → `loading.js`, formulaire
-  # d'article → `admin/article-form.js`) : script-src reste sans 'unsafe-inline'.
-  # Ajouter un hôte d'image est un acte explicite — une ligne ici, documentée
-  # dans docs/SECURITE.md §1.3.
-  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://upload.wikimedia.org https://thumb.wikimedia.org; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; worker-src 'self' blob:; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'"
+  # d'article → `admin/article-form.js`) : script-src reste sans 'unsafe-inline',
+  # et le moteur Flutter est servi par le site (`--no-web-resources-cdn`),
+  # jamais depuis un CDN de scripts.
+  # Ajouter un hôte est un acte explicite — une ligne ici, documentée dans
+  # docs/SECURITE.md §1.1.
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://upload.wikimedia.org https://thumb.wikimedia.org; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://fonts.gstatic.com; media-src 'self' blob:; worker-src 'self' blob:; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'"
 
   # Le code doit être revalidé à chaque visite : une réponse 304 coûte quelques
   # centaines d'octets et un déploiement est visible immédiatement.
