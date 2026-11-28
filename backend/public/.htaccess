@@ -8,6 +8,15 @@
 
     RewriteEngine On
 
+    # HTTPS obligatoire (CONTEXT §13). Sur TLS, Apache donne `HTTPS=on` et le
+    # proxy `X-Forwarded-Proto: https` (vérifié le 28 novembre 2026 par un
+    # fichier de diagnostic temporaire) ; en HTTP simple, ni l'un ni l'autre
+    # n'est présent : la redirection ne peut pas boucler. Elle passe avant
+    # tout le reste, API comprise.
+    RewriteCond %{HTTPS} !=on
+    RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
     # Anciennes adresses publiées sous /site/ : redirection permanente vers la
     # racine, pour que les liens déjà partagés continuent de fonctionner. La
     # barre est obligatoire : sans elle, « /sitemap.xml » serait lu comme
