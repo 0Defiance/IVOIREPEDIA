@@ -89,6 +89,28 @@
 </IfModule>
 
 <IfModule mod_headers.c>
+  # En-têtes de sécurité (CONTEXT §13, docs/SECURITE.md). Ils s'appliquent à
+  # tout ce que sert cette racine : la coquille Flutter, les articles
+  # pré-rendus, l'API et le panneau.
+  #   - X-Frame-Options : le site ne se laisse pas encadrer ailleurs ;
+  #   - nosniff : le navigateur ne devine pas un type qu'on n'a pas annoncé ;
+  #   - Referrer-Policy : l'adresse d'origine ne fuit pas vers les sites tiers
+  #     (partage, liens d'articles) ;
+  #   - HSTS : un an sans repasser par HTTP (ignoré en HTTP simple, donc posé
+  #     sans condition).
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Strict-Transport-Security "max-age=31536000"
+
+  # CSP d'abord en Report-Only : rien n'est bloqué, le navigateur signale
+  # seulement ce qu'il refuserait. Flutter Web charge son moteur depuis la
+  # même origine et compile du WebAssembly, d'où 'wasm-unsafe-eval' ; les
+  # feuilles de style et les polices sont injectées à la volée, d'où
+  # 'unsafe-inline' et data:. À passer en `Content-Security-Policy` (mode
+  # bloquant) quand les rapports seront propres — docs/SECURITE.md.
+  Header always set Content-Security-Policy-Report-Only "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; worker-src 'self' blob:; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'"
+
   # Le code doit être revalidé à chaque visite : une réponse 304 coûte quelques
   # centaines d'octets et un déploiement est visible immédiatement.
   <FilesMatch "\.(html|js|json)$">

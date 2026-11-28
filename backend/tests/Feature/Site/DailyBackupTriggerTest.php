@@ -2,12 +2,19 @@
 
 use App\Http\Middleware\TriggerDailyBackup;
 use App\Support\DailyBackup;
+use Illuminate\Foundation\Http\Kernel;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 /**
  * Le déclencheur ne fait rien pendant la requête et une seule chose après.
  */
+it('ne s’accroche qu’aux pages publiques, jamais aux appels d’API', function () {
+    $groups = app(Kernel::class)->getMiddlewareGroups();
+
+    expect($groups['web'])->toContain(TriggerDailyBackup::class)
+        ->and($groups['api'])->not->toContain(TriggerDailyBackup::class);
+});
 it('sauvegarde après la réponse, jamais pendant', function () {
     $dir = sys_get_temp_dir().DIRECTORY_SEPARATOR.'ivp-trigger-'.bin2hex(random_bytes(4));
     mkdir($dir, 0750, true);

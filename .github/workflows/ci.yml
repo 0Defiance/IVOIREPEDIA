@@ -38,6 +38,10 @@ jobs:
       - run: composer analyse
         working-directory: backend
 
+      # CONTEXT §13 : aucune dépendance vulnérable connue ne part en production.
+      - run: composer audit --locked --no-interaction
+        working-directory: backend
+
   flutter:
     runs-on: ubuntu-latest
     steps:
