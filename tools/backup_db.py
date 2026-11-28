@@ -152,37 +152,35 @@ def show_counts(title: str, values: dict[str, int]) -> None:
 
 
 def cmd_backup(args: argparse.Namespace) -> int:
-    config = db_config()
-    database = args.database or config["database"]
-    write_defaults(config)
+    """Le dump est fabriqué par `php artisan backup:run`, seul endroit qui le fait.
 
-    print(f"Sauvegarde de {database} et des médias sur {HOST}…")
-    stamp = time.strftime("%Y%m%d-%H%M%S")
-    dump = f"{REMOTE_BACKUPS}/db-{database}-{stamp}.sql.gz"
-    media = f"{REMOTE_BACKUPS}/media-{stamp}.tar.gz"
-    dump_cmd = (
-        f"mysqldump --defaults-extra-file={DEFAULTS_FILE} --single-transaction --quick "
-        f"--skip-lock-tables --default-character-set=utf8mb4 {shlex.quote(database)} "
-        f"| gzip -9 > {dump}"
-    )
-    media_cmd = (
-        f"tar czf {media} -C {BACKEND} --exclude=storage/logs storage/app"
-    )
-    prune_cmd = (
-        f"ls -1t {REMOTE_BACKUPS}/db-*.sql.gz 2>/dev/null | tail -n +{args.keep + 1} | xargs -r rm -f; "
-        f"ls -1t {REMOTE_BACKUPS}/media-*.tar.gz 2>/dev/null | tail -n +{args.keep + 1} | xargs -r rm -f"
-    )
-    ssh(f"set -e; mkdir -p {REMOTE_BACKUPS}; {dump_cmd}; {media_cmd}; {prune_cmd}; rm -f {DEFAULTS_FILE}")
+    Le nommage (`db-<base>-<horodatage>.sql.gz`) et la rétention **par base**
+    vivent donc en PHP, côté serveur : la sauvegarde automatique et la
+    sauvegarde à la main passent exactement par le même code.
+    """
+    print(f"Sauvegarde sur {HOST} (`php artisan backup:run`)…")
+    flags = [f"--keep={args.keep}"]
+    if args.database:
+        flags.append(f"--database={args.database}")
 
-    sizes = ssh(f"du -h {dump} {media} | cut -f1,2")
-    print(sizes.stdout.strip())
+    result = ssh(f"cd {BACKEND} && php artisan backup:run {' '.join(flags)}")
+    print(result.stdout.strip())
 
-    local_dir = ROOT / "backups" / stamp
+    files: dict[str, str] = {}
+    for line in result.stdout.splitlines():
+        key, sep, value = line.partition("=")
+        if sep and key.strip() in ("dump", "media") and value.startswith("/"):
+            files[key.strip()] = value.strip()
+    if "dump" not in files:
+        die("le serveur n'a annoncé aucun dump : `backup:run` a-t-il échoué ?")
+
+    local_dir = ROOT / "backups" / time.strftime("%Y%m%d-%H%M%S")
     local_dir.mkdir(parents=True, exist_ok=True)
-    scp(dump, str(local_dir / Path(dump).name))
-    scp(media, str(local_dir / Path(media).name))
+    for remote in files.values():
+        scp(remote, str(local_dir / Path(remote).name))
+
     print(f"Rapatrié dans {local_dir}")
-    print(f"Conservé sur le serveur : {args.keep} dernières paires dans {REMOTE_BACKUPS}")
+    print(f"Rétention sur le serveur : {args.keep} paires par base dans {REMOTE_BACKUPS}")
     return 0
 
 

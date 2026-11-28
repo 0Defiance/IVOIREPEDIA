@@ -4,7 +4,7 @@
 >
 > **Complément local :** [`INSTALLATION.md`](INSTALLATION.md). **État réel :** [`SUIVI_DEVELOPPEMENT.md`](SUIVI_DEVELOPPEMENT.md).
 >
-> **Version :** 2.3 · **Dernière mise à jour :** 28 novembre 2026
+> **Version :** 2.4 · **Dernière mise à jour :** 28 novembre 2026
 >
 > **Convention de lecture** : `ivoirepedia` désigne l'identifiant du compte Alwaysdata. S'il diffère, remplacer cette valeur partout (hôtes, bases, chemins) — le raisonnement ne change pas.
 
@@ -200,6 +200,13 @@ Pour le premier administrateur de production, utiliser une commande ponctuelle v
 php /home/ivoirepedia/ivoirepedia/backend/artisan schedule:run
 ```
 
+**Statut au 28 novembre 2026 : cette tâche n'existe pas.** Le compte refuse
+`crontab` (« You (ivoirepedia) are not allowed to use this program ») et rien ne
+déclenche `schedule:run` : une entrée planifiée peut être écrite dans
+`routes/console.php` et listée par `php artisan schedule:list`, elle ne se
+exécutera pas avant la création de cette tâche dans le panneau. La sauvegarde
+quotidienne ne dépend pas d'elle (§8.2).
+
 ---
 
 ### Publier le site Flutter (racine du domaine)
@@ -347,7 +354,7 @@ php artisan config:cache && php artisan route:cache && php artisan view:cache
 | Pas de root | Aucune commande système privilégiée ; PHP tourne sous l'utilisateur du compte |
 | Composer | Déjà présent côté serveur : `composer install` fonctionne directement |
 | File d'attente | Pas de worker permanent au MVP : `QUEUE_CONNECTION=database` piloté par une tâche planifiée, ou `sync` tant que rien n'est asynchrone |
-| Sauvegardes | Sauvegardes Alwaysdata activées par défaut ; **tester une restauration** avant la bêta (risque R-04) |
+| Sauvegardes | Dump quotidien vérifié (§8) ; sauvegardes Alwaysdata du compte en filet de dernier recours ; **copie hors-site encore absente** (risque R-04) |
 | Médias | `storage/app/public` + `php artisan storage:link`, à recréer si le dossier est vidé lors d'un déploiement |
 
 ---
@@ -355,35 +362,77 @@ php artisan config:cache && php artisan route:cache && php artisan view:cache
 ## 8. Sauvegardes et restauration
 
 Une sauvegarde qu'on n'a jamais restaurée n'est pas une sauvegarde (risque R-04,
-CONTEXT §17). L'export et l'essai ci-dessous se rejouent à l'identique ; ils ont
-été faits pour la première fois le 28 novembre 2026.
+CONTEXT §17). L'export, l'automatisation et l'essai de restauration ci-dessous
+ont été mis en service et vérifiés le 28 novembre 2026.
 
 **Ce que couvre l'export** : la base entière (`mysqldump --single-transaction`,
 donc sans bloquer les visites) et `backend/storage/app`, c'est-à-dire les médias
 téléversés — `storage/logs` est exclu. Les identifiants ne quittent pas le
-serveur : le script demande la configuration à Laravel, la range dans un fichier
-d'options `600` et le supprime en fin de commande.
+serveur : la commande demande la configuration à Laravel, la range dans un
+fichier d'options `600` et le supprime en fin de course. `mysqldump`, `gzip` et
+`tar` sont cherchés en chemin absolu : une tâche planifiée n'hérite pas du
+`PATH` du shell.
 
-### 8.1 Sauvegarder
+### 8.1 Sauvegarder à la main
+
+Une seule commande fabrique un dump, côté serveur :
 
 ```bash
-python tools/backup_db.py backup                      # base du .env du serveur (production)
+cd ~/ivoirepedia/backend
+php artisan backup:run                       # base du .env (ivoirepedia_prod)
+php artisan backup:run --database ivoirepedia_dev --keep=1
+php artisan backup:run --dry-run             # le plan, sans rien exécuter
+```
+
+Depuis le poste de travail, le même travail plus le rapatriement :
+
+```bash
+python tools/backup_db.py backup                       # appelle `backup:run` par SSH, puis scp
 python tools/backup_db.py backup --database ivoirepedia_dev --keep 3
 ```
 
-Chaque passage écrit sur le serveur `~/backups/` un couple
-`db-<base>-<horodatage>.sql.gz` + `media-<horodatage>.tar.gz`, n'y garde que
-les `--keep` derniers (7 par défaut) et rapatrie la paire du jour dans
-`backups/<horodatage>/` à la racine du dépôt. Ce dossier est ignoré par Git :
-une sauvegarde est une donnée, pas du code. La **copie hors-site** (disque
-externe, autre hébergeur) reste à faire à la main — la règle 3-2-1 n'est pas
-satisfaite par un seul serveur.
+Nommage : `db-<base>-<horodatage>.sql.gz` et `media-<base>-<horodatage>.tar.gz`
+dans `~/backups` (`BACKUP_DIR` pour choisir un autre dossier). **La base fait
+partie du nom**, et la rétention se calcule base par base
+(`App\Support\BackupRetention`) : une série de sauvegardes de `ivoirepedia_dev`
+ne peut pas évincer le dernier dump de production. `--keep` compte des paires
+**par base** (7 par défaut).
 
-### 8.2 Restaurer, et le prouver
+Le poste rapatrie la paire du jour dans `backups/<horodatage>/`, dossier ignoré
+par Git : une sauvegarde est une donnée, pas du code. Les fichiers à l'ancien
+nom (`db-<horodatage>.sql.gz`, avant le 28 novembre 2026) restent sur le
+serveur : ils ne portent pas de nom de base et ne sont donc plus purgés
+automatiquement.
+
+### 8.2 Automatique : deux déclencheurs, un seul travail
+
+`routes/console.php` planifie `backup:run --keep=7` chaque nuit à **3 h 30**.
+Cette entrée ne s'exécute que si le compte lance `php artisan schedule:run`
+chaque minute — la tâche du panneau décrite au §3. **Elle n'existe pas encore
+au 28 novembre 2026** : `php artisan schedule:list` affiche bien l'entrée, mais
+rien ne la déclenche, et `crontab` est refusé au compte.
+
+En attendant, et en secours si la tâche disparaît, le middleware
+`TriggerDailyBackup` (global, `bootstrap/app.php`) déclenche la sauvegarde
+**après l'envoi de la réponse** : le premier visiteur de la journée la lance
+sans l'attendre. Un verrou (`~/backups/.backup.lock`) empêche deux visites
+simultanées de la lancer deux fois, et le repère `~/backups/.last-backup` —
+écrit par `backup:run`, quelle que soit la voie — garantit **une sauvegarde par
+24 h**. Après un échec, la tentative revient une heure plus tard au lieu
+d'attendre un jour.
+
+Vérifié le 28 novembre 2026 : repère supprimé, une visite de
+`/api/v1/health` fait apparaître `db-ivoirepedia_prod-20261128-022552.sql.gz`
+et réécrit le repère ; une seconde visite n'ajoute rien. Coût : environ une
+seconde de plus sur la première visite de la journée, une fois par jour. Créer
+la tâche du panneau supprime ce déclencheur de secours sans autre changement.
+
+### 8.3 Restaurer, et le prouver
 
 ```bash
 python tools/backup_db.py counts --database ivoirepedia_dev          # état avant
-python tools/backup_db.py restore --dump backups/20261128-020023/db-20261128-020023.sql.gz \
+python tools/backup_db.py restore \
+    --dump backups/20261128-022621/db-ivoirepedia_prod-20261128-022618.sql.gz \
     --database ivoirepedia_dev --yes
 ```
 
@@ -399,10 +448,11 @@ Essai réel du 28 novembre 2026, dump de production restauré dans
 chiffres de la production. Le dump de dev pris avant l'essai a ensuite été
 restauré : retour à 89 articles et 2 comptes. La production n'a pas été touchée.
 
-### 8.3 En cas d'incident en production
+### 8.4 En cas d'incident en production
 
-1. **Sauvegarder l'état cassé** avant tout (`backup --database ivoirepedia_prod`) :
-il peut contenir des données à récupérer à la main.
+1. **Sauvegarder l'état cassé** avant tout
+(`php artisan backup:run --database ivoirepedia_prod`) : il peut contenir des
+données à récupérer à la main.
 2. Restaurer la dernière paire saine dans `ivoirepedia_prod`, puis vérifier
 `python tools/backup_db.py counts --database ivoirepedia_prod`,
 `curl -s https://ivoirepedia.alwaysdata.net/api/v1/health` et l'ouverture d'un
@@ -410,12 +460,14 @@ article dans le navigateur.
 3. Vider les caches (`cd ~/ivoirepedia/backend && php artisan cache:clear && php artisan config:clear`)
 et consigner l'incident dans `docs/SUIVI_DEVELOPPEMENT.md`.
 
-### 8.4 Ce qui reste à faire
+### 8.5 Ce qui reste à faire
 
-La **sauvegarde automatique** (tâche planifiée quotidienne sur le compte) et la
-**copie hors-site** ne sont pas en place : l'export est aujourd'hui lancé à la
-main. Les sauvegardes du compte par Alwaysdata restent le filet de dernier
-recours.
+- **La tâche planifiée du panneau** (§3) : elle rendrait la sauvegarde nocturne
+  indépendante des visites et supprimerait le déclencheur de secours.
+- **La copie hors-site** (disque externe, autre hébergeur) : la règle 3-2-1
+  n'est pas satisfaite par un seul serveur, même sauvegardé chaque nuit.
+- Le **nettoyage des anciens dumps** (`db-<horodatage>.sql.gz`) une fois une
+  paire au nouveau nom conservée.
 
 ---
 

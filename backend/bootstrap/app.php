@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\AuthenticateApiToken;
 use App\Http\Middleware\EnsureEditorialAccess;
+use App\Http\Middleware\TriggerDailyBackup;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -25,6 +26,12 @@ return Application::configure(basePath: dirname(__DIR__))
             // Panneau éditorial : CONTRIBUTOR et au-dessus (CONTEXT §10).
             'editorial' => EnsureEditorialAccess::class,
         ]);
+
+        // Sauvegarde quotidienne : la tâche planifiée du panneau n'existe pas
+        // encore (crontab est refusé sur le compte), donc la première visite
+        // du jour la déclenche après l'envoi de sa réponse.
+        // Voir App\Support\DailyBackup et docs/DEPLOIEMENT.md §8.
+        $middleware->append(TriggerDailyBackup::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

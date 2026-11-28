@@ -3216,6 +3216,29 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 135 — 28 novembre 2026 · Une sauvegarde par jour, sans elle-même se faire évincer
+
+**Constat** : deux trous dans la séance 134. D'abord la rétention était commune : `backup_db.py` purgeait `db-*.sql.gz` et `media-*.tar.gz` tous ensemble, si bien qu'un essai de restauration sur `ivoirepedia_dev` — plusieurs dumps d'affilée — pouvait faire disparaître le dernier dump de production. Ensuite le Sprint 5 demandait une sauvegarde **automatique** : elle n'existait pas, et `crontab` est refusé au compte (« not allowed to use this program »).
+
+**Fait** :
+- `App\Support\BackupRetention` : nommage `db-<base>-<horodatage>.sql.gz` / `media-<base>-<horodatage>.tar.gz`, tri lexicographique (l'horodatage est dans le nom), rétention **par base**. Un dump de dev ne peut plus vieillir le dump de production.
+- `php artisan backup:run` (`app/Console/Commands/BackupRun.php`) : seul endroit qui fabrique un dump (`mysqldump --single-transaction`, archive `storage/app`, identifiants dans un fichier d'options `600` supprimé ensuite, binaires résolus en chemin absolu), `--keep`, `--database`, `--dir`, `--skip-media`, `--dry-run`. Il écrit le repère `.last-backup`.
+- `tools/backup_db.py backup` ne duplique plus le nommage : il appelle cette commande par SSH et rapatrie les fichiers annoncés (`dump=`, `media=`). `restore` et `counts` sont inchangés.
+- **Automatisation** : `routes/console.php` planifie `backup:run --keep=7` à 3 h 30, et `TriggerDailyBackup` (middleware global) lance la sauvegarde **après la réponse** quand elle est due — verrou `flock`, repère partagé, une par 24 h, nouvelle tentative une heure après un échec. `config/backup.php` porte le dossier, le quota et l'intervalle.
+
+**Vérifié, local** : `composer test` → **182 tests verts** (5 ajoutés : rétention par base, purge sans toucher aux autres bases, quota non dépassé, déclenchement après réponse, plan de `backup:run`) ; `composer format:check` → 173 fichiers, aucun écart ; `composer analyse` → aucune erreur.
+
+**Vérifié, serveur** :
+- `php artisan backup:run` → `db-ivoirepedia_prod-20261128-022500.sql.gz` (469 Ko) + médias ; repère écrit.
+- Deux sauvegardes de dev avec `--keep=1` → la première paire de dev est purgée (« Supprimé (rétention 1) »), les dumps de production restent intacts.
+- **Automatique** : repère supprimé, une visite de `/api/v1/health` fait apparaître `db-ivoirepedia_prod-20261128-022552.sql.gz` et réécrit le repère ; une seconde visite n'ajoute rien. `/`, `/recherche?q=a`, `/categories/histoire`, `/articles/ernesto-djedje` répondent 200, `/admin` 302.
+- `python tools/backup_db.py backup` délègue bien et rapatrie la paire dans `backups/20261128-022621/`.
+- Incident trouvé en route : le premier envoi oubliait `app/Http/Middleware/TriggerDailyBackup.php`, d'où un **500** à la terminaison (`Target class ... does not exist`) ; fichier envoyé, visite rejouée, 200 et sauvegarde déclenchée.
+
+**Reste** : la tâche `schedule:run` du panneau (impossible à créer depuis le serveur — panneau uniquement), la copie hors-site, et le nettoyage des anciens dumps à l'ancien nom.
+
+---
+
 ## Séance 134 — 28 novembre 2026 · Sauvegarder, puis restaurer pour de vrai
 
 **Constat** : le Sprint 5 gardait « Sauvegardes automatiques MySQL + test de restauration » décoché, et `DEPLOIEMENT.md` §7 l'admettait : « aucune restauration n'a été essayée ». Le dépôt n'avait aucun outil d'export, et le poste de travail n'a pas de client MySQL (ADR-002) — la base ne se sauvegarde que depuis le serveur.
