@@ -3,7 +3,6 @@
 namespace App\Support;
 
 use Closure;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -12,9 +11,15 @@ use Illuminate\Support\Facades\Log;
  * Le compte d'hébergement refuse `crontab` : l'automatisation prévue par
  * l'hébergeur est une tâche du panneau (`php artisan schedule:run` chaque
  * minute, `routes/console.php`). Tant qu'elle n'est pas créée — et en secours si
- * elle disparaît — le premier visiteur de la journée déclenche la sauvegarde
- * **après** l'envoi de sa réponse (`TriggerDailyBackup`) : il n'attend pas le
- * dump, et un verrou empêche deux visites simultanées de le lancer deux fois.
+ * elle disparaît — la première requête de la journée déclenche la sauvegarde,
+ * **dans un autre processus PHP** (`spawn`) : ni le visiteur d'un article ni un
+ * appel d'API n'attendent le dump, qui n'est qu'un `stat` pour eux. Un verrou
+ * empêche deux requêtes simultanées de le lancer deux fois.
+ *
+ * Ce déclencheur est donc global et non limité aux pages publiques : le
+ * 28 novembre 2026, une journée sans visite d'article (API et coquille Flutter
+ * seules) ne produisait aucune sauvegarde, ce que le groupe `web` seul ne
+ * pouvait pas éviter.
  *
  * Le repère est le même fichier que celui écrit par `backup:run`
  * (`.last-backup`) : quelle que soit la voie, une seule sauvegarde par jour.
@@ -30,7 +35,7 @@ final class DailyBackup
     private readonly Closure $runner;
 
     /**
-     * @param  (Closure():int)|null  $runner  exécute la sauvegarde, renvoie son code de sortie
+     * @param  (Closure():int)|null  $runner  lance la sauvegarde, renvoie son code de sortie
      */
     public function __construct(
         private readonly string $directory,
@@ -38,7 +43,28 @@ final class DailyBackup
         private readonly int $interval = 86400,
         private readonly int $keep = 7,
     ) {
-        $this->runner = $runner ?? fn (): int => Artisan::call('backup:run', ['--keep' => $this->keep]);
+        $this->runner = $runner ?? $this->spawn(...);
+    }
+
+    /**
+     * Lance `backup:run` dans un autre processus PHP et rend la main aussitôt.
+     *
+     * C'est ce qui permet au déclencheur de rester sur **toutes** les requêtes :
+     * un appel d'API ne paie qu'un `stat` sur le repère, le dump tourne ailleurs.
+     * Le processus détaché écrit lui-même le repère à la fin (succès ou échec),
+     * et la réservation ci-dessous empêche deux requêtes de le lancer deux fois.
+     */
+    private function spawn(): int
+    {
+        $command = sprintf(
+            '%s %s backup:run --keep=%d > /dev/null 2>&1 &',
+            escapeshellarg(PHP_BINARY),
+            escapeshellarg(base_path('artisan')),
+            $this->keep,
+        );
+        exec($command, $ignored, $code);
+
+        return $code;
     }
 
     /** Dossier et quota lus dans `config/backup.php` (jamais `env()` hors config). */
@@ -96,10 +122,13 @@ final class DailyBackup
         }
 
         try {
+            // Réservation immédiate : si le dump tourne dans un autre processus,
+            // une deuxième requête ne doit pas le relancer avant qu'il ait fini.
+            $this->record(true, $now);
             $code = ($this->runner)();
-            $this->record($code === 0, $now);
 
             if ($code !== 0) {
+                $this->record(false, $now);
                 Log::warning("Sauvegarde quotidienne en échec (code {$code}).");
             }
 

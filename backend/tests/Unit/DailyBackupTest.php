@@ -87,6 +87,25 @@ it('réessaie une heure après un échec sans marteler les visites suivantes', f
     dropDailyBackupDir($dir);
 });
 
+it('réserve le repère avant de lancer le dump, pour ne pas le lancer deux fois', function () {
+    $dir = dailyBackupDir();
+    $reservedAtLaunch = false;
+
+    $backup = new DailyBackup($dir, function () use ($dir, &$reservedAtLaunch): int {
+        // Le repère doit déjà être posé quand le dump démarre : c'est ce qui
+        // empêche une deuxième requête de le lancer en parallèle.
+        $reservedAtLaunch = file_exists($dir.'/'.DailyBackup::MARKER);
+
+        return 0;
+    });
+
+    expect($backup->runIfDue())->toBeTrue()
+        ->and($reservedAtLaunch)->toBeTrue()
+        ->and($backup->runIfDue())->toBeFalse();
+
+    dropDailyBackupDir($dir);
+});
+
 it('laisse la main quand le verrou est déjà pris', function () {
     $dir = dailyBackupDir();
     $lock = fopen($dir.'/.backup.lock', 'c');

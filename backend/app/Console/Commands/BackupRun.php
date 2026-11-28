@@ -71,20 +71,23 @@ class BackupRun extends Command
         try {
             if (! $this->dumpDatabase($credentials, $database, $dump)) {
                 @unlink($dump);
+                $this->markAttempt($directory, false);
 
                 return self::FAILURE;
             }
 
             if ($withMedia && ! $this->archiveMedia($media)) {
+                $this->markAttempt($directory, false);
+
                 return self::FAILURE;
             }
         } finally {
             @unlink($credentials);
         }
 
-        // Repère partagé avec la sauvegarde déclenchée par une visite :
-        // quelle que soit la voie, une seule sauvegarde par jour.
-        @touch($directory.'/'.DailyBackup::MARKER);
+        // Repère partagé avec le déclencheur par requête : quelle que soit la
+        // voie, une seule sauvegarde par jour.
+        $this->markAttempt($directory, true);
 
         $this->line("dump={$dump}");
         $this->info("Dump : {$dump} (".$this->humanSize($dump).')');
@@ -190,6 +193,19 @@ class BackupRun extends Command
         }
 
         return true;
+    }
+
+    /**
+     * Repère de tentative : un succès repousse la suivante de 24 h, un échec la
+     * ramène dans une heure. Le déclencheur par requête a déjà posé une
+     * réservation ; c'est ce fichier qui dit la vérité finale.
+     */
+    private function markAttempt(string $directory, bool $success): void
+    {
+        $interval = (int) config('backup.interval', 86400);
+        $stamp = $success ? time() : time() - $interval + 3600;
+
+        @touch($directory.'/'.DailyBackup::MARKER, $stamp);
     }
 
     /** Chemin absolu : la tâche planifiée n'hérite pas toujours du PATH du shell. */

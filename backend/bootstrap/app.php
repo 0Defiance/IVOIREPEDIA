@@ -28,11 +28,12 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         // Sauvegarde quotidienne : la tâche planifiée du panneau n'existe pas
-        // encore (crontab est refusé sur le compte), donc la première page
-        // publique du jour la déclenche après l'envoi de sa réponse.
-        // Groupe `web` seulement : un appel d'API ne paie jamais ce coût
-        // (App\Support\DailyBackup, docs/DEPLOIEMENT.md §8.2).
-        $middleware->web(append: [TriggerDailyBackup::class]);
+        // encore (crontab est refusé sur le compte), donc la première requête
+        // de la journée la déclenche. Le dump tourne dans un autre processus
+        // PHP : l'appelant paie un `stat`, jamais la sauvegarde. Déclencheur
+        // global parce qu'une journée peut n'avoir que du trafic d'API.
+        // Voir App\Support\DailyBackup et docs/DEPLOIEMENT.md §8.2.
+        $middleware->append(TriggerDailyBackup::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

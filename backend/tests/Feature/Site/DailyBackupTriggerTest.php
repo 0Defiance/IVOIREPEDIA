@@ -9,11 +9,11 @@ use Illuminate\Http\Response;
 /**
  * Le déclencheur ne fait rien pendant la requête et une seule chose après.
  */
-it('ne s’accroche qu’aux pages publiques, jamais aux appels d’API', function () {
-    $groups = app(Kernel::class)->getMiddlewareGroups();
-
-    expect($groups['web'])->toContain(TriggerDailyBackup::class)
-        ->and($groups['api'])->not->toContain(TriggerDailyBackup::class);
+it('s’accroche à toutes les requêtes : une journée peut n’avoir que de l’API', function () {
+    // Le 28 novembre 2026, le déclencheur restreint au groupe `web` laissait
+    // passer une journée entière sans sauvegarde quand personne n'ouvrait
+    // d'article. Le dump est maintenant détaché, donc l'appelant ne le paie pas.
+    expect(app(Kernel::class)->getGlobalMiddleware())->toContain(TriggerDailyBackup::class);
 });
 it('sauvegarde après la réponse, jamais pendant', function () {
     $dir = sys_get_temp_dir().DIRECTORY_SEPARATOR.'ivp-trigger-'.bin2hex(random_bytes(4));
