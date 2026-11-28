@@ -150,7 +150,7 @@ final class DailyBackup
             $code = ($this->runner)();
 
             if ($code !== 0) {
-                $this->record(false, $now);
+                $this->recordFailure($now);
                 Log::warning("Sauvegarde quotidienne en échec (code {$code}).");
             }
 
@@ -168,12 +168,16 @@ final class DailyBackup
     }
 
     /**
-     * Fin de tentative connue : repère à 24 h après un succès, à une heure après
-     * un échec ; la réservation est levée dans les deux cas.
+     * Échec connu du lancement : repère antidaté d'un intervalle moins une heure,
+     * pour que la tentative suivante tombe dans l'heure ; la réservation tombe
+     * aussi, sinon elle bloquerait une heure de plus à elle seule.
+     *
+     * Le succès n'a pas à être enregistré ici : seul `backup:run`, qui fabrique
+     * réellement le dump, écrit le repère du jour (`DailyBackup::MARKER`).
      */
-    private function record(bool $success, int $now): void
+    private function recordFailure(int $now): void
     {
-        @touch($this->markerPath(), $success ? $now : $now - $this->interval + self::RETRY_DELAY);
+        @touch($this->markerPath(), $now - $this->interval + self::RETRY_DELAY);
         @unlink($this->pendingPath());
     }
 }

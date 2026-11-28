@@ -3229,6 +3229,8 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 **Vérifié, production** : sur le serveur, repère supprimé et réservation antidatée de deux heures → un appel d'API suffit à relancer un dump (`db-ivoirepedia_prod-*.sql.gz` neuf, réservation levée) ; réservation fraîche et repère absents → **aucun** dump, comme prévu, avant l'heure.
 
+**Suite (même séance)** : `DailyBackup::record(bool, int)` ne servait plus que pour l'échec — le succès n'est écrit que par `backup:run`. La branche morte et son paramètre sont retirés au profit de `recordFailure(int)`, avec le pourquoi en commentaire ; `composer test` reste à **185 verts**, Pint et PHPStan propres.
+
 **Reste** : le **nom du responsable de publication** (seule raison de la case ouverte), la tâche planifiée du panneau, la copie hors-site et la CSP en mode bloquant.
 
 ---
