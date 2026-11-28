@@ -3216,6 +3216,33 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 136 — 28 novembre 2026 · En-têtes, HTTPS forcé et treize avis de sécurité
+
+**Constat** : le Sprint 5 gardait « revue sécurité (checklist section 13) + en-têtes HTTP » décoché, avec le constat du 27 novembre : la racine ne servait ni `X-Frame-Options`, ni CSP, ni `Referrer-Policy`. Par ailleurs le déclencheur de sauvegarde était global : un appel d'API payait le dump de la journée.
+
+**Fait** :
+- Déclencheur de sauvegarde déplacé du global au groupe `web` (`$middleware->web(append: ...)`) : les pages publiques peuvent le lancer, l'API jamais. Test ajouté : le middleware figure dans `web` et pas dans `api`.
+- `backend/public/.htaccess` : `X-Frame-Options: SAMEORIGIN`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Strict-Transport-Security: max-age=31536000`, et `Content-Security-Policy-Report-Only` taillée pour Flutter Web (`'wasm-unsafe-eval'`, `'unsafe-inline'` pour les styles, `data:`/`blob:` pour images, polices et workers).
+- **HTTPS forcé** : `RewriteCond %{HTTPS} !=on` + `%{HTTP:X-Forwarded-Proto} !=https` → `301` vers `https://`, API comprise. La double condition évite la boucle ; un fichier de diagnostic temporaire a montré `HTTPS=on` et `X-Forwarded-Proto: https` sur TLS, rien en HTTP simple.
+- `composer audit` : **13 avis sur 5 paquets** (laravel/framework 13.39.0, symfony/http-foundation, http-kernel, mailer, routing 7.4.22). Montée en **13.44.1 / 7.4.25** → « No security vulnerability advisories found ». `.github/dependabot.yml` (composer, pub, actions) et étape `composer audit --locked` en CI.
+- `docs/SECURITE.md` (v1.0) : en-têtes et leur raison d'être, checklist §13 avec preuves, points encore ouverts (CSP bloquante, suppression de compte, ARTCI, hors-site), et commandes pour rejouer la vérification.
+
+**Vérifié, local** : après montée de version, `composer test` → **183 tests verts**, `composer format:check` → 173 fichiers propres, `composer analyse` → aucune erreur, `composer audit` → aucun avis.
+
+**Vérifié, production** (`0c03fff` + règle HTTPS) :
+- En-têtes présents sur `/`, `/articles/ernesto-djedje`, `/api/v1/health` et `/admin` (302).
+- `http://` → `301` vers `https://` sur `/` et sur `/api/v1/health` ; aucune boucle, pages 200.
+- `/api/v1/auth/me` sans jeton → `401` JSON ; `/admin` → `302` vers `/admin/connexion`.
+- Douze tentatives de connexion → `422, 422` puis `429` jusqu'à la fin de la fenêtre.
+- `GET /api/v1/search?q=' OR 1=1--` → `200`, JSON, `total: 0` ; `q=<script>alert(1)</script>` → `application/json`, requête échappée.
+- Cookies du panneau : `secure; httponly; samesite=lax` sur la session.
+- `/.env`, `/backend/.env`, `/storage/logs/laravel.log` → coquille Flutter, jamais le fichier.
+- `/api/v1/rien` → `404` JSON sans trace ni chemin.
+
+**Reste** : passer la CSP en mode bloquant après quelques jours de rapports Report-Only (sans collecte, seule la console les montre) ; mentions légales et suppression de compte en libre-service ; copie hors-site des sauvegardes.
+
+---
+
 ## Séance 135 — 28 novembre 2026 · Une sauvegarde par jour, sans elle-même se faire évincer
 
 **Constat** : deux trous dans la séance 134. D'abord la rétention était commune : `backup_db.py` purgeait `db-*.sql.gz` et `media-*.tar.gz` tous ensemble, si bien qu'un essai de restauration sur `ivoirepedia_dev` — plusieurs dumps d'affilée — pouvait faire disparaître le dernier dump de production. Ensuite le Sprint 5 demandait une sauvegarde **automatique** : elle n'existait pas, et `crontab` est refusé au compte (« not allowed to use this program »).
