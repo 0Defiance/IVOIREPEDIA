@@ -252,93 +252,10 @@
     </div>
   </div>
 
-  <script>
-    (function () {
-      var start = Date.now();
-      var node = document.getElementById('loading');
-      var status = document.getElementById('status');
-      var actions = document.getElementById('actions');
-      var elapsed = document.getElementById('elapsed');
-      var retry = document.getElementById('retry');
-      var finished = false;
+  <!-- Le script de la couverture vit dans loading.js : la CSP bloquante
+       interdit les scripts en ligne (docs/SECURITE.md). -->
+  <script src="loading.js" defer></script>
 
-      function setStep(name, text) {
-        var items = node ? node.querySelectorAll('.steps li') : [];
-        for (var i = 0; i < items.length; i++) {
-          var step = items[i].getAttribute('data-step');
-          items[i].classList.remove('on');
-          if (step === name) items[i].classList.add('on');
-          else if (step === 'connect' || (step === 'engine' && name === 'ready')) {
-            items[i].classList.add('done');
-          }
-        }
-        if (status && text) status.textContent = text;
-      }
-
-      function showActions(text) {
-        if (status && text) status.textContent = text;
-        if (actions) actions.hidden = false;
-      }
-
-      // Compteur réel : le temps déjà passé à attendre le moteur.
-      var counter = setInterval(function () {
-        if (finished || !elapsed) return;
-        elapsed.textContent = String(Math.floor((Date.now() - start) / 1000));
-      }, 1000);
-
-      // Le chargeur est arrivé et s'exécute : c'est lui qui télécharge le
-      // moteur (plusieurs Mo). Le premier cadre peint reste le vrai signal.
-      window.__ivoireLoading = {
-        engine: function () {
-          setStep('engine', 'Téléchargement du moteur de lecture (plusieurs Mo sur connexion lente)…');
-        },
-        failed: function () {
-          clearInterval(timer);
-          finished = true;
-          setStep('engine', 'Le moteur n’a pas pu être téléchargé.');
-          showActions('Vérifiez la connexion, puis rechargez la page.');
-        }
-      };
-
-      if (retry) retry.addEventListener('click', function () {
-        window.location.reload();
-      });
-
-      // Message honnête quand la connexion est lente : le moteur ne peint rien
-      // tant qu’il n’est pas arrivé.
-      var slow = setTimeout(function () {
-        showActions('Le moteur tarde à arriver. Sur une connexion lente, comptez jusqu’à une minute.');
-      }, 10000);
-
-      function ready() {
-        return document.querySelector('flt-glass-pane, flutter-view');
-      }
-
-      function clear() {
-        finished = true;
-        clearInterval(counter);
-        if (node) {
-          node.classList.add('gone');
-          setTimeout(function () { if (node.parentNode) node.parentNode.removeChild(node); }, 300);
-        }
-        clearTimeout(slow);
-      }
-
-      var timer = setInterval(function () {
-        if (ready()) {
-          clearInterval(timer);
-          setStep('ready');
-          clear();
-        } else if (Date.now() - start > 90000) {
-          clearInterval(timer);
-          finished = true;
-          setStep('engine', 'La page ne répond toujours pas.');
-          showActions('Vérifiez la connexion, puis rechargez la page.');
-        }
-      }, 100);
-    })();
-  </script>
-
-  <script src="flutter_bootstrap.js" async onload="window.__ivoireLoading && window.__ivoireLoading.engine()" onerror="window.__ivoireLoading && window.__ivoireLoading.failed()"></script>
+  
 </body>
 </html>

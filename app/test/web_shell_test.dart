@@ -28,9 +28,18 @@ void main() {
     expect(shell, contains('id="status"'));
     expect(shell, contains('id="elapsed"'));
     expect(shell, contains('id="retry"'));
-    // Le chargeur signale son arrivée et son échec au lieu d'attendre en silence.
-    expect(shell, contains('onload='));
-    expect(shell, contains('onerror='));
+    // La CSP bloquante refuse les scripts en ligne et les gestionnaires
+    // d'attributs (`onload`, `onerror`) : la couverture est un fichier de la
+    // même origine, qui crée lui-même la balise du chargeur et s'abonne à son
+    // arrivée comme à son échec.
+    expect(shell, contains('<script src="loading.js" defer></script>'));
+    expect(shell, isNot(contains('onload=')));
+    expect(shell, isNot(contains('onerror=')));
+
+    final cover = File('web/loading.js').readAsStringSync();
+    expect(cover, contains('flutter_bootstrap.js'));
+    expect(cover, contains("addEventListener('load'"));
+    expect(cover, contains("addEventListener('error'"));
   });
 
   // Le logo de l'écran de chargement part avant tout le reste : il est

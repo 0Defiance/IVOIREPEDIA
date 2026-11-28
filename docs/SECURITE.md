@@ -3,9 +3,9 @@
 > **Objet :** état des règles de la section 13 du CONTEXT, en-têtes HTTP servis
 > en production, et ce qui reste ouvert avant une bêta publique.
 >
-> **Version :** 1.0 · **Dernière vérification en production :** 28 novembre 2026
-> (site public `https://ivoirepedia.alwaysdata.net`, commit `0c03fff` + règle
-> HTTPS) · **Compléments :** [`DEPLOIEMENT.md`](DEPLOIEMENT.md) §6 et §8,
+> **Version :** 1.1 · **Dernière vérification en production :** 28 novembre 2026
+> (site public `https://ivoirepedia.alwaysdata.net`, CSP bloquante en service) ·
+> **Compléments :** [`DEPLOIEMENT.md`](DEPLOIEMENT.md) §6 et §8,
 > [`SUIVI_DEVELOPPEMENT.md`](SUIVI_DEVELOPPEMENT.md) séance 136.
 
 ---
@@ -20,7 +20,7 @@ l'API et le panneau, donc un seul endroit couvre tout le site.
 |---|---|---|
 | `Strict-Transport-Security` | `max-age=31536000` | Un an sans repasser par HTTP. Ignoré en HTTP simple, posé sans condition. |
 | `X-Frame-Options` | `SAMEORIGIN` | Le site ne se laisse pas encadrer par un site tiers (clickjacking). |
-| `Content-Security-Policy-Report-Only` | voir §1.1 | **Mode surveillance** : rien n'est bloqué, le navigateur signale seulement ce qu'il refuserait. |
+| `Content-Security-Policy` | voir §1.1 | **Mode bloquant** : le navigateur refuse tout ce que la politique n'autorise pas (script en ligne, hôte d'image inconnu). |
 | `X-Content-Type-Options` | `nosniff` | Le navigateur ne devine pas un type non annoncé. |
 | `Referrer-Policy` | `strict-origin-when-cross-origin` | L'adresse complète ne fuit pas vers les sites tiers (partage, liens sortants). |
 
@@ -35,14 +35,31 @@ manquent.
 session ; le jeton `XSRF-TOKEN` reste lisible par le JavaScript de la page
 (c'est son rôle) mais porte `secure` et `samesite=lax`.
 
-### 1.1 Pourquoi une CSP en `Report-Only`
+### 1.1 Une CSP bloquante, et ce qu'il a fallu changer
 
-Flutter Web charge son moteur depuis la même origine mais **compile du
-WebAssembly** (`'wasm-unsafe-eval'`), injecte ses feuilles de style à la volée
-(`'unsafe-inline'` côté styles) et manipule des images et des polices en `data:`
-et `blob:`. Poser ces règles en mode bloquant du premier coup, c'est risquer un
-écran de chargement figé en production, comme la double compression de
-novembre 2026.
+La politique a d'abord été servie en `Report-Only` (séance 136) : Flutter Web
+**compile du WebAssembly** (`'wasm-unsafe-eval'`), injecte ses feuilles de style
+à la volée (`'unsafe-inline'` côté styles) et manipule des images et des polices
+en `data:` et `blob:`. Depuis le 28 novembre 2026 (séance 142), elle est servie
+en mode **bloquant** — `Content-Security-Policy`, sans `report-uri` : la console
+du navigateur reste le seul rapport, ce qui suffit tant que le site n'a pas de
+télémétrie.
+
+Trois choses cassaient sous la politique appliquée ; elles ont été corrigées à
+la source plutôt qu'en élargissant `script-src` :
+
+- **deux scripts en ligne** : la couverture de lancement de `app/web/index.html`
+  (et ses attributs `onload`/`onerror` sur la balise du chargeur) est devenue
+  `app/web/loading.js`, qui crée lui-même la balise `flutter_bootstrap.js` et
+  s'abonne à ses événements ; le formulaire d'article du panneau est devenu
+  `backend/public/admin/article-form.js`, qui lit les compteurs dans le DOM au
+  lieu de les recevoir d'un script injecté par Blade ;
+- **les couvertures d'articles** sont hébergées par Wikimedia (75 en production
+  le 28 novembre 2026 : 19 sur `upload.wikimedia.org`, 56 sur
+  `thumb.wikimedia.org`) : sans ces deux hôtes dans `img-src`, elles
+  disparaîtraient ;
+- le bloc **JSON-LD** des pages pré-rendues est conservé : c'est un bloc de
+  données, non exécuté, auquel la CSP ne s'applique pas.
 
 La politique servie aujourd'hui :
 
@@ -50,7 +67,7 @@ La politique servie aujourd'hui :
 default-src 'self';
 script-src 'self' 'wasm-unsafe-eval';
 style-src 'self' 'unsafe-inline';
-img-src 'self' data: blob:;
+img-src 'self' data: blob: https://upload.wikimedia.org https://thumb.wikimedia.org;
 font-src 'self' data:;
 connect-src 'self';
 media-src 'self' blob:;
@@ -61,10 +78,10 @@ form-action 'self';
 object-src 'none'
 ```
 
-Passer en mode bloquant (`Content-Security-Policy`) quand les rapports sont
-propres. Les rapports ne sont pas encore collectés (pas de `report-uri`) : la
-console du navigateur les affiche, c'est suffisant tant que le site n'a pas de
-télémétrie.
+`script-src` reste `'self'` : ni `'unsafe-inline'`, ni `'unsafe-eval'`. Une
+régression (script en ligne réintroduit, hôte d'image retiré) est signalée par
+`backend/tests/Feature/Site/CspTest.php`, qui lit le `.htaccess` réellement
+déployé et le HTML rendu du panneau comme d'une page d'article.
 
 ---
 
@@ -84,7 +101,7 @@ télémétrie.
 | Upload | MIME et taille serveur, hors racine web | ➖ | Aucun téléversement n'existe encore (l'image de couverture est une adresse) : à traiter avec le chantier médias |
 | Autorisation | Service + Policy, cas « A accède à B » testé | ✅ | `401` sans jeton (`/auth/me`), `302` vers `/admin/connexion` sans session ; Policies couvertes par `tests/Feature/Admin/*` |
 | Secrets | `.env` hors dépôt, jamais servi, `config:cache` | ✅ | `/.env`, `/backend/.env` et `/storage/logs/laravel.log` renvoient la coquille Flutter, jamais le contenu ; `config:cache` actif |
-| En-têtes HTTP | HTTPS forcé, HSTS, CSP raisonnable, nosniff | ✅ | §1 : `301` depuis HTTP et **cinq** en-têtes (quatre de durcissement + CSP en Report-Only) |
+| En-têtes HTTP | HTTPS forcé, HSTS, CSP raisonnable, nosniff | ✅ | §1 : `301` depuis HTTP et **cinq** en-têtes, dont la CSP **bloquante** depuis la séance 142 (`CspTest` : 4 cas) |
 | Dépendances | Dependabot + `composer audit` en CI | ✅ | `composer audit` trouvait **13 avis sur 5 paquets** (framework 13.39.0, Symfony 7.4.22) ; montée en 13.44.1 / 7.4.25 → « No security vulnerability advisories found » ; `.github/dependabot.yml` (composer, pub, actions) et étape `composer audit --locked` en CI |
 | Sauvegardes | Quotidienne dès la première semaine, restauration testée | ✅ | `DEPLOIEMENT.md` §8 : dump quotidien automatique, restauration essayée dans `ivoirepedia_dev` |
 
@@ -98,7 +115,6 @@ chemin de fichier.
 
 | Point | Pourquoi ce n'est pas fait | Échéance proposée |
 |---|---|---|
-| CSP en mode **bloquant** | Il faut d'abord lire les rapports Report-Only sur quelques jours et resserrer `script-src` / `style-src` | Après une semaine de rapports |
 | `Permissions-Policy`, `Cross-Origin-Opener-Policy` | Non demandés, effet nul tant que le site ne charge rien de tiers | Plus tard |
 | Mots de passe compromis (Have I Been Pwned) | Hors MVP (`ADR-003`, périmètre §3.2) | V2 |
 | 2FA | Explicitement hors MVP (CONTEXT §3.2) | V2 |

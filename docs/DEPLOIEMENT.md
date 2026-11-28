@@ -341,7 +341,7 @@ php artisan config:cache && php artisan route:cache && php artisan view:cache
 | Sitemap | `curl -sI https://ivoirepedia.alwaysdata.net/sitemap.xml` | `200`, `application/xml` |
 | Robots | `curl -s https://ivoirepedia.alwaysdata.net/robots.txt` | Ligne `Sitemap:` présente |
 | Journaux | `backend/storage/logs/laravel.log` en SSH | Aucune erreur 500 |
-| En-têtes de sécurité | `curl -sI https://ivoirepedia.alwaysdata.net/` | `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `HSTS` et `Content-Security-Policy-Report-Only` (docs/SECURITE.md) |
+| En-têtes de sécurité | `curl -sI https://ivoirepedia.alwaysdata.net/` | `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `HSTS` et `Content-Security-Policy` bloquante (docs/SECURITE.md) |
 | Limitation de débit | 12 tentatives de `POST /api/v1/auth/login` | `429` dès le quota de 10 par minute dépassé |
 | Secrets non servis | `curl -s https://ivoirepedia.alwaysdata.net/.env` | Coquille Flutter, jamais le contenu du fichier |
 | Dépendances | `cd backend && composer audit --locked` | « No security vulnerability advisories found. » |

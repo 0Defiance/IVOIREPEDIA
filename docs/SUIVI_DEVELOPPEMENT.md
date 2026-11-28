@@ -4,7 +4,7 @@
 > Chaque séance de travail ajoute une entrée datée.
 > Règle : ce journal, le dépôt local et le dépôt distant restent **au même niveau d'information**.
 
-**Version** : 1.11 · **Dernière mise à jour** : 28 novembre 2026
+**Version** : 1.12 · **Dernière mise à jour** : 28 novembre 2026
 
 **État en une phrase** : **IVOIREPEDIA est en ligne** sur son compte Alwaysdata dédié — Sprint 0 terminé et backend déployé (Laravel 13.39.0, PHP 8.4.27), le **site se lit en ligne à la racine du domaine** (`https://ivoirepedia.alwaysdata.net/` ; l'ancienne adresse `/site/` y redirige en 301) sur une API `/api/v1` qui sert articles, catégories, recherche, statistiques, histoire, frise, lieux et sources — ces routes vérifiées en production le 27 novembre 2026 ; le **Sprint 1 est fait** (comptes lecteurs : inscription, connexion par jeton, mot de passe oublié, rôles READER / CONTRIBUTOR / ADMIN) et le **panneau éditorial `/admin`** couvre tout le cycle d'un article (rédaction, modification, transitions de relecture, catégories, étiquettes, utilisateurs, messages de contact), sur **479 articles publiés** (403 biographies, 41 territoires, 30 sujets, 5 institutions) ; **restent l'éditeur d'article dans l'application (Sprint 2)**, les contributions et discussions (Sprint 3), et l'élargissement du contenu — le tout tenu par 170 tests backend (5 703 assertions) et 73 tests Flutter, avec une CI qui vérifie aussi le formatage Dart depuis la séance 124.
 
@@ -3213,6 +3213,27 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 **Vérifié** : `dart format --set-exit-if-changed lib test` → 68 fichiers, aucun écart ; `flutter analyze --no-pub` → « No issues found! » ; `flutter test --no-pub` → **76 tests verts** (73 + 3). Backend intact : aucun fichier PHP touché.
 
 **Reste** : la pagination des résultats de recherche, toujours à offrir. L'écran n'a pas été regardé dans un navigateur : il faudra reconstruire le site (`flutter build web`) pour que `/etiquettes/…` existe en production, et c'est à ce moment qu'une relecture visuelle aura du sens.
+
+---
+
+## Séance 142 — 28 novembre 2026 · La CSP passe en mode bloquant
+
+**Demandé** : faire passer la politique de `Report-Only` à appliquée, corriger ce que cela casse dans le panneau et le bundle Flutter, vérifier en production, avec doc, tests, commit et push.
+
+**Constat** : la politique était servie en `Report-Only` depuis la séance 136, et trois choses auraient été refusées dès le passage en bloquant : deux `<script>` en ligne (la couverture de lancement de `app/web/index.html`, avec ses attributs `onload`/`onerror`, et le formulaire d'article du panneau), puis les couvertures d'articles, hébergées par Wikimedia — 75 en production le 28 novembre 2026, 19 sur `upload.wikimedia.org` et 56 sur `thumb.wikimedia.org` — qu'un `img-src 'self' data: blob:` aurait fait disparaître.
+
+**Fait** :
+- `backend/public/.htaccess` : `Header always set Content-Security-Policy` remplace `-Report-Only`. Politique inchangée sauf `img-src`, qui nomme les deux hôtes Wikimedia ; `script-src` garde `'self'` et n'ouvre que `'wasm-unsafe-eval'` (CanvasKit), `style-src` garde `'unsafe-inline'` pour les feuilles injectées par Flutter et le panneau.
+- `app/web/loading.js` : la couverture crée elle-même la balise `flutter_bootstrap.js` et s'abonne à `load`/`error` ; `index.html` n'a plus qu'un `<script src="loading.js" defer>` et plus aucun gestionnaire d'attribut.
+- `backend/public/admin/article-form.js` : le formulaire d'article (ajout/suppression de lignes, compteurs) devient un fichier de la même origine qui lit le DOM ; `form.blade.php` ne pousse plus qu'une balise externe.
+- `backend/tests/Feature/Site/CspTest.php` : quatre cas — en-tête bloquant sans `Report-Only`, `script-src` sans `unsafe-inline`/`unsafe-eval` avec `wasm-unsafe-eval`, `style-src` souple, `img-src` avec les deux hôtes ; puis le HTML rendu du formulaire d'article et d'une page d'article, où seuls des `<script src=…>` et le bloc JSON-LD subsistent.
+- `app/test/web_shell_test.dart` : les deux assertions `onload=`/`onerror=` — devenues fausses par construction — sont remplacées par « `loading.js` est chargé, aucun attribut en ligne ne subsiste, et `loading.js` s'abonne bien à `load` et `error` ».
+
+**Vérifié, local** : `composer test` → **205 tests verts** (5 839 assertions), `composer format:check` et `composer analyse` propres ; `dart format --set-exit-if-changed lib test` → 70 fichiers, aucun écart ; `flutter analyze` → « No issues found! » ; `flutter test` → **79 tests verts**. Bundle : `flutter build web --release --no-pub --base-href=/ --dart-define=API_BASE_URL=/api/v1`, puis `tools/precompress_web.py` → 34 334 999 → 10 445 540 octets (69,6 % plus petit), `loading.js` 4 045 → 1 263 octets.
+
+**Vérifié, production** : l'envoi du bundle et le contrôle de l'en-tête sont faits juste après le push, et consignés ici même.
+
+**Reste** : la collecte des rapports (`report-uri` ou `report-to`) reste à faire — la console du navigateur suffit tant qu'il n'y a pas de télémétrie ; et la tâche planifiée du panneau, la copie hors-site active, le nom du responsable de publication.
 
 ---
 

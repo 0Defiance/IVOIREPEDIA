@@ -112,13 +112,19 @@
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set Strict-Transport-Security "max-age=31536000"
 
-  # CSP d'abord en Report-Only : rien n'est bloqué, le navigateur signale
-  # seulement ce qu'il refuserait. Flutter Web charge son moteur depuis la
-  # même origine et compile du WebAssembly, d'où 'wasm-unsafe-eval' ; les
-  # feuilles de style et les polices sont injectées à la volée, d'où
-  # 'unsafe-inline' et data:. À passer en `Content-Security-Policy` (mode
-  # bloquant) quand les rapports seront propres — docs/SECURITE.md.
-  Header always set Content-Security-Policy-Report-Only "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; worker-src 'self' blob:; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'"
+  # CSP **bloquante** depuis la séance 142 : ce qui n'est pas listé est refusé,
+  # pas seulement signalé. Trois besoins réels la dimensionnent :
+  #   - Flutter Web charge son moteur depuis la même origine et compile du
+  #     WebAssembly, d'où 'wasm-unsafe-eval' (et pas 'unsafe-eval') ;
+  #   - les feuilles de style et les polices sont injectées à la volée par le
+  #     moteur, d'où 'unsafe-inline' pour style-src et data: pour les polices ;
+  #   - les couvertures d'articles sont des images sourcées, hébergées par
+  #     Wikimedia : sans ces deux hôtes, 75 articles perdraient leur image.
+  # Aucun script en ligne ne subsiste (couverture → `loading.js`, formulaire
+  # d'article → `admin/article-form.js`) : script-src reste sans 'unsafe-inline'.
+  # Ajouter un hôte d'image est un acte explicite — une ligne ici, documentée
+  # dans docs/SECURITE.md §1.3.
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://upload.wikimedia.org https://thumb.wikimedia.org; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; worker-src 'self' blob:; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'"
 
   # Le code doit être revalidé à chaque visite : une réponse 304 coûte quelques
   # centaines d'octets et un déploiement est visible immédiatement.

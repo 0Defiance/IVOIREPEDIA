@@ -253,47 +253,7 @@
 @endsection
 
 @push('scripts')
-    <script>
-        (function () {
-            var counters = {
-                infobox: {{ count($infoboxRows) }},
-                references: {{ count($referenceRows) }}
-            };
-
-            document.querySelectorAll('[data-add-row]').forEach(function (button) {
-                button.addEventListener('click', function () {
-                    var kind = button.getAttribute('data-add-row');
-                    var template = document.getElementById(kind + '-template');
-                    var target = document.getElementById(kind + '-rows');
-
-                    if (!template || !target) {
-                        return;
-                    }
-
-                    target.insertAdjacentHTML(
-                        'beforeend',
-                        template.innerHTML.replace(/__INDEX__/g, String(counters[kind]++))
-                    );
-                });
-            });
-
-            document.addEventListener('click', function (event) {
-                if (!(event.target instanceof Element)) {
-                    return;
-                }
-
-                var button = event.target.closest('[data-remove-row]');
-
-                if (!button) {
-                    return;
-                }
-
-                var row = button.closest('.pair-row, .ref-row');
-
-                if (row) {
-                    row.remove();
-                }
-            });
-        })();
-    </script>
+    {{-- Fichier servi par la même origine : la CSP bloquante interdit les
+         scripts en ligne, et `script-src 'self'` suffit (docs/SECURITE.md). --}}
+    <script src="{{ asset('admin/article-form.js') }}" defer></script>
 @endpush
