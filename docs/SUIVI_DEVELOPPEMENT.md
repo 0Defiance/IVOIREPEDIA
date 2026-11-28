@@ -3229,7 +3229,7 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 - Le tout branché dans `TriggerDailyBackup`, après l'envoi de la réponse : deux `stat` de plus par requête, aucun dump ouvert.
 - Dépendance `league/flysystem-aws-s3-v3` (^3.35) ajoutée au `composer.json` ; `.env.example` complété.
 
-**Vérifié, local** : `composer test` → **196 tests verts** (copie hors-site : envoi, non-réenvoi, purge, refus sans disque ; alerte : seuil 36 h, absence de dump, une par jour, sans destinataire, autre base ignorée ; middleware : alerte après la réponse). `composer format:check` et `composer analyse` propres. `Mail::fake()` n'enregistre pas `Mail::raw` : l'alerte est un Mailable (`App\Mail\BackupStale`, vue texte), ce qui la rend testable.
+**Vérifié, local** : `composer test` → **197 tests verts** (copie hors-site : envoi, non-réenvoi, purge, refus sans disque ; **branche hors-site de `backup:run` : envoi en échec → code 1, repère antidaté de 23 h donc retentative à l'heure, dump local conservé** ; alerte : seuil 36 h, absence de dump, une par jour, sans destinataire, autre base ignorée ; middleware : alerte après la réponse). `composer format:check` et `composer analyse` propres. `Mail::fake()` n'enregistre pas `Mail::raw` : l'alerte est un Mailable (`App\Mail\BackupStale`, vue texte), ce qui la rend testable.
 
 **Non vérifié, et pourquoi** : l'envoi réel vers un stockage objet. Aucun compte de stockage n'est ouvert et le dépôt n'a aucune clé : le code est testé contre un disque simulé, pas contre un fournisseur. C'est la seule étape qui reste sur ce chantier.
 

@@ -175,7 +175,8 @@ class BackupRun extends Command
         return $path;
     }
 
-    private function dumpDatabase(string $credentials, string $database, string $dump): bool
+    /** Protégée pour qu'un test puisse simuler un dump réussi sans `mysqldump`. */
+    protected function dumpDatabase(string $credentials, string $database, string $dump): bool
     {
         $command = sprintf(
             '%s --defaults-extra-file=%s --single-transaction --quick --skip-lock-tables '
