@@ -3216,6 +3216,27 @@ Leçon à retenir pour les prochains déploiements : la compression à la volée
 
 ---
 
+## Séance 133 — 28 novembre 2026 · La recherche paginée en production
+
+**Constat** : les séances 131 à 132 avaient réuni la liste paginée, mais le site public servait encore le bundle du 23 novembre : en ligne, `/recherche` s'arrêtait aux douze premiers résultats.
+
+**Fait** :
+- `flutter build web --release --no-pub --base-href=/ --dart-define=API_BASE_URL=/api/v1` (352 s, `√ Built build\web`), puis `tools/precompress_web.py` : 34 327 460 → 10 443 639 octets (69,6 % plus petit), `main.dart.js` 3 082 948 → 700 360.
+- Envoi par `tar` sur SSH (clé `.deploy/ivoirepedia_ed25519`) vers `~/ivoirepedia/backend/public`. Le `.htaccess` de Laravel est resté intact (même empreinte `d12914a…`).
+- Le dépôt du serveur est passé de `45cf700` à `eeabe88` (`git pull --ff-only`) : il ne peut plus diverger du nôtre.
+- `tools/verify_deploy.py` : page d'accueil, `main.dart.js`, `main.dart.js_1.part.js` et `canvaskit.wasm` reçus en Brotli, **décompressés identiques aux originaux**.
+
+**Vérifié au navigateur, sur `https://ivoirepedia.alwaysdata.net`** :
+- `/recherche?q=a` en 1280 × 900 : « Résultats 1 à 12 sur **479** pour « a » », douze lignes avec domaine · type · date · minutes. Scroll et clic synthétiques sur le canevas (`flt-glass-pane`, événements *wheel* / *pointer*) : « Charger la suite » charge bien la page 2 — le compteur passe à « Résultats 1 à 24 sur 479 » et DJ Arafat, Gervinho, Akè Loba suivent Charles Konan Banny.
+- `/categories/histoire` : « 5 pages dans cette catégorie », cinq lignes correctes en 1280 × 900 et en 390 × 844.
+- `/etiquettes/independance?nom=Indépendance` : « 2 pages avec cette étiquette », deux lignes, aux deux largeurs.
+- `/recherche?q=a` en 390 × 844 : compteur et métadonnées repliées sur deux lignes, aucun débordement.
+- Console : aucune erreur, aucun avertissement applicatif.
+
+**Reste** : la pagination est prouvée par le test de widget et maintenant par un clic réel en production ; aucun autre écart connu. Le clic sur canevas demande des événements synthétiques — à refaire ainsi pour toute vérification future d'un bouton Flutter Web.
+
+---
+
 ## Séance 132 — 27 novembre 2026 · La recherche continue après les douze premiers
 
 **Constat** : `/recherche?q=…` demandait `search(term)` sans numéro de page et affichait 12 résultats sur 479, avec son propre `FutureBuilder`, son squelette, son message « Aucun résultat » et sa ligne de résultat (`_Result`, 95 lignes) — tout ce que la séance 131 venait justement de réunir dans `PagedArticleList`.
